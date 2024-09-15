@@ -1,0 +1,1676 @@
+[
+  {
+    "file": "internal/github/repository.go:13:2",
+    "warning": "containedctx",
+    "description": "The `Repository` struct contains a `context.Context` field. Contexts should not be stored in structs; instead they should be passed as arguments to functions.",
+    "todo": "Remove the `ctx` field from the `Repository` struct. Pass `context.Context` as the first argument to the following methods: `LatestRelease`, `GetRelease`, `LatestIncludingPreRelease`. Update the callers of these methods to pass the context."
+  },
+  {
+    "file": "internal/gitlab/repository.go:13:2",
+    "warning": "containedctx",
+    "description": "The `Repository` struct contains a `context.Context` field. Contexts should not be stored in structs; instead they should be passed as arguments to functions.",
+    "todo": "Remove the `ctx` field from the `Repository` struct. Pass `context.Context` as the first argument to the following methods: `GetRelease`, `getReleasesWithOptions`, `LatestRelease`, `GetLatestIncludingPreRelease`. Update the callers of these methods to pass the context."
+  },
+  {
+    "file": "internal/cli/subcommands.go:1:1",
+    "warning": "cyclop",
+    "description": "The average complexity for the package `cli` is 11.0, which is slightly above the maximum of 10.0. This is caused by the `subcommands` function which adds all the subcommands to the root command.",
+    "todo": "Add a `#nolint:cyclop` directive to the `subcommands` function. The function is not complex in a logical sense, it just adds a list of commands. Splitting the function would not improve readability."
+  },
+  {
+    "file": "internal/cli/logic.go:66:26",
+    "warning": "errcheck",
+    "description": "The type assertion `k.Get(\"config-file\").(string)` can panic if the value is not a string. The error is not checked.",
+    "todo": "Change the code to safely handle the type assertion. First, assert the type to a new variable, checking the `ok` value. If it's not `ok`, return an error. Then, use the new variable to create the `configFile`."
+  },
+  {
+    "file": "internal/debug/debug.go:17:14",
+    "warning": "errcheck",
+    "description": "The error return value of `pretty.Print` is not checked. This function is used for debugging purposes, so an error during printing is not critical.",
+    "todo": "Add a `#nolint:errcheck` directive to the line. It's acceptable to ignore the error in this context as it's a debugging utility."
+  },
+  {
+    "file": "internal/tools/sources/common/common.go:51:14",
+    "warning": "errcheck",
+    "description": "The error return value of `dir.Remove()` is not checked.",
+    "todo": "Handle the error appropriately."
+  },
+  {
+    "file": "internal/tools/sources/go/go.go:123:17",
+    "warning": "errcheck",
+    "description": "The error return value of `folder.Remove()` is not checked.",
+    "todo": "Handle the error appropriately."
+  },
+  {
+    "file": "pkg/koanfx/koanfx.go:131:16",
+    "warning": "errcheck",
+    "description": "The error return value of `filtered.Set` is not checked. While unlikely to fail in this context, it's best practice to handle the error.",
+    "todo": "Check the error returned by `filtered.Set(key, kwt.Get(key))` and return false if it fails."
+  },
+  {
+    "file": "internal/tools/result/result.go:15:6",
+    "warning": "errname",
+    "description": "The error type name `Result` should conform to the `XxxError` format. However, `Result` is not exclusively an error type; it represents the outcome of an operation (success, failure, or skipped). Renaming it would be misleading.",
+    "todo": "Add a `#nolint:errname` directive to the `Result` struct definition with an explanation. The name `Result` accurately reflects its purpose."
+  },
+  {
+    "file": "internal/debug/debug.go:12:3",
+    "warning": "forbidigo",
+    "description": "The use of `fmt.Printf` is forbidden. However, this is a debug utility, and `fmt.Printf` is a simple and direct way to print debug information.",
+    "todo": "Add a `#nolint:forbidigo` directive to the line with an explanation. The use of `fmt.Printf` is acceptable in this context."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:141:3",
+    "warning": "forbidigo",
+    "description": "The use of `fmt.Println` is forbidden. This is a debug utility, and `fmt.Println` is a simple way to print debug information.",
+    "todo": "Add a `#nolint:forbidigo` directive to the line with an explanation. The use of `fmt.Println` is acceptable in this context."
+  },
+  {
+    "file": "internal/gitlab/repository.go:48:1",
+    "warning": "funcorder",
+    "description": "The unexported method `getReleasesWithOptions` should be placed after the exported method `GetLatestIncludingPreRelease`.",
+    "todo": "Move the `getReleasesWithOptions` function to be after the `GetLatestIncludingPreRelease` function."
+  },
+  {
+    "file": "internal/presentation/errors.go:57:1",
+    "warning": "funcorder",
+    "description": "The unexported method `formatJSON` should be placed after the exported method `FormatSummary`.",
+    "todo": "Move the `formatJSON` function to be after the `FormatSummary` function."
+  },
+  {
+    "file": "internal/presentation/errors.go:87:1",
+    "warning": "funcorder",
+    "description": "The unexported method `formatText` should be placed after the exported method `FormatSummary`.",
+    "todo": "Move the `formatText` function to be after the `FormatSummary` function."
+  },
+  {
+    "file": "pkg/koanfx/tracker.go:46:1",
+    "warning": "funcorder",
+    "description": "The unexported method `set` should be placed after the exported method `TrackFlags`.",
+    "todo": "Move the `set` function to be after the `TrackFlags` function."
+  },
+  {
+    "file": "pkg/koanfx/tracker.go:51:1",
+    "warning": "funcorder",
+    "description": "The unexported method `add` should be placed after the exported method `TrackFlags`.",
+    "todo": "Move the `add` function to be after the `TrackFlags` function."
+  },
+  {
+    "file": "internal/config/root/show.go:11:5",
+    "warning": "gochecknoglobals",
+    "description": "The `NoShow` variable is a global variable. However, it is a constant-like variable that provides a default 'no-op' show function and does not represent mutable global state.",
+    "todo": "Add a `#nolint:gochecknoglobals` directive to the `NoShow` variable declaration with an explanation. This global variable is acceptable as it's effectively a constant."
+  },
+  {
+    "file": "internal/detect/platform/library.go:121:5",
+    "warning": "gochecknoglobals",
+    "description": "The `compatibilityMatrix` variable is a global variable. However, it is a constant data structure used for compatibility checks and does not represent mutable global state.",
+    "todo": "Add a `#nolint:gochecknoglobals` directive to the `compatibilityMatrix` variable declaration with an explanation. This global variable is acceptable as it's a constant data structure."
+  },
+  {
+    "file": "internal/tools/sources/go/go.go:67:5",
+    "warning": "gochecknoglobals",
+    "description": "The `mu` variable is a global variable. However, it is a `sync.Mutex` used for synchronization and is a necessary global for protecting shared resources.",
+    "todo": "Add a `#nolint:gochecknoglobals` directive to the `mu` variable declaration with an explanation. This global variable is acceptable as it's necessary for synchronization."
+  },
+  {
+    "file": "internal/cli/auth/remove/logic.go:13:1",
+    "warning": "gocognit",
+    "description": "The cognitive complexity of the `run` function is high. This function handles token removal from both keyring and config files, with conditional logic for arguments, and loops within each branch.",
+    "todo": "Add a `#nolint:gocognit` directive to the `run` function. The complexity is inherent to its responsibility of handling multiple token removal scenarios, and refactoring might not significantly improve readability or maintainability."
+  },
+  {
+    "file": "internal/cli/common/commands.go:22:1",
+    "warning": "gocognit",
+    "description": "The cognitive complexity of the `KCreateSubcommandPreRunE` function is high. This function handles the pre-run logic for subcommands, including loading config, env vars, and flags, and then validating.",
+    "todo": "Add a `#nolint:gocognit` directive to the `KCreateSubcommandPreRunE` function. The function is central to the CLI's configuration loading and splitting it might make the overall flow harder to follow."
+  },
+  {
+    "file": "internal/cli/logic.go:29:1",
+    "warning": "gocognit",
+    "description": "The cognitive complexity of the `run` function is high. This is the main `run` function for the CLI, handling multiple passes of config loading, environment variable processing, and token handling.",
+    "todo": "Add a `#nolint:gocognit` directive to the `run` function. The complexity is inherent to its responsibility of managing the entire CLI configuration loading process."
+  },
+  {
+    "file": "internal/detect/platform/arch.go:107:1",
+    "warning": "gocognit",
+    "description": "The cognitive complexity of the `(*Architecture).ParseFrom` function is high. This function parses architecture information from a string, iterating through supported architectures and aliases, with nested loops and conditional logic.",
+    "todo": "Add a `#nolint:gocognit` directive to the `ParseFrom` function. The complexity is inherent to the detailed parsing logic required to handle various architecture names and aliases."
+  },
+  {
+    "file": "internal/match/asset.go:51:2",
+    "warning": "gocritic",
+    "description": "The `if-else if` chain in `PlatformMatch` could be rewritten as a `switch` statement. However, the current structure is clear and handles the specific conditions well, especially the special case for Windows.",
+    "todo": "Add a `#nolint:gocritic // The current if-else if chain is clear and handles specific conditions well.` directive to the line."
+  },
+  {
+    "file": "internal/match/results.go:76:2",
+    "warning": "gocritic",
+    "description": "The `if-else if` chain in `Status` could be rewritten as a `switch` statement. However, the conditions are not simple equality checks on a single variable, and the current structure is readable.",
+    "todo": "Add a `#nolint:gocritic // The current if-else if chain is clear and handles specific conditions well.` directive to the line."
+  },
+  {
+    "file": "internal/cli/logic.go:27:2",
+    "warning": "godox",
+    "description": "The comment indicates that some subcommands should not validate the config file (e.g., `auth`, `config`). This is a valid architectural improvement.",
+    "todo": "Modify the CLI's configuration validation logic to selectively skip validation for specified subcommands like `auth` and `config`."
+  },
+  {
+    "file": "internal/cli/logic.go:228:3",
+    "warning": "godox",
+    "description": "The comment suggests adding support for token files (e.g., `GITHUB_TOKEN_FILE`). This would enhance flexibility for providing authentication tokens.",
+    "todo": "Implement support for reading authentication tokens from specified files (e.g., `GITHUB_TOKEN_FILE`, `GITLAB_TOKEN_FILE`, `URL_TOKEN_FILE`) in addition to environment variables."
+  },
+  {
+    "file": "internal/cli/status/logic.go:14:2",
+    "warning": "godox",
+    "description": "The comment indicates that the presentation for the `status` command needs to be different, specifically regarding color changes (green -> yellow, yellow -> green, red -> red). This is a UI/UX improvement.",
+    "todo": "Adjust the presentation logic for the `status` command to implement the specified color changes based on the status of the components."
+  },
+  {
+    "file": "internal/config/root/config.go:15:2",
+    "warning": "godox",
+    "description": "The comment suggests changing all configuration sections to use `.Config` instead of specific command names like `.Dump` or `.Update`. This is a refactoring to standardize the configuration structure.",
+    "todo": "Refactor the configuration structure to use a consistent `.Config` naming convention across all relevant sections, replacing command-specific names like `.Dump` and `.Update`."
+  },
+  {
+    "file": "internal/detect/platform.go:43:3",
+    "warning": "godox",
+    "description": "The comment suggests adding flags (`--library` and `--distribution`) to override default platform detection. This would provide more control to the user.",
+    "todo": "Implement new CLI flags, `--library` and `--distribution`, to allow users to explicitly override the automatically detected library and distribution settings."
+  },
+  {
+    "file": "internal/processor/processor.go:150:4",
+    "warning": "godox",
+    "description": "The comment notes that the 'Name' field is ambiguous and can be used for several tools, especially in repositories storing multiple tools. This indicates a potential for confusion.",
+    "todo": "Clarify the purpose and usage of the 'Name' field in `internal/processor/processor.go` to reduce ambiguity, possibly by renaming it or adding more specific context in its usage."
+  },
+  {
+    "file": "internal/tools/result/result.go:11:2",
+    "warning": "godox",
+    "description": "The comment states that `Wrap` and `Wrapped` functions are confusing and suggests making more 'sane' functions. This is a usability and clarity issue.",
+    "todo": "Rename or refactor the `Wrap` and `Wrapped` functions in `internal/tools/result/result.go` to improve clarity and make their purpose more intuitive."
+  },
+  {
+    "file": "internal/tools/sources/common/split.go:8:2",
+    "warning": "godox",
+    "description": "The comment indicates that the current logic for splitting versions doesn't work well for 'pure' Go installations where the version is already provided. This is a functional bug.",
+    "todo": "Fix the version splitting logic in `internal/tools/sources/common/split.go` to correctly handle 'pure' Go installations where the version is already explicitly given, preventing incorrect parsing."
+  },
+  {
+    "file": "internal/tools/sources/go/go.go:35:2",
+    "warning": "godox",
+    "description": "The comment suggests that certain logic should be ignored if the version is already set for Go installations. This is an optimization and correctness improvement.",
+    "todo": "Modify the Go installation logic in `internal/tools/sources/go/go.go` to skip version-related processing if the version is already explicitly set, avoiding redundant or incorrect operations."
+  },
+  {
+    "file": "internal/tools/sources/go/go.go:66:2",
+    "warning": "godox",
+    "description": "The comment questions the necessity of a specific piece of code (`mu sync.Mutex`) and suggests removing it at some point. This indicates potential dead or unnecessary code.",
+    "todo": "Investigate the usage and necessity of the `mu sync.Mutex` in `internal/tools/sources/go/go.go`. If it's found to be unnecessary or redundant, remove it."
+  },
+  {
+    "file": "internal/tools/sources/source.go:35:2",
+    "warning": "godox",
+    "description": "The comment suggests using `go generate` to create source type strings. This would automate the generation of boilerplate code.",
+    "todo": "Implement `go generate` directives and corresponding generation logic to automatically create source type strings in `internal/tools/sources/source.go`, reducing manual maintenance."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:114:2",
+    "warning": "godox",
+    "description": "The comment suggests getting rid of `currentResult`. This indicates a refactoring opportunity to simplify the code.",
+    "todo": "Refactor `internal/tools/tool/tool.go` to eliminate the `currentResult` variable, integrating its functionality directly or using alternative patterns to simplify the code."
+  },
+  {
+    "file": "internal/tools/tool/validate.go:238:4",
+    "warning": "godox",
+    "description": "The comment suggests passing OS and Architecture as they are and letting downstream decide on `Type()`. This indicates a need for more flexible parameter passing.",
+    "todo": "Modify the function signature in `internal/tools/tool/validate.go` to pass OS and Architecture directly, allowing downstream functions to determine how to use their `Type()` method."
+  },
+  {
+    "file": "pkg/koanfx/tracker.go:73:2",
+    "warning": "godox",
+    "description": "The comment suggests implementing an additional tracking 'FromWhere' method to track where a key was set from. This would enhance debugging and understanding of configuration origins.",
+    "todo": "Implement a new method, `FromWhere`, in `pkg/koanfx/tracker.go` to track and report the origin (e.g., file, environment variable, flag) from which a configuration key was set."
+  },
+  {
+    "file": "pkg/unmarshal/templatable.go:34:2",
+    "warning": "godox",
+    "description": "The comment poses a question about whether to return `t.Template` or `t.Value`. This indicates ambiguity in the function's intended return value.",
+    "todo": "Clarify the intended return value of the function in `pkg/unmarshal/templatable.go` and adjust the code to consistently return either `t.Template` or `t.Value` based on the clarified purpose."
+  },
+  {
+    "file": "internal/detect/os.go:36:2",
+    "warning": "gosec",
+    "description": "The `distro.ParseFrom(info.Platform)` call has an unhandled error. The comment indicates that the error is intentionally ignored as it's not critical. This is acceptable for non-critical parsing failures where a default or empty value is sufficient.",
+    "todo": "Add a `#nolint:gosec // Error is intentionally ignored as it's not critical for platform detection.` directive to the line."
+  },
+  {
+    "file": "internal/goi/installer.go:23:9",
+    "warning": "gosec",
+    "description": "The `exec.Command` call uses `path` which is a potential tainted input. This is a security concern as it could lead to arbitrary command execution.",
+    "todo": "Sanitize the `path` variable before passing it to `exec.Command` or ensure that `path` is always a trusted input. If `path` is derived from user input, it must be validated against a whitelist of allowed values or patterns."
+  },
+  {
+    "file": "pkg/download/progress/progress.go:153:82",
+    "warning": "gosec",
+    "description": "The conversion from `int64` to `uint64` for `totalSize` might lead to an integer overflow if `totalSize` is negative. While `totalSize` is expected to be non-negative in this context (file size), it's good practice to handle potential overflows.",
+    "todo": "Add a check to ensure `totalSize` is non-negative before converting it to `uint64`. If `totalSize` can be negative, consider using `int64` for `humanize.Bytes` or handling the negative case appropriately."
+  },
+  {
+    "file": "pkg/executable/executable.go:33:9",
+    "warning": "gosec",
+    "description": "The `exec.CommandContext` call uses `e.String()` and `cmdArgs...` which are potential tainted inputs. This is a security concern as it could lead to arbitrary command execution.",
+    "todo": "Sanitize `e.String()` and `cmdArgs` before passing them to `exec.CommandContext` or ensure that these inputs are always trusted. If they are derived from user input, they must be validated against a whitelist of allowed values or patterns."
+  },
+  {
+    "file": "internal/goi/binary.go:38:11",
+    "warning": "govet",
+    "description": "The declaration of `err` at line 38 shadows the declaration at line 31. This can lead to confusion and unintended behavior if the inner `err` is not handled correctly.",
+    "todo": "Rename the inner `err` variable to avoid shadowing the outer `err`."
+  },
+  {
+    "file": "internal/goi/binary.go:54:5",
+    "warning": "govet",
+    "description": "The declaration of `err` at line 54 shadows the declaration at line 31. This can lead to confusion and unintended behavior if the inner `err` is not handled correctly.",
+    "todo": "Rename the inner `err` variable to avoid shadowing the outer `err`."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:105:5",
+    "warning": "govet",
+    "description": "The declaration of `err` at line 105 shadows the declaration at line 92. This can lead to confusion and unintended behavior if the inner `err` is not handled correctly.",
+    "todo": "Rename the inner `err` variable to avoid shadowing the outer `err`."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:109:5",
+    "warning": "govet",
+    "description": "The declaration of `err` at line 109 shadows the declaration at line 92. This can lead to confusion and unintended behavior if the inner `err` is not handled correctly.",
+    "todo": "Rename the inner `err` variable to avoid shadowing the outer `err`."
+  },
+  {
+    "file": "internal/tools/sources/github/github.go:97:12",
+    "warning": "govet",
+    "description": "The declaration of `err` at line 97 shadows the declaration at line 89. This can lead to confusion and unintended behavior if the inner `err` is not handled correctly.",
+    "todo": "Rename the inner `err` variable to avoid shadowing the outer `err`."
+  },
+  {
+    "file": "internal/tools/sources/gitlab/gitlab.go:136:7",
+    "warning": "govet",
+    "description": "The declaration of `err` at line 136 shadows the declaration at line 126. This can lead to confusion and unintended behavior if the inner `err` is not handled correctly.",
+    "todo": "Rename the inner `err` variable to avoid shadowing the outer `err`."
+  },
+  {
+    "file": "internal/tools/sources/go/go.go:132:11",
+    "warning": "govet",
+    "description": "The declaration of `err` at line 132 shadows the declaration at line 73. This can lead to confusion and unintended behavior if the inner `err` is not handled correctly.",
+    "todo": "Rename the inner `err` variable to avoid shadowing the outer `err`."
+  },
+  {
+    "file": "internal/updater/wincleanup.go:82:5",
+    "warning": "govet",
+    "description": "The declaration of `err` at line 82 shadows the declaration at line 76. This can lead to confusion and unintended behavior if the inner `err` is not handled correctly.",
+    "todo": "Rename the inner `err` variable to avoid shadowing the outer `err`."
+  },
+  {
+    "file": "internal/tools/sources/source.go:67:1",
+    "warning": "ireturn",
+    "description": "The `Installer` method returns an interface type (`Populator`). While generally discouraged, returning an interface here is intentional as it allows for polymorphism and abstraction over different source types (GitHub, GitLab, URL, etc.). This design choice simplifies the `Tool` struct and allows for flexible extension with new source types without modifying existing code.",
+    "todo": "Add a `#nolint:ireturn // We want to return an interface here to allow for polymorphism and abstraction over different source types.` directive to the line."
+  },
+  {
+    "file": "internal/match/asset.go:54:1",
+    "warning": "lll",
+    "description": "The line exceeds the maximum allowed length of 120 characters. This can reduce readability.",
+    "todo": "Refactor the line to be shorter, potentially by breaking it into multiple lines or extracting parts into variables."
+  },
+  {
+    "file": "internal/processor/processor.go:171:13",
+    "warning": "mnd",
+    "description": "The magic number `100` is used directly. This value represents `MaxWidth` for a table formatter. While it's a specific UI constant, it could be named for clarity.",
+    "todo": "Replace the magic number `100` with a named constant, e.g., `const MaxTableWidth = 100`."
+  },
+  {
+    "file": "internal/processor/processor.go:211:14",
+    "warning": "mnd",
+    "description": "The magic number `120` is used directly. This value represents `WrapWidth` for an error formatter. While it's a specific UI constant, it could be named for clarity.",
+    "todo": "Replace the magic number `120` with a named constant, e.g., `const ErrorWrapWidth = 120`."
+  },
+  {
+    "file": "pkg/dag/dag.go:123:8",
+    "warning": "mnd",
+    "description": "The magic number `2` is used in a `case` statement. This represents a specific state in a graph traversal algorithm (e.g., 'black' for already processed nodes). While its meaning is explained in a comment, a named constant would improve readability.",
+    "todo": "Replace the magic number `2` with a named constant, e.g., `const NodeStateBlack = 2`."
+  },
+  {
+    "file": "pkg/download/progress/progress.go:63:24",
+    "warning": "mnd",
+    "description": "The magic number `100` is used directly in a time duration calculation (`100 * time.Millisecond`). This represents the update frequency for a progress bar. A named constant would improve clarity.",
+    "todo": "Replace the magic number `100` with a named constant, e.g., `const ProgressUpdateFrequencyMs = 100`."
+  },
+  {
+    "file": "pkg/download/progress/progress.go:120:14",
+    "warning": "mnd",
+    "description": "The magic number `100` is used directly in a time duration calculation (`100 * time.Millisecond`). This represents a sleep duration. A named constant would improve clarity.",
+    "todo": "Replace the magic number `100` with a named constant, e.g., `const SleepDurationMs = 100`."
+  },
+  {
+    "file": "internal/cache/cache.go:282:27",
+    "warning": "musttag",
+    "description": "The struct being decoded into (`items`) is not annotated with `json` tags. This can lead to issues if the JSON keys do not exactly match the struct field names, or if specific JSON marshaling/unmarshaling behavior is desired.",
+    "todo": "Add `json` tags to the fields of the `items` struct to explicitly define how they should be mapped to JSON keys."
+  },
+  {
+    "file": "internal/cache/cache.go:312:24",
+    "warning": "musttag",
+    "description": "The struct being encoded from (`items`) is not annotated with `json` tags. This can lead to issues if the JSON keys do not exactly match the struct field names, or if specific JSON marshaling/unmarshaling behavior is desired.",
+    "todo": "Add `json` tags to the fields of the `items` struct to explicitly define how they should be mapped to JSON keys."
+  },
+  {
+    "file": "internal/tools/sources/common/common.go:80:1",
+    "warning": "nestif",
+    "description": "The `if destination.IsDir()` block has a high nesting level (complexity: 8). Deeply nested `if` statements can make code harder to read and understand.",
+    "todo": "Refactor the nested `if` statements to reduce complexity. This could involve extracting some logic into separate functions, using guard clauses, or restructuring the conditional logic."
+  },
+  {
+    "file": "pkg/utils/utils.go:95:3",
+    "warning": "nilnil",
+    "description": "The function returns both a `nil` error and a `nil` value (`return nil, nil`). This is generally discouraged as it can make error handling ambiguous. It's better to return a specific sentinel error or a zero value for the non-error return.",
+    "todo": "Replace `return nil, nil` with `return nil, ErrSourceIsNil` (after defining `ErrSourceIsNil` as a sentinel error) to provide a clearer indication of why `nil` is being returned for the value."
+  },
+  {
+    "file": "internal/gitlab/asset.go:16:36",
+    "warning": "nolintlint",
+    "description": "The `//nolint:tagliatelle` directive is missing an explanation. The `nolintlint` linter requires an explanation for `nolint` directives to ensure clarity and justification for suppressing a linting warning.",
+    "todo": "Add an explanation to the `//nolint:tagliatelle` directive, e.g., `//nolint:tagliatelle // The JSON tag uses snake_case which is not idiomatic Go, but required by the API.`"
+  },
+  {
+    "file": "internal/gitlab/release.go:18:31",
+    "warning": "nolintlint",
+    "description": "The `//nolint:tagliatelle` directive is missing an explanation. The `nolintlint` linter requires an explanation for `nolint` directives to ensure clarity and justification for suppressing a linting warning.",
+    "todo": "Add an explanation to the `//nolint:tagliatelle` directive, e.g., `//nolint:tagliatelle // The JSON tag uses snake_case which is not idiomatic Go, but required by the API.`"
+  },
+  {
+    "file": "internal/iutils/source.go:90:1",
+    "warning": "nolintlint",
+    "description": "The `//nolint:ireturn` directive is unused for the `ireturn` linter. This means the linter is not reporting an `ireturn` warning on this line, making the directive redundant.",
+    "todo": "Remove the unused `//nolint:ireturn` directive."
+  },
+  {
+    "file": "pkg/koanfx/internal.go:1:1",
+    "warning": "nolintlint",
+    "description": "The `//nolint:all` directive should mention specific linters instead of `all`. Using `all` can hide important warnings and makes it difficult to understand which specific linters are being suppressed.",
+    "todo": "Replace `//nolint:all` with specific linter names that need to be suppressed, or remove the directive if no linters need to be suppressed."
+  },
+  {
+    "file": "internal/match/results.go:116:2",
+    "warning": "prealloc",
+    "description": "The `errs` slice is declared without pre-allocation. If the number of errors is known or can be estimated, pre-allocating the slice can improve performance by avoiding multiple reallocations.",
+    "todo": "Pre-allocate the `errs` slice with an estimated capacity, e.g., `errs := make([]error, 0, len(m))`."
+  },
+  {
+    "file": "internal/config/root/config.go:19:6",
+    "warning": "recvcheck",
+    "description": "The `Config` struct has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies, especially when methods modify the struct's state.",
+    "todo": "Standardize the receiver type for all methods of the `Config` struct. It is generally recommended to use pointer receivers if any method modifies the struct's state, or if the struct is large and copying it would be inefficient."
+  },
+  {
+    "file": "internal/defaults/defaults.go:16:6",
+    "warning": "recvcheck",
+    "description": "The `Defaults` type (which is a `map`) has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Defaults` type. For maps, it's common to use pointer receivers if methods modify the map."
+  },
+  {
+    "file": "internal/detect/platform.go:10:6",
+    "warning": "recvcheck",
+    "description": "The `Platform` struct has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Platform` struct. It is generally recommended to use pointer receivers if any method modifies the struct's state."
+  },
+  {
+    "file": "internal/detect/platform/arch.go:30:6",
+    "warning": "recvcheck",
+    "description": "The `Architecture` struct has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Architecture` struct. It is generally recommended to use pointer receivers if any method modifies the struct's state."
+  },
+  {
+    "file": "internal/detect/platform/distro.go:13:6",
+    "warning": "recvcheck",
+    "description": "The `Distribution` struct has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Distribution` struct. It is generally recommended to use pointer receivers if any method modifies the struct's state."
+  },
+  {
+    "file": "internal/detect/platform/extension.go:5:6",
+    "warning": "recvcheck",
+    "description": "The `Extension` type (which is a string) has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Extension` type. For string types, non-pointer receivers are usually sufficient unless the method needs to modify the underlying string value."
+  },
+  {
+    "file": "internal/detect/platform/library.go:13:6",
+    "warning": "recvcheck",
+    "description": "The `Library` struct has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Library` struct. It is generally recommended to use pointer receivers if any method modifies the struct's state."
+  },
+  {
+    "file": "internal/detect/platform/os.go:13:6",
+    "warning": "recvcheck",
+    "description": "The `OS` struct has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `OS` struct. It is generally recommended to use pointer receivers if any method modifies the struct's state."
+  },
+  {
+    "file": "internal/match/asset.go:12:6",
+    "warning": "recvcheck",
+    "description": "The `Asset` struct has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Asset` struct. It is generally recommended to use pointer receivers if any method modifies the struct's state."
+  },
+  {
+    "file": "internal/tools/fallbacks/fallbacks.go:17:6",
+    "warning": "recvcheck",
+    "description": "The `Fallbacks` type (which is a slice) has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Fallbacks` type. For slices, non-pointer receivers are usually sufficient unless the method needs to modify the underlying slice (e.g., append, re-slice)."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:47:6",
+    "warning": "recvcheck",
+    "description": "The `Hint` struct has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Hint` struct. It is generally recommended to use pointer receivers if any method modifies the struct's state."
+  },
+  {
+    "file": "internal/tools/skip/skip.go:13:6",
+    "warning": "recvcheck",
+    "description": "The `Skip` type has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Skip` type. It is generally recommended to use pointer receivers if any method modifies the struct's state."
+  },
+  {
+    "file": "internal/tools/skip/skip.go:16:6",
+    "warning": "recvcheck",
+    "description": "The `Condition` struct has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Condition` struct. It is generally recommended to use pointer receivers if any method modifies the struct's state."
+  },
+  {
+    "file": "internal/tools/sources/source.go:23:6",
+    "warning": "recvcheck",
+    "description": "The `Type` type (which is a string) has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Type` type. For string types, non-pointer receivers are usually sufficient unless the method needs to modify the underlying string value."
+  },
+  {
+    "file": "internal/tools/tags/tags.go:22:6",
+    "warning": "recvcheck",
+    "description": "The `Tags` type (which is a slice) has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Tags` type. For slices, non-pointer receivers are usually sufficient unless the method needs to modify the underlying slice (e.g., append, re-slice)."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:36:6",
+    "warning": "recvcheck",
+    "description": "The `Tool` struct has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Tool` struct. It is generally recommended to use pointer receivers if any method modifies the struct's state."
+  },
+  {
+    "file": "internal/tools/tools.go:16:6",
+    "warning": "recvcheck",
+    "description": "The `Tools` type (which is a slice of pointers) has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `Tools` type. For slices, non-pointer receivers are usually sufficient unless the method needs to modify the underlying slice (e.g., append, re-slice)."
+  },
+  {
+    "file": "pkg/path/file/types.go:6:6",
+    "warning": "recvcheck",
+    "description": "The `File` type (which is a string) has methods that use both pointer receivers and non-pointer receivers. This can lead to unexpected behavior or inconsistencies.",
+    "todo": "Standardize the receiver type for all methods of the `File` type. For string types, non-pointer receivers are usually sufficient unless the method needs to modify the underlying string value."
+  },
+  {
+    "file": "internal/cli/common/commands.go:1:1",
+    "warning": "revive",
+    "description": "The package `common` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/cli/common/commands.go` describing the purpose of the `common` package."
+  },
+  {
+    "file": "internal/cli/common/commands.go:17:6",
+    "warning": "revive",
+    "description": "The exported type `Trackable` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Trackable` interface explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/common.go:13:6",
+    "warning": "revive",
+    "description": "The exported type `Handler` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Handler` struct explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/common.go:19:1",
+    "warning": "revive",
+    "description": "The exported function `NewHandler` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `NewHandler` function explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/common.go:26:1",
+    "warning": "revive",
+    "description": "The exported method `Handler.Resolve` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Handler.Resolve` method explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/common.go:102:1",
+    "warning": "revive",
+    "description": "The exported method `Handler.Logger` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Handler.Logger` method explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/common.go:106:1",
+    "warning": "revive",
+    "description": "The exported method `Handler.SetupLogger` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Handler.SetupLogger` method explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/common.go:112:1",
+    "warning": "revive",
+    "description": "The exported function `SetupLogger` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `SetupLogger` function explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/helpers.go:11:1",
+    "warning": "revive",
+    "description": "The exported function `ExitOnShow` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `ExitOnShow` function explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/helpers.go:19:1",
+    "warning": "revive",
+    "description": "The exported function `SetSubcommandDefaults` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `SetSubcommandDefaults` function explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/path.go:11:6",
+    "warning": "revive",
+    "description": "The exported type `CommandPath` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `CommandPath` type explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/path.go:13:1",
+    "warning": "revive",
+    "description": "The exported method `CommandPath.Section` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `CommandPath.Section` method explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/path.go:21:1",
+    "warning": "revive",
+    "description": "The exported method `CommandPath.Env` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `CommandPath.Env` method explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/path.go:25:1",
+    "warning": "revive",
+    "description": "The exported method `CommandPath.WithoutRoot` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `CommandPath.WithoutRoot` method explaining its purpose."
+  },
+  {
+    "file": "internal/cli/common/path.go:29:1",
+    "warning": "revive",
+    "description": "The exported function `BuildCommandPath` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `BuildCommandPath` function explaining its purpose."
+  },
+  {
+    "file": "internal/cli/logic.go:166:10",
+    "warning": "revive",
+    "description": "The `if` block ends with a `return` statement, so the `else` block is superfluous and can be removed by outdenting its content. This improves readability by reducing nesting.",
+    "todo": "Remove the `else` keyword and outdent the code block that follows it."
+  },
+  {
+    "file": "internal/config/cache/config.go:8:6",
+    "warning": "revive",
+    "description": "The exported type `Cache` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Cache` struct explaining its purpose."
+  },
+  {
+    "file": "internal/config/common/common.go:1:1",
+    "warning": "revive",
+    "description": "The package `common` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/config/common/common.go` describing the purpose of the `common` package."
+  },
+  {
+    "file": "internal/config/common/common.go:8:6",
+    "warning": "revive",
+    "description": "The exported type `Common` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Common` struct explaining its purpose."
+  },
+  {
+    "file": "internal/config/common/trackable.go:8:6",
+    "warning": "revive",
+    "description": "The exported type `Tracker` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tracker` struct explaining its purpose."
+  },
+  {
+    "file": "internal/config/common/trackable.go:12:1",
+    "warning": "revive",
+    "description": "The exported method `Tracker.Validate` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tracker.Validate` method explaining its purpose."
+  },
+  {
+    "file": "internal/config/common/trackable.go:16:1",
+    "warning": "revive",
+    "description": "The exported method `Tracker.Store` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tracker.Store` method explaining its purpose."
+  },
+  {
+    "file": "internal/config/common/trackable.go:20:1",
+    "warning": "revive",
+    "description": "The exported method `Tracker.Retrieve` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tracker.Retrieve` method explaining its purpose."
+  },
+  {
+    "file": "internal/config/common/trackable.go:24:1",
+    "warning": "revive",
+    "description": "The exported method `Tracker.IsSet` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tracker.IsSet` method explaining its purpose."
+  },
+  {
+    "file": "internal/config/config/config.go:1:1",
+    "warning": "revive",
+    "description": "The package `config` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/config/config/config.go` describing the purpose of the `config` package."
+  },
+  {
+    "file": "internal/config/config/config.go:5:6",
+    "warning": "revive",
+    "description": "The exported type `Config` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Config` struct explaining its purpose."
+  },
+  {
+    "file": "internal/config/download/config.go:1:1",
+    "warning": "revive",
+    "description": "The package `download` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/config/download/config.go` describing the purpose of the `download` package."
+  },
+  {
+    "file": "internal/config/download/config.go:9:6",
+    "warning": "revive",
+    "description": "The exported type `Download` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Download` struct explaining its purpose."
+  },
+  {
+    "file": "internal/config/download/config.go:21:1",
+    "warning": "revive",
+    "description": "The exported method `Download.ToCommon` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Download.ToCommon` method explaining its purpose."
+  },
+  {
+    "file": "internal/config/download/flags.go:5:1",
+    "warning": "revive",
+    "description": "The exported function `Flags` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Flags` function explaining its purpose."
+  },
+  {
+    "file": "internal/config/dump/tools/config.go:1:1",
+    "warning": "revive",
+    "description": "The package `tools` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/config/dump/tools/config.go` describing the purpose of the `tools` package."
+  },
+  {
+    "file": "internal/config/dump/tools/flags.go:5:1",
+    "warning": "revive",
+    "description": "The exported function `Flags` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Flags` function explaining its purpose."
+  },
+  {
+    "file": "internal/config/install/config.go:1:1",
+    "warning": "revive",
+    "description": "The package `install` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/config/install/config.go` describing the purpose of the `install` package."
+  },
+  {
+    "file": "internal/config/install/config.go:9:1",
+    "warning": "revive",
+    "description": "The comment for exported type `Install` is not in the correct format. It should start with `Install ...`.",
+    "todo": "Change the comment for `Install` to `// Install ...`."
+  },
+  {
+    "file": "internal/config/root/config.go:1:1",
+    "warning": "revive",
+    "description": "The package `root` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/config/root/config.go` describing the purpose of the `root` package."
+  },
+  {
+    "file": "internal/config/root/config.go:134:16",
+    "warning": "revive",
+    "description": "The parameter `name` in the anonymous function is unused. Unused parameters can indicate dead code or a misunderstanding of the function's purpose.",
+    "todo": "Rename the unused parameter `name` to `_` to explicitly mark it as intentionally unused."
+  },
+  {
+    "file": "internal/debug/debug.go:1:1",
+    "warning": "revive",
+    "description": "The package `debug` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/debug/debug.go` describing the purpose of the `debug` package."
+  },
+  {
+    "file": "internal/debug/debug.go:10:1",
+    "warning": "revive",
+    "description": "The exported function `Debug` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Debug` function explaining its purpose."
+  },
+  {
+    "file": "internal/debug/debug.go:16:1",
+    "warning": "revive",
+    "description": "The exported function `Print` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Print` function explaining its purpose."
+  },
+  {
+    "file": "internal/defaults/defaults.go:18:1",
+    "warning": "revive",
+    "description": "The comment for exported function `NewDefaultsFromBytes` is not in the correct format. It should start with `NewDefaultsFromBytes ...`.",
+    "todo": "Change the comment for `NewDefaultsFromBytes` to `// NewDefaultsFromBytes ...`."
+  },
+  {
+    "file": "internal/defaults/defaults.go:29:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Defaults.Load` is not in the correct format. It should start with `Load ...`.",
+    "todo": "Change the comment for `Defaults.Load` to `// Load ...`."
+  },
+  {
+    "file": "internal/detect/platform/arch.go:39:1",
+    "warning": "revive",
+    "description": "The exported method `Architecture.IsNil` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Architecture.IsNil` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/arch.go:43:1",
+    "warning": "revive",
+    "description": "The exported method `Architecture.UnmarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Architecture.UnmarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/arch.go:53:1",
+    "warning": "revive",
+    "description": "The exported method `Architecture.MarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Architecture.MarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/arch.go:104:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Architecture.ParseFrom` is not in the correct format. It should start with `ParseFrom ...`.",
+    "todo": "Change the comment for `Architecture.ParseFrom` to `// ParseFrom ...`."
+  },
+  {
+    "file": "internal/detect/platform/arch.go:219:1",
+    "warning": "revive",
+    "description": "The exported method `Architecture.Type` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Architecture.Type` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/arch.go:223:1",
+    "warning": "revive",
+    "description": "The exported method `Architecture.Version` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Architecture.Version` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/distro.go:23:1",
+    "warning": "revive",
+    "description": "The exported method `Distribution.IsNil` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Distribution.IsNil` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/distro.go:27:1",
+    "warning": "revive",
+    "description": "The exported method `Distribution.UnmarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Distribution.UnmarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/distro.go:37:1",
+    "warning": "revive",
+    "description": "The exported method `Distribution.MarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Distribution.MarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/distro.go:78:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Distribution.ParseFrom` is not in the correct format. It should start with `ParseFrom ...`.",
+    "todo": "Change the comment for `Distribution.ParseFrom` to `// ParseFrom ...`."
+  },
+  {
+    "file": "internal/detect/platform/extension.go:7:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Extension.ParseFrom` is not in the correct format. It should start with `ParseFrom ...`.",
+    "todo": "Change the comment for `Extension.ParseFrom` to `// ParseFrom ...`."
+  },
+  {
+    "file": "internal/detect/platform/extension.go:23:1",
+    "warning": "revive",
+    "description": "The exported method `Extension.IsNil` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Extension.IsNil` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/library.go:22:1",
+    "warning": "revive",
+    "description": "The exported method `Library.IsNil` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Library.IsNil` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/library.go:26:1",
+    "warning": "revive",
+    "description": "The exported method `Library.UnmarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Library.UnmarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/library.go:36:1",
+    "warning": "revive",
+    "description": "The exported method `Library.MarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Library.MarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/library.go:71:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Library.ParseFrom` is not in the correct format. It should start with `ParseFrom ...`.",
+    "todo": "Change the comment for `Library.ParseFrom` to `// ParseFrom ...`."
+  },
+  {
+    "file": "internal/detect/platform/os.go:20:1",
+    "warning": "revive",
+    "description": "The exported method `OS.IsNil` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `OS.IsNil` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/os.go:24:1",
+    "warning": "revive",
+    "description": "The exported method `OS.UnmarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `OS.UnmarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/os.go:34:1",
+    "warning": "revive",
+    "description": "The exported method `OS.MarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `OS.MarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/os.go:76:1",
+    "warning": "revive",
+    "description": "The exported method `OS.ParseFrom` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `OS.ParseFrom` method explaining its purpose."
+  },
+  {
+    "file": "internal/detect/platform/os.go:107:1",
+    "warning": "revive",
+    "description": "The exported method `OS.Type` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `OS.Type` method explaining its purpose."
+  },
+  {
+    "file": "internal/github/web.go:31:23",
+    "warning": "revive",
+    "description": "The parameter `req` in the anonymous function is unused. Unused parameters can indicate dead code or a misunderstanding of the function's purpose.",
+    "todo": "Rename the unused parameter `req` to `_` to explicitly mark it as intentionally unused."
+  },
+  {
+    "file": "internal/github/web.go:38:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Repository.GetReleaseFromWeb` is not in the correct format. It should start with `GetReleaseFromWeb ...`.",
+    "todo": "Change the comment for `Repository.GetReleaseFromWeb` to `// GetReleaseFromWeb ...`."
+  },
+  {
+    "file": "internal/github/web.go:87:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Repository.LatestVersionFromWebHTML` is not in the correct format. It should start with `LatestVersionFromWebHTML ...`.",
+    "todo": "Change the comment for `Repository.LatestVersionFromWebHTML` to `// LatestVersionFromWebHTML ...`."
+  },
+  {
+    "file": "internal/github/web.go:100:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Repository.LatestVersionFromWebJSON` is not in the correct format. It should start with `LatestVersionFromWebJSON ...`.",
+    "todo": "Change the comment for `Repository.LatestVersionFromWebJSON` to `// LatestVersionFromWebJSON ...`."
+  },
+  {
+    "file": "internal/github/web.go:203:35",
+    "warning": "revive",
+    "description": "The parameter `i` in the anonymous function is unused. Unused parameters can indicate dead code or a misunderstanding of the function's purpose.",
+    "todo": "Rename the unused parameter `i` to `_` to explicitly mark it as intentionally unused."
+  },
+  {
+    "file": "internal/iutils/doc.go:1:1",
+    "warning": "revive",
+    "description": "The package comment for `iutils` is not in the correct format. It should start with `Package iutils ...`.",
+    "todo": "Change the package comment for `iutils` to `// Package iutils ...`."
+  },
+  {
+    "file": "internal/iutils/print.go:1:1",
+    "warning": "revive",
+    "description": "The package comment for `iutils` is not in the correct format. It should start with `Package iutils ...`.",
+    "todo": "Change the package comment for `iutils` to `// Package iutils ...`."
+  },
+  {
+    "file": "internal/match/asset.go:17:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Asset.Lower` is not in the correct format. It should start with `Lower ...`.",
+    "todo": "Change the comment for `Asset.Lower` to `// Lower ...`."
+  },
+  {
+    "file": "internal/match/results.go:114:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Results.Errors` is not in the correct format. It should start with `Errors ...`.",
+    "todo": "Change the comment for `Results.Errors` to `// Errors ...`."
+  },
+  {
+    "file": "internal/presentation/table.go:83:23",
+    "warning": "revive",
+    "description": "The parameter `row` in the anonymous function is unused. Unused parameters can indicate dead code or a misunderstanding of the function's purpose.",
+    "todo": "Rename the unused parameter `row` to `_` to explicitly mark it as intentionally unused."
+  },
+  {
+    "file": "internal/runner/default.go:30:29",
+    "warning": "revive",
+    "description": "The parameter `ctx` in the `Run` method is unused. Unused parameters can indicate dead code or a misunderstanding of the function's purpose.",
+    "todo": "Rename the unused parameter `ctx` to `_` to explicitly mark it as intentionally unused."
+  },
+  {
+    "file": "internal/templates/incr.go:1:1",
+    "warning": "revive",
+    "description": "The package `templates` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/templates/incr.go` describing the purpose of the `templates` package."
+  },
+  {
+    "file": "internal/templates/incr.go:65:1",
+    "warning": "revive",
+    "description": "The exported method `Processor.WithOptions` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Processor.WithOptions` method explaining its purpose."
+  },
+  {
+    "file": "internal/templates/incr.go:73:1",
+    "warning": "revive",
+    "description": "The exported method `Processor.WithValues` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Processor.WithValues` method explaining its purpose."
+  },
+  {
+    "file": "internal/templates/incr.go:84:1",
+    "warning": "revive",
+    "description": "The exported method `Processor.Values` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Processor.Values` method explaining its purpose."
+  },
+  {
+    "file": "internal/templates/incr.go:120:1",
+    "warning": "revive",
+    "description": "The exported method `Processor.ApplyAndSet` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Processor.ApplyAndSet` method explaining its purpose."
+  },
+  {
+    "file": "internal/templates/templates.go:10:1",
+    "warning": "revive",
+    "description": "The exported function `Apply` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Apply` function explaining its purpose."
+  },
+  {
+    "file": "internal/templates/templates.go:25:1",
+    "warning": "revive",
+    "description": "The exported function `ApplyAndSet` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `ApplyAndSet` function explaining its purpose."
+  },
+  {
+    "file": "internal/tmp/helpers.go:1:1",
+    "warning": "revive",
+    "description": "The package `tmp` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/tmp/helpers.go` describing the purpose of the `tmp` package."
+  },
+  {
+    "file": "internal/tmp/helpers.go:99:1",
+    "warning": "revive",
+    "description": "The exported function `UserRuntimeDir` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `UserRuntimeDir` function explaining its purpose."
+  },
+  {
+    "file": "internal/tokenstore/keyring/keyring.go:13:2",
+    "warning": "revive",
+    "description": "The exported variable `ErrNotFound` is missing a comment. All exported variables should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `ErrNotFound` variable explaining its purpose."
+  },
+  {
+    "file": "internal/tokenstore/keyring/keyring.go:74:1",
+    "warning": "revive",
+    "description": "The exported function `DeleteAll` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `DeleteAll` function explaining its purpose."
+  },
+  {
+    "file": "internal/tokenstore/tokenstore.go:1:1",
+    "warning": "revive",
+    "description": "The package `tokenstore` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/tokenstore/tokenstore.go` describing the purpose of the `tokenstore` package."
+  },
+  {
+    "file": "internal/tools/command/commands.go:23:1",
+    "warning": "revive",
+    "description": "The exported method `Commands.UnmarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Commands.UnmarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/command/commands.go:52:1",
+    "warning": "revive",
+    "description": "The receiver name `c` for `Commands` is inconsistent with the previous receiver name `e`. Consistent receiver names improve readability.",
+    "todo": "Change the receiver name `c` to `e` to maintain consistency."
+  },
+  {
+    "file": "internal/tools/command/commands.go:70:1",
+    "warning": "revive",
+    "description": "The receiver name `c` for `Commands` is inconsistent with the previous receiver name `e`. Consistent receiver names improve readability.",
+    "todo": "Change the receiver name `c` to `e` to maintain consistency."
+  },
+  {
+    "file": "internal/tools/exe/exe.go:16:6",
+    "warning": "revive",
+    "description": "The exported type `Patterns` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Patterns` type explaining its purpose."
+  },
+  {
+    "file": "internal/tools/fallbacks/fallbacks.go:30:1",
+    "warning": "revive",
+    "description": "The exported method `Fallbacks.Compacted` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Fallbacks.Compacted` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/fallbacks/fallbacks.go:34:1",
+    "warning": "revive",
+    "description": "The exported method `Fallbacks.Build` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Fallbacks.Build` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:1:1",
+    "warning": "revive",
+    "description": "The package comment for `hints` is not in the correct format. It should start with `Package hints ...`.",
+    "todo": "Add a package comment to `internal/tools/hints/hint.go` describing the purpose of the `hints` package."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:17:6",
+    "warning": "revive",
+    "description": "The exported type `Type` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Type` type explaining its purpose."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:20:2",
+    "warning": "revive",
+    "description": "The comment for exported constant `Glob` is not in the correct format. It should start with `Glob ...`.",
+    "todo": "Change the comment for `Glob` to `// Glob ...`."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:22:2",
+    "warning": "revive",
+    "description": "The comment for exported constant `Regex` is not in the correct format. It should start with `Regex ...`.",
+    "todo": "Change the comment for `Regex` to `// Regex ...`."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:24:2",
+    "warning": "revive",
+    "description": "The comment for exported constant `GlobStar` is not in the correct format. It should start with `GlobStar ...`.",
+    "todo": "Change the comment for `GlobStar` to `// GlobStar ...`."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:26:2",
+    "warning": "revive",
+    "description": "The comment for exported constant `StartsWith` is not in the correct format. It should start with `StartsWith ...`.",
+    "todo": "Change the comment for `StartsWith` to `// StartsWith ...`."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:28:2",
+    "warning": "revive",
+    "description": "The comment for exported constant `EndsWith` is not in the correct format. It should start with `EndsWith ...`.",
+    "todo": "Change the comment for `EndsWith` to `// EndsWith ...`."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:30:2",
+    "warning": "revive",
+    "description": "The comment for exported constant `Contains` is not in the correct format. It should start with `Contains ...`.",
+    "todo": "Change the comment for `Contains` to `// Contains ...`."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:34:6",
+    "warning": "revive",
+    "description": "The exported type `Match` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Match` type explaining its purpose."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:39:2",
+    "warning": "revive",
+    "description": "The comment for exported constant `Required` is not in the correct format. It should start with `Required ...`.",
+    "todo": "Change the comment for `Required` to `// Required ...`."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:41:2",
+    "warning": "revive",
+    "description": "The comment for exported constant `Excluded` is not in the correct format. It should start with `Excluded ...`.",
+    "todo": "Change the comment for `Excluded` to `// Excluded ...`."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:58:1",
+    "warning": "revive",
+    "description": "The exported method `Hint.Matches` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Hint.Matches` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:82:1",
+    "warning": "revive",
+    "description": "The exported method `Hint.UnmarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Hint.UnmarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/hints/hint.go:92:1",
+    "warning": "revive",
+    "description": "The exported method `Hint.Parse` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Hint.Parse` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/hints/hints.go:15:1",
+    "warning": "revive",
+    "description": "The exported method `Hints.Has` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Hints.Has` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/hints/hints.go:19:1",
+    "warning": "revive",
+    "description": "The exported method `Hints.UnmarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Hints.UnmarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/hints/hints.go:38:1",
+    "warning": "revive",
+    "description": "The exported method `Hints.Parse` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Hints.Parse` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/inherit/inherit.go:1:1",
+    "warning": "revive",
+    "description": "The package `inherit` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/tools/inherit/inherit.go` describing the purpose of the `inherit` package."
+  },
+  {
+    "file": "internal/tools/inherit/inherit.go:5:6",
+    "warning": "revive",
+    "description": "The exported type `Inherit` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Inherit` type explaining its purpose."
+  },
+  {
+    "file": "internal/tools/result/result.go:98:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Result.IsFailed` is not in the correct format. It should start with `IsFailed ...`.",
+    "todo": "Change the comment for `Result.IsFailed` to `// IsFailed ...`."
+  },
+  {
+    "file": "internal/tools/skip/skip.go:21:1",
+    "warning": "revive",
+    "description": "The exported method `Condition.True` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Condition.True` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/skip/skip.go:25:1",
+    "warning": "revive",
+    "description": "The exported method `Condition.Parse` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Condition.Parse` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/skip/skip.go:35:1",
+    "warning": "revive",
+    "description": "The exported method `Skip.Has` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Skip.Has` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/sources/common/common.go:113:11",
+    "warning": "revive",
+    "description": "The `if` block ends with a `continue` statement, so the `else` block is superfluous and can be removed by outdenting its content. This improves readability by reducing nesting.",
+    "todo": "Remove the `else` keyword and outdent the code block that follows it."
+  },
+  {
+    "file": "internal/tools/sources/github/github.go:49:1",
+    "warning": "revive",
+    "description": "The comment for exported method `GitHub.URL` is not in the correct format. It should start with `URL ...`.",
+    "todo": "Change the comment for `GitHub.URL` to `// URL ...`."
+  },
+  {
+    "file": "internal/tools/sources/gitlab/gitlab.go:56:1",
+    "warning": "revive",
+    "description": "The comment for exported method `GitLab.URL` is not in the correct format. It should start with `URL ...`.",
+    "todo": "Change the comment for `GitLab.URL` to `// URL ...`."
+  },
+  {
+    "file": "internal/tools/sources/none/none.go:1:1",
+    "warning": "revive",
+    "description": "The package `none` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `internal/tools/sources/none/none.go` describing the purpose of the `none` package."
+  },
+  {
+    "file": "internal/tools/sources/none/none.go:30:1",
+    "warning": "revive",
+    "description": "The comment for exported method `None.URL` is not in the correct format. It should start with `URL ...`.",
+    "todo": "Change the comment for `None.URL` to `// URL ...`."
+  },
+  {
+    "file": "internal/tools/sources/source.go:38:2",
+    "warning": "revive",
+    "description": "The exported constant `GITHUB` is missing a comment or a comment on its block. All exported constants should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `GITHUB` constant explaining its purpose."
+  },
+  {
+    "file": "internal/tools/sources/source.go:45:1",
+    "warning": "revive",
+    "description": "The comment for exported type `Source` is not in the correct format. It should start with `Source ...`.",
+    "todo": "Change the comment for `Source` to `// Source ...`."
+  },
+  {
+    "file": "internal/tools/sources/url/url.go:34:1",
+    "warning": "revive",
+    "description": "The comment for exported method `URL.URL` is not in the correct format. It should start with `URL ...`.",
+    "todo": "Change the comment for `URL.URL` to `// URL ...`."
+  },
+  {
+    "file": "internal/tools/tool/copy.go:12:1",
+    "warning": "revive",
+    "description": "The exported method `Tool.CopyYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tool.CopyYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tool/copy.go:26:1",
+    "warning": "revive",
+    "description": "The exported method `Tool.CopiedYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tool.CopiedYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tool/copy.go:52:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Tool.Copy` is not in the correct format. It should start with `Copy ...`.",
+    "todo": "Change the comment for `Tool.Copy` to `// Copy ...`."
+  },
+  {
+    "file": "internal/tools/tool/options.go:14:1",
+    "warning": "revive",
+    "description": "The exported function `WithoutVersion` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `WithoutVersion` function explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tool/options.go:20:1",
+    "warning": "revive",
+    "description": "The exported function `WithoutURL` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `WithoutURL` function explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tool/options.go:26:1",
+    "warning": "revive",
+    "description": "The exported function `WithUpUntilVersion` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `WithUpUntilVersion` function explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tool/template.go:13:30",
+    "warning": "revive",
+    "description": "The parameter `flatten` in the `ToTemplateMap` method is unused. Unused parameters can indicate dead code or a misunderstanding of the function's purpose.",
+    "todo": "Rename the unused parameter `flatten` to `_` to explicitly mark it as intentionally unused."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:107:1",
+    "warning": "revive",
+    "description": "The comment for exported method `Tool.DisableCache` is not in the correct format. It should start with `DisableCache ...`.",
+    "todo": "Change the comment for `Tool.DisableCache` to `// DisableCache ...`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:174:9",
+    "warning": "revive",
+    "description": "The `if` block ends with a `return` statement, so the `else` block is superfluous and can be removed by outdenting its content. This improves readability by reducing nesting.",
+    "todo": "Remove the `else` keyword and outdent the code block that follows it."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:189:1",
+    "warning": "revive",
+    "description": "The exported method `Tool.GetPopulator` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tool.GetPopulator` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tools.go:18:1",
+    "warning": "revive",
+    "description": "The exported method `Tools.Append` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tools.Append` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tools.go:44:1",
+    "warning": "revive",
+    "description": "The exported method `Tools.Get` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tools.Get` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tools.go:54:1",
+    "warning": "revive",
+    "description": "The exported method `Tools.GetFirst` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tools.GetFirst` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tools.go:62:1",
+    "warning": "revive",
+    "description": "The exported method `Tools.DefaultInheritance` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tools.DefaultInheritance` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tools.go:70:1",
+    "warning": "revive",
+    "description": "The exported method `Tools.ResolveInheritance` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tools.ResolveInheritance` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tools.go:102:1",
+    "warning": "revive",
+    "description": "The exported method `Tools.ResolveNilPointers` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tools.ResolveNilPointers` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tools.go:114:1",
+    "warning": "revive",
+    "description": "The exported method `Tools.MergePlatform` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tools.MergePlatform` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/tools.go:127:1",
+    "warning": "revive",
+    "description": "The exported method `Tools.Copy` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Tools.Copy` method explaining its purpose."
+  },
+  {
+    "file": "internal/tools/version/version.go:18:2",
+    "warning": "revive",
+    "description": "The exported type `Patterns` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Patterns` type explaining its purpose."
+  },
+  {
+    "file": "internal/tools/version/version.go:19:2",
+    "warning": "revive",
+    "description": "The exported type `Commands` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Commands` type explaining its purpose."
+  },
+  {
+    "file": "internal/tools/version/version.go:22:1",
+    "warning": "revive",
+    "description": "The exported method `Version.UnmarshalYAML` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Version.UnmarshalYAML` method explaining its purpose."
+  },
+  {
+    "file": "internal/updater/latest.go:12:6",
+    "warning": "revive",
+    "description": "The exported type `Latest` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Latest` struct explaining its purpose."
+  },
+  {
+    "file": "internal/updater/updater.go:29:6",
+    "warning": "revive",
+    "description": "The exported type `Godyl` is missing a comment. All exported types should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Godyl` struct explaining its purpose."
+  },
+  {
+    "file": "internal/updater/updater.go:34:1",
+    "warning": "revive",
+    "description": "The exported method `Godyl.IsUpToDate` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Godyl.IsUpToDate` method explaining its purpose."
+  },
+  {
+    "file": "internal/updater/updater.go:38:1",
+    "warning": "revive",
+    "description": "The exported function `NewGodyl` is missing a comment. All exported functions should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `NewGodyl` function explaining its purpose."
+  },
+  {
+    "file": "internal/updater/updater.go:87:1",
+    "warning": "revive",
+    "description": "The exported method `Updater.IsForced` is missing a comment. All exported methods should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `Updater.IsForced` method explaining its purpose."
+  },
+  {
+    "file": "main.go:1:1",
+    "warning": "revive",
+    "description": "The package `main` is missing a package comment. A package comment provides a summary of the package's purpose and contents.",
+    "todo": "Add a package comment to `main.go` describing the purpose of the `main` package."
+  },
+  {
+    "file": "pkg/download/download.go:64:5",
+    "warning": "revive",
+    "description": "The exported variable `ErrDownload` is missing a comment. All exported variables should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `ErrDownload` variable explaining its purpose."
+  },
+  {
+    "file": "pkg/download/options.go:57:21",
+    "warning": "revive",
+    "description": "The parameter `min` redefines the built-in function `min`. This can lead to confusion and hide the standard library function.",
+    "todo": "Rename the parameter `min` to avoid conflict with the built-in function."
+  },
+  {
+    "file": "pkg/editor/editor.go:15:1",
+    "warning": "revive",
+    "description": "The comment for exported type `YAML` is not in the correct format. It should start with `YAML ...`.",
+    "todo": "Change the comment for `YAML` to `// YAML ...`."
+  },
+  {
+    "file": "pkg/logger/logger.go:1:1",
+    "warning": "revive",
+    "description": "The package comment for `logger` is not in the correct format. It should start with `Package logger ...`.",
+    "todo": "Change the package comment for `logger` to `// Package logger ...`."
+  },
+  {
+    "file": "pkg/logger/logger.go:18:2",
+    "warning": "revive",
+    "description": "The exported constant `SILENT` is missing a comment or a comment on its block. All exported constants should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `SILENT` constant explaining its purpose."
+  },
+  {
+    "file": "pkg/logger/logger.go:41:26",
+    "warning": "revive",
+    "description": "The error string is capitalized and ends with punctuation. Error strings should not be capitalized or end with punctuation or a newline to allow for proper concatenation and formatting by the caller.",
+    "todo": "Change the error string to `%w: %q, setting to %q` (remove capitalization and punctuation)."
+  },
+  {
+    "file": "pkg/pretty/pretty.go:14:5",
+    "warning": "revive",
+    "description": "The exported variable `YAMLOptions` is missing a comment. All exported variables should have a comment explaining their purpose.",
+    "todo": "Add a comment to the `YAMLOptions` variable explaining its purpose."
+  },
+  {
+    "file": "pkg/pretty/print.go:1:1",
+    "warning": "revive",
+    "description": "The package comment for `pretty` is not in the correct format. It should start with `Package pretty ...`.",
+    "todo": "Change the package comment for `pretty` to `// Package pretty ...`."
+  },
+  {
+    "file": "pkg/version/version.go:31:1",
+    "warning": "revive",
+    "description": "The comment for exported function `Equal` is not in the correct format. It should start with `Equal ...`.",
+    "todo": "Change the comment for `Equal` to `// Equal ...`."
+  },
+  {
+    "file": "internal/tools/sources/github/github.go:190:10",
+    "warning": "staticcheck",
+    "description": "The error string is capitalized. Error strings should not be capitalized to allow for proper concatenation and formatting by the caller.",
+    "todo": "Change the error string to `either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`` (remove capitalization)."
+  },
+  {
+    "file": "internal/tools/sources/gitlab/gitlab.go:176:10",
+    "warning": "staticcheck",
+    "description": "The error string is capitalized. Error strings should not be capitalized to allow for proper concatenation and formatting by the caller.",
+    "todo": "Change the error string to `either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`` (remove capitalization)."
+  },
+  {
+    "file": "internal/config/download/config.go:11:23",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Source` to `mapstructure:\"source\"  validate:\"oneof=github gitlab url none go\" yaml:\"source\"`."
+  },
+  {
+    "file": "internal/tools/sources/github/github.go:17:38",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Data` to `mapstructure:\"-\" yaml:\"-\"`."
+  },
+  {
+    "file": "internal/tools/sources/github/github.go:21:29",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Token` to `mapstructure:\"token\" mask:\"fixed\" yaml:\"token\"`."
+  },
+  {
+    "file": "internal/tools/sources/gitlab/gitlab.go:18:38",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Data` to `mapstructure:\"-\" yaml:\"-\"`."
+  },
+  {
+    "file": "internal/tools/sources/gitlab/gitlab.go:22:29",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Token` to `mapstructure:\"token\"     mask:\"fixed\"     yaml:\"token\"`."
+  },
+  {
+    "file": "internal/tools/sources/url/url.go:21:26",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Token` to `mapstructure:\"token\"   mask:\"fixed\"   yaml:\"token\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:38:14",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Name` to `mapstructure:\"name\"          single:\"true\" validate:\"required\" yaml:\"name\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:40:21",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Description` to `mapstructure:\"description\"                                     yaml:\"description\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:42:26",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Version` to `mapstructure:\"version\"                                         yaml:\"version\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:44:13",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `URL` to `mapstructure:\"url\"                                             yaml:\"url\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:46:16",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Output` to `mapstructure:\"output\"                                          yaml:\"output\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:48:14",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Exe` to `mapstructure:\"exe\"                                             yaml:\"exe\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:50:27",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Platform` to `mapstructure:\"platform\"                                        yaml:\"platform\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:52:26",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Aliases` to `mapstructure:\"aliases\"                                         yaml:\"aliases\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:54:23",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Values` to `mapstructure:\"values\"                                          yaml:\"values\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:56:32",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Fallbacks` to `mapstructure:\"fallbacks\"                                       yaml:\"fallbacks\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:58:21",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Hints` to `mapstructure:\"hints\"                                           yaml:\"hints\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:60:24",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Source` to `mapstructure:\"source\"                                          yaml:\"source\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:62:28",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Commands` to `mapstructure:\"commands\"                                        yaml:\"commands\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:64:17",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Tags` to `mapstructure:\"tags\"                                            yaml:\"tags\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:66:29",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Strategy` to `mapstructure:\"strategy\"                                        yaml:\"strategy\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:68:17",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Skip` to `mapstructure:\"skip\"                                            yaml:\"skip\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:69:17",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Mode` to `mapstructure:\"mode\"                                            yaml:\"mode\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:71:14",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Env` to `mapstructure:\"env\"                                             yaml:\"env\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:73:19",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `NoVerifySSL` to `mapstructure:\"no-verify-ssl\"                                   yaml:\"no-verify-ssl\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:75:15",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `NoCache` to `mapstructure:\"no-cache\"                                        yaml:\"no-cache\"`."
+  },
+  {
+    "file": "internal/tools/tool/tool.go:77:27",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Inherit` to `mapstructure:\"inherit\"                                         yaml:\"inherit\"`."
+  },
+  {
+    "file": "internal/tools/version/version.go:14:21",
+    "warning": "tagalign",
+    "description": "The struct tags are not aligned. Consistent tag alignment improves readability.",
+    "todo": "Align the struct tags for `Version` to `mapstructure:\"version\"  single:\"true\"   yaml:\"version\"`."
+  },
+  {
+    "file": "internal/config/download/config.go:24:30",
+    "warning": "unconvert",
+    "description": "The conversion `strategy.Strategy(strategy.Force)` is unnecessary as `strategy.Force` is already of type `strategy.Strategy`.",
+    "todo": "Remove the unnecessary type conversion: `Strategy: strategy.Force`."
+  },
+  {
+    "file": "internal/tools/hints/hints.go:61:17",
+    "warning": "unconvert",
+    "description": "The conversion `Hints(reduced)` is unnecessary as `reduced` is already of type `Hints`.",
+    "todo": "Remove the unnecessary type conversion: `result := reduced`."
+  },
+  {
+    "file": "pkg/download/progress/progress.go:112:20",
+    "warning": "unused",
+    "description": "The `(*Tracker).wait` function is unused. Unused functions can indicate dead code and should be removed or used.",
+    "todo": "Remove the unused `wait` function."
+  },
+  {
+    "file": "internal/goi/binary.go:45:2",
+    "warning": "wsl",
+    "description": "The block ends with a whitespace (or comment). This is a minor formatting issue.",
+    "todo": "Remove the trailing whitespace or comment at the end of the block."
+  },
+  {
+    "file": "internal/tools/sources/github/github.go:111:2",
+    "warning": "wsl",
+    "description": "The block ends with a whitespace (or comment). This is a minor formatting issue.",
+    "todo": "Remove the trailing whitespace or comment at the end of the block."
+  }
+]

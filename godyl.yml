@@ -1,0 +1,13 @@
+# Dump settings
+dump:
+  tools:
+    # Always dump out the embedded tools
+    embedded: true
+# Use the keyring to store the tokens
+keyring: true
+update:
+  # Cleanup the previous binary when running on windows
+  cleanup: true
+
+# Set verbosity level
+verbose: 1

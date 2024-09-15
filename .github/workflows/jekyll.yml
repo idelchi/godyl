@@ -1,0 +1,77 @@
+# Sample workflow for building and deploying a Jekyll site to GitHub Pages
+name: jekyll
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches:
+      - dev
+    paths:
+      - docs/**
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate static version files
+        run: |
+          mkdir -p docs/_versions
+          latest=$(gh release list -L 1 --exclude-pre-releases --json tagName -q '.[0].tagName')
+          latest_changelog=$(gh release view "${latest}" --json body -q .body | jq -Rs .)
+
+          pre=$(gh release list -L 1 --json tagName -q '.[0].tagName')
+          pre_changelog=$(gh release view "${pre}" --json body -q .body | jq -Rs .)
+
+          jq -n --arg version "${latest}" --argjson changelog "${latest_changelog}" \
+            '{version: $version, changelog: $changelog}' > docs/_versions/latest
+
+          jq -n --arg version "${pre}" --argjson changelog "${pre_changelog}" \
+            '{version: $version, changelog: $changelog}' > docs/_versions/pre
+
+          versions=$(gh release list -L 2 --json tagName --jq '[.[] | .tagName]')
+          echo "${versions}" > docs/_versions/versions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

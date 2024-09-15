@@ -1,0 +1,56 @@
+- name: one
+  hints:
+    pattern: "farting around"
+  source:
+    type: none
+  commands:
+    - echo "one" >> {{ index .Values.list1 0 }}
+    - echo "one" >> {{ index .Values.list1 1 }}
+
+    - echo "one" >> {{ index .Values.list2 0 }}
+    - echo "one" >> {{ index .Values.list2 1 }}
+
+    - echo "one" >> {{ .Values.common }}
+
+  # commands:
+  #   - echo "one" >> {{ .Env.ONE_1 }}
+  #   - echo "one" >> {{ .Env.ONE_2 }}
+  #   - echo "one" >> {{ .Env.DEFAULT_1 }}
+  #   - echo "one" >> {{ .Env.DEFAULT_2 }}
+
+  values:
+    list1:
+      - xxx_from_one_1
+      - xxx_from_one_2
+    list2:
+      - xxx_from_default_overwritten_from_one_1
+      - xxx_from_default_overwritten_from_one_2
+  env:
+    ONE_1: xxx_from_one_1
+    ONE_2: xxx_from_one_2
+    DEFAULT_1: xxx_from_default_overwritten_from_one_1
+    DEFAULT_2: xxx_from_default_overwritten_from_one_2
+
+- name: two
+  source:
+    type: none
+  commands:
+    - echo "two" >> {{ index .Values.list1 0 }}
+    - echo "two" >> {{ index .Values.list1 1 }}
+
+    - echo "two" >> {{ index .Values.list2 0 }}
+    - echo "two" >> {{ index .Values.list2 1 }}
+
+    - echo "two" >> {{ .Values.common }}
+  # commands:
+  #   - echo "two" >> {{ .Env.TWO_1 }}
+  #   - echo "two" >> {{ .Env.TWO_2 }}
+  #   - echo "two" >> {{ .Env.DEFAULT_1 }}
+  #   - echo "two" >> {{ .Env.DEFAULT_2 }}
+  values:
+    list1:
+      - xxx_from_two_1
+      - xxx_from_two_2
+  env:
+    TWO_1: xxx_from_two_1
+    TWO_2: xxx_from_two_2

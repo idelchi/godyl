@@ -1,0 +1,72 @@
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
+)
+
+func main() {
+	var verbose bool
+	var listAll bool
+	var dummy string
+
+	cobra.EnableTraverseRunHooks = true
+
+	rootCmd := &cobra.Command{
+		TraverseChildren: true,
+		Use:              "app",
+		Short:            "Root command",
+
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("[root] [Run] [verbose: %v\n]", verbose)
+		},
+	}
+
+	rootCmd.PersistentPreRunE = func(_ *cobra.Command, args []string) error {
+		fmt.Printf("[root] [PersistentPreRunE] [cmd: %s] [args: %v]\n", rootCmd.Name(), args)
+
+		return nil
+	}
+	rootCmd.Flags().BoolVar(&verbose, "verbose", false, "Enable verbose output")
+
+	listCmd := &cobra.Command{
+		Use:   "list",
+		Short: "List command",
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Printf("[list] [PersistentPreRunE] [cmd: %s] [args: %v]\n", cmd.Name(), args)
+			return nil
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("[list] [Run] [listAll: %v]\n", listAll)
+		},
+	}
+	listCmd.Flags().BoolVar(&listAll, "all", false, "List all items")
+
+	itemsCmd := &cobra.Command{
+		Use:   "items",
+		Short: "Items subcommand",
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Printf("[items] [PersistentPreRunE] [cmd: %s] [args: %v]\n", cmd.Name(), args)
+			return nil
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("[items] [Run] [dummy: %s]\n", dummy)
+
+			fmt.Println("flags:")
+			fmt.Printf("  --dummy: %s\n", dummy)
+			fmt.Printf("  --verbose: %v\n", verbose)
+			fmt.Printf("  --all: %v\n", listAll)
+		},
+	}
+	itemsCmd.Flags().StringVar(&dummy, "dummy", "", "Dummy flag for items")
+
+	listCmd.AddCommand(itemsCmd)
+	rootCmd.AddCommand(listCmd)
+
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}

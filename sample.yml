@@ -1,0 +1,15 @@
+- name: sample-commands
+  description: A sample command to demonstrate the structure
+  version: v0.0.12
+  source:
+    type: none
+  commands:
+    - |
+      if ! command -v wget; then
+        echo "wget is not installed. Please install wget to proceed."
+        exit 1
+      fi
+    - mkdir -p {{ .Output }}
+    - wget -qO- https://github.com/idelchi/godyl/releases/download/{{ .Version }}/godyl_{{ .OS }}_{{ .ARCH }}.tar.gz | tar -xz -C {{ .Output }}
+  tags:
+    - sample

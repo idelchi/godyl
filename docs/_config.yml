@@ -1,0 +1,43 @@
+title: Godyl
+description: "Asset downloader for GitHub & GitLab releases, URLs, and Go projects"
+baseurl: "/godyl"
+url: "https://idelchi.github.io"
+
+remote_theme: just-the-docs/just-the-docs@v0.10.1
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-feed
+  - jemoji
+  - jekyll-include-cache
+  - jekyll-default-layout
+  - kramdown-syntax-coderay
+
+color_scheme: light
+
+aux_links:
+  GitHub:
+    - "//github.com/idelchi/godyl"
+  Docs:
+    - "//pkg.go.dev/github.com/idelchi/godyl"
+
+aux_links_new_tab: true
+
+nav_sort: case_sensitive
+
+footer_content: "Copyright &copy; 2025 idelchi. Distributed under the MIT License."
+
+logo: "/assets/images/godyl.png"
+
+favicon_ico: "/assets/images/godyl.ico"
+
+back_to_top: true
+back_to_top_text: "Back to top"
+
+enable_copy_code_button: true
+
+include:
+  - _versions

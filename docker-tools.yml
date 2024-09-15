@@ -1,0 +1,24 @@
+- description: A Docker manager for the terminal
+  name: moncho/dry
+  tags:
+  - docker
+- description: A simple tui to view & control docker containers
+  name: mrjackwills/oxker
+  skip:
+    condition: "{{ eq .OS \"windows\" }}"
+    reason: oxker is not available on darwin
+  tags:
+  - docker
+- aliases: lazy
+  description: The lazier way to manage everything docker
+  name: jesseduffield/lazydocker
+  tags:
+  - docker
+- description: Top-like interface for container metrics
+  hints: []
+  name: bcicen/ctop
+  skip:
+    condition: "{{ and (eq .OS \"darwin\") (eq .ARCH \"arm64\") }}"
+    reason: ctop is not available for darwin arm64
+  tags:
+  - docker

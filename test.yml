@@ -1,0 +1,27 @@
+- name: selfhosted-gitlab/recovery
+  exe: recovery
+  version:
+    version: v0.0.0
+  url: "{{ .Values.protocol }}://{{ .Values.host }}/{{ .Values.endpoint }}/{{ .Values.project }}/releases/{{ .Version }}/downloads/{{ .Exe }}_{{ .OS }}_{{ .ARCH }}.tar.gz"
+  source:
+    type: url
+  values:
+    protocol: https
+    host: gitlab.garfield-labs.com
+    endpoint: api/v4/projects
+    project: 7
+  tags:
+    - automation
+  inherit: gitlab:selfhosted
+# - name: apps/tokens
+#   inherit: gitlab:selfhosted
+
+# - name: gitlab-org/cli
+#   description: glab is an open source GitLab CLI tool
+#   exe: glab
+#   extensions:
+#     - .zip
+#     - .tar.gz
+#   tags:
+#     - terminal
+#   inherit: gitlab

@@ -1,0 +1,44 @@
+- idelchi/gocry
+- idelchi/gogen
+- idelchi/go-match
+- idelchi/gonc
+- idelchi/go-next-tag
+- idelchi/tcisd
+- name: idelchi/wslint
+  version:
+    commands: -v
+
+- name: gitlab-org/cli
+  description: glab is an open source GitLab CLI tool
+  exe: glab
+  aliases:
+    - gl
+  hints:
+    - pattern: "*.zip"
+      must: '{{ if eq .OS "windows" }}true{{ else }}false{{ end }}'
+    - pattern: "*.tar.gz"
+      must: '{{ if eq .OS "windows" }}false{{ else }}true{{ end }}'
+  tags:
+    - terminal
+  inherit: gitlab
+
+- name: mikefarah/yq
+  description: YAML, JSON, and XML processor
+  exe:
+    patterns: yq_*
+  hints:
+    - pattern: "*.zip"
+      must: '{{ if eq .OS "windows" }}true{{ else }}false{{ end }}'
+  tags:
+    - processing
+
+- name: cli/cli
+  description: GitHub's official command line tool
+  exe:
+    name: gh
+    patterns:
+      - "bin/gh{{ .EXTENSION }}"
+  aliases:
+    - shawtay
+  tags:
+    - terminal

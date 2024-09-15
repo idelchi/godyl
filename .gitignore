@@ -1,0 +1,32 @@
+# Binaries for programs and plugins
+*.exe
+*.lnk
+*.bat
+
+# Ignored files
+.bash_history
+.gitconfig
+.env
+ai.env
+secrets.env
+gitlab.env
+gitlab.yml
+.clinerules
+.clineignore
+.bashrc
+.sass-cache
+.jekyll-metadata
+# *___generated.go
+
+# Ignored folders
+.build
+.cache
+.task
+dist/
+.bin-*
+.bin
+.local
+bin
+.logs
+*.exe.old
+example-other-apps-by-me

@@ -1,0 +1,8 @@
+.devenv/
+.github/
+.vscode/
+assets/
+scripts/
+settings/
+LICENSE
+Dockerfile*

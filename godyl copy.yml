@@ -1,0 +1,18 @@
+cache:
+  dump:
+    format: yaml
+
+dump:
+  format: yaml
+  tools:
+    full: false
+
+godyl:
+  env-file:
+    - .env
+    - gitlab.env
+  inherit: default
+  no-progress: false
+
+update:
+  cleanup: true

@@ -1,0 +1,36 @@
+- name: selfhosted-gitlab/recovery
+  skip:
+    reason: "recovery is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  # output: .bin/gitlab/url
+  exe: recovery
+  version:
+    version: v0.0.0
+  url: "{{ .Values.protocol }}://{{ .Values.host }}/{{ .Values.endpoint }}/{{ .Values.project }}/releases/{{ .Version }}/downloads/{{ .Exe }}_{{ .OS }}_{{ .ARCH }}.tar.gz"
+  source:
+    type: url
+  values:
+    protocol: https
+    host: gitlab.garfield-labs.com
+    endpoint: api/v4/projects
+    project: 7
+  tags:
+    - automation
+  inherit: gitlab:selfhosted
+
+- name: raspberry/recovery
+  skip:
+    reason: "recovery is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  # output: .bin/gitlab/api
+  inherit: gitlab:selfhosted
+
+- name: apps/tokens
+  inherit:
+    - gitlab:selfhosted
+    # - custom
+
+- name: apps/tuna
+  inherit:
+    - gitlab:selfhosted
+    # - custom

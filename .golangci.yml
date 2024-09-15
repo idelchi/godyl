@@ -1,0 +1,199 @@
+version: "2"
+
+linters:
+  default: all
+  disable:
+    # No restrictions on packages
+    - depguard
+    # overly strict
+    - exhaustruct
+    # Use named returns when it makes sense
+    - nonamedreturns
+    # Favor inline errors
+    - noinlineerr
+    # Deprecated
+    - wsl
+    # Occasional dynamic errors are fine
+    - err113
+    # Most errors don't need additional wrapping
+    - wrapcheck
+    # Used wherever it makes sense
+    - dogsled
+    # Requires too many exceptions
+    - varnamelen
+    # Project uses dashes for tags
+    - tagliatelle
+    # Tags are not always necessary
+    - musttag
+    # Can introduce unintentional behavior
+    - recvcheck
+    # Returning interfaces is not inherently wrong or bad
+    - ireturn
+    # Not in scope for this project
+    - goprintffuncname
+
+  settings:
+    wsl_v5:
+      allow-first-in-block: false
+      allow-whole-block: false
+      # branch-max-lines: 4
+      # case-max-lines: 2
+      default: all
+
+    cyclop:
+      max-complexity: 35
+      package-average: 15
+
+    errcheck:
+      check-type-assertions: true
+
+    forbidigo:
+      forbid:
+        # Encourage using loggers instead of fmt.Print*
+        - pattern: fmt\.Print.*
+        # Discourage exiting the program
+        - pattern: os.Exit
+        - pattern: log.Fatal.*
+
+    funlen:
+      lines: 100
+      statements: 50
+      ignore-comments: true
+
+    gocognit:
+      min-complexity: 20
+
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+
+    inamedparam:
+      skip-single-param: true
+
+    ireturn:
+      allow:
+        - anon
+        - error
+        - empty
+        - stdlib
+        - generic
+
+    mnd:
+      ignored-functions:
+        - args.Error
+        - flag.Arg
+        - flag.Duration.*
+        - flag.Float.*
+        - flag.Int.*
+        - flag.Uint.*
+        - os.Chmod
+        - os.Mkdir.*
+        - os.OpenFile
+        - os.WriteFile
+        - time.Duration
+
+    nakedret:
+      max-func-lines: 0
+
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+      allow-no-explanation:
+        - funlen
+        - gocognit
+        - lll
+
+    usetesting:
+      os-temp-dir: true
+
+    varnamelen:
+      ignore-names:
+        - tc
+        - ok
+
+  exclusions:
+    generated: lax
+
+    rules:
+      - linters:
+          - funlen
+          - wrapcheck
+        path: _test.go
+
+      # Exceptions for `main.go` and `config.go`
+      - linters:
+          - forbidigo
+        path: ^cmd/.+/(main|config)\.go$
+      - linters:
+          - forbidigo
+        path: main.go$
+      - linters:
+          - forbidigo
+        path: internal/cli
+
+      # Ignore varnamelen for test files
+      - linters:
+          - varnamelen
+        path: _test.go$
+
+      # EXC0001 errcheck: Almost all programs ignore errors on these functions and in most cases it's ok
+      - path: (.+)\.go$
+        text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
+
+      - linters:
+          - govet
+        text: 'shadow: declaration of "(err|ctx)" shadows declaration at'
+
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+    - golines
+
+  settings:
+    gci:
+      sections:
+        # std
+        - standard
+        # extensions
+        - prefix(golang.org)
+        # 3rd party
+        - prefix(github.com)
+        # custom
+        - prefix(github.com/idelchi)
+        - default
+      custom-order: true
+
+    gofmt:
+      rewrite-rules:
+        - pattern: "interface{}"
+          replacement: "any"
+        - pattern: "a[b:len(a)]"
+          replacement: "a[b:]"
+
+    gofumpt:
+      extra-rules: true
+
+    golines:
+      max-len: 120
+      shorten-comments: true
+      reformat-tags: false
+
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

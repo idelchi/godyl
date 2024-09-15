@@ -1,0 +1,137 @@
+none: {}
+
+default:
+  # Output as for example `.bin-linux-amd64/<tool>`
+  output: .bin-{{ .OS }}-{{ .ARCH_LONG }}
+  checksum:
+    type: file
+  exe:
+    patterns:
+      # Search for the executable in all subdirectories
+      - "**/{{ .Exe }}*{{ .EXTENSION }}"
+  hints:
+    # General rules
+    # Name of the executable (without extension)
+    - pattern: "{{ .Exe }}"
+      type: contains
+
+    # .tar.gz format is commonly used
+    - pattern: .tar.gz
+      type: endswith
+
+    # .gz format is commonly used
+    - pattern: .gz
+      type: endswith
+      weight: 1
+
+    # .exe extensions for Windows
+    - pattern: .exe
+      weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
+      type: endswith
+
+      # .zip extensions for Windows
+    - pattern: .zip
+      weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
+      type: endswith
+
+      # .zip extensions for macOS
+    - pattern: .zip
+      weight: '{{ if eq .OS "darwin" }}1{{ else }}0{{ end }}'
+      type: endswith
+
+    # ARM32 specifics
+    # Give priority to the current version
+    - pattern: armv{{ .ARCH_VERSION }}
+      weight: 4
+      type: contains
+
+    # Less priority to the previous version
+    - pattern: armv{{sub .ARCH_VERSION 1}}
+      weight: 3
+      type: contains
+
+    # Even less priority to the previous version
+    - pattern: armv{{sub .ARCH_VERSION 2}}
+      weight: 2
+      type: contains
+
+    # Matches strings starting with 'arm' followed by any single character except 'v'
+    # TODO(Idelchi): Why?
+    - pattern: arm[^v]
+      type: regex
+
+    # Alpine Linux specifics
+    # Match musl-based ARM binaries
+    - pattern: musleabihf
+      weight: |-
+        {{- if and (eq .DISTRIBUTION "alpine") (eq .ARCH "arm") -}}
+        1
+        {{- else -}}
+        0
+        {{- end -}}
+      type: contains
+
+    # Avoid files ending with .txt (commonly the checksum.txt file)
+    - pattern: .txt
+      type: endswith
+      match: excluded
+
+    # Avoid files ending with .sha256 (commonly the checksum file)
+    - pattern: .sha256
+      type: endswith
+      match: excluded
+  source:
+    type: github
+    go:
+      base: github.com
+      download_if_missing: true
+  mode: find
+  strategy: sync
+  version:
+    commands:
+      - --version
+      - -v
+      - -version
+      - version
+    patterns:
+      - '.*?(v?\d+\.\d+\.\d+).*'
+      - '.*?(v?\d+\.\d+).*'
+
+linux:
+  inherit: default
+  output: ~/.local/bin
+
+windows:
+  inherit: default
+  output: $USERPROFILE\AppData\Local\Programs
+
+darwin:
+  inherit: default
+  output: ~/bin
+
+gitlab:
+  inherit: default
+  source:
+    type: gitlab
+    gitlab:
+      no-token: true
+
+gitlab:selfhosted:
+  inherit: default
+  version:
+    commands: []
+  source:
+    type: gitlab
+    gitlab:
+      server: https://gitlab.garfield-labs.com
+    url:
+      headers:
+        PRIVATE-TOKEN:
+          - "{{ .Tokens.GitLab }}"
+
+custom:
+  inherit: default
+  output: D:\DevEnv\bin
+
+wrong:
+  inherit: gitlab

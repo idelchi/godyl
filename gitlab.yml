@@ -1,0 +1,46 @@
+- name: selfhosted-gitlab/recovery
+  skip:
+    reason: "recovery is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  exe: recovery
+  version:
+    version: v0.0.0
+  url: "{{ .Values.protocol }}://{{ .Values.host }}/{{ .Values.endpoint }}/{{ .Values.project }}/releases/{{ .Version }}/downloads/{{ .Exe }}_{{ .OS }}_{{ .ARCH }}.tar.gz"
+  source:
+    type: url
+  values:
+    protocol: https
+    host: gitlab.garfield-labs.com
+    endpoint: api/v4/projects
+    project: 10
+  inherit: gitlab:selfhosted
+
+- name: apps/recovery
+  skip:
+    reason: "recovery is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  inherit: gitlab:selfhosted
+
+- name: apps/tokens
+  inherit:
+    - gitlab:selfhosted
+
+- name: apps/tuna
+  inherit:
+    - gitlab:selfhosted
+
+- name: apps/gocom
+  inherit:
+    - gitlab:selfhosted
+
+- name: apps/dirstat
+  inherit:
+    - gitlab:selfhosted
+
+- name: apps/dupfind
+  inherit:
+    - gitlab:selfhosted
+
+- name: apps/templ
+  inherit:
+    - gitlab:selfhosted

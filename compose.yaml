@@ -1,0 +1,106 @@
+services:
+  build:
+    build:
+      args:
+        - GODYL_VERSION=local
+      target: build
+    image: idelchi/godyl:build
+    container_name: godyl
+    hostname: godyl
+    volumes:
+      - .:/home/user/ws
+      - ./.bash_history:/home/user/.bash_history
+    extra_hosts:
+      - host:host-gateway
+    working_dir: /home/user/ws
+    environment:
+      - GODYL_KEYRING=false
+    networks:
+      - godyl
+
+  final:
+    extends: build
+    working_dir: /home/user/
+    image: idelchi/godyl:dev
+    build:
+      target: final
+      platforms:
+        - linux/amd64
+        - linux/arm64
+
+  arm64:
+    extends: final
+    platform: linux/arm64
+
+  docker:
+    extends: build
+    build:
+      args:
+        - GODYL_VERSION=dev
+      target: final
+    image: idelchi/godyl:dev
+
+  gifs:
+    build:
+      dockerfile: Dockerfile.gifs
+      secrets:
+        - tokens.env
+    container_name: machine
+    hostname: machine
+    volumes:
+      - .:/home/user/ws
+      - ./.bashrc:/home/user/.bashrc
+      - ./tools.yml:/home/user/tools.yml
+      - ./docs/assets/gifs:/home/user/gifs
+      - ./docs/assets/tapes:/home/user/tapes
+    env_file:
+      - tokens.env
+    secrets:
+      - tokens.env
+    extra_hosts:
+      - host:host-gateway
+    working_dir: /home/user
+    networks:
+      - godyl
+    entrypoint:
+      - /bin/bash
+      - -c
+    command:
+      - |
+        source /home/user/.bashrc
+        pall
+
+  jekyll:
+    build:
+      dockerfile: Dockerfile.jekyll
+    container_name: jekyll
+    hostname: godyljekyll
+    volumes:
+      - ./docs:/home/user/ws
+    working_dir: /home/user/ws
+    networks:
+      - godyl
+    ports:
+      - 4000:4000
+    command:
+      - jekyll
+      - serve
+      - --host
+      - 0.0.0.0
+      - --source
+      - .
+      - --destination
+      - /tmp/_site
+      - --livereload
+      - --force_polling
+      - --incremental
+      - --watch
+
+networks:
+  godyl:
+    name: godyl
+    driver: bridge
+
+secrets:
+  tokens.env:
+    file: ./tokens.env

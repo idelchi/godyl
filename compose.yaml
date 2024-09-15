@@ -1,0 +1,139 @@
+services:
+  build:
+    build:
+      secrets:
+        - .env
+      args:
+        - GODYL_VERSION=local
+      target: build
+    image: idelchi/godyl:local
+    container_name: godyl
+    hostname: godyl
+    volumes:
+      - .:/home/user/ws
+    extra_hosts:
+      - host:host-gateway
+    working_dir: /home/user/ws
+    networks:
+      - godyl
+    secrets:
+      - .env
+
+  final:
+    extends: build
+    working_dir: /home/user/
+    build:
+      secrets:
+        - .env
+      args:
+        - GODYL_VERSION=local
+      target: final
+
+  docker:
+    extends: build
+    build:
+      args:
+        - GODYL_VERSION=dev
+      target: final
+    image: idelchi/godyl:dev
+
+
+  code:
+    build:
+      dockerfile: Dockerfile.code
+    container_name: code
+    hostname: godylcode
+    env_file:
+      - ai.env
+    volumes:
+      - .:/home/user/ws
+    extra_hosts:
+      - host:host-gateway
+    working_dir: /home/user/ws
+    networks:
+      - godyl
+
+  gifs:
+    build:
+      dockerfile: Dockerfile.gifs
+      args:
+        - GODYL_GITHUB_TOKEN=${GODYL_GITHUB_TOKEN}
+    container_name: machine
+    hostname: machine
+    volumes:
+      - .:/home/user/ws
+      - ./.bashrc:/home/user/.bashrc
+      - ./tools.yml:/home/user/tools.yml
+      - ./docs/assets/gifs:/home/user/gifs
+      - ./docs/assets/tapes:/home/user/tapes
+    env_file:
+      - .env
+    extra_hosts:
+      - host:host-gateway
+    working_dir: /home/user
+    networks:
+      - godyl
+    entrypoint:
+      - /bin/bash
+      - -c
+    command:
+      - |
+        source /home/user/.bashrc
+        all
+
+  tape:
+    build:
+      dockerfile: Dockerfile.tape
+      args:
+        - GODYL_GITHUB_TOKEN=${GODYL_GITHUB_TOKEN}
+    container_name: machine
+    hostname: machine
+    volumes:
+      - .:/home/user/ws
+      - ./.bashrc:/home/user/.bashrc
+      - ./tools.yml:/home/user/tools.yml
+      - ./docs/assets/gifs:/home/user/gifs
+      - ./docs/assets/tapes:/home/user/tapes
+    env_file:
+      - .env
+    extra_hosts:
+      - host:host-gateway
+    working_dir: /home/user
+    networks:
+      - godyl
+
+
+  jekyll:
+    build:
+      dockerfile: Dockerfile.jekyll
+    container_name: jekyll
+    hostname: godyljekyll
+    volumes:
+      - ./docs:/home/user/ws
+    working_dir: /home/user/ws
+    networks:
+      - godyl
+    ports:
+      - 4000:4000
+    command:
+      - jekyll
+      - serve
+      - --host
+      - 0.0.0.0
+      - --source
+      - .
+      - --destination
+      - /tmp/_site
+      - --livereload
+      - --force_polling
+      - --incremental
+      - --watch
+
+networks:
+  godyl:
+    name: godyl
+    driver: bridge
+
+secrets:
+  .env:
+    file: ./.env

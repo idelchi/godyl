@@ -1,0 +1,182 @@
+version: "3"
+
+# .env file variables are available here, with the exception of `includes`,
+# where externally defined environment variables and regular variables are available.
+# It's therefore recommended to also source the .env file before running.
+dotenv: ["taskfile.env"]
+
+vars:
+  # This environment variable must exist (i.e it's not enough that it's set in the .env file)
+  DEVENV: .devenv
+
+env:
+  CSPELL_CONFIG: ./settings/cspell.yaml
+
+includes:
+  aux: "{{.DEVENV}}/taskfiles/Taskfile.aux.yml"
+  git: "{{.DEVENV}}/taskfiles/Taskfile.git.yml"
+  lint: "{{.DEVENV}}/taskfiles/Taskfile.lint.yml"
+  format: "{{.DEVENV}}/taskfiles/Taskfile.format.yml"
+  go:
+    taskfile: "{{.DEVENV}}/taskfiles/Taskfile.go.yml"
+    vars:
+      COVERAGE: 0.0%
+  github: "{{.DEVENV}}/taskfiles/Taskfile.github.yml"
+
+silent: true
+
+output: prefixed
+
+tasks:
+  docker:
+    desc: Run commands inside the Docker container
+    summary: |
+      This task allows you to run commands inside the Docker container.
+      Usage:
+        - `task docker` to launch the container and enter its shell
+        - `task docker -- task <task> -f` to run a task/command inside the container
+    cmds:
+      - docker rm -f devenv > /dev/null 2>&1 || true
+      - docker compose -f {{.DEVENV}}/docker-compose.yml build --build-arg CACHEBUST=$(date +%s) devenv
+      - docker compose -f {{.DEVENV}}/docker-compose.yml run --rm devenv {{.CLI_ARGS}}
+    interactive: true
+
+  push:
+    desc: Push changes to the remote repository
+    summary: |
+      This task pushes changes to the remote repository.
+      Usage:
+        - `task push` for a default commit message
+        - `task push -- "My commit message"` for a custom commit message
+    cmds:
+      - task: git
+      - task: git:push
+
+  clean:
+    - task: aux:clean
+    - task: go:clean
+
+  info:
+    - task: git
+
+  generate:
+    run: once
+    cmds:
+      - go generate ./...
+
+  format:
+    deps:
+      - generate
+    cmds:
+      - task: format:default
+      - task: go:format
+
+  lint:
+    deps:
+      - generate
+    cmds:
+      # TODO(Idelchi): Move as `deps` when fixed.
+      - cmd: task lint:default
+        ignore_error: true
+      - cmd: task go:lint
+        ignore_error: true
+
+  build:
+    deps:
+      - generate
+    cmds:
+      - task: go:build
+      - task: go:release
+
+  test:
+    deps:
+      - generate
+    cmds:
+      - task: go:quality
+
+  all:
+    desc: run all available tasks
+    deps:
+      - generate
+    cmds:
+      - task: clean
+      - task: info
+      - task: format
+      - task: lint
+      - task: build
+      - task: test
+
+  default:
+    desc: clean, format & lint
+    deps:
+      - generate
+    cmds:
+      - task: info
+      - task: format
+      - task: lint
+
+  update:
+    - task: git:update
+
+  release:
+    dotenv:
+      - .env
+    cmds:
+      - |
+        git config --global credential.helper '!f() { sleep 1; echo "username=git"; echo "password=${GH_TOKEN}"; }; f'
+
+        git tag -l | xargs git tag -d
+        git fetch --tags
+
+        latest=$(gh release list -L 1 --exclude-pre-releases --json tagName -q '.[0].tagName')
+        next=$(go-next-tag $latest --bump=patch)-beta
+
+        echo "next version: ${next}"
+
+        git tag -d ${next} || true
+
+        gh release delete ${next} --yes --cleanup-tag || true
+
+        git push origin :refs/tags/${next}
+
+        git tag ${next}
+
+        git push origin ${next}
+
+        GITHUB_TOKEN=${GH_TOKEN} goreleaser release --skip=validate --clean --config ./.devenv/.goreleaser.yaml
+
+        rm -rf dist
+
+  # docs:
+  #   - |
+  #     docker compose run --build jekyll jekyll build --source . --destination /tmp/_site
+  #     touch /tmp/_site/.nojekyll
+  #     git c
+
+  docs:
+    - |
+      docker compose down -v jekyll
+      docker compose up -d jekyll
+      cmd /c "start chrome http://localhost:4000/godyl/"
+
+  build:
+    - |
+      docker buildx bake --set "*.platform=linux/arm64,linux/amd64" --push docker
+
+  squash:
+    - |
+      git c
+      git reset --soft $(git rev-list --max-parents=0 HEAD)
+      git commit --amend -m "development branch"
+      git push --force
+
+
+
+  deadcode:
+    cmds:
+      - go install golang.org/x/tools/cmd/deadcode@latest
+      - deadcode .
+
+  gifs:
+    cmds:
+      - docker compose run --build gifs

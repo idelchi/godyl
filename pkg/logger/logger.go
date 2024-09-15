@@ -1,0 +1,133 @@
+//go:generate go tool enumer -type=Level -output level_enumer___generated.go -transform=lower
+package logger
+
+import (
+	"fmt"
+	"io"
+	"os"
+
+	"github.com/fatih/color"
+)
+
+// Level represents the severity of a log message.
+// It can be one of DEBUG, INFO, WARN, ERROR, ALWAYS, or SILENT.
+type Level int
+
+const (
+	// SILENT represents no logging, effectively muting all log messages.
+	SILENT Level = iota - 1
+	// DEBUG represents debug-level messages, useful for development and troubleshooting.
+	DEBUG
+	// INFO represents informational messages, typically used for normal operation.
+	INFO
+	// WARN represents warning messages, which indicate potential issues but not failures.
+	WARN
+	// ERROR represents error messages, indicating failure in operation.
+	ERROR
+	// ALWAYS represents messages that should always be logged, regardless of the current log level.
+	ALWAYS
+)
+
+// Logger holds the configuration for logging.
+// It includes the current logging level, the output writer, and color mappings for each log level.
+type Logger struct {
+	output io.Writer
+	colors map[Level]*color.Color
+	level  Level
+}
+
+// NewCustom creates a new Logger instance with the specified log level and output writer.
+// If an invalid log level is provided, it defaults to INFO.
+func NewCustom(level Level, output io.Writer) *Logger {
+	if !level.IsALevel() {
+		fmt.Fprintf(os.Stderr, "Invalid log level: %q, setting to %q\n", level, INFO)
+		level = INFO
+	}
+
+	return &Logger{
+		level:  level,
+		output: output,
+		colors: map[Level]*color.Color{
+			DEBUG:  color.New(color.FgBlue),
+			INFO:   color.New(color.FgGreen),
+			WARN:   color.New(color.FgYellow),
+			ERROR:  color.New(color.FgRed),
+			ALWAYS: color.New(color.FgGreen),
+		},
+	}
+}
+
+// New creates a new Logger instance with the specified log level and writes to stdout.
+// If an invalid log level is provided, it defaults to INFO.
+func New(level Level) *Logger {
+	return NewCustom(level, os.Stdout)
+}
+
+// log prints a log message with the specified log level, applying colors based on the level if available.
+// The message will only be logged if the level's severity is equal to or higher than the Logger's current level.
+func (l *Logger) log(level Level, format string, args ...any) {
+	if l.level == SILENT || level < l.level {
+		return
+	}
+
+	message := fmt.Sprintf(format, args...)
+	if c, ok := l.colors[level]; ok {
+		if _, err := c.Fprintln(l.output, message); err != nil {
+			panic(err)
+		}
+	} else {
+		if _, err := fmt.Fprintln(l.output, message); err != nil {
+			panic(err)
+		}
+	}
+}
+
+// Always logs a message at the ALWAYS level, regardless of the current log level.
+func (l *Logger) Always(message string) {
+	l.log(ALWAYS, "%s", message)
+}
+
+// Alwaysf logs a formatted message at the ALWAYS level, regardless of the current log level.
+func (l *Logger) Alwaysf(format string, args ...any) {
+	l.log(ALWAYS, format, args...)
+}
+
+// Debug logs a debug-level message if the current log level allows it.
+func (l *Logger) Debug(message string) {
+	l.log(DEBUG, "%s", message)
+}
+
+// Debugf logs a formatted debug-level message if the current log level allows it.
+func (l *Logger) Debugf(format string, args ...any) {
+	l.log(DEBUG, format, args...)
+}
+
+// Info logs an informational message if the current log level allows it.
+func (l *Logger) Info(message string) {
+	l.log(INFO, "%s", message)
+}
+
+// Infof logs a formatted informational message if the current log level allows it.
+func (l *Logger) Infof(format string, args ...any) {
+	l.log(INFO, format, args...)
+}
+
+// Warn logs a warning message if the current log level allows it.
+func (l *Logger) Warn(message string) {
+	l.log(WARN, "%s", message)
+}
+
+// Warnf logs a formatted warning message if the current log level allows it.
+func (l *Logger) Warnf(format string, args ...any) {
+	l.log(WARN, format, args...)
+}
+
+// Error logs an error message if the current log level allows it.
+func (l *Logger) Error(message string) {
+	l.log(ERROR, "%s", message)
+}
+
+// Errorf logs a formatted error message if the current log level allows it.
+func (l *Logger) Errorf(format string, args ...any) {
+	l.log(ERROR, format, args...)
+}

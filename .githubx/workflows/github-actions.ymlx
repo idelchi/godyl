@@ -1,0 +1,95 @@
+name: godyl
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  # info:
+  #   uses: idelchi/devenv/.github/workflows/info.yml@dev
+
+  # cleanup:
+  #   uses: idelchi/devenv/.github/workflows/cleanup.yml@dev
+  #   if: github.ref == 'refs/heads/dev'
+  #   needs: info
+  #   permissions:
+  #     actions: write
+
+  # lint:
+  #   if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
+  #   # uses: idelchi/devenv/.github/workflows/task.yml@dev
+  #   needs: cleanup
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #     - name: Dry run
+  #       run: echo "Dry run"
+
+  # test:
+  #   needs: lint
+  #   if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #     - name: Dry run
+  #       run: echo "Dry run"
+  # strategy:
+  #   matrix:
+  #     os:
+  #       - ubuntu-24.04
+  #       - windows-2022
+  #       - macos-14
+  # runs-on: ${{ matrix.os }}
+  # env:
+  #   GODYL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v4
+
+  #   - uses: actions/setup-go@v5
+  #     with:
+  #       go-version: "1.24.1"
+  #       check-latest: true
+
+  #   - name: Dump out platform
+  #     run: go run . dump platform
+
+  #   - name: Dry install tools
+  #     run: go run . dump tools | go run . status -
+
+  next-tag:
+    uses: idelchi/devenv/.github/workflows/next-tag.yml@dev
+    if: github.ref == 'refs/heads/dev'
+    # needs: test
+
+  prerelease:
+    uses: idelchi/devenv/.github/workflows/prerelease.yml@dev
+    if: github.ref == 'refs/heads/dev'
+    needs: next-tag
+    permissions:
+      contents: write
+      actions: write
+    with:
+      tag: ${{ needs.next-tag.outputs.next }}-beta
+      workflow: release
+
+  docker:
+    uses: idelchi/devenv/.github/workflows/docker.yml@dev
+    if: github.ref == 'refs/heads/none'
+    # needs: test
+    permissions:
+      contents: write
+    secrets: inherit
+    with:
+      platforms: linux/amd64,linux/arm64
+      args: |
+        GODYL_VERSION=${{
+          github.ref == 'refs/heads/dev' && 'dev' ||
+          github.ref == 'refs/heads/main' && 'latest'
+        }}
+      tag: ${{ github.ref == 'refs/heads/dev' && 'dev' || 'latest' }}
+# https://github.com/skills/release-based-workflow
+# https://birtony.medium.com/setting-up-automated-release-workflow-with-github-actions-628dbca2446e
+# https://rangle.io/blog/release-process-github-actions

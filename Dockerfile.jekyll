@@ -1,0 +1,44 @@
+FROM ruby:3.1-slim-bullseye AS jekyll
+
+# Install dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Jekyll and necessary gems
+RUN gem update --system && \
+    gem install jekyll:3.10.0 \
+    jekyll-seo-tag \
+    jekyll-paginate \
+    jekyll-sitemap \
+    jekyll-feed \
+    jekyll-remote-theme \
+    jekyll-github-metadata \
+    jekyll-coffeescript \
+    jekyll-include-cache \
+    jekyll-titles-from-headings \
+    jekyll-relative-links \
+    jekyll-optional-front-matter \
+    jekyll-readme-index \
+    kramdown-parser-gfm \
+    jemoji \
+    jekyll-default-layout \
+    jekyll-commonmark-ghpages \
+    jekyll-gist \
+    kramdown-syntax-coderay && \
+    gem install just-the-docs && \
+    gem cleanup
+
+
+# Create User (Debian/Ubuntu)
+ARG USER=user
+RUN groupadd -r -g 1001 ${USER} && \
+    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
+
+USER ${USER}
+WORKDIR /home/${USER}
+
+ENTRYPOINT []
+CMD ["/bin/bash"]

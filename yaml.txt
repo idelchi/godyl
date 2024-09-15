@@ -1,0 +1,1509 @@
+YAML support for the Go language
+PkgGoDev Go codecov Go Report Card
+
+
+
+This library has NO relation to the go-yaml/yaml library
+Important
+
+This library is developed from scratch to replace go-yaml/yaml. If you're looking for a better YAML library, this one should be helpful.
+
+Why a new library?
+As of this writing, there already exists a de facto standard library for YAML processing for Go: https://github.com/go-yaml/yaml. However, we believe that a new YAML library is necessary for the following reasons:
+
+Not actively maintained
+go-yaml/yaml has ported the libyaml written in C to Go, so the source code is not written in Go style
+There is a lot of content that cannot be parsed
+YAML is often used for configuration, and it is common to include validation along with it. However, the errors in go-yaml/yaml are not intuitive, and it is difficult to provide meaningful validation errors
+When creating tools that use YAML, there are cases where reversible transformation of YAML is required. However, to perform reversible transformations of content that includes Comments or Anchors/Aliases, manipulating the AST is the only option
+Non-intuitive Marshaler / Unmarshaler
+By the way, libraries such as ghodss/yaml and sigs.k8s.io/yaml also depend on go-yaml/yaml, so if you are using these libraries, the same issues apply: they cannot parse things that go-yaml/yaml cannot parse, and they inherit many of the problems that go-yaml/yaml has.
+
+Features
+No dependencies
+A better parser than go-yaml/yaml.
+Support recursive processing
+Higher coverage in the YAML Test Suite
+YAML Test Suite consists of 402 cases in total, of which gopkg.in/yaml.v3 passes 295. In addition to passing all those test cases, goccy/go-yaml successfully passes nearly 60 additional test cases ( 2024/12/15 )
+The test code is here
+Ease and sustainability of maintenance
+The main maintainer is @goccy, but we are also building a system to develop as a team with trusted developers
+Since it is written from scratch, the code is easy to read for Gophers
+An API structure that allows the use of not only Encoder/Decoder but also Tokenizer and Parser functionalities.
+lexer.Tokenize
+parser.Parse
+Filtering, replacing, and merging YAML content using YAML Path
+Reversible transformation without using the AST for YAML that includes Anchors, Aliases, and Comments
+Customize the Marshal/Unmarshal behavior for primitive types and third-party library types (RegisterCustomMarshaler, RegisterCustomUnmarshaler)
+Respects encoding/json behavior
+Accept the json tag. Note that not all options from the json tag will have significance when parsing YAML documents. If both tags exist, yaml tag will take precedence.
+json.Marshaler style marshaler
+json.Unmarshaler style unmarshaler
+Options for using MarshalJSON and UnmarshalJSON (UseJSONMarshaler, UseJSONUnmarshaler)
+Pretty format for error notifications
+Smart validation processing combined with go-playground/validator
+example test code is here
+Allow referencing elements declared in another file via anchors
+Users
+The repositories that use goccy/go-yaml are listed here.
+
+https://github.com/goccy/go-yaml/wiki/Users
+The source data is here. It is already being used in many repositories. Now it's your turn 😄
+
+Playground
+The Playground visualizes how go-yaml processes YAML text. Use it to assist with your debugging or issue reporting.
+
+https://goccy.github.io/go-yaml
+
+Installation
+go get github.com/goccy/go-yaml
+Synopsis
+1. Simple Encode/Decode
+Has an interface like go-yaml/yaml using reflect
+
+var v struct {
+	A int
+	B string
+}
+v.A = 1
+v.B = "hello"
+bytes, err := yaml.Marshal(v)
+if err != nil {
+	//...
+}
+fmt.Println(string(bytes)) // "a: 1\nb: hello\n"
+	yml := `
+%YAML 1.2
+---
+a: 1
+b: c
+`
+var v struct {
+	A int
+	B string
+}
+if err := yaml.Unmarshal([]byte(yml), &v); err != nil {
+	//...
+}
+To control marshal/unmarshal behavior, you can use the yaml tag.
+
+	yml := `---
+foo: 1
+bar: c
+`
+var v struct {
+	A int    `yaml:"foo"`
+	B string `yaml:"bar"`
+}
+if err := yaml.Unmarshal([]byte(yml), &v); err != nil {
+	//...
+}
+For convenience, we also accept the json tag. Note that not all options from the json tag will have significance when parsing YAML documents. If both tags exist, yaml tag will take precedence.
+
+	yml := `---
+foo: 1
+bar: c
+`
+var v struct {
+	A int    `json:"foo"`
+	B string `json:"bar"`
+}
+if err := yaml.Unmarshal([]byte(yml), &v); err != nil {
+	//...
+}
+For custom marshal/unmarshaling, implement either Bytes or Interface variant of marshaler/unmarshaler. The difference is that while BytesMarshaler/BytesUnmarshaler behaves like encoding/json and InterfaceMarshaler/InterfaceUnmarshaler behaves like gopkg.in/yaml.v2.
+
+Semantically both are the same, but they differ in performance. Because indentation matters in YAML, you cannot simply accept a valid YAML fragment from a Marshaler, and expect it to work when it is attached to the parent container's serialized form. Therefore when we receive use the BytesMarshaler, which returns []byte, we must decode it once to figure out how to make it work in the given context. If you use the InterfaceMarshaler, we can skip the decoding.
+
+If you are repeatedly marshaling complex objects, the latter is always better performance wise. But if you are, for example, just providing a choice between a config file format that is read only once, the former is probably easier to code.
+
+2. Reference elements declared in another file
+testdata directory contains anchor.yml file:
+
+├── testdata
+   └── anchor.yml
+And anchor.yml is defined as follows:
+
+a: &a
+  b: 1
+  c: hello
+Then, if yaml.ReferenceDirs("testdata") option is passed to yaml.Decoder, Decoder tries to find the anchor definition from YAML files the under testdata directory.
+
+buf := bytes.NewBufferString("a: *a\n")
+dec := yaml.NewDecoder(buf, yaml.ReferenceDirs("testdata"))
+var v struct {
+	A struct {
+		B int
+		C string
+	}
+}
+if err := dec.Decode(&v); err != nil {
+	//...
+}
+fmt.Printf("%+v\n", v) // {A:{B:1 C:hello}}
+3. Encode with Anchor and Alias
+3.1. Explicitly declared Anchor name and Alias name
+If you want to use anchor, you can define it as a struct tag. If the value specified for an anchor is a pointer type and the same address as the pointer is found, the value is automatically set to alias. If an explicit alias name is specified, an error is raised if its value is different from the value specified in the anchor.
+
+type T struct {
+  A int
+  B string
+}
+var v struct {
+  C *T `yaml:"c,anchor=x"`
+  D *T `yaml:"d,alias=x"`
+}
+v.C = &T{A: 1, B: "hello"}
+v.D = v.C
+bytes, err := yaml.Marshal(v)
+if err != nil {
+  panic(err)
+}
+fmt.Println(string(bytes))
+/*
+c: &x
+  a: 1
+  b: hello
+d: *x
+*/
+3.2. Implicitly declared Anchor and Alias names
+If you do not explicitly declare the anchor name, the default behavior is to use the equivalent of strings.ToLower($FieldName) as the name of the anchor. If the value specified for an anchor is a pointer type and the same address as the pointer is found, the value is automatically set to alias.
+
+type T struct {
+	I int
+	S string
+}
+var v struct {
+	A *T `yaml:"a,anchor"`
+	B *T `yaml:"b,anchor"`
+	C *T `yaml:"c"`
+	D *T `yaml:"d"`
+}
+v.A = &T{I: 1, S: "hello"}
+v.B = &T{I: 2, S: "world"}
+v.C = v.A // C has same pointer address to A
+v.D = v.B // D has same pointer address to B
+bytes, err := yaml.Marshal(v)
+if err != nil {
+	//...
+}
+fmt.Println(string(bytes))
+/*
+a: &a
+  i: 1
+  s: hello
+b: &b
+  i: 2
+  s: world
+c: *a
+d: *b
+*/
+3.3 MergeKey and Alias
+Merge key and alias ( <<: *alias ) can be used by embedding a structure with the inline,alias tag.
+
+type Person struct {
+	*Person `yaml:",omitempty,inline,alias"` // embed Person type for default value
+	Name    string `yaml:",omitempty"`
+	Age     int    `yaml:",omitempty"`
+}
+defaultPerson := &Person{
+	Name: "John Smith",
+	Age:  20,
+}
+people := []*Person{
+	{
+		Person: defaultPerson, // assign default value
+		Name:   "Ken",         // override Name property
+		Age:    10,            // override Age property
+	},
+	{
+		Person: defaultPerson, // assign default value only
+	},
+}
+var doc struct {
+	Default *Person   `yaml:"default,anchor"`
+	People  []*Person `yaml:"people"`
+}
+doc.Default = defaultPerson
+doc.People = people
+bytes, err := yaml.Marshal(doc)
+if err != nil {
+	//...
+}
+fmt.Println(string(bytes))
+/*
+default: &default
+  name: John Smith
+  age: 20
+people:
+- <<: *default
+  name: Ken
+  age: 10
+- <<: *default
+*/
+4. Pretty Formatted Errors
+Error values produced during parsing have two extra features over regular error values.
+
+First, by default, they contain extra information on the location of the error from the source YAML document, to make it easier to find the error location.
+
+Second, the error messages can optionally be colorized.
+
+If you would like to control exactly how the output looks like, consider using yaml.FormatError, which accepts two boolean values to control turning these features on or off.
+
+
+
+5. Use YAMLPath
+yml := `
+store:
+  book:
+    - author: john
+      price: 10
+    - author: ken
+      price: 12
+  bicycle:
+    color: red
+    price: 19.95
+`
+path, err := yaml.PathString("$.store.book[*].author")
+if err != nil {
+  //...
+}
+var authors []string
+if err := path.Read(strings.NewReader(yml), &authors); err != nil {
+  //...
+}
+fmt.Println(authors)
+// [john ken]
+5.1 Print customized error with YAML source code
+package main
+
+import (
+  "fmt"
+
+  "github.com/goccy/go-yaml"
+)
+
+func main() {
+  yml := `
+a: 1
+b: "hello"
+`
+  var v struct {
+    A int
+    B string
+  }
+  if err := yaml.Unmarshal([]byte(yml), &v); err != nil {
+    panic(err)
+  }
+  if v.A != 2 {
+    // output error with YAML source
+    path, err := yaml.PathString("$.a")
+    if err != nil {
+      panic(err)
+    }
+    source, err := path.AnnotateSource([]byte(yml), true)
+    if err != nil {
+      panic(err)
+    }
+    fmt.Printf("a value expected 2 but actual %d:\n%s\n", v.A, string(source))
+  }
+}
+output result is the following:
+
+
+
+Tools
+ycat
+print yaml file with color
+
+ycat
+
+Installation
+git clone https://github.com/goccy/go-yaml.git
+cd go-yaml/cmd/ycat && go install .
+For Developers
+Note
+
+In this project, we manage such test code under the testdata directory to avoid adding dependencies on libraries that are only needed for testing to the top go.mod file. Therefore, if you want to add test cases that use 3rd party libraries, please add the test code to the testdata directory.
+
+Looking for Sponsors
+I'm looking for sponsors this library. This library is being developed as a personal project in my spare time. If you want a quick response or problem resolution when using this library in your project, please register as a sponsor. I will cooperate as much as possible. Of course, this library is developed as an MIT license, so you can use it freely for free.
+
+License
+MIT
+
+YAML support for the Go language
+PkgGoDev Go codecov Go Report Card
+
+
+
+This library has NO relation to the go-yaml/yaml library
+[!IMPORTANT] This library is developed from scratch to replace go-yaml/yaml. If you're looking for a better YAML library, this one should be helpful.
+
+Why a new library?
+As of this writing, there already exists a de facto standard library for YAML processing for Go: https://github.com/go-yaml/yaml. However, we believe that a new YAML library is necessary for the following reasons:
+
+Not actively maintained
+go-yaml/yaml has ported the libyaml written in C to Go, so the source code is not written in Go style
+There is a lot of content that cannot be parsed
+YAML is often used for configuration, and it is common to include validation along with it. However, the errors in go-yaml/yaml are not intuitive, and it is difficult to provide meaningful validation errors
+When creating tools that use YAML, there are cases where reversible transformation of YAML is required. However, to perform reversible transformations of content that includes Comments or Anchors/Aliases, manipulating the AST is the only option
+Non-intuitive Marshaler / Unmarshaler
+By the way, libraries such as ghodss/yaml and sigs.k8s.io/yaml also depend on go-yaml/yaml, so if you are using these libraries, the same issues apply: they cannot parse things that go-yaml/yaml cannot parse, and they inherit many of the problems that go-yaml/yaml has.
+
+Features
+No dependencies
+A better parser than go-yaml/yaml.
+Support recursive processing
+Higher coverage in the YAML Test Suite
+YAML Test Suite consists of 402 cases in total, of which gopkg.in/yaml.v3 passes 295. In addition to passing all those test cases, goccy/go-yaml successfully passes nearly 60 additional test cases ( 2024/12/15 )
+The test code is here
+Ease and sustainability of maintenance
+The main maintainer is @goccy, but we are also building a system to develop as a team with trusted developers
+Since it is written from scratch, the code is easy to read for Gophers
+An API structure that allows the use of not only Encoder/Decoder but also Tokenizer and Parser functionalities.
+lexer.Tokenize
+parser.Parse
+Filtering, replacing, and merging YAML content using YAML Path
+Reversible transformation without using the AST for YAML that includes Anchors, Aliases, and Comments
+Customize the Marshal/Unmarshal behavior for primitive types and third-party library types (RegisterCustomMarshaler, RegisterCustomUnmarshaler)
+Respects encoding/json behavior
+Accept the json tag. Note that not all options from the json tag will have significance when parsing YAML documents. If both tags exist, yaml tag will take precedence.
+json.Marshaler style marshaler
+json.Unmarshaler style unmarshaler
+Options for using MarshalJSON and UnmarshalJSON (UseJSONMarshaler, UseJSONUnmarshaler)
+Pretty format for error notifications
+Smart validation processing combined with go-playground/validator
+example test code is here
+Allow referencing elements declared in another file via anchors
+Users
+The repositories that use goccy/go-yaml are listed here.
+
+https://github.com/goccy/go-yaml/wiki/Users
+The source data is here. It is already being used in many repositories. Now it's your turn 😄
+
+Playground
+The Playground visualizes how go-yaml processes YAML text. Use it to assist with your debugging or issue reporting.
+
+https://goccy.github.io/go-yaml
+
+Installation
+go get github.com/goccy/go-yaml
+Synopsis
+1. Simple Encode/Decode
+Has an interface like go-yaml/yaml using reflect
+
+var v struct {
+	A int
+	B string
+}
+v.A = 1
+v.B = "hello"
+bytes, err := yaml.Marshal(v)
+if err != nil {
+	//...
+}
+fmt.Println(string(bytes)) // "a: 1\nb: hello\n"
+	yml := `
+%YAML 1.2
+---
+a: 1
+b: c
+`
+var v struct {
+	A int
+	B string
+}
+if err := yaml.Unmarshal([]byte(yml), &v); err != nil {
+	//...
+}
+To control marshal/unmarshal behavior, you can use the yaml tag.
+
+	yml := `---
+foo: 1
+bar: c
+`
+var v struct {
+	A int    `yaml:"foo"`
+	B string `yaml:"bar"`
+}
+if err := yaml.Unmarshal([]byte(yml), &v); err != nil {
+	//...
+}
+For convenience, we also accept the json tag. Note that not all options from the json tag will have significance when parsing YAML documents. If both tags exist, yaml tag will take precedence.
+
+	yml := `---
+foo: 1
+bar: c
+`
+var v struct {
+	A int    `json:"foo"`
+	B string `json:"bar"`
+}
+if err := yaml.Unmarshal([]byte(yml), &v); err != nil {
+	//...
+}
+For custom marshal/unmarshaling, implement either Bytes or Interface variant of marshaler/unmarshaler. The difference is that while BytesMarshaler/BytesUnmarshaler behaves like encoding/json and InterfaceMarshaler/InterfaceUnmarshaler behaves like gopkg.in/yaml.v2.
+
+Semantically both are the same, but they differ in performance. Because indentation matters in YAML, you cannot simply accept a valid YAML fragment from a Marshaler, and expect it to work when it is attached to the parent container's serialized form. Therefore when we receive use the BytesMarshaler, which returns []byte, we must decode it once to figure out how to make it work in the given context. If you use the InterfaceMarshaler, we can skip the decoding.
+
+If you are repeatedly marshaling complex objects, the latter is always better performance wise. But if you are, for example, just providing a choice between a config file format that is read only once, the former is probably easier to code.
+
+2. Reference elements declared in another file
+testdata directory contains anchor.yml file:
+
+├── testdata
+   └── anchor.yml
+And anchor.yml is defined as follows:
+
+a: &a
+  b: 1
+  c: hello
+Then, if yaml.ReferenceDirs("testdata") option is passed to yaml.Decoder, Decoder tries to find the anchor definition from YAML files the under testdata directory.
+
+buf := bytes.NewBufferString("a: *a\n")
+dec := yaml.NewDecoder(buf, yaml.ReferenceDirs("testdata"))
+var v struct {
+	A struct {
+		B int
+		C string
+	}
+}
+if err := dec.Decode(&v); err != nil {
+	//...
+}
+fmt.Printf("%+v\n", v) // {A:{B:1 C:hello}}
+3. Encode with Anchor and Alias
+3.1. Explicitly declared Anchor name and Alias name
+If you want to use anchor, you can define it as a struct tag. If the value specified for an anchor is a pointer type and the same address as the pointer is found, the value is automatically set to alias. If an explicit alias name is specified, an error is raised if its value is different from the value specified in the anchor.
+
+type T struct {
+  A int
+  B string
+}
+var v struct {
+  C *T `yaml:"c,anchor=x"`
+  D *T `yaml:"d,alias=x"`
+}
+v.C = &T{A: 1, B: "hello"}
+v.D = v.C
+bytes, err := yaml.Marshal(v)
+if err != nil {
+  panic(err)
+}
+fmt.Println(string(bytes))
+/*
+c: &x
+  a: 1
+  b: hello
+d: *x
+*/
+3.2. Implicitly declared Anchor and Alias names
+If you do not explicitly declare the anchor name, the default behavior is to use the equivalent of strings.ToLower($FieldName) as the name of the anchor. If the value specified for an anchor is a pointer type and the same address as the pointer is found, the value is automatically set to alias.
+
+type T struct {
+	I int
+	S string
+}
+var v struct {
+	A *T `yaml:"a,anchor"`
+	B *T `yaml:"b,anchor"`
+	C *T `yaml:"c"`
+	D *T `yaml:"d"`
+}
+v.A = &T{I: 1, S: "hello"}
+v.B = &T{I: 2, S: "world"}
+v.C = v.A // C has same pointer address to A
+v.D = v.B // D has same pointer address to B
+bytes, err := yaml.Marshal(v)
+if err != nil {
+	//...
+}
+fmt.Println(string(bytes))
+/*
+a: &a
+  i: 1
+  s: hello
+b: &b
+  i: 2
+  s: world
+c: *a
+d: *b
+*/
+3.3 MergeKey and Alias
+Merge key and alias ( <<: *alias ) can be used by embedding a structure with the inline,alias tag.
+
+type Person struct {
+	*Person `yaml:",omitempty,inline,alias"` // embed Person type for default value
+	Name    string `yaml:",omitempty"`
+	Age     int    `yaml:",omitempty"`
+}
+defaultPerson := &Person{
+	Name: "John Smith",
+	Age:  20,
+}
+people := []*Person{
+	{
+		Person: defaultPerson, // assign default value
+		Name:   "Ken",         // override Name property
+		Age:    10,            // override Age property
+	},
+	{
+		Person: defaultPerson, // assign default value only
+	},
+}
+var doc struct {
+	Default *Person   `yaml:"default,anchor"`
+	People  []*Person `yaml:"people"`
+}
+doc.Default = defaultPerson
+doc.People = people
+bytes, err := yaml.Marshal(doc)
+if err != nil {
+	//...
+}
+fmt.Println(string(bytes))
+/*
+default: &default
+  name: John Smith
+  age: 20
+people:
+- <<: *default
+  name: Ken
+  age: 10
+- <<: *default
+*/
+4. Pretty Formatted Errors
+Error values produced during parsing have two extra features over regular error values.
+
+First, by default, they contain extra information on the location of the error from the source YAML document, to make it easier to find the error location.
+
+Second, the error messages can optionally be colorized.
+
+If you would like to control exactly how the output looks like, consider using yaml.FormatError, which accepts two boolean values to control turning these features on or off.
+
+
+
+5. Use YAMLPath
+yml := `
+store:
+  book:
+    - author: john
+      price: 10
+    - author: ken
+      price: 12
+  bicycle:
+    color: red
+    price: 19.95
+`
+path, err := yaml.PathString("$.store.book[*].author")
+if err != nil {
+  //...
+}
+var authors []string
+if err := path.Read(strings.NewReader(yml), &authors); err != nil {
+  //...
+}
+fmt.Println(authors)
+// [john ken]
+5.1 Print customized error with YAML source code
+package main
+
+import (
+  "fmt"
+
+  "github.com/goccy/go-yaml"
+)
+
+func main() {
+  yml := `
+a: 1
+b: "hello"
+`
+  var v struct {
+    A int
+    B string
+  }
+  if err := yaml.Unmarshal([]byte(yml), &v); err != nil {
+    panic(err)
+  }
+  if v.A != 2 {
+    // output error with YAML source
+    path, err := yaml.PathString("$.a")
+    if err != nil {
+      panic(err)
+    }
+    source, err := path.AnnotateSource([]byte(yml), true)
+    if err != nil {
+      panic(err)
+    }
+    fmt.Printf("a value expected 2 but actual %d:\n%s\n", v.A, string(source))
+  }
+}
+output result is the following:
+
+
+
+Tools
+ycat
+print yaml file with color
+
+ycat
+Installation
+git clone https://github.com/goccy/go-yaml.git
+cd go-yaml/cmd/ycat && go install .
+For Developers
+[!NOTE] In this project, we manage such test code under the testdata directory to avoid adding dependencies on libraries that are only needed for testing to the top go.mod file. Therefore, if you want to add test cases that use 3rd party libraries, please add the test code to the testdata directory.
+
+Looking for Sponsors
+I'm looking for sponsors this library. This library is being developed as a personal project in my spare time. If you want a quick response or problem resolution when using this library in your project, please register as a sponsor. I will cooperate as much as possible. Of course, this library is developed as an MIT license, so you can use it freely for free.
+
+License
+MIT
+
+Expand ▾
+ Documentation ¶
+Rendered for
+linux/amd64
+Index ¶
+Constants
+Variables
+func ErrUnsupportedFootPositionType(node ast.Node) error
+func ErrUnsupportedHeadPositionType(node ast.Node) error
+func ErrUnsupportedLinePositionType(node ast.Node) error
+func FormatError(e error, colored, inclSource bool) string
+func IsInvalidAliasNameError(err error) bool
+func IsInvalidAnchorNameError(err error) bool
+func IsInvalidPathError(err error) bool
+func IsInvalidPathStringError(err error) bool
+func IsInvalidQueryError(err error) bool
+func IsInvalidTokenTypeError(err error) bool
+func IsNotFoundNodeError(err error) bool
+func JSONToYAML(bytes []byte) ([]byte, error)
+func Marshal(v interface{}) ([]byte, error)
+func MarshalContext(ctx context.Context, v interface{}, opts ...EncodeOption) ([]byte, error)
+func MarshalWithOptions(v interface{}, opts ...EncodeOption) ([]byte, error)
+func NodeToValue(node ast.Node, v interface{}, opts ...DecodeOption) error
+func RegisterCustomMarshaler[T any](marshaler func(T) ([]byte, error))
+func RegisterCustomUnmarshaler[T any](unmarshaler func(*T, []byte) error)
+func Unmarshal(data []byte, v interface{}) error
+func UnmarshalContext(ctx context.Context, data []byte, v interface{}, opts ...DecodeOption) error
+func UnmarshalWithOptions(data []byte, v interface{}, opts ...DecodeOption) error
+func ValueToNode(v interface{}, opts ...EncodeOption) (ast.Node, error)
+func YAMLToJSON(bytes []byte) ([]byte, error)
+type BytesMarshaler
+type BytesMarshalerContext
+type BytesUnmarshaler
+type BytesUnmarshalerContext
+type Comment
+func FootComment(texts ...string) *Comment
+func HeadComment(texts ...string) *Comment
+func LineComment(text string) *Comment
+type CommentMap
+type CommentPosition
+func (p CommentPosition) String() string
+type DecodeOption
+func AllowDuplicateMapKey() DecodeOption
+func CommentToMap(cm CommentMap) DecodeOption
+func CustomUnmarshaler[T any](unmarshaler func(*T, []byte) error) DecodeOption
+func DisallowUnknownField() DecodeOption
+func RecursiveDir(isRecursive bool) DecodeOption
+func ReferenceDirs(dirs ...string) DecodeOption
+func ReferenceFiles(files ...string) DecodeOption
+func ReferenceReaders(readers ...io.Reader) DecodeOption
+func Strict() DecodeOption
+func UseJSONUnmarshaler() DecodeOption
+func UseOrderedMap() DecodeOption
+func Validator(v StructValidator) DecodeOption
+type Decoder
+func NewDecoder(r io.Reader, opts ...DecodeOption) *Decoder
+func (d *Decoder) Decode(v interface{}) error
+func (d *Decoder) DecodeContext(ctx context.Context, v interface{}) error
+func (d *Decoder) DecodeFromNode(node ast.Node, v interface{}) error
+func (d *Decoder) DecodeFromNodeContext(ctx context.Context, node ast.Node, v interface{}) error
+type DuplicateKeyError
+type EncodeOption
+func AutoInt() EncodeOption
+func CustomMarshaler[T any](marshaler func(T) ([]byte, error)) EncodeOption
+func Flow(isFlowStyle bool) EncodeOption
+func Indent(spaces int) EncodeOption
+func IndentSequence(indent bool) EncodeOption
+func JSON() EncodeOption
+func MarshalAnchor(callback func(*ast.AnchorNode, interface{}) error) EncodeOption
+func UseJSONMarshaler() EncodeOption
+func UseLiteralStyleIfMultiline(useLiteralStyleIfMultiline bool) EncodeOption
+func UseSingleQuote(sq bool) EncodeOption
+func WithComment(cm CommentMap) EncodeOption
+func WithSmartAnchor() EncodeOption
+type Encoder
+func NewEncoder(w io.Writer, opts ...EncodeOption) *Encoder
+func (e *Encoder) Close() error
+func (e *Encoder) Encode(v interface{}) error
+func (e *Encoder) EncodeContext(ctx context.Context, v interface{}) error
+func (e *Encoder) EncodeToNode(v interface{}) (ast.Node, error)
+func (e *Encoder) EncodeToNodeContext(ctx context.Context, v interface{}) (ast.Node, error)
+type Error
+type FieldError
+type InterfaceMarshaler
+type InterfaceMarshalerContext
+type InterfaceUnmarshaler
+type InterfaceUnmarshalerContext
+type IsZeroer
+type MapItem
+type MapSlice
+func (s MapSlice) ToMap() map[interface{}]interface{}
+type NodeUnmarshaler
+type NodeUnmarshalerContext
+type OverflowError
+type Path
+func PathString(s string) (*Path, error)
+func (p *Path) AnnotateSource(source []byte, colored bool) ([]byte, error)
+func (p *Path) Filter(target, v interface{}) error
+func (p *Path) FilterFile(f *ast.File) (ast.Node, error)
+func (p *Path) FilterNode(node ast.Node) (ast.Node, error)
+func (p *Path) MergeFromFile(dst *ast.File, src *ast.File) error
+func (p *Path) MergeFromNode(dst *ast.File, src ast.Node) error
+func (p *Path) MergeFromReader(dst *ast.File, src io.Reader) error
+func (p *Path) Read(r io.Reader, v interface{}) error
+func (p *Path) ReadNode(r io.Reader) (ast.Node, error)
+func (p *Path) ReplaceWithFile(dst *ast.File, src *ast.File) error
+func (p *Path) ReplaceWithNode(dst *ast.File, node ast.Node) error
+func (p *Path) ReplaceWithReader(dst *ast.File, src io.Reader) error
+func (p *Path) String() string
+type PathBuilder
+func (b *PathBuilder) Build() *Path
+func (b *PathBuilder) Child(name string) *PathBuilder
+func (b *PathBuilder) Index(idx uint) *PathBuilder
+func (b *PathBuilder) IndexAll() *PathBuilder
+func (b *PathBuilder) Recursive(selector string) *PathBuilder
+func (b *PathBuilder) Root() *PathBuilder
+type StructField
+type StructFieldMap
+type StructValidator
+type SyntaxError
+type TypeError
+type UnexpectedNodeTypeError
+type UnknownFieldError
+Examples ¶
+Decoder.Decode (DisallowUnknownField)
+Marshal
+Marshal (ExplicitAnchorAlias)
+Marshal (ImplicitAnchorAlias)
+Marshal (Node)
+NodeToValue
+Path.AnnotateSource
+Path.AnnotateSource (WithComment)
+PathString
+Unmarshal (JSONTags)
+Unmarshal (YAMLTags)
+Constants ¶
+View Source
+const (
+	// DefaultIndentSpaces default number of space for indent
+	DefaultIndentSpaces = 2
+)
+View Source
+const (
+	// StructTagName tag keyword for Marshal/Unmarshal
+	StructTagName = "yaml"
+)
+Variables ¶
+View Source
+var (
+	ErrInvalidQuery               = errors.New("invalid query")
+	ErrInvalidPath                = errors.New("invalid path instance")
+	ErrInvalidPathString          = errors.New("invalid path string")
+	ErrNotFoundNode               = errors.New("node not found")
+	ErrUnknownCommentPositionType = errors.New("unknown comment position type")
+	ErrInvalidCommentMapValue     = errors.New("invalid comment map value. it must be not nil value")
+	ErrDecodeRequiredPointerType  = errors.New("required pointer type value")
+	ErrExceededMaxDepth           = errors.New("exceeded max depth")
+	FormatErrorWithToken          = errors.FormatError
+)
+Functions ¶
+func ErrUnsupportedFootPositionType ¶
+added in v1.10.0
+func ErrUnsupportedFootPositionType(node ast.Node) error
+func ErrUnsupportedHeadPositionType ¶
+added in v1.9.2
+func ErrUnsupportedHeadPositionType(node ast.Node) error
+func ErrUnsupportedLinePositionType ¶
+added in v1.10.0
+func ErrUnsupportedLinePositionType(node ast.Node) error
+func FormatError ¶
+func FormatError(e error, colored, inclSource bool) string
+FormatError is a utility function that takes advantage of the metadata stored in the errors returned by this package's parser.
+
+If the second argument `colored` is true, the error message is colorized. If the third argument `inclSource` is true, the error message will contain snippets of the YAML source that was used.
+
+func IsInvalidAliasNameError ¶
+added in v1.8.7
+func IsInvalidAliasNameError(err error) bool
+IsInvalidAliasNameError whether err is ast.ErrInvalidAliasName or not.
+
+func IsInvalidAnchorNameError ¶
+added in v1.8.7
+func IsInvalidAnchorNameError(err error) bool
+IsInvalidAnchorNameError whether err is ast.ErrInvalidAnchorName or not.
+
+func IsInvalidPathError ¶
+added in v1.8.7
+func IsInvalidPathError(err error) bool
+IsInvalidPathError whether err is ErrInvalidPath or not.
+
+func IsInvalidPathStringError ¶
+added in v1.8.7
+func IsInvalidPathStringError(err error) bool
+IsInvalidPathStringError whether err is ErrInvalidPathString or not.
+
+func IsInvalidQueryError ¶
+added in v1.8.7
+func IsInvalidQueryError(err error) bool
+IsInvalidQueryError whether err is ErrInvalidQuery or not.
+
+func IsInvalidTokenTypeError ¶
+added in v1.8.7
+func IsInvalidTokenTypeError(err error) bool
+IsInvalidTokenTypeError whether err is ast.ErrInvalidTokenType or not.
+
+func IsNotFoundNodeError ¶
+added in v1.8.7
+func IsNotFoundNodeError(err error) bool
+IsNotFoundNodeError whether err is ErrNotFoundNode or not.
+
+func JSONToYAML ¶
+added in v1.8.3
+func JSONToYAML(bytes []byte) ([]byte, error)
+JSONToYAML convert JSON bytes to YAML.
+
+func Marshal ¶
+func Marshal(v interface{}) ([]byte, error)
+Marshal serializes the value provided into a YAML document. The structure of the generated document will reflect the structure of the value itself. Maps and pointers (to struct, string, int, etc) are accepted as the in value.
+
+Struct fields are only marshaled if they are exported (have an upper case first letter), and are marshaled using the field name lowercased as the default key. Custom keys may be defined via the "yaml" name in the field tag: the content preceding the first comma is used as the key, and the following comma-separated options are used to tweak the marshaling process. Conflicting names result in a runtime error.
+
+The field tag format accepted is:
+
+`(...) yaml:"[<key>][,<flag1>[,<flag2>]]" (...)`
+The following flags are currently supported:
+
+omitempty    Only include the field if it's not set to the zero
+             value for the type or to empty slices or maps.
+             Zero valued structs will be omitted if all their public
+             fields are zero, unless they implement an IsZero
+             method (see the IsZeroer interface type), in which
+             case the field will be included if that method returns true.
+
+flow         Marshal using a flow style (useful for structs,
+             sequences and maps).
+
+inline       Inline the field, which must be a struct or a map,
+             causing all of its fields or keys to be processed as if
+             they were part of the outer struct. For maps, keys must
+             not conflict with the yaml keys of other struct fields.
+
+anchor       Marshal with anchor. If want to define anchor name explicitly, use anchor=name style.
+             Otherwise, if used 'anchor' name only, used the field name lowercased as the anchor name
+
+alias        Marshal with alias. If want to define alias name explicitly, use alias=name style.
+             Otherwise, If omitted alias name and the field type is pointer type,
+             assigned anchor name automatically from same pointer address.
+In addition, if the key is "-", the field is ignored.
+
+For example:
+
+type T struct {
+    F int `yaml:"a,omitempty"`
+    B int
+}
+yaml.Marshal(&T{B: 2}) // Returns "b: 2\n"
+yaml.Marshal(&T{F: 1}) // Returns "a: 1\nb: 0\n"
+Example ¶
+Example (ExplicitAnchorAlias) ¶
+Example (ImplicitAnchorAlias) ¶
+Example (Node) ¶
+func MarshalContext ¶
+added in v1.9.0
+func MarshalContext(ctx context.Context, v interface{}, opts ...EncodeOption) ([]byte, error)
+MarshalContext serializes the value provided into a YAML document with context.Context and EncodeOptions.
+
+func MarshalWithOptions ¶
+added in v1.8.0
+func MarshalWithOptions(v interface{}, opts ...EncodeOption) ([]byte, error)
+MarshalWithOptions serializes the value provided into a YAML document with EncodeOptions.
+
+func NodeToValue ¶
+added in v1.9.0
+func NodeToValue(node ast.Node, v interface{}, opts ...DecodeOption) error
+NodeToValue converts node to the value pointed to by v.
+
+Example ¶
+func RegisterCustomMarshaler ¶
+added in v1.11.0
+func RegisterCustomMarshaler[T any](marshaler func(T) ([]byte, error))
+RegisterCustomMarshaler overrides any encoding process for the type specified in generics. If you want to switch the behavior for each encoder, use `CustomMarshaler` defined as EncodeOption.
+
+NOTE: If type T implements MarshalYAML for pointer receiver, the type specified in RegisterCustomMarshaler must be *T. If RegisterCustomMarshaler and CustomMarshaler of EncodeOption are specified for the same type, the CustomMarshaler specified in EncodeOption takes precedence.
+
+func RegisterCustomUnmarshaler ¶
+added in v1.11.0
+func RegisterCustomUnmarshaler[T any](unmarshaler func(*T, []byte) error)
+RegisterCustomUnmarshaler overrides any decoding process for the type specified in generics. If you want to switch the behavior for each decoder, use `CustomUnmarshaler` defined as DecodeOption.
+
+NOTE: If RegisterCustomUnmarshaler and CustomUnmarshaler of DecodeOption are specified for the same type, the CustomUnmarshaler specified in DecodeOption takes precedence.
+
+func Unmarshal ¶
+func Unmarshal(data []byte, v interface{}) error
+Unmarshal decodes the first document found within the in byte slice and assigns decoded values into the out value.
+
+Struct fields are only unmarshalled if they are exported (have an upper case first letter), and are unmarshalled using the field name lowercased as the default key. Custom keys may be defined via the "yaml" name in the field tag: the content preceding the first comma is used as the key, and the following comma-separated options are used to tweak the marshaling process (see Marshal). Conflicting names result in a runtime error.
+
+For example:
+
+type T struct {
+    F int `yaml:"a,omitempty"`
+    B int
+}
+var t T
+yaml.Unmarshal([]byte("a: 1\nb: 2"), &t)
+See the documentation of Marshal for the format of tags and a list of supported tag options.
+
+Example (JSONTags) ¶
+Example (YAMLTags) ¶
+func UnmarshalContext ¶
+added in v1.9.0
+func UnmarshalContext(ctx context.Context, data []byte, v interface{}, opts ...DecodeOption) error
+UnmarshalContext decodes with context.Context and DecodeOptions.
+
+func UnmarshalWithOptions ¶
+added in v1.8.0
+func UnmarshalWithOptions(data []byte, v interface{}, opts ...DecodeOption) error
+UnmarshalWithOptions decodes with DecodeOptions the first document found within the in byte slice and assigns decoded values into the out value.
+
+func ValueToNode ¶
+added in v1.8.0
+func ValueToNode(v interface{}, opts ...EncodeOption) (ast.Node, error)
+ValueToNode convert from value to ast.Node.
+
+func YAMLToJSON ¶
+added in v1.8.3
+func YAMLToJSON(bytes []byte) ([]byte, error)
+YAMLToJSON convert YAML bytes to JSON.
+
+Types ¶
+type BytesMarshaler ¶
+type BytesMarshaler interface {
+	MarshalYAML() ([]byte, error)
+}
+BytesMarshaler interface may be implemented by types to customize their behavior when being marshaled into a YAML document. The returned value is marshaled in place of the original value implementing Marshaler.
+
+If an error is returned by MarshalYAML, the marshaling procedure stops and returns with the provided error.
+
+type BytesMarshalerContext ¶
+added in v1.8.4
+type BytesMarshalerContext interface {
+	MarshalYAML(context.Context) ([]byte, error)
+}
+BytesMarshalerContext interface use BytesMarshaler with context.Context.
+
+type BytesUnmarshaler ¶
+type BytesUnmarshaler interface {
+	UnmarshalYAML([]byte) error
+}
+BytesUnmarshaler interface may be implemented by types to customize their behavior when being unmarshaled from a YAML document.
+
+type BytesUnmarshalerContext ¶
+added in v1.8.4
+type BytesUnmarshalerContext interface {
+	UnmarshalYAML(context.Context, []byte) error
+}
+BytesUnmarshalerContext interface use BytesUnmarshaler with context.Context.
+
+type Comment ¶
+added in v1.9.2
+type Comment struct {
+	Texts    []string
+	Position CommentPosition
+}
+Comment raw data for comment.
+
+func FootComment ¶
+added in v1.10.0
+func FootComment(texts ...string) *Comment
+FootComment create a multiline comment for CommentMap.
+
+func HeadComment ¶
+added in v1.9.2
+func HeadComment(texts ...string) *Comment
+HeadComment create a multiline comment for CommentMap.
+
+func LineComment ¶
+added in v1.9.2
+func LineComment(text string) *Comment
+LineComment create a one-line comment for CommentMap.
+
+type CommentMap ¶
+added in v1.9.2
+type CommentMap map[string][]*Comment
+CommentMap map of the position of the comment and the comment information.
+
+type CommentPosition ¶
+added in v1.9.2
+type CommentPosition int
+CommentPosition type of the position for comment.
+
+const (
+	CommentHeadPosition CommentPosition = CommentPosition(iota)
+	CommentLinePosition
+	CommentFootPosition
+)
+func (CommentPosition) String ¶
+added in v1.9.2
+func (p CommentPosition) String() string
+type DecodeOption ¶
+type DecodeOption func(d *Decoder) error
+DecodeOption functional option type for Decoder
+
+func AllowDuplicateMapKey ¶
+added in v1.14.0
+func AllowDuplicateMapKey() DecodeOption
+AllowDuplicateMapKey ignore syntax error when mapping keys that are duplicates.
+
+func CommentToMap ¶
+added in v1.9.3
+func CommentToMap(cm CommentMap) DecodeOption
+CommentToMap apply the position and content of comments in a YAML document to a CommentMap.
+
+func CustomUnmarshaler ¶
+added in v1.11.0
+func CustomUnmarshaler[T any](unmarshaler func(*T, []byte) error) DecodeOption
+CustomUnmarshaler overrides any decoding process for the type specified in generics.
+
+NOTE: If RegisterCustomUnmarshaler and CustomUnmarshaler of DecodeOption are specified for the same type, the CustomUnmarshaler specified in DecodeOption takes precedence.
+
+func DisallowUnknownField ¶
+added in v1.1.3
+func DisallowUnknownField() DecodeOption
+DisallowUnknownField causes the Decoder to return an error when the destination is a struct and the input contains object keys which do not match any non-ignored, exported fields in the destination.
+
+func RecursiveDir ¶
+func RecursiveDir(isRecursive bool) DecodeOption
+RecursiveDir search yaml file recursively from passed dirs by ReferenceDirs option
+
+func ReferenceDirs ¶
+func ReferenceDirs(dirs ...string) DecodeOption
+ReferenceDirs pass to Decoder that reference to anchor defined by files under the passed dirs
+
+func ReferenceFiles ¶
+func ReferenceFiles(files ...string) DecodeOption
+ReferenceFiles pass to Decoder that reference to anchor defined by passed files
+
+func ReferenceReaders ¶
+func ReferenceReaders(readers ...io.Reader) DecodeOption
+ReferenceReaders pass to Decoder that reference to anchor defined by passed readers
+
+func Strict ¶
+added in v1.6.1
+func Strict() DecodeOption
+Strict enable DisallowUnknownField
+
+func UseJSONUnmarshaler ¶
+added in v1.8.3
+func UseJSONUnmarshaler() DecodeOption
+UseJSONUnmarshaler if neither `BytesUnmarshaler` nor `InterfaceUnmarshaler` is implemented and `UnmashalJSON([]byte)error` is implemented, convert the argument from `YAML` to `JSON` and then call it.
+
+func UseOrderedMap ¶
+added in v1.5.0
+func UseOrderedMap() DecodeOption
+UseOrderedMap can be interpreted as a map, and uses MapSlice ( ordered map ) aggressively if there is no type specification
+
+func Validator ¶
+func Validator(v StructValidator) DecodeOption
+Validator set StructValidator instance to Decoder
+
+type Decoder ¶
+type Decoder struct {
+	// contains filtered or unexported fields
+}
+Decoder reads and decodes YAML values from an input stream.
+
+func NewDecoder ¶
+func NewDecoder(r io.Reader, opts ...DecodeOption) *Decoder
+NewDecoder returns a new decoder that reads from r.
+
+func (*Decoder) Decode ¶
+func (d *Decoder) Decode(v interface{}) error
+Decode reads the next YAML-encoded value from its input and stores it in the value pointed to by v.
+
+See the documentation for Unmarshal for details about the conversion of YAML into a Go value.
+
+Example (DisallowUnknownField) ¶
+func (*Decoder) DecodeContext ¶
+added in v1.8.4
+func (d *Decoder) DecodeContext(ctx context.Context, v interface{}) error
+DecodeContext reads the next YAML-encoded value from its input and stores it in the value pointed to by v with context.Context.
+
+func (*Decoder) DecodeFromNode ¶
+added in v1.9.0
+func (d *Decoder) DecodeFromNode(node ast.Node, v interface{}) error
+DecodeFromNode decodes node into the value pointed to by v.
+
+func (*Decoder) DecodeFromNodeContext ¶
+added in v1.9.0
+func (d *Decoder) DecodeFromNodeContext(ctx context.Context, node ast.Node, v interface{}) error
+DecodeFromNodeContext decodes node into the value pointed to by v with context.Context.
+
+type DuplicateKeyError ¶
+added in v1.14.1
+type DuplicateKeyError = errors.DuplicateKeyError
+type EncodeOption ¶
+type EncodeOption func(e *Encoder) error
+EncodeOption functional option type for Encoder
+
+func AutoInt ¶
+added in v1.16.0
+func AutoInt() EncodeOption
+AutoInt automatically converts floating-point numbers to integers when the fractional part is zero. For example, a value of 1.0 will be encoded as 1.
+
+func CustomMarshaler ¶
+added in v1.11.0
+func CustomMarshaler[T any](marshaler func(T) ([]byte, error)) EncodeOption
+CustomMarshaler overrides any encoding process for the type specified in generics.
+
+NOTE: If type T implements MarshalYAML for pointer receiver, the type specified in CustomMarshaler must be *T. If RegisterCustomMarshaler and CustomMarshaler of EncodeOption are specified for the same type, the CustomMarshaler specified in EncodeOption takes precedence.
+
+func Flow ¶
+func Flow(isFlowStyle bool) EncodeOption
+Flow encoding by flow style
+
+func Indent ¶
+func Indent(spaces int) EncodeOption
+Indent change indent number
+
+func IndentSequence ¶
+added in v1.8.10
+func IndentSequence(indent bool) EncodeOption
+IndentSequence causes sequence values to be indented the same value as Indent
+
+func JSON ¶
+added in v1.6.3
+func JSON() EncodeOption
+JSON encode in JSON format
+
+func MarshalAnchor ¶
+added in v1.1.9
+func MarshalAnchor(callback func(*ast.AnchorNode, interface{}) error) EncodeOption
+MarshalAnchor call back if encoder find an anchor during encoding
+
+func UseJSONMarshaler ¶
+added in v1.8.3
+func UseJSONMarshaler() EncodeOption
+UseJSONMarshaler if neither `BytesMarshaler` nor `InterfaceMarshaler` nor `encoding.TextMarshaler` is implemented and `MarshalJSON()([]byte, error)` is implemented, call `MarshalJSON` to convert the returned `JSON` to `YAML` for processing.
+
+func UseLiteralStyleIfMultiline ¶
+added in v1.8.5
+func UseLiteralStyleIfMultiline(useLiteralStyleIfMultiline bool) EncodeOption
+UseLiteralStyleIfMultiline causes encoding multiline strings with a literal syntax, no matter what characters they include
+
+func UseSingleQuote ¶
+added in v1.9.5
+func UseSingleQuote(sq bool) EncodeOption
+UseSingleQuote determines if single or double quotes should be preferred for strings.
+
+func WithComment ¶
+added in v1.9.2
+func WithComment(cm CommentMap) EncodeOption
+WithComment add a comment using the location and text information given in the CommentMap.
+
+func WithSmartAnchor ¶
+added in v1.16.0
+func WithSmartAnchor() EncodeOption
+WithSmartAnchor when multiple map values share the same pointer, an anchor is automatically assigned to the first occurrence, and aliases are used for subsequent elements. The map key name is used as the anchor name by default. If key names conflict, a suffix is automatically added to avoid collisions. This is an experimental feature and cannot be used simultaneously with anchor tags.
+
+type Encoder ¶
+type Encoder struct {
+	// contains filtered or unexported fields
+}
+Encoder writes YAML values to an output stream.
+
+func NewEncoder ¶
+func NewEncoder(w io.Writer, opts ...EncodeOption) *Encoder
+NewEncoder returns a new encoder that writes to w. The Encoder should be closed after use to flush all data to w.
+
+func (*Encoder) Close ¶
+func (e *Encoder) Close() error
+Close closes the encoder by writing any remaining data. It does not write a stream terminating string "...".
+
+func (*Encoder) Encode ¶
+func (e *Encoder) Encode(v interface{}) error
+Encode writes the YAML encoding of v to the stream. If multiple items are encoded to the stream, the second and subsequent document will be preceded with a "---" document separator, but the first will not.
+
+See the documentation for Marshal for details about the conversion of Go values to YAML.
+
+func (*Encoder) EncodeContext ¶
+added in v1.8.4
+func (e *Encoder) EncodeContext(ctx context.Context, v interface{}) error
+EncodeContext writes the YAML encoding of v to the stream with context.Context.
+
+func (*Encoder) EncodeToNode ¶
+added in v1.8.0
+func (e *Encoder) EncodeToNode(v interface{}) (ast.Node, error)
+EncodeToNode convert v to ast.Node.
+
+func (*Encoder) EncodeToNodeContext ¶
+added in v1.8.4
+func (e *Encoder) EncodeToNodeContext(ctx context.Context, v interface{}) (ast.Node, error)
+EncodeToNodeContext convert v to ast.Node with context.Context.
+
+type Error ¶
+added in v1.17.0
+type Error = errors.Error
+type FieldError ¶
+type FieldError interface {
+	StructField() string
+}
+FieldError need to implement StructField method only ( see https://pkg.go.dev/github.com/go-playground/validator/v10#FieldError )
+
+type InterfaceMarshaler ¶
+type InterfaceMarshaler interface {
+	MarshalYAML() (interface{}, error)
+}
+InterfaceMarshaler interface has MarshalYAML compatible with github.com/go-yaml/yaml package.
+
+type InterfaceMarshalerContext ¶
+added in v1.8.4
+type InterfaceMarshalerContext interface {
+	MarshalYAML(context.Context) (interface{}, error)
+}
+InterfaceMarshalerContext interface use InterfaceMarshaler with context.Context.
+
+type InterfaceUnmarshaler ¶
+type InterfaceUnmarshaler interface {
+	UnmarshalYAML(func(interface{}) error) error
+}
+InterfaceUnmarshaler interface has UnmarshalYAML compatible with github.com/go-yaml/yaml package.
+
+type InterfaceUnmarshalerContext ¶
+added in v1.8.4
+type InterfaceUnmarshalerContext interface {
+	UnmarshalYAML(context.Context, func(interface{}) error) error
+}
+InterfaceUnmarshalerContext interface use InterfaceUnmarshaler with context.Context.
+
+type IsZeroer ¶
+type IsZeroer interface {
+	IsZero() bool
+}
+IsZeroer is used to check whether an object is zero to determine whether it should be omitted when marshaling with the omitempty flag. One notable implementation is time.Time.
+
+type MapItem ¶
+type MapItem struct {
+	Key, Value interface{}
+}
+MapItem is an item in a MapSlice.
+
+type MapSlice ¶
+type MapSlice []MapItem
+MapSlice encodes and decodes as a YAML map. The order of keys is preserved when encoding and decoding.
+
+func (MapSlice) ToMap ¶
+added in v1.8.0
+func (s MapSlice) ToMap() map[interface{}]interface{}
+ToMap convert to map[interface{}]interface{}.
+
+type NodeUnmarshaler ¶
+added in v1.17.0
+type NodeUnmarshaler interface {
+	UnmarshalYAML(ast.Node) error
+}
+NodeUnmarshaler interface is similar to BytesUnmarshaler but provide related AST node instead of raw YAML source.
+
+type NodeUnmarshalerContext ¶
+added in v1.17.0
+type NodeUnmarshalerContext interface {
+	UnmarshalYAML(context.Context, ast.Node) error
+}
+NodeUnmarshalerContext interface is similar to BytesUnmarshaler but provide related AST node instead of raw YAML source.
+
+type OverflowError ¶
+added in v1.14.1
+type OverflowError = errors.OverflowError
+type Path ¶
+added in v1.7.0
+type Path struct {
+	// contains filtered or unexported fields
+}
+Path represent YAMLPath ( like a JSONPath ).
+
+func PathString ¶
+added in v1.7.0
+func PathString(s string) (*Path, error)
+PathString create Path from string
+
+YAMLPath rule $ : the root object/element . : child operator .. : recursive descent [num] : object/element of array by number [*] : all objects/elements for array.
+
+If you want to use reserved characters such as `.` and `*` as a key name, enclose them in single quotation as follows ( $.foo.'bar.baz-*'.hoge ). If you want to use a single quote with reserved characters, escape it with `\` ( $.foo.'bar.baz\'s value'.hoge ).
+
+Example ¶
+func (*Path) AnnotateSource ¶
+added in v1.8.0
+func (p *Path) AnnotateSource(source []byte, colored bool) ([]byte, error)
+AnnotateSource add annotation to passed source ( see section 5.1 in README.md ).
+
+Example ¶
+Example (WithComment) ¶
+func (*Path) Filter ¶
+added in v1.7.0
+func (p *Path) Filter(target, v interface{}) error
+Filter filter from target by YAMLPath and set it to v.
+
+func (*Path) FilterFile ¶
+added in v1.7.0
+func (p *Path) FilterFile(f *ast.File) (ast.Node, error)
+FilterFile filter from ast.File by YAMLPath.
+
+func (*Path) FilterNode ¶
+added in v1.7.0
+func (p *Path) FilterNode(node ast.Node) (ast.Node, error)
+FilterNode filter from node by YAMLPath.
+
+func (*Path) MergeFromFile ¶
+added in v1.8.0
+func (p *Path) MergeFromFile(dst *ast.File, src *ast.File) error
+MergeFromFile merge ast.File into ast.File.
+
+func (*Path) MergeFromNode ¶
+added in v1.8.0
+func (p *Path) MergeFromNode(dst *ast.File, src ast.Node) error
+MergeFromNode merge ast.Node into ast.File.
+
+func (*Path) MergeFromReader ¶
+added in v1.8.0
+func (p *Path) MergeFromReader(dst *ast.File, src io.Reader) error
+MergeFromReader merge YAML text into ast.File.
+
+func (*Path) Read ¶
+added in v1.7.0
+func (p *Path) Read(r io.Reader, v interface{}) error
+Read decode from r and set extracted value by YAMLPath to v.
+
+func (*Path) ReadNode ¶
+added in v1.7.0
+func (p *Path) ReadNode(r io.Reader) (ast.Node, error)
+ReadNode create AST from r and extract node by YAMLPath.
+
+func (*Path) ReplaceWithFile ¶
+added in v1.8.0
+func (p *Path) ReplaceWithFile(dst *ast.File, src *ast.File) error
+ReplaceWithFile replace ast.File with ast.File.
+
+func (*Path) ReplaceWithNode ¶
+added in v1.8.0
+func (p *Path) ReplaceWithNode(dst *ast.File, node ast.Node) error
+ReplaceNode replace ast.File with ast.Node.
+
+func (*Path) ReplaceWithReader ¶
+added in v1.8.0
+func (p *Path) ReplaceWithReader(dst *ast.File, src io.Reader) error
+ReplaceWithReader replace ast.File with io.Reader.
+
+func (*Path) String ¶
+added in v1.7.0
+func (p *Path) String() string
+String path to text.
+
+type PathBuilder ¶
+added in v1.7.0
+type PathBuilder struct {
+	// contains filtered or unexported fields
+}
+PathBuilder represent builder for YAMLPath.
+
+func (*PathBuilder) Build ¶
+added in v1.7.0
+func (b *PathBuilder) Build() *Path
+Build build YAMLPath.
+
+func (*PathBuilder) Child ¶
+added in v1.7.0
+func (b *PathBuilder) Child(name string) *PathBuilder
+Child add '.name' to current path.
+
+func (*PathBuilder) Index ¶
+added in v1.7.0
+func (b *PathBuilder) Index(idx uint) *PathBuilder
+Index add '[idx]' to current path.
+
+func (*PathBuilder) IndexAll ¶
+added in v1.7.0
+func (b *PathBuilder) IndexAll() *PathBuilder
+IndexAll add '[*]' to current path.
+
+func (*PathBuilder) Recursive ¶
+added in v1.7.0
+func (b *PathBuilder) Recursive(selector string) *PathBuilder
+Recursive add '..selector' to current path.
+
+func (*PathBuilder) Root ¶
+added in v1.7.0
+func (b *PathBuilder) Root() *PathBuilder
+Root add '$' to current path.
+
+type StructField ¶
+type StructField struct {
+	FieldName    string
+	RenderName   string
+	AnchorName   string
+	AliasName    string
+	IsAutoAnchor bool
+	IsAutoAlias  bool
+	IsOmitEmpty  bool
+	IsFlow       bool
+	IsInline     bool
+}
+StructField information for each the field in structure
+
+type StructFieldMap ¶
+type StructFieldMap map[string]*StructField
+type StructValidator ¶
+type StructValidator interface {
+	Struct(interface{}) error
+}
+StructValidator need to implement Struct method only ( see https://pkg.go.dev/github.com/go-playground/validator/v10#Validate.Struct )
+
+type SyntaxError ¶
+added in v1.14.1
+type SyntaxError = errors.SyntaxError
+type TypeError ¶
+added in v1.14.1
+type TypeError = errors.TypeError
+type UnexpectedNodeTypeError ¶
+added in v1.14.1
+type UnexpectedNodeTypeError = errors.UnexpectedNodeTypeError
+type UnknownFieldError ¶
+added in v1.14.1
+type UnknownFieldError = errors.UnknownFieldError
+ Source Files ¶
+View all Source files
+context.go
+decode.go
+encode.go
+error.go
+option.go
+path.go
+stdlib_quote.go
+struct.go
+validate.go
+yaml.go
+ Directories ¶
+Show internal
+Expand all
+ast
+cmd
+lexer
+parser
+printer
+This source inspired by https://github.com/fatih/color.
+scanner
+token
+

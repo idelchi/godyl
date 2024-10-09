@@ -2,6 +2,7 @@ package tools
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -11,12 +12,20 @@ type Tools []Tool
 
 func (t *Tools) Load(cfg string) (err error) {
 	if !strings.HasSuffix(cfg, ".yml") && !strings.HasSuffix(cfg, ".yaml") {
-		*t = Tools{
-			Tool{
-				Name: cfg,
-			},
+		if strings.HasPrefix(cfg, "http") {
+			*t = Tools{
+				Tool{
+					Name: filepath.Base(cfg),
+					Path: cfg,
+				},
+			}
+		} else {
+			*t = Tools{
+				Tool{
+					Name: cfg,
+				},
+			}
 		}
-
 		return nil
 	}
 

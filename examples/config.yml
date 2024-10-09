@@ -2,7 +2,6 @@ defaults:
   output: ~/.local/bin
   fallbacks:
     - go
-    - rust
   source:
     type: github
   hints:

@@ -1,0 +1,50 @@
+version: "3"
+
+# .env file variables are available here, with the exception of `includes`,
+# where externally defined environment variables and regular variables are available.
+# It's therefore recommended to also source the .env file before running.
+dotenv: [".env"]
+
+vars:
+  # This environment variable must exist (i.e it's not enough that it's set in the .env file)
+  DEVENV: $DEVENV
+
+env:
+  CSPELL_CONFIG: ./settings/cspell.yaml
+
+includes:
+  aux: "{{.DEVENV}}/taskfiles/Taskfile.aux.yml"
+  git: "{{.DEVENV}}/taskfiles/Taskfile.git.yml"
+  lint: "{{.DEVENV}}/taskfiles/Taskfile.lint.yml"
+  format: "{{.DEVENV}}/taskfiles/Taskfile.format.yml"
+  go:
+    taskfile: "{{.DEVENV}}/taskfiles/Taskfile.go.yml"
+    vars:
+      COVERAGE: 0.0%
+
+silent: true
+
+output: prefixed
+
+tasks:
+  sanity: |
+    go build -o . ./...
+    test "$(./go-match --include "*.txt" file1.txt file2.txt file3.md)" = '["file1.txt","file2.txt"]'
+    test "$(./go-match --exclude "*.md" file1.txt file2.txt file3.md)" = '["file1.txt","file2.txt"]'
+    test "$(./go-match --include "*.txt" --exclude "file2*" file1.txt file2.txt file3.md)" = '["file1.txt"]'
+    test "$(./go-match --include "**/*.txt" dir/file1.txt file2.txt file3.md)" = '["dir/file1.txt","file2.txt"]'
+    test "$(./go-match --exclude "**/*.txt" dir/file1.txt file2.txt file3.md)" = '["file3.md"]'
+    test "$(./go-match --include "*.txt" --include "*.md" file1.txt file2.txt file3.md)" = '["file1.txt","file2.txt","file3.md"]'
+    test "$(./go-match --exclude "*.txt" --exclude "*.md" file1.txt file2.txt file3.md file4.js)" = '["file4.js"]'
+    test "$(./go-match --include "file[1-2].txt" file1.txt file2.txt file3.txt)" = '["file1.txt","file2.txt"]'
+    test "$(./go-match --exclude "file[1-2].txt" file1.txt file2.txt file3.txt)" = '["file3.txt"]'
+    test "$(./go-match --include "**/test_*.py" src/test_a.py src/test_b.py src/prod.py)" = '["src/test_a.py","src/test_b.py"]'
+    test "$(./go-match --exclude "**/test_*.py" src/test_a.py src/test_b.py src/prod.py)" = '["src/prod.py"]'
+    test "$(./go-match --include "*.{js,ts}" file1.js file2.ts file3.py)" = '["file1.js","file2.ts"]'
+    test "$(./go-match --exclude "*.{js,ts}" file1.js file2.ts file3.py)" = '["file3.py"]'
+    test "$(./go-match --include "dir/**/*.txt" dir/file1.txt dir/subdir/file2.txt file3.txt)" = '["dir/file1.txt","dir/subdir/file2.txt"]'
+    test "$(./go-match --exclude "dir/**/*.txt" dir/file1.txt dir/subdir/file2.txt file3.txt)" = '["file3.txt"]'
+    test "$(./go-match --include "**" --exclude "**/*.log" file1.txt file2.log file3.js)" = '["file1.txt","file3.js"]'
+    test "$(./go-match --include "file?.txt" file1.txt file10.txt file.txt)" = '["file1.txt"]'
+    test "$(./go-match --include "**/*" --exclude "**/__pycache__/**" src/file.py src/__pycache__/cache.pyc src/test.py)" = '["src/file.py","src/test.py"]'
+    test "$(./go-match --include "{src,test}/**/*.js" src/file.js test/test.js docs/doc.js)" = '["src/file.js","test/test.js"]'

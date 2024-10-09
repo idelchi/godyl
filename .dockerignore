@@ -1,0 +1,8 @@
+# Ignore everything
+*
+
+# But not .go files, go.mod, and go.sum
+!**/*.go
+!go.mod
+!go.sum
+!.bashrc

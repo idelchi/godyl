@@ -1,0 +1,10 @@
+defaults:
+  output: ~/.local/bin
+  fallbacks:
+    - go
+    - rust
+  source:
+    type: github
+  hints:
+    - pattern: "{{ .Exe }}"
+      weight: 1

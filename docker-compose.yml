@@ -1,0 +1,69 @@
+services:
+  build:
+    build:
+      args:
+        - GO_TMANAGER_VERSION=local
+      target: build
+    pull_policy: if_not_present
+    image: idelchi/godyl:dev
+    container_name: godyl
+    hostname: godyl
+    volumes:
+      - .:/home/user/ws
+    extra_hosts:
+      - host:host-gateway
+    working_dir: /home/user/ws
+    networks:
+      - godyl-network
+
+  bookworm:
+    extends: build
+    build:
+      args:
+        - GO_TMANAGER_VERSION=local
+        - DISTRO=bookworm
+
+  bookwormf:
+    extends: build
+    build:
+      args:
+        - GO_TMANAGER_VERSION=local
+        - DISTRO=bookworm
+      target: final
+
+  alpine:
+    extends: build
+    build:
+      dockerfile: Dockerfile.alpine
+      args:
+        - GO_TMANAGER_VERSION=local
+        - DISTRO=alpine
+
+  bookwormarm64:
+    extends: build
+    build:
+      args:
+        - GO_TMANAGER_VERSION=local
+        - DISTRO=bookworm
+    platform: linux/arm64/v8
+
+  bookwormv7:
+    extends: build
+    build:
+      args:
+        - GO_TMANAGER_VERSION=local
+        - DISTRO=bookworm
+    platform: linux/arm/v7
+
+  bookwormv6:
+    extends: build
+    build:
+      args:
+        - GO_TMANAGER_VERSION=local
+        - DISTRO=bookworm
+    platform: linux/arm/6
+
+networks:
+  godyl-network:
+    name: godyl-network
+    driver: bridge

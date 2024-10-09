@@ -1,0 +1,22 @@
+defaults:
+  output: ~/.local/bin
+  fallbacks:
+    - go
+    - rust
+  source:
+    type: github
+  hints:
+    - pattern: "{{ .Exe }}"
+      weight: 1
+
+    # - pattern: static
+    #   weight: 1
+
+    # - pattern: >-
+    #     .*{{ if eq .Platform.OS "linux" }}
+    #         \.tar\.gz
+    #       {{ else }}
+    #         \.zip
+    #       {{ end }}$
+    #   weight: 1
+    #   regex: true

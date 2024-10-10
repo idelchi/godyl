@@ -8,27 +8,33 @@ import (
 	"regexp"
 )
 
-// Executable consists of a full path to a file and its version-
+// Executable consists of a full path to a file and its version.
+// The version can be attempted to parse by using a `Version` type.
 type Executable struct {
 	Path    string
 	Version string
 }
 
+// New creates a new Executable with the given directory and path.
+// The path is joined with the directory to create the full path.
 func New(dir string, path string) Executable {
 	return Executable{Path: filepath.Join(dir, path)}
 }
 
+// Name returns the base name of the executable.
 func (e Executable) Name() string {
 	return filepath.Base(e.Path)
 }
 
+// Dir returns the directory of the executable.
 func (e Executable) Dir() string {
 	return filepath.Dir(e.Path)
 }
 
+// CriteriaFunc is a function that takes an Executable and returns a boolean and an error.
 type CriteriaFunc func(Executable) (bool, error)
 
-// Find searches for a file in the given directory that matches all provided criteria
+// Find searches for a file in the given directory that matches all provided criteria.
 func (e Executable) Find(dir string, criteria ...CriteriaFunc) (Executable, error) {
 	var filePath string
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
@@ -69,6 +75,7 @@ func (e Executable) Find(dir string, criteria ...CriteriaFunc) (Executable, erro
 	return Executable{Path: filePath}, nil
 }
 
+// IsExecutable checks if the file is executable.
 func IsExecutable(file Executable) (bool, error) {
 	info, err := os.Stat(file.Path)
 	if err != nil {
@@ -78,6 +85,7 @@ func IsExecutable(file Executable) (bool, error) {
 	return info.Mode()&0o111 != 0, nil
 }
 
+// Copy copies the file to the destination path and sets the executable permission.
 func (e Executable) Copy(destination string) error {
 	// Open the source file
 	sourceFile, err := os.Open(e.Path)
@@ -108,6 +116,7 @@ func (e Executable) Copy(destination string) error {
 	return nil
 }
 
+// Exists checks if the file exists.
 func (e Executable) Exists() bool {
 	info, err := os.Stat(e.Path)
 	if err != nil {

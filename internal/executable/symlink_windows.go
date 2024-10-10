@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// Symlink creates symlinks for the executable.
 func (e Executable) Symlink(symlinks []string) error {
 	for _, symlink := range symlinks {
 		if symlink == e.Path {

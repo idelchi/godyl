@@ -5,8 +5,10 @@ import (
 	"path/filepath"
 )
 
+// Executables is a list of Executable.
 type Executables []Executable
 
+// FromStrings creates a list of Executable from a list of strings.
 func (Executables) FromStrings(dir string, executables ...string) Executables {
 	e := Executables{}
 
@@ -22,6 +24,8 @@ func (Executables) FromStrings(dir string, executables ...string) Executables {
 	return e
 }
 
+// Find searches for any of the executables in the given directory.
+// The first executable found is returned.
 func (es Executables) Find(dir string) (Executable, error) {
 	for _, e := range es {
 		executable, err := e.Find(dir)
@@ -32,6 +36,7 @@ func (es Executables) Find(dir string) (Executable, error) {
 	return Executable{}, fmt.Errorf("executable not found in %q", dir)
 }
 
+// Paths returns a list of paths for all executables.
 func (es Executables) Paths() (paths []string) {
 	for _, e := range es {
 		paths = append(paths, e.Path)
@@ -39,6 +44,7 @@ func (es Executables) Paths() (paths []string) {
 	return paths
 }
 
+// SymlinksFor creates symlinks for all executables.
 func (es Executables) SymlinksFor(exe Executable) error {
 	return exe.Symlink(es.Paths())
 }

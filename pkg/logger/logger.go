@@ -59,8 +59,8 @@ func New(level Level) *Logger {
 		level:  level,
 		output: os.Stdout,
 		colors: map[Level]*color.Color{
-			DEBUG: color.New(color.FgGreen),
-			INFO:  color.New(color.FgBlue),
+			DEBUG: color.New(color.FgBlue),
+			INFO:  color.New(color.FgGreen),
 			WARN:  color.New(color.FgYellow),
 			ERROR: color.New(color.FgRed),
 		},

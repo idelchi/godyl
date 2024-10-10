@@ -33,7 +33,7 @@ func (c Command) Shell() (string, error) {
 	// Execute the parsed command
 	err = runner.Run(context.TODO(), file)
 	if err != nil {
-		return "", fmt.Errorf("shell: %w: stderr: %s", err, stderrBuf.String())
+		return "", fmt.Errorf("running shell command: %w: stdout: %s: stderr: %s", err, stdoutBuf.String(), stderrBuf.String())
 	}
 
 	// Return the captured output

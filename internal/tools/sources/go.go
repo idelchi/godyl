@@ -42,7 +42,7 @@ func (g *Go) Path(_ string, _ []string, version string, _ match.Requirements) er
 
 var mu sync.Mutex
 
-func (g Go) Install(d InstallData) (output string, err error) {
+func (g *Go) Install(d InstallData) (output string, err error) {
 	mu.Lock()
 	binary, err := ginstaller.New()
 	if err != nil {
@@ -63,11 +63,17 @@ func (g Go) Install(d InstallData) (output string, err error) {
 		},
 	)
 
-	paths := [3]string{
+	paths := []string{
 		d.Path,
-		strings.Replace(d.Path, fmt.Sprintf("/%s@", d.Exe), fmt.Sprintf("/cmd/%s@", d.Exe), 1),
+		strings.Replace(d.Path, fmt.Sprintf("/%s@", d.Exe), fmt.Sprintf("/%s/cmd/%s@", d.Exe, d.Exe), 1),
 		strings.Replace(d.Path, fmt.Sprintf("/%s@", d.Exe), fmt.Sprintf("/%s/cmd@", d.Exe), 1),
 	}
+
+	if g.Command != "" {
+		paths = []string{(strings.Replace(d.Path, fmt.Sprintf("/%s@", d.Exe), fmt.Sprintf("/%s/%s@", d.Exe, g.Command), 1))}
+	}
+
+	fmt.Printf("Searching for %q\n", paths)
 
 	for _, path := range paths {
 		output, err = installer.Install(path)

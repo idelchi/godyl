@@ -107,7 +107,6 @@ func New() (b Binary, err error) {
 
 func (b *Binary) Find(paths ...string) (executable.Executable, error) {
 	binary, err := exec.LookPath("go")
-	err = errors.New("not found")
 	if err != nil {
 		for _, path := range paths {
 			file := executable.New(path, filepath.Join("go", "bin", "go"))

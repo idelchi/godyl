@@ -3,9 +3,9 @@
 #]=======================================================================]
 
 ARG GO_VERSION=1.23.1
-ARG DISTRO
+ARG DISTRO=bookworm
 #### ---- Build ---- ####
-FROM golang:${GO_VERSION}-${DISTRO} AS build
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-${DISTRO} AS build
 
 LABEL maintainer=arash.idelchi
 
@@ -34,28 +34,49 @@ RUN --mount=type=cache,target=${GOMODCACHE},uid=1001,gid=1001 \
     --mount=type=cache,target=${GOCACHE},uid=1001,gid=1001 \
     go mod download
 
-RUN go mod download
-
-ENV PATH=$PATH:/home/${USER}/.local/bin
-ENV PATH=$PATH:/root/.local/bin
+ARG TARGETOS TARGETARCH
 
 COPY . .
 ARG GODYL_VERSION="unofficial & built by unknown"
 RUN --mount=type=cache,target=${GOMODCACHE},uid=1001,gid=1001 \
     --mount=type=cache,target=${GOCACHE},uid=1001,gid=1001 \
-    CGO_ENABLED=0 go install -ldflags="-s -w -X 'main.version=${GODYL_VERSION}'" ./cmd/...
+    GOOS=${TARGETOS} GOARCH=${TARGETARCH} CGO_ENABLED=0 go build -ldflags="-s -w -X 'main.version=${GODYL_VERSION}'" -o bin/ ./cmd/...
+
+RUN go mod download
+
+COPY .bashrc /home/${USER}/.bashrc
+
+ENV PATH=$PATH:/home/${USER}/.local/bin
+ENV PATH=$PATH:/root/.local/bin
+
+USER ${USER}
+WORKDIR /home/${USER}
 
 # Timezone
 ENV TZ=Europe/Zurich
 
-COPY .bashrc /home/${USER}/.bashrc
+FROM debian:12 AS final
 
+RUN apt-get update && apt-get install -y \
+    curl \
+    ca-certificates \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
-FROM build AS final
+# Create User (Debian/Ubuntu)
+ARG USER=user
+RUN groupadd -r -g 1001 ${USER} && \
+    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 
+USER ${USER}
+WORKDIR /home/${USER}
 
-USER root
+COPY --from=build --chown=1001:1001 /tmp/go/bin/godyl /home/${USER}/.local/bin/godyl
 
-RUN rm -rf /usr/local/go
+COPY --chown=1001:1001 .bashrc /home/${USER}/.bashrc
 
-USER user
+ENV PATH=$PATH:/home/${USER}/.local/bin
+ENV PATH=$PATH:/root/.local/bin
+
+# Timezone
+ENV TZ=Europe/Zurich

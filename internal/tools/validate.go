@@ -23,6 +23,12 @@ func SetStringIfEmpty(input *string, value string) {
 	}
 }
 
+func SetStringSliceIfNil(input *[]string, value string) {
+	if *input == nil {
+		*input = []string{value}
+	}
+}
+
 func StringIsEmpty(input string) bool {
 	return input == ""
 }
@@ -131,7 +137,7 @@ func (t *Tool) tryResolveFallback(fallback string, path string, withTags []strin
 
 	t.Exe.Name += t.Platform.Extension.String()
 
-	SetStringIfEmpty(&t.Exe.Pattern, fmt.Sprintf("^%s$", t.Exe.Name))
+	SetStringSliceIfNil(&t.Exe.Patterns, fmt.Sprintf("^%s$", t.Exe.Name))
 
 	for i, alias := range t.Aliases {
 		t.Aliases[i] = alias + t.Platform.Extension.String()
@@ -157,15 +163,6 @@ func (t *Tool) Validate() error {
 
 func (t *Tool) Exists() bool {
 	return executable.New(t.Output, t.Exe.Name).Exists()
-
-	// files := executable.Executables{}.FromStrings(t.Output, append([]string{t.Name, t.Exe}, t.Aliases...)...)
-
-	// for _, file := range files {
-	// 	if file.Exists() {
-	// 		return true
-	// 	}
-	// }
-	// return false
 }
 
 type Installer interface {
@@ -179,12 +176,12 @@ func (t *Tool) Download() (string, error) {
 	}
 
 	data := sources.InstallData{
-		Path:    t.Path,
-		Name:    t.Name,
-		Exe:     t.Exe.Name,
-		Pattern: t.Exe.Pattern,
-		Output:  t.Output,
-		Aliases: t.Aliases,
+		Path:     t.Path,
+		Name:     t.Name,
+		Exe:      t.Exe.Name,
+		Patterns: t.Exe.Patterns,
+		Output:   t.Output,
+		Aliases:  t.Aliases,
 	}
 
 	return installer.Install(data)

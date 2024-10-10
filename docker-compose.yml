@@ -2,7 +2,7 @@ services:
   build:
     build:
       args:
-        - GO_TMANAGER_VERSION=local
+        - GODYL_VERSION=local
       target: build
     pull_policy: if_not_present
     image: idelchi/godyl:dev
@@ -19,58 +19,46 @@ services:
   bookworm:
     extends: build
     build:
-      args:
-        - GO_TMANAGER_VERSION=local
-        - DISTRO=bookworm
-
-  bookwormf:
-    extends: build
-    build:
-      args:
-        - GO_TMANAGER_VERSION=local
-        - DISTRO=bookworm
       target: final
+    platform: linux/amd64
+
+  bookworm-amd32:
+    extends: bookworm
+    platform: linux/386
+
+  bookworm-arm64:
+    extends: bookworm
+    platform: linux/arm64/v8
+
+  bookworm-armv7:
+    extends: bookworm
+    platform: linux/arm/v5
+
+  bookworm-armv5:
+    extends: bookworm
+    platform: linux/arm/6
 
   alpine:
     extends: build
     build:
       dockerfile: Dockerfile.alpine
-      args:
-        - GO_TMANAGER_VERSION=local
-        - DISTRO=alpine
+      target: final
 
-  bookwormamd32:
-    extends: build
-    build:
-      args:
-        - GO_TMANAGER_VERSION=local
-        - DISTRO=bookworm
+  alpine-amd32:
+    extends: alpine
     platform: linux/386
 
-  bookwormarm64:
-    extends: build
-    build:
-      args:
-        - GO_TMANAGER_VERSION=local
-        - DISTRO=bookworm
+  alpine-arm64:
+    extends: alpine
     platform: linux/arm64/v8
 
-  bookwormv7:
-    extends: build
-    build:
-      args:
-        - GO_TMANAGER_VERSION=local
-        - DISTRO=bookworm
+  alpine-armv7:
+    extends: alpine
     platform: linux/arm/v7
 
-  bookwormv6:
-    extends: build
-    build:
-      args:
-        - GO_TMANAGER_VERSION=local
-        - DISTRO=bookworm
-    platform: linux/arm/6
-
+  alpine-armv6:
+    extends: alpine
+    platform: linux/arm/v6
 networks:
   godyl-network:
     name: godyl-network

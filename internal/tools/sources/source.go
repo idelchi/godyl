@@ -32,7 +32,8 @@ func (s *Source) Installer() (Populater, error) {
 	case "command":
 		return &s.Commands, nil
 	case "go":
-		return &Go{github: &s.Github}, nil
+		s.Go.github = &s.Github
+		return &s.Go, nil
 	default:
 		return nil, fmt.Errorf("unknown source type: %s", s.Type)
 	}

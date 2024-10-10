@@ -8,8 +8,8 @@ import (
 
 // Aliases is a custom type for handling alias names.
 type Exe struct {
-	Name    string
-	Pattern string
+	Name     string
+	Patterns []string
 }
 
 func (e *Exe) UnmarshalYAML(value *yaml.Node) error {

@@ -37,11 +37,20 @@
     - go
 
 - name: trntv/sshed
+  exe:
+    name: sshed
+    patterns:
+      - sshed
+      - ^cmd$
   fallbacks:
     - go
-  hints:
-    - pattern: "{{ .Platform.OS }}"
-      must: true
+  # hints:
+  #   - pattern: "{{ .Platform.OS }}"
+  #     must: true
+  source:
+    type: github
+    go:
+      command: cmd
 
 - name: pemistahl/grex
   skip: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
@@ -151,7 +160,8 @@
 
 - name: jarun/nnn
   exe:
-    pattern: nnn-.*
+    patterns:
+      - nnn-.*
   skip: '{{ if hasPrefix .Platform.Architecture.Name "arm" }}true{{ else }}false{{ end }}'
   aliases:
     - nnn

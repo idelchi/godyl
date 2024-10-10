@@ -63,26 +63,9 @@ func (c *Config) Default() {
 		},
 		Hints: []match.Hint{
 			{
-				Pattern: `{{ .Exe }}`,
+				Pattern: "{{ .Exe.Name }}",
 				Weight:  1,
 			},
-			// {
-			// 	Pattern: "static",
-			// 	Weight:  1,
-			// },
-			// {
-			// 	Pattern: `.*{{ if eq .Platform.OS "linux" }}\.tar\.gz{{ else }}\.zip{{ end }}$`,
-			// 	Weight:  1,
-			// 	Regex:   true,
-			// },
-			// {
-			// 	Pattern:        `musl`,
-			// 	WeightTemplate: `{{ if and (eq .Platform.OS "linux") (eq .Platform.Distribution "alpine") }}1{{ else }}0{{ end }}`,
-			// },
-			// {
-			// 	Pattern:        `gnu`,
-			// 	WeightTemplate: `{{ if and (eq .Platform.OS "linux") (ne .Platform.Distribution "alpine") }}1{{ else }}0{{ end }}`,
-			// },
 		},
 	}
 }

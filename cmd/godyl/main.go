@@ -98,19 +98,21 @@ func main() {
 			tool := res.tool
 			err := res.err
 			msg := res.msg
-			color.White(tool.Name)
+			// color.White(tool.Name)
 
 			if cfg.Verbose {
-				fmt.Println(PrintJSON(tool))
+				if tool.Name == "trntv/sshed" {
+					fmt.Println(PrintJSON(tool))
+				}
 			}
 			// Process tool results
 			if err != nil {
 				if errors.Is(err, tools.ErrAlreadyExists) {
-					color.Yellow("  already installed")
+					// color.Yellow("  already installed")
 				} else if errors.Is(err, tools.ErrDoesNotHaveTags) {
-					color.Yellow("  skipped due to not having required tags")
+					// color.Yellow("  skipped due to not having required tags")
 				} else if errors.Is(err, tools.ErrSkipped) {
-					color.Yellow("  skipped due to skip marker")
+					// color.Yellow("  skipped due to skip marker")
 				} else {
 					color.Red("  %v", err)
 					color.Red("  %s", msg)

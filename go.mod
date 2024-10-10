@@ -51,6 +51,7 @@ require (
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
+	github.com/trntv/sshed v0.0.0-20220306193326-c54509a60ca8 // indirect
 	github.com/ulikunitz/xz v0.5.12 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect

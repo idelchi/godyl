@@ -89,9 +89,12 @@ func (t *Tool) Template() error {
 		return err
 	}
 
-	t.Exe.Pattern, err = t.ApplyTemplate(t.Exe.Pattern)
-	if err != nil {
-		return err
+	for i, pattern := range t.Exe.Patterns {
+		output, err := t.ApplyTemplate(pattern)
+		if err != nil {
+			return err
+		}
+		t.Exe.Patterns[i] = output
 	}
 
 	// Apply templating to Source.Commands (iterate over the command list)

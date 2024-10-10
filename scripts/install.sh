@@ -32,12 +32,15 @@ esac
 
 case $ARCH in
     x86_64) ARCH="amd64" ;;
+    aarch64) ARCH="arm64" ;;
+    x86) ARCH="386" ;;
+    i686) ARCH="386" ;;
+    i386) ARCH="386" ;;
     armv6*) ARCH="armv6" ;;
     armv7*) ARCH="armv7" ;;
-    aarch64) ARCH="arm64" ;;
-    i386) ARCH="x86" ;;
     *) echo "Unsupported architecture: $ARCH" && exit 1 ;;
 esac
+
 
 # Set the format based on OS
 FORMAT="tar.gz"

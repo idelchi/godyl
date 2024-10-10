@@ -150,6 +150,8 @@
   #       }}1{{ else }}0{{ end }}
 
 - name: jarun/nnn
+  exe:
+    pattern: nnn-*
   skip: '{{ if hasPrefix .Platform.Architecture.Name "arm" }}true{{ else }}false{{ end }}'
   exe: nnn
   aliases:

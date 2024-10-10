@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/idelchi/godyl/internal/match"
@@ -24,6 +25,12 @@ type Config struct {
 
 	// Config file to load
 	Config string
+
+	// Update the binary now
+	Update bool `mapstructure:"update"`
+
+	// Update strategy
+	UpdateStrategy tools.Strategy `mapstructure:"update-strategy"`
 
 	// Show help message
 	Help bool
@@ -76,6 +83,11 @@ func (c *Config) Default() {
 
 // Validate the configuration.
 func (c *Config) Validate() error {
+	allowedUpdateStrategies := []tools.Strategy{tools.Upgrade, tools.Force}
+	if !slices.Contains(allowedUpdateStrategies, c.UpdateStrategy) {
+		return fmt.Errorf("invalid update strategy: %q: allowed are %v", c.UpdateStrategy, allowedUpdateStrategies)
+	}
+
 	validate := validator.New()
 	if err := validate.Struct(c); err != nil {
 		return fmt.Errorf("validating config: %w", err)

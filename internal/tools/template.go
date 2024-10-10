@@ -84,7 +84,12 @@ func (t *Tool) Template() error {
 		return err
 	}
 
-	t.Exe, err = t.ApplyTemplate(t.Exe)
+	t.Exe.Name, err = t.ApplyTemplate(t.Exe.Name)
+	if err != nil {
+		return err
+	}
+
+	t.Exe.Pattern, err = t.ApplyTemplate(t.Exe.Pattern)
 	if err != nil {
 		return err
 	}

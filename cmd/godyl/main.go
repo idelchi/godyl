@@ -8,7 +8,9 @@ import (
 	"sync"
 
 	"github.com/fatih/color"
+	"github.com/idelchi/godyl/internal/folder"
 	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/pretty"
 	"golang.org/x/sync/errgroup"
 )
@@ -45,6 +47,53 @@ func main() {
 	if err := cfg.Validate(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error validating configuration: %v\n", err)
 		os.Exit(1)
+	}
+
+	if cfg.Update {
+		fmt.Printf("Updating godyl with strategy: %v\n", cfg.UpdateStrategy)
+		if err := cfg.Defaults.Defaults(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error setting defaults: %v\n", err)
+			os.Exit(1)
+		}
+
+		var dir folder.Folder
+		if err := dir.CreateRandomInTempDir(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error creating temporary directory: %v\n", err)
+
+			os.Exit(1)
+		}
+
+		tool := tools.Tool{
+			Output: dir.Path(),
+			Name:   "idelchi/godyl",
+			Source: sources.Source{
+				Type: "github",
+			},
+		}
+		tool.ApplyDefaults(cfg.Defaults)
+
+		if err := tool.Resolve(nil, nil); err != nil {
+			fmt.Fprintf(os.Stderr, "Error resolving tool: %v\n", err)
+
+			os.Exit(1)
+		}
+
+		if output, err := tool.Download(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error downloading tool: %v: %s\n", err, output)
+
+			os.Exit(1)
+		}
+
+		fmt.Printf("Downloading %q from %q\n", tool.Name, tool.Path)
+
+		if err := doUpdate(filepath.Join(tool.Output, "godyl")); err != nil {
+			fmt.Fprintf(os.Stderr, "Error updating godyl: %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("godyl updated successfully")
+		os.Exit(0)
+
 	}
 
 	var toolsList tools.Tools
@@ -108,11 +157,12 @@ func main() {
 					fmt.Println(pretty.JSON(tool))
 				}
 			} else {
+				fmt.Println(pretty.JSON(tool))
 				if tool.Version != "" {
 					color.Magenta("  version: %s", tool.Version)
 				}
 				color.Yellow("  picked %q", filepath.Base(tool.Path))
-				color.Green("  installed successfully at %q\n", filepath.Join(tool.Output, tool.Exe))
+				color.Green("  installed successfully at %q\n", filepath.Join(tool.Output, tool.Exe.Name))
 				if tool.Aliases != nil {
 					color.Magenta("  symlinks:")
 					for _, alias := range tool.Aliases {
@@ -135,10 +185,10 @@ func main() {
 				return nil
 			}
 
-			if msg, err := tool.Download(); err != nil {
-				resultCh <- result{tool: &tool, err: err, msg: msg}
-				return nil
-			}
+			// if msg, err := tool.Download(); err != nil {
+			// 	resultCh <- result{tool: &tool, err: err, msg: msg}
+			// 	return nil
+			// }
 
 			// If everything succeeds, send the tool and nil error.
 			resultCh <- result{tool: &tool, err: nil}

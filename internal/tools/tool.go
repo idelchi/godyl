@@ -24,7 +24,7 @@ type Tool struct {
 	// Output path for the tool
 	Output string
 	// Name of the executable itself
-	Exe          string
+	Exe          Exe
 	Platform     detect.Platform
 	Aliases      Aliases
 	Values       map[string]any

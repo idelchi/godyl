@@ -3,7 +3,6 @@ package sources
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -16,6 +15,7 @@ type InstallData struct {
 	Path    string
 	Name    string
 	Exe     string
+	Pattern string
 	Output  string
 	Aliases []string
 }
@@ -40,10 +40,9 @@ func Download(d InstallData) (output string, err error) {
 
 func FindAndSymlink(destination string, d InstallData) error {
 	// Construct an executables item from all the possible names
-	executables := executable.Executables{}.FromStrings("", append([]string{d.Name, d.Exe, filepath.Base(d.Path)}, d.Aliases...)...)
-
+	// executables := executable.Executables{}.FromStrings("", append([]string{d.Name, d.Exe, filepath.Base(d.Path)}, d.Aliases...)...)
 	// Find the specific executable that was downloaded
-	download, err := executables.Find(destination)
+	download, err := executable.New("", d.Pattern).Find(destination)
 	if err != nil {
 		return fmt.Errorf("finding executable: %w", err)
 	}

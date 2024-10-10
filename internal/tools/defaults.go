@@ -75,5 +75,12 @@ func (t *Tool) ApplyDefaults(d Defaults) {
 		t.SkipTemplate = "false"
 	}
 
+	// if t.Exe.Name == "" {
+	// 	t.Exe.Name = t.Name
+	// }
+	// if t.Exe.Pattern == "" {
+	// 	t.Exe.Pattern = `{{ .Exe }}`
+	// }
+
 	t.Hints.Add(d.Hints)
 }

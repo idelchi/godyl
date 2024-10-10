@@ -53,6 +53,9 @@ func flags() {
 	pflag.String("defaults.strategy", "none", "")
 	pflag.String("defaults.output", "~/.local/bin", "")
 
+	pflag.String("update-strategy", "upgrade", "")
+	pflag.Bool("update", false, "")
+
 	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
 
 	pflag.CommandLine.SortFlags = false

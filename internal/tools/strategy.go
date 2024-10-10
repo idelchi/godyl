@@ -30,7 +30,7 @@ func (s Strategy) Upgrade(t *Tool) error {
 		}
 	case Upgrade:
 		if t.Exists() {
-			exe := executable.New(t.Output, t.Exe)
+			exe := executable.New(t.Output, t.Exe.Name)
 			err := exe.ParseVersion()
 			if err != nil {
 				fmt.Printf("parsing version: %v\n", err)

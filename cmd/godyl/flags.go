@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/idelchi/godyl/internal/flagexp"
+	"github.com/idelchi/godyl/pkg/flagexp"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"

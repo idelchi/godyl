@@ -16,6 +16,20 @@ This uses simple heuristics to infer the correct binary to download, and will no
 
 Most properties can be overridden and `hints` can be used to help `godyl` make the correct decision.
 
+## Installation
+
+### From source
+
+```sh
+go install github.com/idelchi/godyl/cmd/godyl@latest
+```
+
+## From [installation script](https://raw.githubusercontent.com/idelchi/gocry/refs/heads/dev/scripts/install.sh)
+
+```sh
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts/install.sh | sh -s -- -v v0.0 -o ~/.local/bin
+```
+
 ## Configuration
 
 A configuration may be used to specify default settings for all tools. These will override (or extend in some case) the settings for each tool.

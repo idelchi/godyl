@@ -25,16 +25,16 @@
 - kraanzu/dooit
 
 - name: homeport/dyff
-  # fallbacks:
-  #   - go
+  fallbacks:
+    - go
 
 - name: logdyhq/logdy-core
-  # fallbacks:
-  #   - go
+  fallbacks:
+    - go
 
 - name: cespare/reflex
-  # fallbacks:
-  #   - go
+  fallbacks:
+    - go
 
 - name: trntv/sshed
   fallbacks:

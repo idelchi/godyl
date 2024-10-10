@@ -2,6 +2,7 @@ package sources
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/idelchi/godyl/internal/folder"
@@ -62,10 +63,23 @@ func (g Go) Install(d InstallData) (output string, err error) {
 		},
 	)
 
-	output, err = installer.Install(d.Path)
-	if err != nil {
-		return output, err
+	paths := [3]string{
+		d.Path,
+		strings.Replace(d.Path, fmt.Sprintf("/%s@", d.Exe), fmt.Sprintf("/cmd/%s@", d.Exe), 1),
+		strings.Replace(d.Path, fmt.Sprintf("/%s@", d.Exe), fmt.Sprintf("/%s/cmd@", d.Exe), 1),
 	}
 
-	return output, FindAndSymlink(folder.Path(), d)
+	for _, path := range paths {
+		output, err = installer.Install(path)
+
+		if err == nil {
+			d.Path = path
+			return output, FindAndSymlink(folder.Path(), d)
+		} else {
+			fmt.Println(err)
+			fmt.Println(output)
+		}
+	}
+
+	return output, err
 }

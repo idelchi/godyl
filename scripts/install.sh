@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+BINARY="godyl"
+
 # Default values
 VERSION="v0.0"
 OUTPUT_DIR="./bin"
@@ -41,7 +43,6 @@ case $ARCH in
     *) echo "Unsupported architecture: $ARCH" && exit 1 ;;
 esac
 
-
 # Set the format based on OS
 FORMAT="tar.gz"
 if [ "$OS" = "windows" ]; then
@@ -49,8 +50,8 @@ if [ "$OS" = "windows" ]; then
 fi
 
 # Construct the download URL
-BASE_URL="https://github.com/idelchi/godyl/releases/download"
-BINARY_NAME="godyl_${OS}_${ARCH}.${FORMAT}"
+BASE_URL="https://github.com/idelchi/${BINARY}/releases/download"
+BINARY_NAME="${BINARY}_${OS}_${ARCH}.${FORMAT}"
 URL="${BASE_URL}/${VERSION}/${BINARY_NAME}"
 
 tmp=$(mktemp)
@@ -73,4 +74,4 @@ fi
 
 rm -f $tmp
 
-echo "godyl installed to $OUTPUT_DIR"
+echo "${BINARY} installed to $OUTPUT_DIR"

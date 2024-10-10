@@ -1,27 +1,75 @@
 name: godyl
 
 on:
+  workflow_dispatch:
   push:
+    branches:
+      - dev
+      - master
     tags:
       - "*"
 
 jobs:
-  release:
+  tag:
     permissions:
       contents: write
+      actions: write
     runs-on: ubuntu-24.04
-    if: startsWith(github.ref, 'refs/tags/')
+    if: github.ref == 'refs/heads/dev'
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: "v0.0"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: delete ${{github.ref_name}} release
-        run: gh release delete ${{github.ref_name}} --yes
+      - name: delete ${{ env.TAG }} release & tag
+        run: |
+          gh release delete ${{ env.TAG }} --yes --cleanup-tag || true
         continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: delete ${{ env.TAG }} tag
+        run: |
+          git tag --delete ${{ env.TAG }}
+          git push origin --delete ${{ env.TAG }}
+        continue-on-error: true
+
+      - name: create ${{ env.TAG }} tag
+        run: |
+          git tag ${{ env.TAG }}
+          git push origin ${{ env.TAG }}
+
+      - name: run workflow for ${{ env.TAG }} tag
+        run: |
+          gh workflow run ${{ github.workflow }} --ref ${{ env.TAG }}
+
+      # - name: Run GoReleaser
+      #   uses: goreleaser/goreleaser-action@v6
+      #   with:
+      #     distribution: goreleaser
+      #     version: "~> v2"
+      #     args: release --clean --skip validate
+      #   env:
+      #     GORELEASER_CURRENT_TAG: ${{ env.TAG }}
+
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-24.04
+    if: startsWith(github.ref, 'refs/tags/')
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -30,7 +78,5 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
-          version: latest
+          version: "~> v2"
           args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

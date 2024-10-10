@@ -53,7 +53,7 @@ func flags() {
 	pflag.String("defaults.strategy", "none", "")
 	pflag.String("defaults.output", "~/.local/bin", "")
 
-	pflag.StringSliceP("tags", "t", nil, "Tags to filter tools by")
+	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
 
 	pflag.CommandLine.SortFlags = false
 	pflag.Usage = func() {

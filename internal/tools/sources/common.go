@@ -25,7 +25,7 @@ func Download(d InstallData) (output string, err error) {
 	if err := tmp.CreateRandomInTempDir(); err != nil {
 		return "", fmt.Errorf("creating temp dir: %w", err)
 	}
-	defer tmp.Remove()
+	// defer tmp.Remove()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()

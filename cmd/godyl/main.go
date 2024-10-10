@@ -9,6 +9,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/pkg/pretty"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -104,6 +105,7 @@ func main() {
 				} else {
 					color.Red("  %v", err)
 					color.Red("  %s", msg)
+					fmt.Println(pretty.JSON(tool))
 				}
 			} else {
 				if tool.Version != "" {

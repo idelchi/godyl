@@ -14,6 +14,7 @@ var (
 	ErrAlreadyExists   = fmt.Errorf("tool already exists")
 	ErrDoesNotHaveTags = fmt.Errorf("tool does not have required tags")
 	ErrSkipped         = fmt.Errorf("tool skipped")
+	ErrFailed          = fmt.Errorf("tool failed")
 )
 
 func SetStringIfEmpty(input *string, value string) {

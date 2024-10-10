@@ -39,6 +39,14 @@ services:
         - GO_TMANAGER_VERSION=local
         - DISTRO=alpine
 
+  bookwormamd32:
+    extends: build
+    build:
+      args:
+        - GO_TMANAGER_VERSION=local
+        - DISTRO=bookworm
+    platform: linux/386
+
   bookwormarm64:
     extends: build
     build:

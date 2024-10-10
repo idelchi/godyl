@@ -12,6 +12,8 @@ import (
 type Go struct {
 	github *GitHub
 
+	Command string `yaml:"command"`
+
 	Data Metadata `yaml:"-"`
 }
 

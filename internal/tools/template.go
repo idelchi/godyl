@@ -3,6 +3,7 @@ package tools
 import (
 	"bytes"
 	"strconv"
+	"strings"
 	"text/template"
 
 	"github.com/idelchi/godyl/internal/tools/sources"
@@ -27,8 +28,13 @@ func (t *Tool) NormalizeValues() {
 
 // ApplyTemplate applies Go templates to a string field using the Tool struct as data
 func (t *Tool) ApplyTemplate(field string) (string, error) {
+	// Register custom functions here
+	funcMap := template.FuncMap{
+		"hasPrefix": strings.HasPrefix, // Registering hasPrefix function
+	}
+
 	var buf bytes.Buffer
-	tmpl, err := template.New("tmpl").Parse(field)
+	tmpl, err := template.New("tmpl").Funcs(funcMap).Parse(field)
 	if err != nil {
 		return "", err
 	}
@@ -105,6 +111,9 @@ func (t *Tool) Template() error {
 			return err
 		}
 		// Convert the result (string) into an integer and store it in the actual Weight field
+		if output == "" {
+			output = "1"
+		}
 		t.Hints[i].Weight, err = strconv.Atoi(output)
 		if err != nil {
 			return err

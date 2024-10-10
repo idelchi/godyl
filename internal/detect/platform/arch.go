@@ -20,6 +20,17 @@ func (a Architecture) Name() string {
 	return string(a.Type)
 }
 
+func (a Architecture) Short() string {
+	switch a.Type {
+	case AMD64, ARM64:
+		return "amd"
+	case AMD32, ARM32:
+		return "arm"
+	default:
+		return string(a.Type)
+	}
+}
+
 const (
 	AMD64 Type = "amd64"
 	AMD32 Type = "amd32"

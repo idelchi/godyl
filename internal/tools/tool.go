@@ -37,6 +37,7 @@ type Tool struct {
 	SkipTemplate string `yaml:"skip" mapstructure:"skip"`
 	Skip         bool   `yaml:"-" mapstructure:"-"`
 	Test         sources.Commands
+	AllowFailure bool `yaml:"allow_failure" mapstructure:"allow_failure"`
 }
 
 // UnmarshalYAML implements custom unmarshaling for Tool with KnownFields check

@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Executable consists of a full path to a file and its version-
@@ -34,7 +35,21 @@ func (e Executable) Find(dir string, criteria ...CriteriaFunc) (Executable, erro
 		if err != nil {
 			return err
 		}
-		if info.Name() == e.Name() && !info.IsDir() {
+
+		file := info.Name()
+		executable := e.Name()
+		// if strings.Contains(executable, "*") {
+		// 	matched, err := filepath.Match(executable, file)
+		// 	if err != nil {
+		// 		return err
+		// 	}
+		// 	if matched {
+		// 		executable = file
+		// 	}
+		// }
+		match := file == executable || strings.HasPrefix(file, executable)
+
+		if match && !info.IsDir() {
 			if len(criteria) == 0 {
 				// If no criteria provided, accept the first file matching the name
 				filePath = path

@@ -9,33 +9,57 @@
 - sharkdp/bat
 - traefik/traefik
 - casey/just
-- pemistahl/grex
 - sorenisanerd/gotty
 - charmbracelet/glow
 - gopasspw/gopass
 - lsd-rs/lsd
-- homeport/dyff
+
 - moncho/dry
 - rs/curlie
 - so-fancy/diff-so-fancy
 - sharkdp/diskus
 - muesli/duf
-- name: trntv/sshed
-  skip: '{{ if eq .Platform.Architecture.Name "arm64" }}true{{ else }}false{{ end }}'
 - AlDanial/cloc
 - FiloSottile/age
 - chmln/sd
 - kraanzu/dooit
-- cespare/reflex
-- logdyhq/logdy-core
+
+- name: homeport/dyff
+  # fallbacks:
+  #   - go
+
+- name: logdyhq/logdy-core
+  # fallbacks:
+  #   - go
+
+- name: cespare/reflex
+  # fallbacks:
+  #   - go
+
+- name: trntv/sshed
+  fallbacks:
+    - go
+  hints:
+    - pattern: "{{ .Platform.OS }}"
+      must: true
+
+- name: pemistahl/grex
+  skip: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
+  # fallbacks:
+  #   - rust
 
 - name: nivekuil/rip
   skip: '{{ if eq .Platform.Architecture.Name "arm64" }}true{{ else }}false{{ end }}'
   version: 0.11.4
+  # fallbacks:
+  #   - rust
 
 - name: mgunyho/tere
+  skip: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
   extensions:
     - .zip
+  # fallbacks:
+  #   - rust
 
 - name: cli/cli
   aliases:
@@ -73,6 +97,7 @@
     type: github
   fallbacks:
     - go
+
 - name: TomWright/dasel
   extensions:
     - ""
@@ -88,11 +113,17 @@
 
 - name: jqlang/jq
   hints:
-    - pattern: jq-linux-amd64
+    - pattern: amd64
       weight: |-
         {{ if and
             (eq .Platform.OS "linux")
             (eq .Platform.Architecture.Name "amd64")
+        }}1{{ else }}0{{ end }}
+    - pattern: armhf
+      weight: |-
+        {{ if and
+            (eq .Platform.OS "linux")
+            (eq .Platform.Architecture.Type "arm")
         }}1{{ else }}0{{ end }}
 
 - name: BurntSushi/ripgrep
@@ -119,17 +150,10 @@
   #       }}1{{ else }}0{{ end }}
 
 - name: jarun/nnn
-  skip: '{{ if eq .Platform.Architecture.Name "arm64" }}true{{ else }}false{{ end }}'
-  exe: nnn-musl-static
+  skip: '{{ if hasPrefix .Platform.Architecture.Name "arm" }}true{{ else }}false{{ end }}'
+  exe: nnn
   aliases:
     - nnn
-  # hints:
-  #   - pattern: musl
-  #     weight: |-
-  #       {{ if and
-  #           (eq .Platform.OS "linux")
-  #           (eq .Platform.Architecture.Name "amd64")
-  #       }}1{{ else }}0{{ end }}
 
 - name: helm
   version: 3.16.1

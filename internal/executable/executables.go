@@ -29,7 +29,7 @@ func (es Executables) Find(dir string) (Executable, error) {
 			return executable, nil
 		}
 	}
-	return Executable{}, fmt.Errorf("executable not found")
+	return Executable{}, fmt.Errorf("executable not found in %q", dir)
 }
 
 func (es Executables) Paths() (paths []string) {

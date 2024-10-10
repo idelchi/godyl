@@ -118,8 +118,6 @@ func (b *Binary) Find(paths ...string) (executable.Executable, error) {
 
 		return executable.Executable{}, fmt.Errorf("go binary not found: %w", err)
 
-	} else {
-		fmt.Println(b)
 	}
 
 	return executable.Executable{
@@ -129,8 +127,6 @@ func (b *Binary) Find(paths ...string) (executable.Executable, error) {
 
 func (b *Binary) Download(path string) error {
 	url := fmt.Sprintf("https://go.dev/dl/%s", path)
-
-	fmt.Println("GO IS BEING DOWNLOADED")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()

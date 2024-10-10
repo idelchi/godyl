@@ -44,9 +44,9 @@
       - ^cmd$
   fallbacks:
     - go
-  # hints:
-  #   - pattern: "{{ .Platform.OS }}"
-  #     must: true
+  hints:
+    - pattern: "{{ .Platform.OS }}"
+      must: true
   source:
     type: github
     go:
@@ -137,26 +137,11 @@
 
 - name: BurntSushi/ripgrep
   exe: rg
-  # hints:
-  #   - pattern: musl
-  #     weight: |-
-  #       {{ if and
-  #           (eq .Platform.OS "linux")
-  #           (eq .Platform.Architecture.Name "amd64")
-  #       }}2{{ else }}0{{ end }}
 
 - name: jesseduffield/lazygit
   aliases: lazyg
 - name: Byron/dua-cli
   exe: dua
-
-  # hints:
-  #   - pattern: musl
-  #     weight: |-
-  #       {{ if and
-  #           (eq .Platform.OS "linux")
-  #           (eq .Platform.Architecture.Name "amd64")
-  #       }}1{{ else }}0{{ end }}
 
 - name: jarun/nnn
   exe:
@@ -268,7 +253,7 @@
       - |
         {{ if eq .Platform.OS "linux" }}
         apt-get update
-        apt-get install -y {{ .Exe }}
+        apt-get install -y {{ .Exe.Name }}
         {{ else }}
         echo "installation skipped"
         {{ end }}
@@ -288,7 +273,7 @@
       - |
         {{ if eq .Platform.OS "linux" }}
         apt-get update
-        apt-get install -y {{ .Exe }}
+        apt-get install -y {{ .Exe.Name }}
         {{ else }}
         echo "installation skipped"
         {{ end }}
@@ -308,7 +293,7 @@
         export CARGO_HOME=${TMPDIR}/cargo
         curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
         dir=$(dirname {{ .Output }})
-        ${TMPDIR}/cargo/bin/cargo install {{ .Exe }} --root ${dir}
+        ${TMPDIR}/cargo/bin/cargo install {{ .Exe.Name }} --root ${dir}
         rm -rf ${TMPDIR}
   tags:
     - rust

@@ -73,8 +73,6 @@ func (g *Go) Install(d InstallData) (output string, err error) {
 		paths = []string{(strings.Replace(d.Path, fmt.Sprintf("/%s@", d.Exe), fmt.Sprintf("/%s/%s@", d.Exe, g.Command), 1))}
 	}
 
-	fmt.Printf("Searching for %q\n", paths)
-
 	for _, path := range paths {
 		output, err = installer.Install(path)
 

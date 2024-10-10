@@ -10,6 +10,7 @@ import (
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/pkg/logger"
 )
 
 type Update struct {
@@ -36,7 +37,7 @@ type Config struct {
 
 	Dry bool
 
-	Verbose bool
+	Log logger.Level
 
 	// Show help message
 	Help bool

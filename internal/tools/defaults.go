@@ -8,6 +8,7 @@ import (
 )
 
 type Defaults struct {
+	Exe        Exe
 	Output     string
 	Platform   detect.Platform
 	Values     map[string]any
@@ -41,6 +42,10 @@ func (d *Defaults) Defaults() error {
 				"",
 			}
 		}
+	}
+
+	if d.Exe.Patterns == nil || len(d.Exe.Patterns) == 0 {
+		d.Exe.Patterns = []string{"{{ .Exe.Name }}.*"}
 	}
 
 	return nil
@@ -78,9 +83,10 @@ func (t *Tool) ApplyDefaults(d Defaults) {
 	// if t.Exe.Name == "" {
 	// 	t.Exe.Name = t.Name
 	// }
-	// if t.Exe.Pattern == "" {
-	// 	t.Exe.Pattern = `{{ .Exe }}`
-	// }
+
+	if t.Exe.Patterns == nil || len(t.Exe.Patterns) == 0 {
+		t.Exe.Patterns = d.Exe.Patterns
+	}
 
 	t.Hints.Add(d.Hints)
 }

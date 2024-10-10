@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -31,6 +32,7 @@ func NewDefaultVersionParser() *Version {
 		Commands: [][]string{
 			{"--version"}, // Default attempt with --version
 			{"version"},   // Default attempt with version
+			{"-v"},        // Default attempt with -v
 		},
 	}
 }
@@ -38,11 +40,14 @@ func NewDefaultVersionParser() *Version {
 // commandWithContext runs the executable with the provided arguments using a timeout.
 func (f Executable) Command(ctx context.Context, cmdArgs []string) (string, error) {
 	var out bytes.Buffer
+
 	cmd := exec.CommandContext(ctx, f.Path, cmdArgs...)
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 
-	return strings.TrimSpace(out.String()), cmd.Run()
+	err := cmd.Run()
+
+	return strings.TrimSpace(out.String()), err
 }
 
 // ParseString attempts to parse the provided string using the Version patterns.
@@ -76,20 +81,22 @@ func (f *Executable) ParseVersion() error {
 		// Get the output of the command
 		output, err := f.Command(ctx, cmdArgs)
 		if err != nil {
+			fmt.Printf("Error parsing version: %v: %q\n", err, output)
 			continue
 		}
 
-		// Use the new ParseString method to parse the output
 		if version, err := version.ParseString(output); err == nil {
 			f.Version = version
 
 			return nil
 		} else {
-			f.Version = ""
+			fmt.Printf("Error parsing version: %v: %q: %q\n", err, version, output)
 
-			return nil
+			continue
 		}
 	}
+
+	f.Version = ""
 
 	return errors.New("unable to parse version from output")
 }

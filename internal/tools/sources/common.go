@@ -30,12 +30,12 @@ func Download(d InstallData) (output string, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
-	destination, err := download.Download(ctx, d.Path, tmp.Path())
+	_, err = download.Download(ctx, d.Path, tmp.Path())
 	if err != nil {
 		return "", fmt.Errorf("downloading %q: %w", d.Path, err)
 	}
 
-	return "", FindAndSymlink(destination, d)
+	return "", FindAndSymlink(tmp.Path(), d)
 }
 
 func FindAndSymlink(destination string, d InstallData) error {

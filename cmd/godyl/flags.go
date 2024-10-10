@@ -8,6 +8,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/flagexp"
+	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -54,8 +55,9 @@ func flags() {
 	pflag.String("defaults.strategy", "none", "")
 	pflag.String("defaults.output", "~/.local/bin", "")
 
+	pflag.String("log", string(logger.INFO), "")
+
 	pflag.Bool("dry", false, "")
-	pflag.Bool("verbose", false, "")
 
 	pflag.Bool("update", false, "")
 	pflag.String("update-strategy", string(tools.Upgrade), "")

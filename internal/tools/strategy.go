@@ -1,8 +1,6 @@
 package tools
 
 import (
-	"fmt"
-
 	"github.com/idelchi/godyl/internal/executable"
 )
 
@@ -33,7 +31,7 @@ func (s Strategy) Upgrade(t *Tool) error {
 			exe := executable.New(t.Output, t.Exe.Name)
 			err := exe.ParseVersion()
 			if err != nil {
-				fmt.Printf("parsing version: %v\n", err)
+				return nil
 			}
 			if version, err := executable.NewDefaultVersionParser().ParseString(t.Version); err == nil {
 				if exe.Version == version {

@@ -1,5 +1,8 @@
 defaults:
   output: ~/.local/bin
+  exe:
+    patterns:
+      - "{{ .Exe.Name }}.*"
   fallbacks:
     - go
     - rust

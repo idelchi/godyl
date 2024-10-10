@@ -12,6 +12,11 @@ import (
 	"github.com/idelchi/godyl/internal/tools/sources"
 )
 
+type Update struct {
+	Strategy tools.Strategy `mapstructure:"update-strategy"`
+	Update   bool           `mapstructure:"update"`
+}
+
 // Config holds all the configuration options for godyl.
 type Config struct {
 	// Defaults for tools. Allows setting a default subset of values for tools
@@ -27,10 +32,11 @@ type Config struct {
 	Config string
 
 	// Update the binary now
-	Update bool `mapstructure:"update"`
+	Update Update `mapstructure:",squash"`
 
-	// Update strategy
-	UpdateStrategy tools.Strategy `mapstructure:"update-strategy"`
+	Dry bool
+
+	Verbose bool
 
 	// Show help message
 	Help bool
@@ -84,8 +90,8 @@ func (c *Config) Default() {
 // Validate the configuration.
 func (c *Config) Validate() error {
 	allowedUpdateStrategies := []tools.Strategy{tools.Upgrade, tools.Force}
-	if !slices.Contains(allowedUpdateStrategies, c.UpdateStrategy) {
-		return fmt.Errorf("invalid update strategy: %q: allowed are %v", c.UpdateStrategy, allowedUpdateStrategies)
+	if !slices.Contains(allowedUpdateStrategies, c.Update.Strategy) {
+		return fmt.Errorf("invalid update strategy: %q: allowed are %v", c.Update.Strategy, allowedUpdateStrategies)
 	}
 
 	validate := validator.New()

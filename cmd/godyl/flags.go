@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/flagexp"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/pflag"
@@ -53,8 +54,11 @@ func flags() {
 	pflag.String("defaults.strategy", "none", "")
 	pflag.String("defaults.output", "~/.local/bin", "")
 
-	pflag.String("update-strategy", "upgrade", "")
+	pflag.Bool("dry", false, "")
+	pflag.Bool("verbose", false, "")
+
 	pflag.Bool("update", false, "")
+	pflag.String("update-strategy", string(tools.Upgrade), "")
 
 	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
 

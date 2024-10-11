@@ -40,12 +40,9 @@ The following is embedded and used by default if no configuration is provided:
 
 ```yaml
 defaults:
-  output: ~/.local/bin
   exe:
     patterns:
       - "{{ .Exe.Name }}.*"
-  source:
-    type: github
   hints:
     - pattern: "{{ .Exe.Name }}"
       weight: 1
@@ -149,46 +146,179 @@ test: # Test commands, can use Go templates
   - zoxide --version
 ```
 
-| Field           | Type     | Template | Default              |
-| --------------- | -------- | -------- | -------------------- |
-| output          | string   | yes      | ~/.local/bin         |
-| exe.patterns    | string[] | yes      | "{{ .Exe.Name }}.\*" |
-| hints[].pattern | string   | yes      | "{{ .Exe.Name }}"    |
-| hints[].weight  | number   | yes      | 1                    |
-| source.type     | string   | no       | GitHub               |
+## Settings
 
-| Field        | Type     | Template | Alt-form                                | Inferrence                                      | Implemented |
-| ------------ | -------- | -------- | --------------------------------------- | ----------------------------------------------- | ----------- |
-| name         | string   | yes      | -                                       | no                                              | yes         |
-| description  | string   | yes      | no                                      | no                                              | yes         |
-| version      | string   | yes      | no                                      | if left blank, from chosen source type          | yes         |
-| path         | string   | yes      | no                                      | if left blank, from chosen source type          | yes         |
-| checksum     | string   | no       | no                                      | no                                              | **no**      |
-| output       | string   | yes      | no                                      | no                                              | yes         |
-| exe          | dict     | no       | exe: string -> exe.name: string         | yes                                             | yes         |
-| exe.name     | string   | yes      | no                                      | if left blank, from ´name`if on form`<>/<name>` | yes         |
-| exe.patterns | string[] | yes      | patterns: string -> patterns[0]: string | no                                              | yes         |
-| platform     | dict     | yes      | no                                      | yes                                             | yes         |
-| platform     | dict     | yes      | no                                      | yes                                             | yes         |
-| platform     | dict     | yes      | no                                      | yes                                             | yes         |
-| platform     | dict     | yes      | no                                      | yes                                             | yes         |
+In general, settings can be set in the following ways:
 
-| aliases | string[] | no | no | no | yes |
-| values | dict | yes | no | no | yes |
-| fallbacks | string[] | no | no | no | yes |
-| hints.pattern | string | yes | no | no | yes |
-| hints.weight | number | yes | no | no | yes |
-| hints.regex | boolean | no | no | no | yes |
-| hints.must | boolean | no | no | no | yes |
-| source.type | string | no | yes | no | yes |
-| source.github.owner | string | no | no | no | yes |
-| source.github.repo | string | no | no | no | yes |
-| source.github.token | string | no | no | no | yes |
-| source.url.url | string | no | no | no | yes |
-| source.url.token | string | no | no | no | yes |
-| source.go.command | string | no | no | no | yes |
-| tags | string[] | yes | no | no | yes |
-| strategy | string | no | no | no | yes |
-| extensions | string[] | no | no | no | yes |
-| skip | boolean | no | no | no | yes |
-| test | string[] | yes | no | no | yes |
+- as a field in the tool definition
+
+  ```yaml
+  output: ~/.local/bin
+  ```
+
+- as a flag to the tool
+
+  ```sh
+  godyl --defaults.output ~/.local/bin
+  ```
+
+- as an environment variable
+
+  ```sh
+  GODYL_DEFAULTS_OUTPUT=~/.local/bin godyl
+  ```
+
+- in the configuration file
+
+  ```yaml
+  defaults:
+    output: ~/.local/bin
+  ```
+
+  pflag.Bool("version", false, "Show the version information and exit")
+  pflag.BoolP("help", "h", false, "Show the help information and exit")
+  pflag.BoolP("show", "s", false, "Show the configuration and exit")
+  pflag.StringP("config", "c", config.Get(), "Path to configuration file")
+  pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
+
+  // Selected custom flags
+  pflag.String("defaults.source.github.token", "", "GitHub token for API requests")
+  pflag.String("defaults.strategy", "none", "")
+  pflag.String("defaults.output", "~/.local/bin", "")
+
+  pflag.String("log", string(logger.INFO), "")
+
+  pflag.Bool("dry", false, "")
+
+  pflag.Bool("update", false, "")
+  pflag.String("update-strategy", string(tools.Upgrade), "")
+
+  pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
+
+The following `config` parameters are available:
+
+| Field               | Type          | `config.yml`          | Flag                   | Environment Variable          | Default                                                                                    |
+| ------------------- | ------------- | --------------------- | ---------------------- | ----------------------------- | ------------------------------------------------------------------------------------------ |
+| output              | string        | defaults.output       | `--defaults.output`    | `GODYL_DEFAULTS_OUTPUT`       | ~/.local/bin                                                                               |
+| exe                 | list of dicts | defaults.exe          | -                      | -                             | <pre>exe:<br>&nbsp;&nbsp;patterns: "{{ .Exe.Name }}.\*"<br></pre> [refer](./README.md#L43) |
+| hints               | list of dicts | defaults.hints        | -                      | -                             | {{ .Exe.Name }}                                                                            |
+| source.type         | string        | defaults.exe.patterns | `defaults.source.type` | `GODYL_DEFAULTS_SOURCE_TYPE`  | GitHub                                                                                     |
+| source.github.token | string        | defaults.github.token | `defaults.source.type` | `GODYL_DEFAULTS_GITHUB_TOKEN` | GitHub                                                                                     |
+
+Markdown Input HTML Output HTML Preview
+`{a: 1, b: 2, c: 3}` <code>{a: 1, b: 2, c: 3}</code> {a: 1, b: 2, c: 3}
+
+<pre> {JSON: <br>
+&emsp; ["Key1":"Value1",<br>
+&emsp; "Key2":"Value2"] <br>
+}</pre>
+
+{JSON:
+ ["Key1":"Value1",
+ "Key2":"Value2"]
+}
+
+### output
+
+`output` is the path to the directory where the tool will be installed.
+
+This can be set with (in order of priority):
+
+- as a field in the tool definition
+
+  ```yaml
+  output: ~/.local/bin
+  ```
+
+- as a flag to the tool
+
+  ```sh
+  godyl --defaults.output ~/.local/bin
+  ```
+
+- as an environment variable
+
+  ```sh
+  GODYL_DEFAULTS_OUTPUT=~/.local/bin godyl
+  ```
+
+- in the configuration file
+
+  ```yaml
+  defaults:
+    output: ~/.local/bin
+  ```
+
+| Field           | Type     | Template | Default            |
+| --------------- | -------- | -------- | ------------------ |
+| output          | string   | yes      | ~/.local/bin       |
+| exe.patterns    | string[] | yes      | {{ .Exe.Name }}.\* |
+| hints[].pattern | string   | yes      | {{ .Exe.Name }}    |
+| hints[].weight  | number   | yes      | 1                  |
+| source.type     | string   | no       | GitHub             |
+
+| Field       | Type     | Template | Alt-form                                | Inferrence                             | Implemented |
+| ----------- | -------- | -------- | --------------------------------------- | -------------------------------------- | ----------- |
+| name        | string   | yes      | no                                      | no                                     | yes         |
+| description | string   | yes      | no                                      | no                                     | yes         |
+| version     | string   | yes      | no                                      | if left blank, from chosen source type | yes         |
+| path        | string   | yes      | no                                      | if left blank, from chosen source type | yes         |
+| checksum    | string   | no       | no                                      | no                                     | **no**      |
+| output      | string   | yes      | no                                      | no                                     | yes         |
+| aliases     | string[] | no       | `aliases: string -> aliases[0]: string` | no                                     | yes         |
+
+| Field        | Type     | Template | Alt-form                                  | Inferrence                                        | Implemented |
+| ------------ | -------- | -------- | ----------------------------------------- | ------------------------------------------------- | ----------- |
+| exe          | dict     | no       | `exe: string -> exe.name: string`         | yes                                               | yes         |
+| exe.name     | string   | yes      | no                                        | if left blank, from `name` if on form `<>/<name>` | yes         |
+| exe.patterns | string[] | yes      | `patterns: string -> patterns[0]: string` | no                                                | yes         |
+
+| Field                         | Type   | Template | Alt-form | Inferrence                                                              | Implemented |
+| ----------------------------- | ------ | -------- | -------- | ----------------------------------------------------------------------- | ----------- |
+| platform                      | dict   | yes      | no       | any attribute left blank under `platform.` will have its value inferred | yes         |
+| platform.os                   | string | no       | no       | yes                                                                     | yes         |
+| platform.architecture         | dict   | no       | no       | yes                                                                     | yes         |
+| platform.architecture.type    | dict   | no       | no       | yes                                                                     | yes         |
+| platform.architecture.version | dict   | no       | no       | yes                                                                     | yes         |
+| platform.distribution         | string | no       | no       | yes                                                                     | yes         |
+| platform.library              | string | no       | no       | yes                                                                     | yes         |
+| platform.extension            | string | no       | no       | yes                                                                     | yes         |
+
+| Field      | Type     | Template | Alt-form | Inferrence | Implemented |
+| ---------- | -------- | -------- | -------- | ---------- | ----------- |
+| values     | dict     | yes      | no       | no         | yes         |
+| fallbacks  | string[] | no       | no       | no         | yes         |
+| tags       | string[] | yes      | no       | no         | yes         |
+| strategy   | string   | no       | no       | no         | yes         |
+| extensions | string[] | no       | no       | no         | yes         |
+| skip       | boolean  | no       | no       | no         | yes         |
+| test       | string[] | yes      | no       | no         | yes         |
+
+| Field         | Type    | Template | Alt-form | Inferrence | Implemented |
+| ------------- | ------- | -------- | -------- | ---------- | ----------- |
+| hints.pattern | string  | yes      | yes      | no         | yes         |
+| hints.weight  | string  | yes      | yes      | no         | yes         |
+| hints.regex   | boolean | no       | no       | no         | yes         |
+| hints.must    | boolean | no       | no       | no         | yes         |
+
+| Field       | Type   | Template | Alt-form | Inferrence | Implemented |
+| ----------- | ------ | -------- | -------- | ---------- | ----------- |
+| source.type | string | no       | no       | no         | yes         |
+
+| Field               | Type   | Template | Alt-form | Inferrence | Implemented |
+| ------------------- | ------ | -------- | -------- | ---------- | ----------- |
+| source.github       | dict   | no       | no       | no         | yes         |
+| source.github.owner | string | no       | no       | no         | yes         |
+| source.github.repo  | string | no       | no       | no         | yes         |
+| source.github.token | string | no       | no       | no         | yes         |
+
+| Field            | Type   | Template | Alt-form | Inferrence | Implemented |
+| ---------------- | ------ | -------- | -------- | ---------- | ----------- |
+| source.url       | dict   | no       | no       | no         | yes         |
+| source.url.url   | string | no       | no       | no         | yes         |
+| source.url.token | string | no       | no       | no         | yes         |
+
+| Field             | Type   | Template | Alt-form | Inferrence | Implemented |
+| ----------------- | ------ | -------- | -------- | ---------- | ----------- |
+| source.go         | dict   | no       | no       | no         | yes         |
+| source.go.command | string | no       | no       | no         | yes         |

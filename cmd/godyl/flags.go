@@ -52,7 +52,7 @@ func flags() {
 
 	// Selected custom flags
 	pflag.String("defaults.source.github.token", "", "GitHub token for API requests")
-	pflag.StringSliceP("defaults.extensions", "e", nil, "Extensions to filter tools by")
+	pflag.String("defaults.source.type", "github", "")
 	pflag.String("defaults.strategy", "none", "")
 	pflag.String("defaults.output", "~/.local/bin", "")
 

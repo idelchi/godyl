@@ -2,8 +2,6 @@ defaults:
   output: ~/.local/bin
   exe:
     patterns: "{{ .Exe.Name }}.*"
-  source:
-    type: github
   hints:
     - pattern: "{{ .Exe.Name }}"
       weight: 1

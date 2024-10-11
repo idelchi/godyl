@@ -48,23 +48,3 @@ func (p *Platform) Merge(other Platform) {
 		p.Distribution = other.Distribution
 	}
 }
-
-func (p Platform) ToInfo() Info {
-	return Info{
-		"os":           p.OS.String(),
-		"architecture": p.Architecture.String(),
-		"library":      p.Library.String(),
-		"extension":    p.Extension.String(),
-		"distribution": p.Distribution.String(),
-	}
-}
-
-func (p *Platform) ToMap() map[string]string {
-	return map[string]string{
-		"os":           p.OS.String(),
-		"architecture": p.Architecture.String(),
-		"library":      p.Library.String(),
-		"extension":    p.Extension.String(),
-		"distribution": p.Distribution.String(),
-	}
-}

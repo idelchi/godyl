@@ -8,3 +8,10 @@ defaults:
       weight: 1
     - pattern: zip
       weight: '{{ if eq .Platform.OS "windows" }}1{{ else }}0{{ end }}'
+  # tests:
+  #   allow-failure: true
+  #   args:
+  #     - --version
+  #     - -version
+  #     - version
+  #     - -v

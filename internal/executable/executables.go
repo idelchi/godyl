@@ -1,6 +1,7 @@
 package executable
 
 import (
+	"context"
 	"fmt"
 	"path/filepath"
 )
@@ -34,6 +35,18 @@ func (es Executables) Find(dir string) (Executable, error) {
 		}
 	}
 	return Executable{}, fmt.Errorf("executables %v not found in %q", es.Paths(), dir)
+}
+
+// Find searches for any of the executables in the given directory.
+// The first executable found is returned.
+func (es Executables) Test(args []string) error {
+	for _, e := range es {
+		err := e.Test(context.TODO(), args)
+		if err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("executables %v failed test with args %v", es.Paths(), args)
 }
 
 // Paths returns a list of paths for all executables.

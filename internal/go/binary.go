@@ -60,7 +60,6 @@ func New() (b Binary, err error) {
 		b.Dir = folder.Folder(binary.Dir())
 
 		if dir.IsParentOf(b.Dir) {
-			fmt.Printf("%q is parent of %q\n", dir.Path(), b.Dir.Path())
 			b.Env = Env{
 				"GOMODCACHE": filepath.Join(b.Dir.Path(), ".cache"),
 				"GOCACHE":    filepath.Join(b.Dir.Path(), ".cache"),

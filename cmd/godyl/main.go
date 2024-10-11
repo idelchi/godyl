@@ -9,6 +9,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/pretty"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -91,10 +92,13 @@ func main() {
 			err := res.err
 			msg := res.msg
 			logger.Info(tool.Name)
-
-			logger.Debug(PrintJSON(tool))
+			logger.Debug("configuration:")
+			logger.Debug("-------")
+			logger.Debug(pretty.YAMLMasked(tool))
+			logger.Debug("-------")
 			// Process tool results
 			if err != nil {
+				logger.Warn(tool.Name)
 				if errors.Is(err, tools.ErrAlreadyExists) {
 					logger.Warn("  already installed")
 				} else if errors.Is(err, tools.ErrDoesNotHaveTags) {
@@ -102,6 +106,12 @@ func main() {
 				} else if errors.Is(err, tools.ErrSkipped) {
 					logger.Warn("  skipped due to skip marker")
 				} else {
+					logger.Error(tool.Name)
+					logger.Error("  failed to install")
+					logger.Error("configuration:")
+					logger.Error("-------")
+					logger.Error(pretty.JSONMasked(tool))
+					logger.Error("-------")
 					logger.Error("  %v", err)
 					logger.Error("  %s", msg)
 				}

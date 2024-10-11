@@ -5,7 +5,11 @@ import "slices"
 type Tags []string
 
 func (t *Tags) Append(tags ...string) {
-	*t = append(*t, tags...)
+	for _, tag := range tags {
+		if !slices.Contains(*t, tag) {
+			*t = append(*t, tag)
+		}
+	}
 }
 
 func (t Tags) Has(tags Tags) bool {

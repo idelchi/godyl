@@ -2,7 +2,7 @@ package tools
 
 import (
 	"github.com/idelchi/godyl/internal/detect"
-	"github.com/idelchi/godyl/internal/detect/platform"
+	stringlike "github.com/idelchi/godyl/internal/generic"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
 )
@@ -28,37 +28,20 @@ func (d *Defaults) Defaults() error {
 
 	d.Platform.Merge(p)
 
-	if len(d.Extensions) == 0 {
-		switch d.Platform.OS {
-		case platform.Windows:
-			d.Extensions = []string{
-				".zip",
-				".exe",
-				".gz",
-			}
-		default:
-			d.Extensions = []string{
-				".gz",
-				"",
-			}
-		}
-	}
-
-	if d.Exe.Patterns == nil {
-		d.Exe.Patterns = []string{"{{ .Exe.Name }}.*"}
-	}
+	stringlike.SetSliceIfNil(&d.Extensions, p.CommonExtensions()...)
+	// stringlike.SetSliceIfNil(&d.Exe.Patterns, "{{ .Exe.Name }}.*")
 
 	return nil
 }
 
 func (t *Tool) ApplyDefaults(d Defaults) {
-	SetStringIfEmpty(&t.Output, d.Output)
-	SetStringIfEmpty(&t.Source.Type, d.Source.Type)
-	SetStringIfEmpty(&t.Source.Github.Token, d.Source.Github.Token)
-	SetStringIfEmpty(&t.Strategy, d.Strategy)
-	SetStringIfEmpty(&t.SkipTemplate, "false")
-	SetStringSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
-	SetStringSliceIfNil(&t.Extensions, d.Extensions...)
+	stringlike.SetIfEmpty(&t.Output, d.Output)
+	stringlike.SetIfEmpty(&t.Source.Type, d.Source.Type)
+	stringlike.SetIfEmpty(&t.Source.Github.Token, d.Source.Github.Token)
+	stringlike.SetIfEmpty(&t.Strategy, d.Strategy)
+	stringlike.SetIfEmpty(&t.Skip.Template, "false")
+	stringlike.SetSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
+	stringlike.SetSliceIfNil(&t.Extensions, d.Extensions...)
 
 	t.Platform.Merge(d.Platform)
 	t.Hints.Add(d.Hints)

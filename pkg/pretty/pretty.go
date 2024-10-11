@@ -2,14 +2,32 @@
 package pretty
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 
 	"github.com/showa-93/go-mask"
+	"gopkg.in/yaml.v3"
 )
 
 func PrintJSON(obj any) {
 	fmt.Println(JSON(obj))
+}
+
+func YAML(obj any) string {
+	buf := bytes.Buffer{}
+	enc := yaml.NewEncoder(&buf)
+	enc.SetIndent(2)
+	err := enc.Encode(&obj)
+	if err != nil {
+		return err.Error()
+	}
+
+	return buf.String()
+}
+
+func YAMLMasked(obj any) string {
+	return YAML(JSONMasked(obj))
 }
 
 // JSON returns a prettified JSON representation of the provided object.
@@ -24,12 +42,12 @@ func JSON(obj any) string {
 
 // PrintJSONMasked returns a pretty-printed JSON string representation of the provided object with masked sensitive
 // fields.
-func PrintJSONMasked(obj any) string {
-	return JSON(JSONMasked(obj))
+func JSONMasked(obj any) string {
+	return JSON(MaskJSON(obj))
 }
 
 // JSONMasked returns a pretty-printed JSON representation of the provided object with masked sensitive fields.
-func JSONMasked(obj any) any {
+func MaskJSON(obj any) any {
 	masker := mask.NewMasker()
 
 	masker.SetMaskChar("-")

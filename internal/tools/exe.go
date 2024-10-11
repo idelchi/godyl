@@ -6,7 +6,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Aliases is a custom type for handling alias names.
 type Exe struct {
 	Name     string
 	Patterns []string
@@ -16,7 +15,7 @@ func (e *Exe) UnmarshalYAML(value *yaml.Node) error {
 	// If it's a scalar (e.g., just the name), handle it directly
 	if value.Kind == yaml.ScalarNode {
 		e.Name = value.Value
-		e.Patterns = []string{value.Value}
+		// e.Patterns = []string{value.Value}
 		return nil
 	}
 

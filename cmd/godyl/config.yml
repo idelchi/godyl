@@ -1,7 +1,10 @@
 defaults:
   output: ~/.local/bin
   exe:
-    patterns: "{{ .Exe.Name }}.*"
+    patterns:
+      - "^{{ .Exe.Name }}.*"
   hints:
     - pattern: "{{ .Exe.Name }}"
       weight: 1
+    - pattern: zip
+      weight: '{{ if eq .Platform.OS "windows" }}1{{ else }}0{{ end }}'

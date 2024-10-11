@@ -2,6 +2,7 @@ package detect
 
 import (
 	"github.com/idelchi/godyl/internal/detect/platform"
+	stringlike "github.com/idelchi/godyl/internal/generic"
 )
 
 type Info map[string]string
@@ -29,22 +30,26 @@ func (p *Platform) Default() {
 }
 
 func (p *Platform) Merge(other Platform) {
-	if p.OS == "" {
-		p.OS = other.OS
-	}
-	if p.Architecture.Type == "" {
-		p.Architecture.Type = other.Architecture.Type
-	}
-	if p.Architecture.Version == "" {
-		p.Architecture.Version = other.Architecture.Version
-	}
-	if p.Library == "" {
-		p.Library = other.Library
-	}
-	if p.Extension == "" {
-		p.Extension = other.Extension
-	}
-	if p.Distribution == "" {
-		p.Distribution = other.Distribution
+	stringlike.SetIfEmpty(&p.OS, other.OS)
+	stringlike.SetIfEmpty(&p.Architecture.Type, other.Architecture.Type)
+	stringlike.SetIfEmpty(&p.Architecture.Version, other.Architecture.Version)
+	stringlike.SetIfEmpty(&p.Library, other.Library)
+	stringlike.SetIfEmpty(&p.Extension, other.Extension)
+	stringlike.SetIfEmpty(&p.Distribution, other.Distribution)
+}
+
+func (p *Platform) CommonExtensions() []string {
+	switch p.OS {
+	case platform.Windows:
+		return []string{
+			".zip",
+			".exe",
+			".gz",
+		}
+	default:
+		return []string{
+			".gz",
+			"",
+		}
 	}
 }

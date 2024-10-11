@@ -6,24 +6,33 @@ import (
 	"strings"
 	"text/template"
 
+	stringlike "github.com/idelchi/godyl/internal/generic"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
-// NormalizeValues ensures all keys in Values are upper-cased
+// NormalizeValues ensures all keys in Values are capitalized.
 func (t *Tool) NormalizeValues() {
-	normalizedValues := make(map[string]any)
+	t.Values = normalizeMap(t.Values)
+}
+
+func normalizeMap(m map[string]any) map[string]any {
+	normalizedMap := make(map[string]any)
 	c := cases.Title(language.English)
 
-	// Iterate through the Values and convert keys to uppercase
-	for key, value := range t.Values {
+	for key, value := range m {
 		upperKey := c.String(key)
-		normalizedValues[upperKey] = value
+
+		switch v := value.(type) {
+		case map[string]any:
+			normalizedMap[upperKey] = normalizeMap(v)
+		default:
+			normalizedMap[upperKey] = v
+		}
 	}
 
-	// Replace the original Values map with the normalized one
-	t.Values = normalizedValues
+	return normalizedMap
 }
 
 // ApplyTemplate applies Go templates to a string field using the Tool struct as data
@@ -55,11 +64,11 @@ func (t *Tool) Template() error {
 	}
 
 	// Apply templating to all relevant fields
-	skip, err := t.ApplyTemplate(t.SkipTemplate)
+	skip, err := t.ApplyTemplate(t.Skip.Template)
 	if err != nil {
 		return err
 	}
-	t.Skip, err = strconv.ParseBool(skip)
+	t.Skip.Skip, err = strconv.ParseBool(skip)
 	if err != nil {
 		return err
 	}
@@ -90,11 +99,10 @@ func (t *Tool) Template() error {
 	}
 
 	for i, pattern := range t.Exe.Patterns {
-		output, err := t.ApplyTemplate(pattern)
+		t.Exe.Patterns[i], err = t.ApplyTemplate(pattern)
 		if err != nil {
 			return err
 		}
-		t.Exe.Patterns[i] = output
 	}
 
 	// Apply templating to Source.Commands (iterate over the command list)
@@ -108,25 +116,20 @@ func (t *Tool) Template() error {
 
 	// Apply templating to Source.Commands (iterate over the command list)
 	for i, hints := range t.Hints {
-		output, err := t.ApplyTemplate(hints.Pattern)
+		t.Hints[i].Pattern, err = t.ApplyTemplate(hints.Pattern)
 		if err != nil {
 			return err
 		}
-		t.Hints[i].Pattern = output
-
-		output, err = t.ApplyTemplate(hints.WeightTemplate)
+		output, err := t.ApplyTemplate(hints.WeightTemplate)
 		if err != nil {
 			return err
 		}
 		// Convert the result (string) into an integer and store it in the actual Weight field
-		if output == "" {
-			output = "1"
-		}
+		stringlike.SetIfEmpty(&output, "1")
 		t.Hints[i].Weight, err = strconv.Atoi(output)
 		if err != nil {
 			return err
 		}
-
 	}
 
 	return nil

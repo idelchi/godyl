@@ -34,8 +34,7 @@ type Tool struct {
 	Tags         Tags
 	Strategy     Strategy
 	Extensions   []string
-	SkipTemplate string `yaml:"skip" mapstructure:"skip"`
-	Skip         bool   `yaml:"-" mapstructure:"-"`
+	Skip         Skip
 	Test         sources.Commands
 	AllowFailure bool `yaml:"allow_failure" mapstructure:"allow_failure"`
 }

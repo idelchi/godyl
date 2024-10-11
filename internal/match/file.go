@@ -32,7 +32,7 @@ func (h *Hints) Add(hints Hints) {
 
 type Hint struct {
 	Pattern        string
-	WeightTemplate string `yaml:"weight" mapstructure:"weight"`
+	WeightTemplate string `json:"-" yaml:"weight" mapstructure:"weight"`
 	Weight         int    `yaml:"-" mapstructure:"-"`
 	Regex          bool
 	Must           bool
@@ -172,6 +172,7 @@ func (as Assets) Match(req Requirements) Results {
 		score, qualified := a.Match(req)
 		results = append(results, Result{Name: a.Name, Score: score, Qualified: qualified})
 	}
+
 	return results
 }
 

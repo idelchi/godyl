@@ -10,7 +10,7 @@ import (
 type GitHub struct {
 	Repo  string
 	Owner string
-	Token string
+	Token string `mask:"fixed"`
 
 	Data Metadata `yaml:"-"`
 }
@@ -41,6 +41,7 @@ func (g *GitHub) MatchAssetsToRequirements(filters []string, version string, req
 	}
 
 	assets := release.Assets
+
 	assets = assets.FilterByExtension(filters)
 
 	match, err := assets.Match(requirements)

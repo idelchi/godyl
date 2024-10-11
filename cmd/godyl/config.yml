@@ -2,8 +2,6 @@ defaults:
   output: ~/.local/bin
   exe:
     patterns: "{{ .Exe.Name }}.*"
-  fallbacks:
-    - go
   source:
     type: github
   hints:

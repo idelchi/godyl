@@ -128,6 +128,8 @@ func (b *Binary) Find(paths ...string) (executable.Executable, error) {
 func (b *Binary) Download(path string) error {
 	url := fmt.Sprintf("https://go.dev/dl/%s", path)
 
+	fmt.Fprintf(os.Stderr, "Downloading %q\n", url)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 

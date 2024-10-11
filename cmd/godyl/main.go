@@ -91,7 +91,7 @@ func main() {
 			tool := res.tool
 			err := res.err
 			msg := res.msg
-			logger.Info(tool.Name)
+			logger.Always(tool.Name)
 			logger.Debug("configuration:")
 			logger.Debug("-------")
 			logger.Debug(pretty.YAMLMasked(tool))
@@ -102,7 +102,6 @@ func main() {
 				if errors.Is(err, tools.ErrAlreadyExists) || errors.Is(err, tools.ErrDoesNotHaveTags) || errors.Is(err, tools.ErrDoesHaveTags) || errors.Is(err, tools.ErrSkipped) {
 					logger.Warn("  %v", err)
 				} else {
-					logger.Error(tool.Name)
 					logger.Error("  failed to install")
 					logger.Error("configuration:")
 					logger.Error("-------")

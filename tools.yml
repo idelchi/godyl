@@ -13,12 +13,25 @@
 - charmbracelet/glow
 - gopasspw/gopass
 - lsd-rs/lsd
+- sharkdp/diskus
+- muesli/duf
+- AlDanial/cloc
+- FiloSottile/age
+- chmln/sd
+- name: kraanzu/dooit
+  exe:
+    patterns:
+      - "^{{ .Platform.OS }}-{{ .Exe.Name }}"
+
+- name: homeport/dyff
+  fallbacks:
+    - go
 
 - name: moncho/dry
   exe:
     name: dry
     patterns:
-      - ^dry.*$
+      - ^dry
   extensions:
     - ""
 
@@ -31,20 +44,11 @@
   extensions:
     - ""
 
-- sharkdp/diskus
-- muesli/duf
-- AlDanial/cloc
-- FiloSottile/age
-- chmln/sd
-- kraanzu/dooit
-
-- name: homeport/dyff
-  fallbacks:
-    - go
-
 - name: logdyhq/logdy-core
-  # exe:
-  #   patterns: logdy
+  exe:
+    name: logdy
+    patterns:
+      - ^logdy
   fallbacks:
     - go
 
@@ -105,12 +109,15 @@
   #   - rust
 
 - name: cli/cli
-  aliases:
-    - gh
+  exe:
+    name: gh
 
 - name: github/gh-copilot
-  aliases:
-    - ghc
+  exe:
+    name: github-copilot
+    patterns:
+      - "^{{ .Platform.OS }}-"
+  aliases: ghc
 
 - name: jesseduffield/lazydocker
   aliases: lazy
@@ -146,6 +153,18 @@
     - go
   extensions:
     - ""
+  source:
+    type: |-
+      {{- if or
+          (eq .Platform.OS "linux")
+          (eq .Platform.OS "darwin")
+      -}}
+      github
+      {{- else -}}
+      go
+      {{- end -}}
+    go:
+      command: v2/cmd/dasel
 
 - name: kdash-rs/kdash
   tags:

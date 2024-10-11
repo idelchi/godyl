@@ -2,7 +2,7 @@ package detect
 
 import (
 	"github.com/idelchi/godyl/internal/detect/platform"
-	stringlike "github.com/idelchi/godyl/internal/generic"
+	"github.com/idelchi/godyl/internal/stringlike"
 )
 
 type Info map[string]string

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"text/template"
 
-	stringlike "github.com/idelchi/godyl/internal/generic"
+	"github.com/idelchi/godyl/internal/stringlike"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -59,6 +59,12 @@ func (t *Tool) Template() error {
 
 	// Apply templating to all relevant fields
 	t.Name, err = t.ApplyTemplate(t.Name)
+	if err != nil {
+		return err
+	}
+
+	// Apply templating to all relevant fields
+	t.Source.Type, err = t.ApplyTemplate(t.Source.Type)
 	if err != nil {
 		return err
 	}

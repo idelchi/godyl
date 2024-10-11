@@ -100,6 +100,10 @@ func (l *Logger) log(level Level, format string, args ...any) {
 	}
 }
 
+func (l *Logger) Always(format string, args ...any) {
+	l.log(INFO, format, args...)
+}
+
 // Debug logs a debug message
 func (l *Logger) Debug(format string, args ...any) {
 	l.log(DEBUG, format, args...)

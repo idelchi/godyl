@@ -2,8 +2,8 @@ package tools
 
 import (
 	"github.com/idelchi/godyl/internal/detect"
-	stringlike "github.com/idelchi/godyl/internal/generic"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/stringlike"
 	"github.com/idelchi/godyl/internal/tools/sources"
 )
 

@@ -2,12 +2,13 @@ package tools
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/idelchi/godyl/internal/executable"
 	"github.com/idelchi/godyl/internal/folder"
-	stringlike "github.com/idelchi/godyl/internal/generic"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/stringlike"
 	"github.com/idelchi/godyl/internal/tools/sources"
 )
 
@@ -36,6 +37,16 @@ func (t *Tool) Resolve(withTags []string, withoutTags []string) error {
 	path := t.Path
 
 	fallbacks := append([]string{t.Source.Type}, t.Fallbacks...)
+
+	for i, fallback := range fallbacks {
+		output, err := t.ApplyTemplate(fallback)
+		if err != nil {
+			return err
+		}
+		fallbacks[i] = output
+	}
+
+	fallbacks = slices.Compact(fallbacks)
 
 	var lastErr error
 

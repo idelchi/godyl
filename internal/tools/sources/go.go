@@ -2,6 +2,7 @@ package sources
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -63,14 +64,21 @@ func (g *Go) Install(d InstallData) (output string, err error) {
 		},
 	)
 
+	name := strings.TrimSuffix(d.Exe, filepath.Ext(d.Exe))
+
 	paths := []string{
 		d.Path,
-		strings.Replace(d.Path, fmt.Sprintf("/%s@", d.Exe), fmt.Sprintf("/%s/cmd/%s@", d.Exe, d.Exe), 1),
-		strings.Replace(d.Path, fmt.Sprintf("/%s@", d.Exe), fmt.Sprintf("/%s/cmd@", d.Exe), 1),
+		strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/cmd/%s@", name, name), 1),
+		strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/cmd@", name), 1),
 	}
 
 	if g.Command != "" {
-		paths = []string{(strings.Replace(d.Path, fmt.Sprintf("/%s@", d.Exe), fmt.Sprintf("/%s/%s@", d.Exe, g.Command), 1))}
+		paths = []string{(strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/%s@", name, g.Command), 1))}
+	}
+
+	for i, path := range paths {
+		// Lowercase the path
+		paths[i] = strings.ToLower(path)
 	}
 
 	for _, path := range paths {

@@ -9,6 +9,7 @@ require (
 	github.com/go-resty/resty/v2 v2.15.0
 	github.com/google/go-github/v64 v64.0.0
 	github.com/google/uuid v1.6.0
+	github.com/hashicorp/go-envparse v0.1.0
 	github.com/hashicorp/go-getter/v2 v2.2.3
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
 	github.com/mitchellh/mapstructure v1.5.0

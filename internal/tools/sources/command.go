@@ -62,14 +62,14 @@ func (*Commands) Path(_ string, _ []string, _ string, _ match.Requirements) erro
 	return nil
 }
 
-func (c *Commands) Install(d InstallData) (output string, err error) {
+func (c *Commands) Install(d InstallData) (output, found string, err error) {
 	for _, command := range *c {
 		output, err := command.Shell()
 		output += output + "\n"
 		if err != nil {
-			return strings.TrimRight(output, "\n"), fmt.Errorf("running commands: %w", err)
+			return strings.TrimRight(output, "\n"), "", fmt.Errorf("running commands: %w", err)
 		}
 	}
 
-	return strings.TrimRight(output, "\n"), nil
+	return strings.TrimRight(output, "\n"), "", nil
 }

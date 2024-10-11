@@ -110,6 +110,6 @@ func (g *GitHub) Path(_ string, extensions []string, version string, requirement
 	return nil
 }
 
-func (g *GitHub) Install(d InstallData) (output string, err error) {
+func (g *GitHub) Install(d InstallData) (output, found string, err error) {
 	return Download(d)
 }

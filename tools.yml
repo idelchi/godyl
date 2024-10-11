@@ -53,6 +53,9 @@
     - go
 
 - name: cespare/reflex
+  skip:
+    template: '{{ if eq .Platform.OS "windows" }}true{{ else }}false{{ end }}'
+    message: "reflex does not work on windows"
   fallbacks:
     - go
 
@@ -111,6 +114,8 @@
 - name: cli/cli
   exe:
     name: gh
+    patterns:
+      - bin/gh{{ .Platform.Extension }}$
 
 - name: github/gh-copilot
   exe:
@@ -118,7 +123,6 @@
     patterns:
       - "^{{ .Platform.OS }}-"
   aliases: ghc
-
 - name: jesseduffield/lazydocker
   aliases: lazy
   tags:

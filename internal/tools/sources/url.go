@@ -33,6 +33,6 @@ func (u *URL) Path(name string, _ []string, _ string, _ match.Requirements) erro
 	return nil
 }
 
-func (u *URL) Install(d InstallData) (output string, err error) {
+func (u *URL) Install(d InstallData) (output, found string, err error) {
 	return Download(d)
 }

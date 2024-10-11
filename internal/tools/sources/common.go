@@ -20,10 +20,10 @@ type InstallData struct {
 	Aliases  []string
 }
 
-func Download(d InstallData) (output string, err error) {
+func Download(d InstallData) (output, found string, err error) {
 	var tmp folder.Folder
 	if err := tmp.CreateRandomInTempDir(); err != nil {
-		return "", fmt.Errorf("creating temp dir: %w", err)
+		return "", "", fmt.Errorf("creating temp dir: %w", err)
 	}
 	// defer tmp.Remove()
 
@@ -32,37 +32,39 @@ func Download(d InstallData) (output string, err error) {
 
 	_, err = download.Download(ctx, d.Path, tmp.Path())
 	if err != nil {
-		return "", fmt.Errorf("downloading %q: %w", d.Path, err)
+		return "", "", fmt.Errorf("downloading %q: %w", d.Path, err)
 	}
 
-	return "", FindAndSymlink(tmp.Path(), d)
+	found, err = FindAndSymlink(tmp.Path(), d)
+
+	return "", found, err
 }
 
-func FindAndSymlink(destination string, d InstallData) error {
+func FindAndSymlink(destination string, d InstallData) (found string, err error) {
 	// Construct an executables item from all the possible names
 	executables := executable.Executables{}.FromStrings("", d.Patterns...)
 	// Find the specific executable that was downloaded
 	download, err := executables.Find(destination)
 	if err != nil {
-		return fmt.Errorf("finding executable: %w", err)
+		return found, fmt.Errorf("finding executable: %w", err)
 	}
 
 	folder := folder.Folder(d.Output)
 	if !folder.Exists() {
 		if err := folder.Create(); err != nil {
-			return fmt.Errorf("creating output folder: %w", err)
+			return found, fmt.Errorf("creating output folder: %w", err)
 		}
 	}
 
 	target := executable.New(d.Output, d.Exe)
 
 	if err := download.Copy(target.Path); err != nil {
-		return fmt.Errorf("copying %q to %q: %w", download.Path, target.Path, err)
+		return found, fmt.Errorf("copying %q to %q: %w", download.Path, target.Path, err)
 	}
 
 	aliases := executable.Executables{}.FromStrings(d.Output, d.Aliases...)
 
-	return aliases.SymlinksFor(target)
+	return download.Path, aliases.SymlinksFor(target)
 }
 
 func SplitName(name string) (parts [2]string, err error) {

@@ -43,11 +43,11 @@ func (g *Go) Path(_ string, _ []string, version string, _ match.Requirements) er
 
 var mu sync.Mutex
 
-func (g *Go) Install(d InstallData) (output string, err error) {
+func (g *Go) Install(d InstallData) (output, found string, err error) {
 	mu.Lock()
 	binary, err := ginstaller.New()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	mu.Unlock()
 
@@ -86,12 +86,14 @@ func (g *Go) Install(d InstallData) (output string, err error) {
 
 		if err == nil {
 			d.Path = path
-			return output, FindAndSymlink(folder.Path(), d)
+			found, err := FindAndSymlink(folder.Path(), d)
+
+			return output, found, err
 		} else {
 			fmt.Println(err)
 			fmt.Println(output)
 		}
 	}
 
-	return output, err
+	return output, "", err
 }

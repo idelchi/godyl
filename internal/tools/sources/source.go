@@ -19,7 +19,7 @@ type Populater interface {
 	Exe() error
 	Version(string) error
 	Path(string, []string, string, match.Requirements) error
-	Install(InstallData) (string, error)
+	Install(InstallData) (string, string, error)
 	Get(string) string
 }
 

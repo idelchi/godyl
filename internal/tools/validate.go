@@ -181,10 +181,10 @@ type Installer interface {
 	Install(d sources.InstallData) (output string, err error)
 }
 
-func (t *Tool) Download() (string, error) {
+func (t *Tool) Download() (string, string, error) {
 	installer, err := t.Source.Installer()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	data := sources.InstallData{

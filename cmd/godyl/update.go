@@ -48,7 +48,7 @@ func updater(cfg Config) error {
 			return fmt.Errorf("Error resolving tool: %w", err)
 		}
 
-		if output, err := tool.Download(); err != nil {
+		if output, _, err := tool.Download(); err != nil {
 			return fmt.Errorf("Error downloading tool: %w: %s", err, output)
 		}
 

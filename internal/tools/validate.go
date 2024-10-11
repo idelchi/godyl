@@ -17,19 +17,19 @@ var (
 	ErrFailed          = fmt.Errorf("tool failed")
 )
 
-func SetStringIfEmpty(input *string, value string) {
+func SetStringIfEmpty[S ~string](input *S, value S) {
 	if *input == "" {
 		*input = value
 	}
 }
 
-func SetStringSliceIfNil(input *[]string, value string) {
+func SetStringSliceIfNil[S ~string](input *[]S, values ...S) {
 	if *input == nil {
-		*input = []string{value}
+		*input = append([]S(nil), values...)
 	}
 }
 
-func StringIsEmpty(input string) bool {
+func StringIsEmpty[S ~string](input S) bool {
 	return input == ""
 }
 

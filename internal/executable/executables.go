@@ -33,7 +33,7 @@ func (es Executables) Find(dir string) (Executable, error) {
 			return executable, nil
 		}
 	}
-	return Executable{}, fmt.Errorf("executable not found in %q", dir)
+	return Executable{}, fmt.Errorf("executables %v not found in %q", es.Paths(), dir)
 }
 
 // Paths returns a list of paths for all executables.

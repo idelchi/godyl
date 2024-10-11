@@ -123,7 +123,6 @@ func main() {
 
 	// Start goroutines for each tool.
 	for _, tool := range toolsList {
-		tool := tool // avoid closure capturing issue
 		g.Go(func() error {
 			tool.ApplyDefaults(cfg.Defaults)
 

@@ -44,7 +44,7 @@ func (d *Defaults) Defaults() error {
 		}
 	}
 
-	if d.Exe.Patterns == nil || len(d.Exe.Patterns) == 0 {
+	if d.Exe.Patterns == nil {
 		d.Exe.Patterns = []string{"{{ .Exe.Name }}.*"}
 	}
 
@@ -52,41 +52,14 @@ func (d *Defaults) Defaults() error {
 }
 
 func (t *Tool) ApplyDefaults(d Defaults) {
-	// Apply default for Output if empty
-	if t.Output == "" {
-		t.Output = d.Output
-	}
-
-	// Apply default for Source
-	if t.Source.Type == "" {
-		t.Source = d.Source
-	}
-	if t.Source.Github.Token == "" {
-		t.Source.Github.Token = d.Source.Github.Token
-	}
-
-	// Apply default for Strategy if empty
-	if t.Strategy == "" {
-		t.Strategy = d.Strategy
-	}
+	SetStringIfEmpty(&t.Output, d.Output)
+	SetStringIfEmpty(&t.Source.Type, d.Source.Type)
+	SetStringIfEmpty(&t.Source.Github.Token, d.Source.Github.Token)
+	SetStringIfEmpty(&t.Strategy, d.Strategy)
+	SetStringIfEmpty(&t.SkipTemplate, "false")
+	SetStringSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
+	SetStringSliceIfNil(&t.Extensions, d.Extensions...)
 
 	t.Platform.Merge(d.Platform)
-
-	if t.Extensions == nil {
-		t.Extensions = d.Extensions
-	}
-
-	if t.SkipTemplate == "" {
-		t.SkipTemplate = "false"
-	}
-
-	// if t.Exe.Name == "" {
-	// 	t.Exe.Name = t.Name
-	// }
-
-	if t.Exe.Patterns == nil || len(t.Exe.Patterns) == 0 {
-		t.Exe.Patterns = d.Exe.Patterns
-	}
-
 	t.Hints.Add(d.Hints)
 }

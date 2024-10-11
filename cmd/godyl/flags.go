@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -102,13 +103,11 @@ func parseFlags() (cfg Config, err error) {
 	// Only return errors if the config flag is set or the environment variable is set
 	// Otherwise, either read the configuration or try to read the default value
 	if err := viper.ReadInConfig(); err != nil && config.IsSet() {
-		fmt.Println("Error reading config file:", err)
-
-		return cfg, err
+		return cfg, fmt.Errorf("reading config: %w", err)
 	} else if err != nil {
-		fmt.Println("Setting defaults to config file")
-
-		cfg.Default()
+		if err := viper.ReadConfig(bytes.NewReader(defaultConfigFile)); err != nil {
+			return cfg, fmt.Errorf("reading default config: %w", err)
+		}
 	}
 
 	decoderConfig := func(dc *mapstructure.DecoderConfig) {

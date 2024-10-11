@@ -34,32 +34,60 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts
 
 A configuration may be used to specify default settings for all tools. These will override (or extend in some case) the settings for each tool.
 
-[config.yml](./examples/config.yml)
+The following is embedded and used by default if no configuration is provided:
+
+[config.yml](./cmd/godyl/config.yml)
 
 ```yaml
 defaults:
   output: ~/.local/bin
-  fallbacks:
-    - go
+  exe:
+    patterns:
+      - "{{ .Exe.Name }}.*"
   source:
     type: github
   hints:
-    - pattern: "{{ .Exe }}"
+    - pattern: "{{ .Exe.Name }}"
       weight: 1
 ```
 
 The example above defines:
 
 - The default output directory for all tools
-- The default fallbacks to use if the tool cannot be downloaded
+- A pattern to use for when searching for the executable
 - The default source to use if not specified
 - A hint to use the executable name as a pattern (useful for repositories with multiple binaries, such as `ahmetb/kubectx`)
 
+The full set of configuration options are:
+
+```yaml
+# path to tools file
+tools: string
+# list of tags to filter tools by
+tags: []
+# whether to update `godyl` itself
+update: boolean
+# update strategy for `godyl`
+update-strategy: string
+# dry run to output chosen tools
+dry: boolean
+# log level, one of debug, info, warn, error
+log: string
+# help message
+help: boolean
+# show configuration
+show: boolean
+# show version
+version: boolean
+# number of parallel downloads
+parallel: int
+```
+
 ## Tools
 
-A YAML file controls the tools to download and install. Alternative, if the second argument to the tool is not a YAML file, it will be treated as a single (GitHub) tool.
+A YAML file controls the tools to download and install. Alternative, if the positional argument to the tool is not a YAML file, it will be treated as a single tool name.
 
-Examples are provided in [tools.yml](./examples/tools.yml) and
+Examples are provided in [tools.yml](./tools.yml) and
 
 ```yaml
 - ajeetdsouza/zoxide
@@ -70,16 +98,16 @@ Above is the `simple` form to attempt to download the latest release of `zoxide`
 The full form is
 
 ```yaml
-- name: ajeetdsouza/zoxide # May use Go templates
-  exe: zoxide # Inferred from name if not given, may use Go templates
-
 - name: ajeetdsouza/zoxide # Name of the tool, can use Go templates
   description: A smart autojump tool # Description of the tool
   version: v{{ .Values.Version }} # Version of the tool, can use Go templates
   path: "" # Path to fetch the tool, can use Go templates. Will be inferred if not given
   checksum: "" # Checksum for the downloaded file (NOT IMPLEMENTED)
   output: "{{ .Output }}" # Output path for the tool
-  exe: "{{ .Exe }}" # Name of the executable itself, inferred from name if not given, can use Go templates
+  exe:
+    name: # Name of the executable itself, inferred from name if not given, can use Go templates
+    patterns: # Patterns to use for finding the executable, can use Go templates
+      - "{{ .Exe.Name }}.*"
   platform: "{{ .Platform }}" # Platform detection. Any field not given will be detected from the system.
   aliases: # Aliases for the tool
     - z

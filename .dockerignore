@@ -6,3 +6,4 @@
 !go.mod
 !go.sum
 !.bashrc
+!cmd/godyl/config.yml

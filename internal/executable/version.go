@@ -32,6 +32,7 @@ func NewDefaultVersionParser() *Version {
 		Commands: [][]string{
 			{"--version"}, // Default attempt with --version
 			{"version"},   // Default attempt with version
+			{"-version"},  // Default attempt with -version
 			{"-v"},        // Default attempt with -v
 		},
 	}

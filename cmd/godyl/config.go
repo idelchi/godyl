@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 	"slices"
 
+	_ "embed"
+
 	"github.com/go-playground/validator/v10"
-	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools"
-	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/logger"
 )
+
+//go:embed config.yml
+var defaultConfigFile []byte
 
 type Update struct {
 	Strategy tools.Strategy `mapstructure:"update-strategy"`
@@ -30,7 +31,7 @@ type Config struct {
 	Tags []string
 
 	// Config file to load
-	Config string
+	Config string `yaml:"-"`
 
 	// Update the binary now
 	Update Update `mapstructure:",squash"`
@@ -48,27 +49,6 @@ type Config struct {
 
 	// Number of parallel downloads
 	Parallel int `validate:"gte=0"`
-}
-
-// Default method sets the default configuration values for godyl.
-func (c *Config) Default() {
-	dirname, err := os.UserHomeDir()
-	if err != nil {
-		dirname = "/tmp"
-	}
-
-	c.Defaults = tools.Defaults{
-		Output: filepath.Join(dirname, ".local", "bin"),
-		Source: sources.Source{
-			Type: "github",
-		},
-		Hints: []match.Hint{
-			{
-				Pattern: "{{ .Exe.Name }}",
-				Weight:  1,
-			},
-		},
-	}
 }
 
 // Validate the configuration.

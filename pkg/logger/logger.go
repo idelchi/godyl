@@ -33,6 +33,15 @@ func (l Level) Int() int {
 	}
 }
 
+func (l Level) IsAllowed() bool {
+	switch l {
+	case DEBUG, INFO, WARN, ERROR:
+		return true
+	default:
+		return false
+	}
+}
+
 // Logger struct to hold the log level, output writer, and color functions
 type Logger struct {
 	level  Level
@@ -42,6 +51,12 @@ type Logger struct {
 
 // New creates a new Logger instance
 func NewCustom(level Level, output io.Writer) *Logger {
+	if !level.IsAllowed() {
+		fmt.Fprintf(os.Stderr, "Invalid log level: %q, setting to %q\n", level, INFO)
+
+		level = INFO
+	}
+
 	return &Logger{
 		level:  level,
 		output: output,
@@ -55,6 +70,12 @@ func NewCustom(level Level, output io.Writer) *Logger {
 }
 
 func New(level Level) *Logger {
+	if !level.IsAllowed() {
+		fmt.Fprintf(os.Stderr, "Invalid log level: %q, setting to %q\n", level, INFO)
+
+		level = INFO
+	}
+
 	return &Logger{
 		level:  level,
 		output: os.Stdout,

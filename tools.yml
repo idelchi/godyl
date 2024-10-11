@@ -69,30 +69,36 @@
       command: cmd
 
 - name: pemistahl/grex
-  skip: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
+  skip:
+    template: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
+    message: "grex is not available for arm architecture"
   # fallbacks:
   #   - rust
 
 - name: nivekuil/rip
   # fallbacks:
   #   - rust
-  skip: |-
-    {{- if or
-        (ne .Platform.OS "linux")
-        (ne .Platform.Architecture.Type "arm32")
-        (ne .Platform.Architecture.Type "amd64")
-    -}}
-    true
-    {{- else -}}
-    false
-    {{- end -}}
+  skip:
+    message: "rip is only available for linux arm32 and amd64"
+    template: |-
+      {{- if or
+          (ne .Platform.OS "linux")
+          (ne .Platform.Architecture.Type "arm32")
+          (ne .Platform.Architecture.Type "amd64")
+      -}}
+      true
+      {{- else -}}
+      false
+      {{- end -}}
 
   version: 0.11.4
   # fallbacks:
   #   - rust
 
 - name: mgunyho/tere
-  skip: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
+  skip:
+    template: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
+    message: "tere is not available for arm architecture"
   extensions:
     - .zip
   # fallbacks:
@@ -170,7 +176,9 @@
 
 - name: BurntSushi/ripgrep
   exe: rg
-  skip: '{{ if ne .Platform.OS "linux" }}true{{ else }}false{{ end }}'
+  skip:
+    template: '{{ if ne .Platform.OS "linux" }}true{{ else }}false{{ end }}'
+    message: "ripgrep is only available for linux"
 
 - name: jesseduffield/lazygit
   aliases: lazyg
@@ -178,15 +186,17 @@
   exe: dua
 
 - name: jarun/nnn
-  skip: |-
-    {{- if or
-        (ne .Platform.OS "linux")
-        (ne .Platform.Architecture.Type "amd64")
-    -}}
-    true
-    {{- else -}}
-    false
-    {{- end -}}
+  skip:
+    message: "nnn is only available for linux amd64"
+    template: |-
+      {{- if or
+          (ne .Platform.OS "linux")
+          (ne .Platform.Architecture.Type "amd64")
+      -}}
+      true
+      {{- else -}}
+      false
+      {{- end -}}
   aliases:
     - nnn
 

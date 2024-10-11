@@ -8,7 +8,7 @@ import (
 
 type Skip struct {
 	Template     string `json:"-"`
-	Message      bool
+	Message      string
 	SkipTemplate string `json:"-" yaml:"skip" mapstructure:"skip"`
 	Skip         bool   `yaml:"-" mapstructure:"-"`
 }

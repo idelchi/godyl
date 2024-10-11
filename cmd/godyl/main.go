@@ -99,12 +99,8 @@ func main() {
 			// Process tool results
 			if err != nil {
 				logger.Warn(tool.Name)
-				if errors.Is(err, tools.ErrAlreadyExists) {
-					logger.Warn("  already installed")
-				} else if errors.Is(err, tools.ErrDoesNotHaveTags) {
-					logger.Warn("  skipped due to not having required tags")
-				} else if errors.Is(err, tools.ErrSkipped) {
-					logger.Warn("  skipped due to skip marker")
+				if errors.Is(err, tools.ErrAlreadyExists) || errors.Is(err, tools.ErrDoesNotHaveTags) || errors.Is(err, tools.ErrDoesHaveTags) || errors.Is(err, tools.ErrSkipped) {
+					logger.Warn("  %v", err)
 				} else {
 					logger.Error(tool.Name)
 					logger.Error("  failed to install")

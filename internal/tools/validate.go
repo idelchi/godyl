@@ -13,7 +13,8 @@ import (
 
 var (
 	ErrAlreadyExists   = fmt.Errorf("tool already exists")
-	ErrDoesNotHaveTags = fmt.Errorf("tool does not have required tags")
+	ErrDoesHaveTags    = fmt.Errorf("tool contains excluded tags")
+	ErrDoesNotHaveTags = fmt.Errorf("tool does not contain included tags")
 	ErrSkipped         = fmt.Errorf("tool skipped")
 	ErrFailed          = fmt.Errorf("tool failed")
 )
@@ -55,11 +56,11 @@ func (t *Tool) Resolve(withTags []string, withoutTags []string) error {
 
 func (t *Tool) CheckSkipConditions(withTags []string, withoutTags []string) error {
 	if !t.Tags.Has(withTags) {
-		return ErrDoesNotHaveTags
+		return fmt.Errorf("%w: %v: tool tags: %v", ErrDoesNotHaveTags, withTags, t.Tags)
 	}
 
 	if !t.Tags.HasNot(withoutTags) {
-		return ErrDoesNotHaveTags
+		return fmt.Errorf("%w: %v: tool tags: %v", ErrDoesHaveTags, withoutTags, t.Tags)
 	}
 
 	if err := t.Strategy.Check(t); err != nil {
@@ -67,7 +68,7 @@ func (t *Tool) CheckSkipConditions(withTags []string, withoutTags []string) erro
 	}
 
 	if t.Skip.Skip {
-		return ErrSkipped
+		return fmt.Errorf("%w: %q", ErrSkipped, t.Skip.Message)
 	}
 
 	return nil

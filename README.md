@@ -197,26 +197,17 @@ In general, settings can be set in the following ways:
 
 The following `config` parameters are available:
 
-| Field               | Type          | `config.yml`          | Flag                   | Environment Variable          | Default                                                                                    |
-| ------------------- | ------------- | --------------------- | ---------------------- | ----------------------------- | ------------------------------------------------------------------------------------------ |
-| output              | string        | defaults.output       | `--defaults.output`    | `GODYL_DEFAULTS_OUTPUT`       | ~/.local/bin                                                                               |
-| exe                 | list of dicts | defaults.exe          | -                      | -                             | <pre>exe:<br>&nbsp;&nbsp;patterns: "{{ .Exe.Name }}.\*"<br></pre> [refer](./README.md#L43) |
-| hints               | list of dicts | defaults.hints        | -                      | -                             | {{ .Exe.Name }}                                                                            |
-| source.type         | string        | defaults.exe.patterns | `defaults.source.type` | `GODYL_DEFAULTS_SOURCE_TYPE`  | GitHub                                                                                     |
-| source.github.token | string        | defaults.github.token | `defaults.source.type` | `GODYL_DEFAULTS_GITHUB_TOKEN` | GitHub                                                                                     |
+| Field               | Type          | `config.yml`          | Flag                           | Environment Variable          | Default                                 |
+| ------------------- | ------------- | --------------------- | ------------------------------ | ----------------------------- | --------------------------------------- |
+| output              | string        | defaults.output       | `--defaults.output`            | `GODYL_DEFAULTS_OUTPUT`       | `~/.local/bin`                          |
+| exe                 | list of dicts | defaults.exe          |                                |                               | [config.yml](./cmd/godyl/config.yml#L3) |
+| hints               | list of dicts | defaults.hints        |                                |                               | [config.yml](./cmd/godyl/config.yml#L5) |
+| source.type         | string        | defaults.exe.patterns | `defaults.source.type`         | `GODYL_DEFAULTS_SOURCE_TYPE`  | `github`                                |
+| source.github.token | string        | defaults.github.token | `defaults.source.github.token` | `GODYL_DEFAULTS_GITHUB_TOKEN` |                                         |
 
-Markdown Input HTML Output HTML Preview
-`{a: 1, b: 2, c: 3}` <code>{a: 1, b: 2, c: 3}</code> {a: 1, b: 2, c: 3}
-
-<pre> {JSON: <br>
-&emsp; ["Key1":"Value1",<br>
-&emsp; "Key2":"Value2"] <br>
-}</pre>
-
-{JSON:
- ["Key1":"Value1",
- "Key2":"Value2"]
-}
+| Field | Type          | `config.yml` | Flag | Environment Variable | Default                                                                                   |
+| ----- | ------------- | ------------ | ---- | -------------------- | ----------------------------------------------------------------------------------------- |
+| exe   | list of dicts | defaults.exe | -    | -                    | <pre>exe:<br>&nbsp;&nbsp;patterns: "{{ .Exe.Name }}.\*"<br></pre> [refer](#configuration) |
 
 ### output
 

@@ -3,6 +3,8 @@ package download
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/hashicorp/go-getter/v2"
@@ -53,4 +55,41 @@ func (d Downloader) Download(url string, output string) (string, error) {
 	}
 
 	return res.Dst, err
+}
+
+// Type represents the type of a file.
+type Type int
+
+const (
+	Unknown Type = iota
+	File
+	Directory
+)
+
+type Result struct {
+	Path string
+	Type Type
+}
+
+func NewResult(path string) (Result, error) {
+	r := Result{
+		Path: path,
+	}
+
+	// Check if the path is a directory
+	info, err := os.Stat(r.Path)
+	if err != nil {
+		return r, fmt.Errorf("file info for path %q: %v", path, err)
+	}
+
+	switch mode := info.Mode(); {
+	case mode.IsDir():
+		r.Type = Directory
+		return r, nil
+	case mode.IsRegular():
+		r.Type = File
+		return r, nil
+	default:
+		return r, fmt.Errorf("unknown type %s", mode)
+	}
 }

@@ -85,16 +85,6 @@ func FromSlice(slice ...string) (Env, error) {
 	return e.Normalized(), nil
 }
 
-func (e Env) GetAllWithPrefix(prefix string) Env {
-	result := make(Env)
-	for k, v := range e {
-		if strings.HasPrefix(k, prefix) {
-			result[k] = v
-		}
-	}
-	return result
-}
-
 // Add splits a `key=value` string and adds it to the Env map.
 // It returns an error if the input is not properly formatted.
 func (e *Env) Add(kv string) error {

@@ -29,51 +29,35 @@ func main2() {
 }
 
 func main() {
+	os.Setenv("CUSTOM_KEY", "CUSTOM_VALUE")
 	// Test FromEnv
 	envVars := env.FromEnv()
-	// fmt.Println("Original Environment Variables:", envVars.ToSlice())
-
-	// Test Normalized for Windows (won't modify on non-Windows)
-	// normalizedEnv := envVars.Normalized()
-	// fmt.Println("Normalized Environment Variables:", normalizedEnv.ToSlice())
-
-	// Test Get
-	key := "PATH"
-	value, err := envVars.Get(key)
-	if err != nil {
-		fmt.Printf("Error getting key %q: %v\n", key, err)
-	} else {
-		fmt.Printf("Value of key %q: %s\n", key, value)
-	}
-
-	// Test ToSlice
-	// envSlice := envVars.ToSlice()
-	// fmt.Println("Environment variables as slice:", envSlice)
 
 	// Test FromSlice
-	newEnvVars := env.FromSlice("KEY1=VALUE1=SHART", "KEY2=VALUE2")
-	fmt.Println("New Env from Slice:", newEnvVars.ToSlice())
+	newEnvVars := env.FromSlice("KEY1=VALUE1", "KEY2=VALUE2")
 
 	// Test Add
-	newEnvVars.Add("KEY3=VALUE3=SHIT")
-	fmt.Println("Env after Add:", newEnvVars.ToSlice())
+	newEnvVars.Add("KEY3=SKR54/=//SHIT")
+	newEnvVars.Add("HOSTNAME=SHIT")
 
-	key = "KEY1"
-	value, err = newEnvVars.Get(key)
+	key := "KEY1"
+	value, err := newEnvVars.Get(key)
 	if err != nil {
 		fmt.Printf("Error getting key %q: %v\n", key, err)
 	} else {
 		fmt.Printf("Value of key %q: %s\n", key, value)
 	}
 
+	fmt.Println("Before Merge")
 	pretty.PrintJSON(newEnvVars)
 
 	// Test Merge
-	// envVars.Merge(newEnvVars)
-	// fmt.Println("Env after Merge:", envVars.ToSlice())
+	newEnvVars.Merge(envVars)
+
+	fmt.Println("After merge")
+	pretty.PrintJSON(newEnvVars)
 
 	// Setting a custom environment variable for testing
-	os.Setenv("CUSTOM_KEY", "CUSTOM_VALUE")
 	// envVars = env.FromEnv()
 	// fmt.Println("Updated Environment Variables:", envVars.ToSlice())
 }

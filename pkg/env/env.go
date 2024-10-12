@@ -62,6 +62,10 @@ func FromEnv() Env {
 
 func (e *Env) Merge(env Env) {
 	for k, v := range env {
+		if _, ok := (*e)[k]; ok {
+			continue
+		}
+
 		(*e)[k] = v
 	}
 }

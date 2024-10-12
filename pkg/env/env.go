@@ -79,18 +79,22 @@ func (e *Env) Add(slice ...string) {
 }
 
 // Merge merges another Env into the current Env, without overwriting existing keys.
-func (e *Env) Merge(env Env) {
-	maps.Copy(env, *e)
+func (e *Env) Merge(envs ...Env) {
+	for _, env := range envs {
+		maps.Copy(env, *e)
 
-	*e = env
+		*e = env
+	}
 }
 
 // Merged returns a new Env by merging the given Env into the current Env,
 // without overwriting existing keys in the original Env.
-func (e Env) Merged(env Env) Env {
+func (e Env) Merged(envs ...Env) Env {
 	merged := maps.Clone(e)
 
-	merged.Merge(env)
+	for _, env := range envs {
+		merged.Merge(env)
+	}
 
 	return merged
 }

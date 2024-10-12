@@ -13,7 +13,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var ErrEnvVarNotFound = errors.New("environment variable not found")
+var (
+	ErrEnvVarNotFound = errors.New("environment variable not found")
+	ErrDotEnvLoad     = errors.New("failed to load dotenv")
+)
 
 // Env represents a map of environment variables with string keys and values.
 type Env map[string]string
@@ -94,6 +97,9 @@ func (e Env) Merged(env Env) Env {
 
 func FromDotEnv(path string) (Env, error) {
 	env, err := godotenv.Read(path)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrDotEnvLoad, err)
+	}
 
-	return Env(env), err
+	return Env(env), nil
 }

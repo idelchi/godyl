@@ -35,7 +35,10 @@ func main() {
 	envVars := env.FromEnv()
 
 	// Test FromSlice
-	newEnvVars := env.FromSlice("KEY1=VALUE1", "KEY2=VALUE2")
+	newEnvVars, err := env.FromSlice("KEY1=VALUE1", "KEY2=VALUE2")
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	// Test Add
 	newEnvVars.Add("KEY3=SKR54/=//SHIT")

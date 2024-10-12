@@ -23,7 +23,9 @@ type Env map[string]string
 
 // FromEnv returns the current environment variables as an Env.
 func FromEnv() Env {
-	return FromSlice(os.Environ()...)
+	env, _ := FromSlice(os.Environ()...)
+
+	return env
 }
 
 // Normalized returns a copy of the Env with all keys normalized to uppercase on Windows.
@@ -118,7 +120,7 @@ func (e Env) Merged(envs ...Env) Env {
 func FromDotEnv(path string) (Env, error) {
 	env, err := godotenv.Read(path)
 	if err != nil {
-		return nil, fmt.Errorf("loading dotenv from %q: %w", path, err)
+		return nil, fmt.Errorf("loading dotenv: %w", err)
 	}
 
 	return Env(env), nil

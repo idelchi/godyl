@@ -60,4 +60,14 @@ func main() {
 	// Setting a custom environment variable for testing
 	// envVars = env.FromEnv()
 	// fmt.Println("Updated Environment Variables:", envVars.ToSlice())
+
+	dotEnv, err := env.FromDotEnv("cmd/flag/.env")
+
+	if err != err {
+		fmt.Println(err)
+	}
+
+	newEnvVars.Merge(dotEnv)
+
+	pretty.PrintJSON(newEnvVars)
 }

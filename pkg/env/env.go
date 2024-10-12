@@ -5,9 +5,12 @@ package env
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 var ErrEnvVarNotFound = errors.New("environment variable not found")
@@ -74,11 +77,25 @@ func (e *Env) Add(slice ...string) {
 
 // Merge merges another Env into the current Env, without overwriting existing keys.
 func (e *Env) Merge(env Env) {
-	for k, v := range env {
-		if _, ok := (*e)[k]; ok {
-			continue
-		}
+	maps.Copy(env, *e)
 
-		(*e)[k] = v
-	}
+	*e = env
+}
+
+// Merged returns a new Env by merging the given Env into the current Env,
+// without overwriting existing keys in the original Env. It reuses the Merge method.
+func (e Env) Merged(env Env) Env {
+	merged := maps.Clone(env)
+
+	merged.Merge(env)
+
+	return merged
+}
+
+///
+
+func FromDotEnv(path string) (Env, error) {
+	env, err := godotenv.Read(path)
+
+	return Env(env), err
 }

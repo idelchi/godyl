@@ -70,17 +70,16 @@ func (e Env) ToSlice() []string {
 }
 
 // FromSlice constructs an Env from a slice of `key=value` strings.
-func FromSlice(slice ...string) Env {
+func FromSlice(slice ...string) (Env, error) {
 	e := make(Env, len(slice))
 
 	for _, v := range slice {
 		if err := e.Add(v); err != nil {
-			// Handle the error (e.g., log it, continue, or break depending on desired behavior)
-			fmt.Printf("Warning: %v\n", err)
+			return nil, err
 		}
 	}
 
-	return e
+	return e, nil
 }
 
 // Add splits a `key=value` string and adds it to the Env map.

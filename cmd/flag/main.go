@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -67,7 +68,15 @@ func main() {
 		fmt.Println(err)
 	}
 
-	newEnvVars.Merge(dotEnv)
+	m := newEnvVars.Merged(dotEnv)
+	fmt.Println("Merged")
+	pretty.PrintJSON(m)
 
-	pretty.PrintJSON(newEnvVars)
+	_, err = env.FromDotEnv("ass")
+
+	fmt.Printf("%v: %T\n", err, err)
+
+	if errors.Is(err, os.ErrNotExist) {
+		fmt.Println("It was an os.ErrNotExist error")
+	}
 }

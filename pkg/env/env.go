@@ -83,16 +83,14 @@ func (e *Env) Merge(env Env) {
 }
 
 // Merged returns a new Env by merging the given Env into the current Env,
-// without overwriting existing keys in the original Env. It reuses the Merge method.
+// without overwriting existing keys in the original Env.
 func (e Env) Merged(env Env) Env {
-	merged := maps.Clone(env)
+	merged := maps.Clone(e)
 
 	merged.Merge(env)
 
 	return merged
 }
-
-///
 
 func FromDotEnv(path string) (Env, error) {
 	env, err := godotenv.Read(path)

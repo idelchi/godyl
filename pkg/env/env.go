@@ -15,7 +15,7 @@ import (
 
 var (
 	ErrEnvVarNotFound = errors.New("environment variable not found")
-	ErrDotEnvLoad     = errors.New("failed to load dotenv")
+	ErrEnvMalformed   = errors.New("environment variable is malformed")
 )
 
 // Env represents a map of environment variables with string keys and values.
@@ -24,18 +24,6 @@ type Env map[string]string
 // FromEnv returns the current environment variables as an Env.
 func FromEnv() Env {
 	return FromSlice(os.Environ()...)
-}
-
-// FromSlice constructs an Env from a slice of key=value strings.
-func FromSlice(slice ...string) Env {
-	e := make(Env, len(slice))
-
-	for _, v := range slice {
-		kv := strings.SplitN(v, "=", 2)
-		e[kv[0]] = kv[1]
-	}
-
-	return e
 }
 
 // Normalized returns a copy of the Env with all keys normalized to uppercase on Windows.
@@ -62,6 +50,14 @@ func (e Env) Get(key string) (string, error) {
 	return "", fmt.Errorf("%w: %q", ErrEnvVarNotFound, key)
 }
 
+func (e Env) GetOrDefault(key, defaultValue string) string {
+	if value, err := e.Get(key); err != nil {
+		return defaultValue
+	} else {
+		return value
+	}
+}
+
 // ToSlice converts the Env to a slice of `key=value“ strings.
 func (e Env) ToSlice() []string {
 	slice := make([]string, 0, len(e))
@@ -73,12 +69,33 @@ func (e Env) ToSlice() []string {
 	return slice
 }
 
-// Add adds `key=value“ pairs from a slice of strings to the Env.
-func (e *Env) Add(slice ...string) {
-	e.Merge(FromSlice(slice...))
+// FromSlice constructs an Env from a slice of `key=value` strings.
+func FromSlice(slice ...string) Env {
+	e := make(Env, len(slice))
+
+	for _, v := range slice {
+		if err := e.Add(v); err != nil {
+			// Handle the error (e.g., log it, continue, or break depending on desired behavior)
+			fmt.Printf("Warning: %v\n", err)
+		}
+	}
+
+	return e
 }
 
-// Merge merges another Env into the current Env, without overwriting existing keys.
+// Add splits a `key=value` string and adds it to the Env map.
+// It returns an error if the input is not properly formatted.
+func (e *Env) Add(kv string) error {
+	parts := strings.SplitN(kv, "=", 2)
+	if len(parts) != 2 {
+		return fmt.Errorf("%w: %q", ErrEnvMalformed, kv)
+	}
+
+	(*e)[parts[0]] = parts[1]
+	return nil
+}
+
+// Merge merges another Env into the current Env, without overwriting existing keys in the current Env.
 func (e *Env) Merge(envs ...Env) {
 	for _, env := range envs {
 		maps.Copy(env, *e)
@@ -102,7 +119,7 @@ func (e Env) Merged(envs ...Env) Env {
 func FromDotEnv(path string) (Env, error) {
 	env, err := godotenv.Read(path)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrDotEnvLoad, err)
+		return nil, fmt.Errorf("loading dotenv from %q: %w", path, err)
 	}
 
 	return Env(env), nil

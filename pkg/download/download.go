@@ -1,3 +1,4 @@
+// Package download provides functionality for downloading files from URLs.
 package download
 
 import (
@@ -7,7 +8,27 @@ import (
 	"github.com/hashicorp/go-getter/v2"
 )
 
-func Download(ctx context.Context, url string, output string) (string, error) {
+type Downloader struct {
+	ContextTimeout time.Duration
+	ReadTimeout    time.Duration
+	HeadTimeout    time.Duration
+}
+
+func New() *Downloader {
+	return &Downloader{
+		ContextTimeout: 5 * time.Minute,
+		ReadTimeout:    5 * time.Minute,
+		HeadTimeout:    5 * time.Minute,
+	}
+}
+
+// Download fetches a file from the given URL and saves it to the specified output path.
+// If the file is an archive, it will be extracted to the output directory.
+// It returns the destination path of the downloaded file (or folder) and any error encountered.
+func (d Downloader) Download(url string, output string) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), d.ContextTimeout)
+	defer cancel()
+
 	req := &getter.Request{
 		Src:     url,
 		Dst:     output,
@@ -18,8 +39,8 @@ func Download(ctx context.Context, url string, output string) (string, error) {
 			&getter.HttpGetter{
 				Netrc:                 true,
 				XTerraformGetDisabled: true,
-				HeadFirstTimeout:      1 * time.Minute,
-				ReadTimeout:           2 * time.Minute,
+				HeadFirstTimeout:      d.HeadTimeout,
+				ReadTimeout:           d.ReadTimeout,
 			},
 		},
 	}

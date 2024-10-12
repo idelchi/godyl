@@ -25,7 +25,7 @@ type Env map[string]string
 func FromEnv() Env {
 	env, _ := FromSlice(os.Environ()...)
 
-	return env
+	return env.Normalized()
 }
 
 // Normalized returns a copy of the Env with all keys normalized to uppercase on Windows.
@@ -81,7 +81,17 @@ func FromSlice(slice ...string) (Env, error) {
 		}
 	}
 
-	return e, nil
+	return e.Normalized(), nil
+}
+
+func (e Env) GetAllWithPrefix(prefix string) Env {
+	result := make(Env)
+	for k, v := range e {
+		if strings.HasPrefix(k, prefix) {
+			result[k] = v
+		}
+	}
+	return result
 }
 
 // Add splits a `key=value` string and adds it to the Env map.
@@ -123,5 +133,5 @@ func FromDotEnv(path string) (Env, error) {
 		return nil, fmt.Errorf("loading dotenv: %w", err)
 	}
 
-	return Env(env), nil
+	return Env(env).Normalized(), nil
 }

@@ -2,6 +2,7 @@ package tools
 
 import (
 	"bytes"
+	"fmt"
 
 	"gopkg.in/yaml.v3"
 )
@@ -56,5 +57,26 @@ func (e *Exe) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
+	return nil
+}
+
+// Patterns represents a slice of string patterns with custom unmarshalling.
+type Patterns []string
+
+// UnmarshalYAML implements custom unmarshaling for Patterns,
+// allowing to set a single string or a slice of strings.
+func (p *Patterns) UnmarshalYAML(value *yaml.Node) error {
+	switch value.Kind {
+	case yaml.ScalarNode:
+		*p = []string{value.Value}
+	case yaml.SequenceNode:
+		var patterns []string
+		if err := value.Decode(&patterns); err != nil {
+			return err
+		}
+		*p = patterns
+	default:
+		return fmt.Errorf("failed to unmarshal Aliases")
+	}
 	return nil
 }

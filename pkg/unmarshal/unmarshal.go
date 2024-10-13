@@ -33,8 +33,8 @@ func UnmarshalStringOrSlice[T StringOrSlice](value *yaml.Node) (T, error) {
 }
 
 // UnmarshalStringOrSlice is a generic function to unmarshal YAML into either a single string or a slice of strings
-func UnmarshalSingleOrSlice[T []any](value *yaml.Node) (T, error) {
-	var result T
+func UnmarshalSingleOrSlice[T any](value *yaml.Node) ([]T, error) {
+	var result []T
 
 	// Try unmarshalling into a single string
 	var single T
@@ -43,10 +43,10 @@ func UnmarshalSingleOrSlice[T []any](value *yaml.Node) (T, error) {
 		return result, nil
 	}
 
-	// Try unmarshalling into a slice of strings
-	var multiple []string
+	// Try unmarshalling into a slice of T
+	var multiple []T
 	if err := value.Decode(&multiple); err == nil {
-		result = T(multiple)
+		result = []T(multiple)
 		return result, nil
 	}
 

@@ -5,6 +5,7 @@ import (
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/stringlike"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/pkg/env"
 )
 
 type Defaults struct {
@@ -18,6 +19,7 @@ type Defaults struct {
 	Tags       Tags
 	Strategy   Strategy
 	Extensions []string
+	Env        env.Env
 }
 
 func (d *Defaults) Defaults() error {

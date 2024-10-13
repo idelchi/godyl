@@ -6,6 +6,7 @@ import (
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/pkg/env"
 	"gopkg.in/yaml.v3"
 )
 
@@ -38,7 +39,21 @@ type Tool struct {
 	Test         sources.Commands
 	AllowFailure bool `yaml:"allow_failure" mapstructure:"allow_failure"`
 	After        sources.Commands
+	Mode         Mode
+	Settings     Settings
+	Env          env.Env
 }
+
+type Settings struct {
+	// Organize here instead of in Tool
+}
+
+type Mode int
+
+const (
+	Extract Mode = iota
+	Find
+)
 
 // UnmarshalYAML implements custom unmarshaling for Tool with KnownFields check
 func (t *Tool) UnmarshalYAML(value *yaml.Node) error {

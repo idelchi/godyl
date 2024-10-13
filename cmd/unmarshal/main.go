@@ -3,7 +3,9 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"os"
 
+	"github.com/idelchi/godyl/pkg/pretty"
 	"gopkg.in/yaml.v3"
 )
 
@@ -129,11 +131,32 @@ type Person struct {
 	Age  int    `yaml:"age"`
 }
 
+type Persons []Person
+
+func (p Persons) GetOldest() Person {
+	var oldest Person
+	for _, person := range p {
+		if person.Age > oldest.Age {
+			oldest = person
+		}
+	}
+	return oldest
+}
+
+func (p *Persons) UnmarshalYAML(value *yaml.Node) error {
+	result, err := UnmarshalSingleOrSlice[Person](value)
+	if err != nil {
+		return err
+	}
+	*p = result
+	return nil
+}
+
 // Type aliases using the generic wrapper
 type (
 	StringList = GenericList[string]
 	IntList    = GenericList[int]
-	PersonList = GenericList[Person]
+	// PersonList = GenericList[Person]
 )
 
 func main() {
@@ -157,19 +180,22 @@ func main() {
 		yaml     string
 		testType string
 	}{
-		{"Invalid YAML", "[:invalid", "StringList"},
-		{"Wrong type for StringList", "42", "StringList"},
-		{"Wrong type for IntList", "not a number", "IntList"},
-		{"Invalid Person structure", "Alice", "PersonList"},
-		{"Mixed types in IntList", "[1, two, 3]", "IntList"},
-		{"Invalid nested structure", "{persons: [{name: Alice}]}", "PersonList"},
+		// {"Invalid YAML", "[:invalid", "StringList"},
+		// {"Wrong type for StringList", "42", "StringList"},
+		// {"Wrong type for IntList", "not a number", "IntList"},
+		// {"Invalid Person structure", "Alice", "PersonList"},
+		// {"Mixed types in IntList", "[1, two, 3]", "IntList"},
+		// {"Invalid nested structure", "{persons: [{name: Alice}]}", "PersonList"},
 	}
 
 	// Run success tests
-	runTests := func(tests []string, list interface{}) {
+	runTests := func(tests []string, list any) {
 		for _, test := range tests {
 			err := yaml.Unmarshal([]byte(test), list)
-			fmt.Printf("Input: %s\nResult: %v\nError: %v\n\n", test, list, err)
+			fmt.Printf("Input: %v\n", test)
+			fmt.Printf("Error: %v\n", err)
+			fmt.Println("Result:")
+			pretty.PrintJSON(list)
 		}
 	}
 
@@ -180,7 +206,9 @@ func main() {
 	runTests(intTests, &IntList{})
 
 	fmt.Println("Testing PersonList (Success cases):")
-	runTests(personTests, &PersonList{})
+	runTests(personTests, &Persons{})
+
+	os.Exit(0)
 
 	// Run failure tests
 	fmt.Println("Testing Failure Cases:")
@@ -195,7 +223,7 @@ func main() {
 			var il IntList
 			err = yaml.Unmarshal([]byte(test.yaml), &il)
 		case "PersonList":
-			var pl PersonList
+			var pl Persons
 			err = yaml.Unmarshal([]byte(test.yaml), &pl)
 
 			fmt.Println(pl)

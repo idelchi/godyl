@@ -35,15 +35,47 @@ func UnmarshalSingleOrSlice[T any](value *yaml.Node) ([]T, error) {
 	return result, nil
 }
 
-// GenericList is a generic wrapper type that implements UnmarshalYAML
-type GenericList[T any] []T
+// UnmarshalSingleOrSlice is a generic function to unmarshal YAML into either a single value or a slice of values
+func UnmarshalSingleOrSlice2[T any](value *yaml.Node) ([]T, error) {
+	var result []T
 
-func (g *GenericList[T]) UnmarshalYAML(value *yaml.Node) error {
-	result, err := UnmarshalSingleOrSlice[T](value)
+	// Try unmarshalling into a single value
+	var single T
+	if err := value.Decode(&single); err == nil {
+		result = append(result, single)
+		return result, nil
+	}
+
+	// Try unmarshalling into a slice of T
+	var multiple []T
+	if err := value.Decode(&multiple); err == nil {
+		result = multiple
+		return result, nil
+	}
+
+	return result, fmt.Errorf("failed to unmarshal: expected single value or slice")
+}
+
+// Custom types
+type StringList []string
+
+func (s *StringList) UnmarshalYAML(value *yaml.Node) error {
+	result, err := UnmarshalSingleOrSlice[string](value)
 	if err != nil {
 		return err
 	}
-	*g = result
+	*s = result
+	return nil
+}
+
+type IntList []int
+
+func (i *IntList) UnmarshalYAML(value *yaml.Node) error {
+	result, err := UnmarshalSingleOrSlice[int](value)
+	if err != nil {
+		return err
+	}
+	*i = result
 	return nil
 }
 
@@ -52,12 +84,16 @@ type Person struct {
 	Age  int    `yaml:"age"`
 }
 
-// Type aliases using the generic wrapper
-type (
-	StringList = GenericList[string]
-	IntList    = GenericList[int]
-	PersonList = GenericList[Person]
-)
+type PersonList []Person
+
+func (p *PersonList) UnmarshalYAML(value *yaml.Node) error {
+	result, err := UnmarshalSingleOrSlice[Person](value)
+	if err != nil {
+		return err
+	}
+	*p = result
+	return nil
+}
 
 func main() {
 	// Test cases

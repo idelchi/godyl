@@ -124,6 +124,7 @@
     patterns:
       - "^{{ .Platform.OS }}-"
   aliases: ghc
+
 - name: jesseduffield/lazydocker
   aliases: lazy
   tags:

@@ -6,7 +6,41 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func UnmarshalSingleOrSlice[T any](value *yaml.Node) ([]T, error) {
+func UnmarshalSingleOrSlice[T any](node *yaml.Node) ([]T, error) {
+	var value any
+
+	switch node.Kind {
+	case yaml.ScalarNode:
+		value = new(T)
+	case yaml.SequenceNode:
+		value = new([]T)
+	case yaml.MappingNode:
+		value = new(T)
+	default:
+		return nil, fmt.Errorf("unsupported YAML node kind: %v", node.Kind)
+	}
+
+	// Create a decoder with KnownFields enabled
+	decoder := yaml.NewDecoder(nil)
+	decoder.KnownFields(true)
+
+	// Decode the node
+	if err := decoder.Decode(value); err != nil {
+		return nil, fmt.Errorf("failed to decode: %w", err)
+	}
+
+	// Convert the result to []T
+	switch v := value.(type) {
+	case *T:
+		return []T{*v}, nil
+	case *[]T:
+		return *v, nil
+	default:
+		return nil, fmt.Errorf("unexpected type after decoding")
+	}
+}
+
+func UnmarshalSingleOrSlice3[T any](value *yaml.Node) ([]T, error) {
 	var result []T
 
 	switch value.Kind {
@@ -60,40 +94,73 @@ type (
 )
 
 func main() {
-	// Test cases
+	// Success test cases (as before)
 	stringTests := []string{
 		"hello",
 		"[hello, world]",
 	}
-
 	intTests := []string{
 		"42",
 		"[1, 2, 3]",
 	}
-
 	personTests := []string{
 		"{name: Alice, age: 30}",
 		"[{name: Alice, age: 30}, {name: Bob, age: 25}]",
 	}
 
-	fmt.Println("Testing StringList:")
-	for _, test := range stringTests {
-		var sl StringList
-		err := yaml.Unmarshal([]byte(test), &sl)
-		fmt.Printf("Input: %s\nResult: %v\nError: %v\n\n", test, sl, err)
+	// Failure test cases
+	failureTests := []struct {
+		name     string
+		yaml     string
+		testType string
+	}{
+		{"Invalid YAML", "[:invalid", "StringList"},
+		{"Wrong type for StringList", "42", "StringList"},
+		{"Wrong type for IntList", "not a number", "IntList"},
+		{"Invalid Person structure", "Alice", "PersonList"},
+		{"Mixed types in IntList", "[1, two, 3]", "IntList"},
+		{"Invalid nested structure", "{persons: [{name: Alice}]}", "PersonList"},
 	}
 
-	fmt.Println("Testing IntList:")
-	for _, test := range intTests {
-		var il IntList
-		err := yaml.Unmarshal([]byte(test), &il)
-		fmt.Printf("Input: %s\nResult: %v\nError: %v\n\n", test, il, err)
+	// Run success tests
+	runTests := func(tests []string, list interface{}) {
+		for _, test := range tests {
+			err := yaml.Unmarshal([]byte(test), list)
+			fmt.Printf("Input: %s\nResult: %v\nError: %v\n\n", test, list, err)
+		}
 	}
 
-	fmt.Println("Testing PersonList:")
-	for _, test := range personTests {
-		var pl PersonList
-		err := yaml.Unmarshal([]byte(test), &pl)
-		fmt.Printf("Input: %s\nResult: %v\nError: %v\n\n", test, pl, err)
+	fmt.Println("Testing StringList (Success cases):")
+	runTests(stringTests, &StringList{})
+
+	fmt.Println("Testing IntList (Success cases):")
+	runTests(intTests, &IntList{})
+
+	fmt.Println("Testing PersonList (Success cases):")
+	runTests(personTests, &PersonList{})
+
+	// Run failure tests
+	fmt.Println("Testing Failure Cases:")
+	for _, test := range failureTests {
+		fmt.Printf("Test: %s\nInput: %s\n", test.name, test.yaml)
+		var err error
+		switch test.testType {
+		case "StringList":
+			var sl StringList
+			err = yaml.Unmarshal([]byte(test.yaml), &sl)
+		case "IntList":
+			var il IntList
+			err = yaml.Unmarshal([]byte(test.yaml), &il)
+		case "PersonList":
+			var pl PersonList
+			err = yaml.Unmarshal([]byte(test.yaml), &pl)
+
+			fmt.Println(pl)
+		}
+		if err != nil {
+			fmt.Printf("Error (as expected): %v\n\n", err)
+		} else {
+			fmt.Printf("Unexpected success: no error occurred\n\n")
+		}
 	}
 }

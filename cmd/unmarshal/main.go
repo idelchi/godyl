@@ -1,12 +1,55 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 
 	"gopkg.in/yaml.v3"
 )
 
 func UnmarshalSingleOrSlice[T any](node *yaml.Node) ([]T, error) {
+	var result []T
+
+	switch node.Kind {
+	case yaml.ScalarNode:
+		var single T
+		if err := node.Decode(&single); err != nil {
+			return nil, fmt.Errorf("failed to decode scalar: %w", err)
+		}
+		result = append(result, single)
+
+	case yaml.SequenceNode:
+		if err := node.Decode(&result); err != nil {
+			return nil, fmt.Errorf("failed to decode sequence: %w", err)
+		}
+
+	case yaml.MappingNode:
+		var single T
+		// Re-encode the yaml.Node to bytes to leverage yaml.NewDecoder
+		var buf bytes.Buffer
+		enc := yaml.NewEncoder(&buf)
+		if err := enc.Encode(node); err != nil {
+			return nil, fmt.Errorf("failed to re-encode mapping: %w", err)
+		}
+		enc.Close()
+
+		// Now decode from the buffer with KnownFields enabled
+		decoder := yaml.NewDecoder(&buf)
+		decoder.KnownFields(true)
+
+		if err := decoder.Decode(&single); err != nil {
+			return nil, fmt.Errorf("failed to decode mapping with KnownFields: %w", err)
+		}
+		result = append(result, single)
+
+	default:
+		return nil, fmt.Errorf("unsupported YAML node kind: %v", node.Kind)
+	}
+
+	return result, nil
+}
+
+func UnmarshalSingleOrSlice4[T any](node *yaml.Node) ([]T, error) {
 	var value any
 
 	switch node.Kind {

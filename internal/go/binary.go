@@ -1,7 +1,6 @@
 package ginstaller
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,7 +9,6 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/go-resty/resty/v2"
 
@@ -129,10 +127,9 @@ func (b *Binary) Download(path string) error {
 
 	fmt.Fprintf(os.Stderr, "Downloading %q\n", url)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-	defer cancel()
+	downloader := download.New()
 
-	destination, err := download.Download(ctx, url, b.Dir.Path())
+	destination, err := downloader.Download(url, b.Dir.Path())
 	if err != nil {
 		return fmt.Errorf("downloading %q: %w", url, err)
 	}

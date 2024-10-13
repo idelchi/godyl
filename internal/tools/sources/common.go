@@ -1,10 +1,8 @@
 package sources
 
 import (
-	"context"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/idelchi/godyl/internal/executable"
 	"github.com/idelchi/godyl/internal/folder"
@@ -27,10 +25,9 @@ func Download(d InstallData) (output, found string, err error) {
 	}
 	// defer tmp.Remove()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-	defer cancel()
+	downloader := download.New()
 
-	_, err = download.Download(ctx, d.Path, tmp.Path())
+	_, err = downloader.Download(d.Path, tmp.Path())
 	if err != nil {
 		return "", "", fmt.Errorf("downloading %q: %w", d.Path, err)
 	}

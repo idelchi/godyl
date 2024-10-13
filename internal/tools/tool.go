@@ -37,6 +37,7 @@ type Tool struct {
 	Skip         Skip
 	Test         sources.Commands
 	AllowFailure bool `yaml:"allow_failure" mapstructure:"allow_failure"`
+	After        sources.Commands
 }
 
 // UnmarshalYAML implements custom unmarshaling for Tool with KnownFields check

@@ -117,6 +117,7 @@
     patterns:
       - bin/gh{{ .Platform.Extension }}$
 
+# Make this a post-installation step of gh
 - name: github/gh-copilot
   exe:
     name: github-copilot

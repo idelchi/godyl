@@ -91,7 +91,6 @@ func (t *Tool) Template() error {
 		}
 	}
 
-	// Apply templating to Source.Commands (iterate over the command list)
 	for i, cmd := range t.Source.Commands {
 		output, err := t.ApplyTemplate(string(cmd))
 		if err != nil {
@@ -100,7 +99,14 @@ func (t *Tool) Template() error {
 		t.Source.Commands[i] = sources.Command(output)
 	}
 
-	// Apply templating to Source.Commands (iterate over the command list)
+	for i, cmd := range t.Post {
+		output, err := t.ApplyTemplate(string(cmd))
+		if err != nil {
+			return err
+		}
+		t.Post[i] = sources.Command(output)
+	}
+
 	for i, hints := range t.Hints {
 		t.Hints[i].Pattern, err = t.ApplyTemplate(hints.Pattern)
 		if err != nil {

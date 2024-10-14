@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/pretty"
 	"golang.org/x/sync/errgroup"
@@ -156,16 +157,24 @@ func main() {
 				return nil
 			}
 
-			if !cfg.Dry {
-				msg, found, err := tool.Download()
-				resultCh <- result{tool: &tool, found: found, err: err, msg: msg}
-
-				if err != nil {
-					return nil
-				}
-			} else {
+			if cfg.Dry {
 				resultCh <- result{tool: &tool, err: nil}
+
+				return nil
 			}
+
+			msg, found, err := tool.Download()
+			resultCh <- result{tool: &tool, found: found, err: err, msg: msg}
+
+			if err != nil {
+				return nil
+			}
+
+			output, _, err := tool.Post.Install(sources.InstallData{})
+			if err != nil {
+				resultCh <- result{tool: &tool, err: err, msg: output}
+			}
+
 			return nil
 		})
 	}

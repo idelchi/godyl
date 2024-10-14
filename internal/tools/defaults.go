@@ -46,6 +46,7 @@ func (t *Tool) ApplyDefaults(d Defaults) {
 	utils.SetIfEmpty(&t.Mode, d.Mode)
 	utils.SetSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
 	utils.SetSliceIfNil(&t.Extensions, d.Extensions...)
+	utils.SetMapIfNil(&t.Values, d.Values)
 
 	t.Platform.Merge(d.Platform)
 	t.Hints.Add(d.Hints)

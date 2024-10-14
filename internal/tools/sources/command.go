@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"strings"
 
-	"github.com/idelchi/godyl/internal/match"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
@@ -38,38 +36,4 @@ func (c Command) Shell() (string, error) {
 
 	// Return the captured output
 	return stdoutBuf.String(), nil
-}
-
-type Commands []Command
-
-func (c *Commands) Get(attribute string) string {
-	return ""
-}
-
-func (*Commands) Initialize(_ string) error {
-	return nil
-}
-
-func (*Commands) Exe() error {
-	return nil
-}
-
-func (*Commands) Version(_ string) error {
-	return nil
-}
-
-func (*Commands) Path(_ string, _ []string, _ string, _ match.Requirements) error {
-	return nil
-}
-
-func (c *Commands) Install(d InstallData) (output, found string, err error) {
-	for _, command := range *c {
-		output, err := command.Shell()
-		output += output + "\n"
-		if err != nil {
-			return strings.TrimRight(output, "\n"), "", fmt.Errorf("running commands: %w", err)
-		}
-	}
-
-	return strings.TrimRight(output, "\n"), "", nil
 }

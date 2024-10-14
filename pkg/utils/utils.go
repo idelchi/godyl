@@ -33,6 +33,17 @@ func IsEmpty[S comparable](input S) bool {
 	return input == zero
 }
 
+// SetMapIfNil sets the value of input to the provided defaultMap if input is nil.
+// M is constrained to maps with keys of type K and values of type V.
+func SetMapIfNil[M ~map[K]V, K comparable, V any](input *M, values M) {
+	if *input == nil {
+		*input = make(M, len(values))
+		for k, v := range values {
+			(*input)[k] = v
+		}
+	}
+}
+
 // NormalizeMap normalizes the keys of a map to title case recursively.
 // If the value is another map, it will recursively normalize its keys as well.
 func NormalizeMap(m map[string]any) map[string]any {

@@ -37,7 +37,7 @@ type Tool struct {
 	Skip         Skip
 	Test         sources.Commands
 	AllowFailure bool `yaml:"allow_failure" mapstructure:"allow_failure"`
-	After        sources.Commands
+	Post         sources.Commands
 	Mode         Mode
 	Settings     Settings
 	Env          env.Env

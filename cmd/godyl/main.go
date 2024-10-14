@@ -49,7 +49,7 @@ func main() {
 
 		logger.Info(PrintJSON(cfg.Defaults.Platform))
 
-		os.Exit(1)
+		os.Exit(0)
 	}
 
 	if err := updater(cfg); err != nil {

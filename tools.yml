@@ -17,6 +17,8 @@
 - AlDanial/cloc
 - FiloSottile/age
 - chmln/sd
+- rs/curlie
+
 - name: kraanzu/dooit
   exe:
     patterns:
@@ -34,7 +36,6 @@
   extensions:
     - ""
 
-- rs/curlie
 - name: so-fancy/diff-so-fancy
   exe:
     name: diff-so-fancy

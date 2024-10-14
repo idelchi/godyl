@@ -49,12 +49,14 @@ func (t *Tool) Template() error {
 		return err
 	}
 
-	// Apply templating to all relevant fields
-	skip, err := t.ApplyTemplate(t.Skip.Condition)
-	if err != nil {
-		return err
+	for i, pattern := range t.Skip.Conditions {
+		t.Skip.Conditions[i], err = t.ApplyTemplate(pattern)
+		if err != nil {
+			return err
+		}
 	}
-	t.Skip.skip, err = strconv.ParseBool(skip)
+
+	t.Skip.skip, err = t.Skip.Conditions.IsSkipped()
 	if err != nil {
 		return err
 	}

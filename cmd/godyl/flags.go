@@ -49,6 +49,7 @@ func flags() {
 	pflag.BoolP("show", "s", false, "Show the configuration and exit")
 	pflag.StringP("config", "c", config.Get(), "Path to configuration file")
 	pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
+	pflag.Bool("detect", false, "Detect the platform and exit")
 
 	// Selected custom flags
 	pflag.String("defaults.source.github.token", "", "GitHub token for API requests")

@@ -40,6 +40,18 @@ func main() {
 
 	logger := logger.New(cfg.Log)
 
+	if cfg.Detect {
+		if err := cfg.Defaults.Defaults(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error setting defaults: %v\n", err)
+
+			os.Exit(1)
+		}
+
+		logger.Info(PrintJSON(cfg.Defaults.Platform))
+
+		os.Exit(1)
+	}
+
 	if err := updater(cfg); err != nil {
 		fmt.Fprintf(os.Stderr, "Error updating: %v\n", err)
 

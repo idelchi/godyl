@@ -1,3 +1,11 @@
+package platform
+
+import (
+	"fmt"
+
+	"github.com/idelchi/godyl/pkg/compare"
+)
+
 // Distribution represents a Linux distribution, with several predefined values.
 type Distribution string
 

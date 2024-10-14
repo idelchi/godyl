@@ -6,15 +6,18 @@ import (
 	"github.com/idelchi/godyl/pkg/compare"
 )
 
+// Library represents a system library or ABI (Application Binary Interface) used by an operating system or platform.
 type Library string
 
+// Predefined Library values.
 const (
-	GNU        Library = "gnu"
-	Musl       Library = "musl"
-	MSVC       Library = "msvc"
-	LibAndroid Library = "android"
+	GNU        Library = "gnu"      // GNU library, typically used in Linux distributions.
+	Musl       Library = "musl"     // Musl library, often used in lightweight Linux distributions like Alpine.
+	MSVC       Library = "msvc"     // Microsoft Visual C++ (MSVC) library, used in Windows.
+	LibAndroid Library = "android"  // Android library, used in Android OS.
 )
 
+// Default returns the default Library for a given OS and Distribution.
 func (l *Library) Default(os OS, distro Distribution) Library {
 	switch os {
 	case Windows:
@@ -33,15 +36,16 @@ func (l *Library) Default(os OS, distro Distribution) Library {
 	}
 }
 
+// Available returns a slice of all supported libraries.
 func (l Library) Available() []Library {
 	return []Library{Musl, GNU, MSVC, LibAndroid}
 }
 
+// From sets the Library based on the provided string, if it matches any available library.
 func (l *Library) From(library string) error {
 	for _, lib := range l.Available() {
 		if compare.Lower(library, lib.Name()) {
 			*l = lib
-
 			return nil
 		}
 	}
@@ -49,16 +53,15 @@ func (l *Library) From(library string) error {
 	for _, lib := range l.Available() {
 		if lib.IsCompatibleWith(library) {
 			*l = lib
-
 			return nil
 		}
 	}
 
-	*l = ""
-
+	*l = "" // Reset to empty if no match is found
 	return nil
 }
 
+// CompatibleWith returns a list of compatible library names for the given Library.
 func (l Library) CompatibleWith() []string {
 	switch l {
 	case GNU:
@@ -73,6 +76,7 @@ func (l Library) CompatibleWith() []string {
 	return nil
 }
 
+// IsCompatibleWith checks if the provided library name is compatible with the current Library.
 func (l Library) IsCompatibleWith(lib string) bool {
 	for _, compatible := range l.CompatibleWith() {
 		if lib == compatible {
@@ -82,14 +86,17 @@ func (l Library) IsCompatibleWith(lib string) bool {
 	return false
 }
 
+// Name returns the name of the Library as a string.
 func (l Library) Name() string {
 	return string(l)
 }
 
+// String returns the Library as a string.
 func (l Library) String() string {
 	return l.Name()
 }
 
+// Parse attempts to parse a string and set the Library accordingly, based on its name or aliases.
 func (l *Library) Parse(name string) error {
 	for _, library := range l.Available() {
 		if compare.ContainsLower(name, library.Name()) {

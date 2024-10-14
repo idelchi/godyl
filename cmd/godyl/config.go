@@ -38,6 +38,8 @@ type Config struct {
 
 	Dry bool
 
+	Detect bool
+
 	Log logger.Level
 
 	// Show help message

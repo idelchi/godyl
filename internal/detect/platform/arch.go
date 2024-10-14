@@ -1,3 +1,11 @@
+package platform
+
+import (
+	"fmt"
+
+	"github.com/idelchi/godyl/pkg/compare"
+)
+
 // Type represents a CPU architecture type, such as "amd64" or "arm64".
 type Type string
 

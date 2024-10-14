@@ -10,6 +10,22 @@ on:
       - "*"
 
 jobs:
+  test:
+    permissions:
+      contents: write
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+
+      - name: Run tests
+        run: go run ./cmd/godyl --detect
+
   tag:
     permissions:
       contents: write

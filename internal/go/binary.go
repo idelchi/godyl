@@ -206,8 +206,8 @@ func (t Targets) Match() (match.Results, error) {
 	for _, tt := range t.Files {
 		asset := match.Asset{Name: tt.FileName}
 
-		asset.Platfrom.OS.From(tt.OS)
-		asset.Platfrom.Architecture.From(tt.Arch, "")
+		asset.Platform.OS.From(tt.OS)
+		asset.Platform.Architecture.From(tt.Arch, "")
 
 		assets = append(assets, asset)
 	}

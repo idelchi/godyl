@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/folder"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/internal/utils"
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
 var (

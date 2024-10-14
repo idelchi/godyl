@@ -4,8 +4,8 @@ import (
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
 type Defaults struct {

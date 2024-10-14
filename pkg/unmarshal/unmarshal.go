@@ -5,16 +5,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/idelchi/godyl/pkg/pretty"
 	"gopkg.in/yaml.v3"
 )
 
 type SingleOrSlice[T any] []T
 
 func (ss *SingleOrSlice[T]) UnmarshalYAML(value *yaml.Node) error {
-	fmt.Println("UnmarshalYAML")
-	pretty.PrintJSON(value)
-
 	result, err := UnmarshalSingleOrSlice[T](value, true)
 	if err != nil {
 		return err

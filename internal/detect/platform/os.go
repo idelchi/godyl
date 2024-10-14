@@ -19,14 +19,14 @@ const (
 	OpenBSD OS = "openbsd"
 )
 
-func (o *OS) Supported() []OS {
+func (o *OS) Available() []OS {
 	return []OS{Linux, MacOS, Windows, FreeBSD, Android, NetBSD, OpenBSD}
 }
 
 var ErrNotFound = errors.New("match not found")
 
 func (o *OS) From(operatingSystem string) error {
-	for _, os := range o.Supported() {
+	for _, os := range o.Available() {
 		if os.IsCompatibleWith(operatingSystem) {
 			*o = os
 
@@ -76,14 +76,14 @@ func (o OS) IsCompatibleWith(os string) bool {
 }
 
 func (o *OS) Parse(name string) error {
-	for _, os := range o.Supported() {
+	for _, os := range o.Available() {
 		if compare.ContainsLower(name, os.Name()) {
 			*o = os
 			return nil
 		}
 	}
 
-	for _, os := range o.Supported() {
+	for _, os := range o.Available() {
 		for _, alias := range os.CompatibleWith() {
 			if compare.ContainsLower(name, alias) {
 				*o = os

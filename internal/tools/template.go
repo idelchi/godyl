@@ -7,7 +7,7 @@ import (
 	"text/template"
 
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/internal/utils"
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // NormalizeValues ensures all keys in Values are capitalized.

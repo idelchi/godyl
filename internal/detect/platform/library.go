@@ -33,12 +33,12 @@ func (l *Library) Default(os OS, distro Distribution) Library {
 	}
 }
 
-func (l Library) Supported() []Library {
+func (l Library) Available() []Library {
 	return []Library{Musl, GNU, MSVC, LibAndroid}
 }
 
 func (l *Library) From(library string) error {
-	for _, lib := range l.Supported() {
+	for _, lib := range l.Available() {
 		if compare.Lower(library, lib.Name()) {
 			*l = lib
 
@@ -46,7 +46,7 @@ func (l *Library) From(library string) error {
 		}
 	}
 
-	for _, lib := range l.Supported() {
+	for _, lib := range l.Available() {
 		if lib.IsCompatibleWith(library) {
 			*l = lib
 
@@ -91,14 +91,14 @@ func (l Library) String() string {
 }
 
 func (l *Library) Parse(name string) error {
-	for _, library := range l.Supported() {
+	for _, library := range l.Available() {
 		if compare.ContainsLower(name, library.Name()) {
 			*l = library
 			return nil
 		}
 	}
 
-	for _, library := range l.Supported() {
+	for _, library := range l.Available() {
 		for _, alias := range library.CompatibleWith() {
 			if compare.ContainsLower(name, alias) {
 				*l = library

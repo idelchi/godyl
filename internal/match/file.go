@@ -11,7 +11,7 @@ import (
 
 type Asset struct {
 	Name     string
-	Platfrom detect.Platform
+	Platform detect.Platform
 }
 
 func (a Asset) NameLower() string {
@@ -19,7 +19,7 @@ func (a Asset) NameLower() string {
 }
 
 func (a *Asset) Parse() {
-	a.Platfrom.Parse(a.Name)
+	a.Platform.Parse(a.Name)
 }
 
 type Hints []Hint
@@ -182,44 +182,44 @@ func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 
 	// fmt.Printf("Asset: %s\n", a.Name)
 
-	if a.Platfrom.OS != "" {
-		if a.Platfrom.OS == req.Platform.OS {
-			// fmt.Printf("OS %s == %s\n", a.Platfrom.OS, req.Platform.OS)
+	if a.Platform.OS != "" {
+		if a.Platform.OS == req.Platform.OS {
+			// fmt.Printf("OS %s == %s\n", a.Platform.OS, req.Platform.OS)
 			score++
 		}
-		if req.Platform.OS.IsCompatibleWith(a.Platfrom.OS.Name()) {
-			// fmt.Printf("OS %s compatible with %s\n", a.Platfrom.OS, req.Platform.OS)
+		if req.Platform.OS.IsCompatibleWith(a.Platform.OS.Name()) {
+			// fmt.Printf("OS %s compatible with %s\n", a.Platform.OS, req.Platform.OS)
 			score++
 		} else {
-			// fmt.Printf("OS %s not compatible with %s\n", a.Platfrom.OS, req.Platform.OS)
+			// fmt.Printf("OS %s not compatible with %s\n", a.Platform.OS, req.Platform.OS)
 			qualified = false
 		}
 	}
 
-	if a.Platfrom.Architecture.Name() != "" {
-		if a.Platfrom.Architecture.Name() == req.Platform.Architecture.Name() {
-			// fmt.Printf("Arch %s == %s\n", a.Platfrom.Architecture, req.Platform.Architecture)
+	if a.Platform.Architecture.Name() != "" {
+		if a.Platform.Architecture.Name() == req.Platform.Architecture.Name() {
+			// fmt.Printf("Arch %s == %s\n", a.Platform.Architecture, req.Platform.Architecture)
 			score++
 		}
-		if req.Platform.Architecture.IsCompatibleWith(a.Platfrom.Architecture.Name(), req.Platform.Distribution) {
-			// fmt.Printf("Arch %s compatible with %s\n", a.Platfrom.Architecture, req.Platform.Architecture)
+		if req.Platform.Architecture.IsCompatibleWith(a.Platform.Architecture.Name(), req.Platform.Distribution) {
+			// fmt.Printf("Arch %s compatible with %s\n", a.Platform.Architecture, req.Platform.Architecture)
 			score++
 		} else {
-			// fmt.Printf("Arch %s not compatible with %s\n", a.Platfrom.Architecture, req.Platform.Architecture)
+			// fmt.Printf("Arch %s not compatible with %s\n", a.Platform.Architecture, req.Platform.Architecture)
 			qualified = false
 		}
 	}
 
-	if a.Platfrom.Library != "" {
-		if a.Platfrom.Library == req.Platform.Library {
-			// fmt.Printf("Library %s == %s\n", a.Platfrom.Library, req.Platform.Library)
+	if a.Platform.Library != "" {
+		if a.Platform.Library == req.Platform.Library {
+			// fmt.Printf("Library %s == %s\n", a.Platform.Library, req.Platform.Library)
 			score++
 		}
-		if req.Platform.Library.IsCompatibleWith(a.Platfrom.Library.Name()) {
-			// fmt.Printf("Library %s compatible with %s\n", a.Platfrom.Library, req.Platform.Library)
+		if req.Platform.Library.IsCompatibleWith(a.Platform.Library.Name()) {
+			// fmt.Printf("Library %s compatible with %s\n", a.Platform.Library, req.Platform.Library)
 			score++
 		} else {
-			// fmt.Printf("Library %s not compatible with %s\n", a.Platfrom.Library, req.Platform.Library)
+			// fmt.Printf("Library %s not compatible with %s\n", a.Platform.Library, req.Platform.Library)
 			// qualified = false
 			score--
 		}

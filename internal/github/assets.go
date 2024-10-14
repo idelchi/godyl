@@ -71,7 +71,7 @@ func (as Assets) Match(requirements match.Requirements) (matches match.Results, 
 	for _, a := range as {
 		asset := match.Asset{Name: a.Name}
 		asset.Parse()
-		asset.Platfrom.Extension = platform.Extension(filepath.Ext(a.Name))
+		asset.Platform.Extension = platform.Extension(filepath.Ext(a.Name))
 
 		assets = append(assets, asset)
 	}

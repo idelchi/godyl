@@ -42,6 +42,44 @@ func (c ConfigFile) IsSet() bool {
 	return pflag.CommandLine.Changed("config") || c.Env() != ""
 }
 
+func flags2() {
+	pflag.String("output", "", "Output path for the downloaded tools")
+	pflag.String("tools", "", "Path to tools configuration file")
+	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
+	pflag.StringP("config", "c", config.Get(), "Path to configuration file")
+
+	// Update flags
+	pflag.Bool("update", false, "Update the tools")
+	pflag.String("update-strategy", string(tools.Upgrade), "Strategy to use for updating tools")
+
+	pflag.Bool("dry", false, "Run without making any changes (dry run)")
+	pflag.Bool("detect", false, "Detect the platform and exit")
+	pflag.String("log", string(logger.INFO), "Log level (DEBUG, INFO, WARN, ERROR)")
+
+	// Tokens flags
+	pflag.String("github-token", "", "GitHub token for authentication")
+
+	pflag.String("mode", string(tools.Find), "Mode for tool installation (default, interactive, etc.)")
+	pflag.String("source", "", "Source from which to install the tools")
+	pflag.String("strategy", string(tools.Upgrade), "Strategy to use for installing tools")
+
+	pflag.BoolP("help", "h", false, "Show help message and exit")
+	pflag.Bool("show", false, "Show the parsed configuration and exit")
+	pflag.Bool("version", false, "Show version information and exit")
+
+	pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
+
+	pflag.StringSlice("env", nil, "Environment variables to pass to the tools")
+
+	pflag.CommandLine.SortFlags = false
+	pflag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [flags] [tools]\n\n", "godyl")
+		fmt.Fprintf(os.Stderr, "Tool manager that installs tools as specified in a YAML file.\n\n")
+		fmt.Fprintf(os.Stderr, "Flags:\n")
+		pflag.PrintDefaults()
+	}
+}
+
 func flags() {
 	// General flags
 	pflag.Bool("version", false, "Show the version information and exit")

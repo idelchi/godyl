@@ -46,6 +46,8 @@ type Flags struct {
 
 	// Number of parallel downloads
 	Parallel int `validate:"gte=0"`
+
+	Env []string
 }
 
 // Config holds all the configuration options for godyl.

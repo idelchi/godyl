@@ -53,10 +53,11 @@
 
 - name: cespare/reflex
   skip:
-    condition: '{{ if eq .Platform.OS "windows" }}true{{ else }}false{{ end }}'
-    message: "reflex does not work on windows"
+    - reason: "reflex does not work on Windows"
+      condition: '{{ eq .Platform.OS "windows" }}'
   fallbacks:
     - go
+
 - name: trntv/sshed
   exe:
     name: sshed
@@ -75,37 +76,35 @@
 
 - name: pemistahl/grex
   skip:
-    condition: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
-    message: "grex is not available for arm architecture"
-  # fallbacks:
-  #   - rust
-- name: nivekuil/rip
-  # fallbacks:
-  #   - rust
-  skip:
-    message: "rip is only available for linux arm32 and amd64"
-    condition: |-
-      {{- if or
-          (ne .Platform.OS "linux")
-          (ne .Platform.Architecture.Type "arm32")
-          (ne .Platform.Architecture.Type "amd64")
-      -}}
-      true
-      {{- else -}}
-      false
-      {{- end -}}
+    - reason: "grex is not available for ARM architecture"
+      condition: '{{ eq .Platform.Architecture.Type "arm" }}'
+  fallbacks:
+    - rust
 
+- name: nivekuil/rip
   version: 0.11.4
   fallbacks:
     - rust
+  skip:
+    - reason: "rip is only available for Linux"
+      condition: '{{ne .Platform.OS "linux"}}'
+    - reason: "rip is only available for arm32 and amd64 architectures"
+      condition: |-
+        {{- and
+            (ne .Platform.Architecture.Type "arm32")
+            (ne .Platform.Architecture.Type "amd64")
+        -}}
+  fallbacks:
+    - rust
+
 - name: mgunyho/tere
   skip:
-    condition: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
-    message: "tere is not available for arm architecture"
+    - reason: "tere is not available for ARM architecture"
+      condition: '{{ eq .Platform.Architecture.Type "arm" }}'
   extensions:
     - .zip
-  # fallbacks:
-  #   - rust
+  fallbacks:
+    - rust
 
 - name: cli/cli
   exe:
@@ -162,16 +161,14 @@
     - ""
   source:
     type: |-
-      {{- if or
-          (eq .Platform.OS "linux")
-          (eq .Platform.OS "darwin")
-      -}}
-      github
+      {{- if has .Platform.OS.Name (list "linux" "darwin") -}}
+          github
       {{- else -}}
-      go
+          go
       {{- end -}}
     go:
       command: v2/cmd/dasel
+
 - name: kdash-rs/kdash
   tags:
     - docker
@@ -202,39 +199,27 @@
 - name: BurntSushi/ripgrep
   exe: rg
   skip:
-    condition: '{{ if ne .Platform.OS "linux" }}true{{ else }}false{{ end }}'
-    message: "ripgrep is only available for linux"
+    - reason: "ripgrep is only available for Linux"
+      condition: '{{ ne .Platform.OS "linux" }}'
 
 - name: jesseduffield/lazygit
   aliases: lazyg
+
 - name: Byron/dua-cli
   exe: dua
   skip:
-    message: "nnn is only available for darwin amd64"
-    condition: |-
-      {{- if and
-          (eq .Platform.OS "darwin")
-          (ne .Platform.Architecture.Type "amd64")
-      -}}
-      true
-      {{- else -}}
-      false
-      {{- end -}}
+    reason: "dua-cli is for the Darwin platform only supporting amd64"
+    condition: '{{ and (eq .Platform.OS "darwin") (ne .Platform.Architecture.Type "amd64") }}'
 
 - name: jarun/nnn
   skip:
-    message: "nnn is only available for linux amd64"
-    condition: |-
-      {{- if or
-          (ne .Platform.OS "linux")
-          (ne .Platform.Architecture.Type "amd64")
-      -}}
-      true
-      {{- else -}}
-      false
-      {{- end -}}
+    reason: "nnn is only available for linux"
+    condition: '{{ ne .Platform.OS "linux" }}'
   aliases:
     - nnn
+  hints:
+    - pattern: icons
+      weight: 1
 
 - name: helm
   version: 3.16.1

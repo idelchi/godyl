@@ -3,9 +3,9 @@ package tools
 import (
 	"bytes"
 	"strconv"
-	"strings"
 	"text/template"
 
+	sprig "github.com/go-task/slim-sprig/v3"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/utils"
 )
@@ -17,13 +17,8 @@ func (t *Tool) NormalizeValues() {
 
 // ApplyTemplate applies Go templates to a string field using the Tool struct as data
 func (t *Tool) ApplyTemplate(field string) (string, error) {
-	// Register custom functions here
-	funcMap := template.FuncMap{
-		"hasPrefix": strings.HasPrefix, // Registering hasPrefix function
-	}
-
 	var buf bytes.Buffer
-	tmpl, err := template.New("tmpl").Funcs(funcMap).Parse(field)
+	tmpl, err := template.New("tmpl").Funcs(sprig.FuncMap()).Parse(field)
 	if err != nil {
 		return "", err
 	}

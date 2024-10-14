@@ -1,11 +1,12 @@
-- name: nivekuil/rip
-  skip:
-    - reason: "rip is only available for Linux"
-      condition: '{{ne .Platform.OS "linux"}}'
-    - reason: "rip is only available for arm32 and amd64 architectures"
-      condition: |-
-        {{- and
-            (ne .Platform.Architecture.Type "arm32")
-            (ne .Platform.Architecture.Type "amd64")
-        -}}
-  version: 0.11.4
+- name: TomWright/dasel
+  # fallbacks:
+  #   - go
+  extensions:
+    - ""
+  source:
+    type: |-
+      {{- if has .Platform.OS.Name (list "linux" "darwin") -}}
+          github
+      {{- else -}}
+          go
+      {{- end -}}

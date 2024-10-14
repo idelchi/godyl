@@ -42,7 +42,7 @@ func (t *Tool) ApplyDefaults(d Defaults) {
 	utils.SetIfEmpty(&t.Source.Type, d.Source.Type)
 	utils.SetIfEmpty(&t.Source.Github.Token, d.Source.Github.Token)
 	utils.SetIfEmpty(&t.Strategy, d.Strategy)
-	utils.SetSliceIfNil(&t.Skip.Conditions, "false")
+	utils.SetSliceIfNil(&t.Skip, Condition{Condition: "false"})
 	utils.SetIfEmpty(&t.Mode, d.Mode)
 	utils.SetSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
 	utils.SetSliceIfNil(&t.Extensions, d.Extensions...)

@@ -49,14 +49,14 @@ func (t *Tool) Template() error {
 		return err
 	}
 
-	for i, pattern := range t.Skip.Conditions {
-		t.Skip.Conditions[i], err = t.ApplyTemplate(pattern)
+	for i, pattern := range t.Skip {
+		t.Skip[i].Condition, err = t.ApplyTemplate(pattern.Condition)
 		if err != nil {
 			return err
 		}
 	}
 
-	t.Skip.skip, err = t.Skip.Conditions.IsSkipped()
+	_, _, err = t.Skip.IsSkipped()
 	if err != nil {
 		return err
 	}

@@ -7,58 +7,56 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Conditions []string
+type Skip unmarshal.SingleOrSlice[Condition]
 
-func (c *Conditions) UnmarshalYAML(value *yaml.Node) error {
-	result, err := unmarshal.UnmarshalSingleOrSlice[string](value, true)
+type Condition struct {
+	Condition string
+	Reason    string
+}
+
+func (s *Skip) UnmarshalYAML(value *yaml.Node) error {
+	result, err := unmarshal.UnmarshalSingleOrSlice[Condition](value, true)
 	if err != nil {
 		return err
 	}
-	*c = result
+	*s = result
 	return nil
 }
 
-func (c Conditions) IsSkipped() (bool, error) {
-	for _, condition := range c {
-		if val, err := strconv.ParseBool(condition); err != nil {
-			return false, err
+func (s Skip) IsSkipped() (bool, string, error) {
+	for _, condition := range s {
+		if val, err := strconv.ParseBool(condition.Condition); err != nil {
+			return false, condition.Reason, err
 		} else {
 			if val {
-				return true, nil
+				return true, condition.Reason, nil
 			}
 		}
 	}
 
-	return false, nil
+	return false, "", nil
 }
 
-type Skip struct {
-	Conditions Conditions
-	Message    string
+// func (s *Skip) UnmarshalYAML(value *yaml.Node) error {
+// 	if value.Kind == yaml.ScalarNode {
+// 		s.Conditions = []string{value.Value}
 
-	skip bool
-}
+// 		return nil
+// 	}
 
-func (s *Skip) UnmarshalYAML(value *yaml.Node) error {
-	if value.Kind == yaml.ScalarNode {
-		s.Conditions = []string{value.Value}
+// if value.Kind == yaml.ScalarNode {
+// 	switch value.Tag {
+// 	case "!!bool":
+// 		// If it's a boolean, assign to Skip.Skip
+// 		return value.Decode(&s.Skip)
+// 	case "!!str":
+// 		// If it's a string, assign to Skip.Template
+// 		return value.Decode(&s.Template)
+// 	default:
+// 		return fmt.Errorf("unexpected scalar type for Skip: %s", value.Tag)
+// 	}
+// }
 
-		return nil
-	}
-
-	// if value.Kind == yaml.ScalarNode {
-	// 	switch value.Tag {
-	// 	case "!!bool":
-	// 		// If it's a boolean, assign to Skip.Skip
-	// 		return value.Decode(&s.Skip)
-	// 	case "!!str":
-	// 		// If it's a string, assign to Skip.Template
-	// 		return value.Decode(&s.Template)
-	// 	default:
-	// 		return fmt.Errorf("unexpected scalar type for Skip: %s", value.Tag)
-	// 	}
-	// }
-
-	type rawSkip Skip
-	return unmarshal.DecodeWithOptionalKnownFields(value, (*rawSkip)(s), true, s)
-}
+// 	type rawSkip Skip
+// 	return unmarshal.DecodeWithOptionalKnownFields(value, (*rawSkip)(s), true, s)
+// }

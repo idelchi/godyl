@@ -9,7 +9,7 @@ import (
 func (p *Platform) Detect() error {
 	var os platform.OS
 	var arch platform.Architecture
-	var library platform.Library = platform.MSVC
+	var library platform.Library
 	var distro platform.Distribution
 	var extension platform.Extension
 

@@ -11,10 +11,10 @@ type Library string
 
 // Predefined Library values.
 const (
-	GNU        Library = "gnu"      // GNU library, typically used in Linux distributions.
-	Musl       Library = "musl"     // Musl library, often used in lightweight Linux distributions like Alpine.
-	MSVC       Library = "msvc"     // Microsoft Visual C++ (MSVC) library, used in Windows.
-	LibAndroid Library = "android"  // Android library, used in Android OS.
+	GNU        Library = "gnu"     // GNU library, typically used in Linux distributions.
+	Musl       Library = "musl"    // Musl library, often used in lightweight Linux distributions like Alpine.
+	MSVC       Library = "msvc"    // Microsoft Visual C++ (MSVC) library, used in Windows.
+	LibAndroid Library = "android" // Android library, used in Android OS.
 )
 
 // Default returns the default Library for a given OS and Distribution.
@@ -32,7 +32,7 @@ func (l *Library) Default(os OS, distro Distribution) Library {
 			return GNU
 		}
 	default:
-		return GNU
+		return ""
 	}
 }
 

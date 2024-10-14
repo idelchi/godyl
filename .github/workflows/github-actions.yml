@@ -10,10 +10,19 @@ on:
       - "*"
 
 jobs:
-  mac:
+  test:
+    if: github.ref == 'refs/heads/dev'
     permissions:
       contents: write
-    runs-on: macos-14
+    strategy:
+      matrix:
+        os:
+          - ubuntu-24.04
+          - windows-2022
+          - macos-14
+    runs-on: ${{ matrix.os }}
+    env:
+      GODYL_DEFAULTS_SOURCE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,51 +32,17 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.23.x"
+          go-version: "1.23.2"
           check-latest: true
 
       - name: Run tests
         run: go run ./cmd/godyl --detect
 
-  linux:
-    permissions:
-      contents: write
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.23.x"
-          check-latest: true
-
-      - name: Run tests
-        run: go run ./cmd/godyl --detect
-
-  windows:
-    permissions:
-      contents: write
-    runs-on: windows-2022
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.23.x"
-          check-latest: true
-
-      - name: Run tests
-        run: go run ./cmd/godyl --detect
+      - name: Run godyl
+        run: go run ./cmd/godyl
 
   tag:
+    needs: test
     permissions:
       contents: write
       actions: write

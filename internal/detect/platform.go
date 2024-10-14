@@ -5,9 +5,6 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
-// Info represents a map of key-value pairs with information about the platform.
-type Info map[string]string
-
 // Platform defines the characteristics of the platform, including OS, architecture, library, extension, and distribution.
 type Platform struct {
 	OS           platform.OS           // OS represents the operating system (e.g., Linux, Windows, macOS).

@@ -9,8 +9,8 @@ import (
 
 type Folder string
 
-func (f *Folder) IsSet() bool {
-	return *f != ""
+func (f Folder) IsSet() bool {
+	return f != ""
 }
 
 func (f *Folder) IsParentOf(child Folder) bool {

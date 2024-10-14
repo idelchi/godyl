@@ -82,7 +82,7 @@ func (t *Tool) CheckSkipConditions(withTags []string, withoutTags []string) erro
 		return err
 	}
 
-	if t.Skip.Skip {
+	if t.Skip.skip {
 		return fmt.Errorf("%w: %q", ErrSkipped, t.Skip.Message)
 	}
 

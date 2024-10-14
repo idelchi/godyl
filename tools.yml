@@ -23,7 +23,6 @@
   exe:
     patterns:
       - "^{{ .Platform.OS }}-{{ .Exe.Name }}"
-
 - name: homeport/dyff
   fallbacks:
     - go
@@ -54,11 +53,10 @@
 
 - name: cespare/reflex
   skip:
-    template: '{{ if eq .Platform.OS "windows" }}true{{ else }}false{{ end }}'
+    condition: '{{ if eq .Platform.OS "windows" }}true{{ else }}false{{ end }}'
     message: "reflex does not work on windows"
   fallbacks:
     - go
-
 - name: trntv/sshed
   exe:
     name: sshed
@@ -77,17 +75,16 @@
 
 - name: pemistahl/grex
   skip:
-    template: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
+    condition: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
     message: "grex is not available for arm architecture"
   # fallbacks:
   #   - rust
-
 - name: nivekuil/rip
   # fallbacks:
   #   - rust
   skip:
     message: "rip is only available for linux arm32 and amd64"
-    template: |-
+    condition: |-
       {{- if or
           (ne .Platform.OS "linux")
           (ne .Platform.Architecture.Type "arm32")
@@ -99,12 +96,11 @@
       {{- end -}}
 
   version: 0.11.4
-  # fallbacks:
-  #   - rust
-
+  fallbacks:
+    - rust
 - name: mgunyho/tere
   skip:
-    template: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
+    condition: '{{ if eq .Platform.Architecture.Type "arm" }}true{{ else }}false{{ end }}'
     message: "tere is not available for arm architecture"
   extensions:
     - .zip
@@ -129,7 +125,6 @@
   aliases: lazy
   tags:
     - docker
-
 - name: ahmetb/kubectx
   aliases: kbx
   tags:
@@ -171,7 +166,6 @@
       {{- end -}}
     go:
       command: v2/cmd/dasel
-
 - name: kdash-rs/kdash
   tags:
     - docker
@@ -202,18 +196,29 @@
 - name: BurntSushi/ripgrep
   exe: rg
   skip:
-    template: '{{ if ne .Platform.OS "linux" }}true{{ else }}false{{ end }}'
+    condition: '{{ if ne .Platform.OS "linux" }}true{{ else }}false{{ end }}'
     message: "ripgrep is only available for linux"
 
 - name: jesseduffield/lazygit
   aliases: lazyg
 - name: Byron/dua-cli
   exe: dua
+  skip:
+    message: "nnn is only available for darwin amd64"
+    condition: |-
+      {{- if and
+          (eq .Platform.OS "darwin")
+          (ne .Platform.Architecture.Type "amd64")
+      -}}
+      true
+      {{- else -}}
+      false
+      {{- end -}}
 
 - name: jarun/nnn
   skip:
     message: "nnn is only available for linux amd64"
-    template: |-
+    condition: |-
       {{- if or
           (ne .Platform.OS "linux")
           (ne .Platform.Architecture.Type "amd64")

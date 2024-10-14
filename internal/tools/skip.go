@@ -1,13 +1,15 @@
 package tools
 
 import (
+	"fmt"
 	"strconv"
 
+	"github.com/idelchi/godyl/pkg/pretty"
 	"github.com/idelchi/godyl/pkg/unmarshal"
 	"gopkg.in/yaml.v3"
 )
 
-type Skip unmarshal.SingleOrSlice[Condition]
+type Skip []Condition
 
 type Condition struct {
 	Condition string
@@ -15,6 +17,10 @@ type Condition struct {
 }
 
 func (s *Skip) UnmarshalYAML(value *yaml.Node) error {
+	// Manually set value to Skip[0].Condition if it's a scalar
+
+	fmt.Printf("UnmarshalYAML: %v\n", pretty.YAML(value))
+
 	result, err := unmarshal.UnmarshalSingleOrSlice[Condition](value, true)
 	if err != nil {
 		return err

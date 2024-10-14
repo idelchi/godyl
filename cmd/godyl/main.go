@@ -10,7 +10,6 @@ import (
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/pretty"
-	"github.com/zcalusic/sysinfo"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -42,12 +41,6 @@ func main() {
 	logger := logger.New(cfg.Log)
 
 	if cfg.Detect {
-		var si sysinfo.SysInfo
-
-		si.GetSysInfo()
-
-		logger.Info(PrintJSON(si))
-
 		if err := cfg.Defaults.Defaults(); err != nil {
 			fmt.Fprintf(os.Stderr, "Error setting defaults: %v\n", err)
 

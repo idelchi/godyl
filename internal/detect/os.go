@@ -1,4 +1,4 @@
-//go:build linux || darwin
+//go:build windows || darwin
 
 package detect
 
@@ -6,31 +6,22 @@ import (
 	"runtime"
 
 	"github.com/idelchi/godyl/internal/detect/platform"
-	"github.com/zcalusic/sysinfo"
 )
 
 func (p *Platform) Detect() error {
 	var os platform.OS
 	var arch platform.Architecture
-	var library platform.Library = platform.GNU
+	var library platform.Library
 	var distro platform.Distribution
 	var extension platform.Extension
-
-	var si sysinfo.SysInfo
-
-	si.GetSysInfo()
 
 	if err := os.From(runtime.GOOS); err != nil {
 		return err
 	}
 
-	if err := distro.From(si.OS.Vendor); err != nil {
-		return err
-	}
-
 	library = library.Default(os, distro)
 
-	if err := arch.From(si.Kernel.Architecture, distro); err != nil {
+	if err := arch.From(runtime.GOARCH, distro); err != nil {
 		return err
 	}
 

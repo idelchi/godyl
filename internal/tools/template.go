@@ -33,10 +33,10 @@ func (t *Tool) Template() error {
 	var err error
 
 	// Apply templating to all relevant fields
-	t.Name, err = t.ApplyTemplate(t.Name)
-	if err != nil {
-		return err
-	}
+	// t.Name, err = t.ApplyTemplate(t.Name)
+	// if err != nil {
+	// 	return err
+	// }
 
 	// Apply templating to all relevant fields
 	t.Source.Type, err = t.ApplyTemplate(t.Source.Type)
@@ -51,7 +51,7 @@ func (t *Tool) Template() error {
 		}
 	}
 
-	_, _, err = t.Skip.IsSkipped()
+	_, _, err = t.Skip.True()
 	if err != nil {
 		return err
 	}

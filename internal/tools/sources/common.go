@@ -7,6 +7,7 @@ import (
 	"github.com/idelchi/godyl/internal/executable"
 	"github.com/idelchi/godyl/internal/folder"
 	"github.com/idelchi/godyl/pkg/download"
+	"github.com/idelchi/godyl/pkg/env"
 )
 
 type InstallData struct {
@@ -17,6 +18,7 @@ type InstallData struct {
 	Output   string
 	Aliases  []string
 	Mode     string
+	Env      env.Env
 }
 
 func Download(d InstallData) (output, found string, err error) {

@@ -170,7 +170,7 @@ func main() {
 				return nil
 			}
 
-			output, _, err := tool.Post.Install(sources.InstallData{})
+			output, _, err := tool.Post.Install(sources.InstallData{Env: tool.Env})
 			if err != nil {
 				resultCh <- result{tool: &tool, err: err, msg: output}
 			}

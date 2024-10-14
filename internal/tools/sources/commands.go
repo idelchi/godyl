@@ -50,12 +50,11 @@ func (c Commands) Combined() Command {
 	return Command(strings.Join(stringCommands, "; "))
 }
 
-func (c Commands) Install(_ InstallData) (output, found string, err error) {
-	// Use the Combined method to get a single Command
+func (c Commands) Install(d InstallData) (output, found string, err error) {
 	cmd := c.Combined()
 
 	// Execute the combined command
-	output, err = cmd.Shell()
+	output, err = cmd.Shell(d.Env.ToSlice()...)
 	if err != nil {
 		return output, "", fmt.Errorf("running combined commands: %w", err)
 	}

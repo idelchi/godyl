@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 
+	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
@@ -12,7 +13,7 @@ import (
 type Command string
 
 // Run executes the command using mvdan/sh, capturing output and returning it
-func (c Command) Shell() (string, error) {
+func (c Command) Shell(env ...string) (string, error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 
 	// Parse the command string into a shell script
@@ -23,7 +24,10 @@ func (c Command) Shell() (string, error) {
 	}
 
 	// Set up the interpreter with stdout and stderr buffers to capture output
-	runner, err := interp.New(interp.StdIO(nil, &stdoutBuf, &stderrBuf))
+	runner, err := interp.New(
+		interp.StdIO(nil, &stdoutBuf, &stderrBuf),
+		interp.Env(expand.ListEnviron(env...)), // Pass the environment variables
+	)
 	if err != nil {
 		return "", fmt.Errorf("setting up shell interpreter: %w", err)
 	}

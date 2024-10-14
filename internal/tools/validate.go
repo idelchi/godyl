@@ -82,7 +82,7 @@ func (t *Tool) CheckSkipConditions(withTags []string, withoutTags []string) erro
 		return err
 	}
 
-	if skip, msg, _ := t.Skip.IsSkipped(); skip {
+	if skip, msg, _ := t.Skip.True(); skip {
 		return fmt.Errorf("%w: %q", ErrSkipped, msg)
 	}
 
@@ -199,7 +199,10 @@ func (t *Tool) Download() (string, string, error) {
 		Output:   t.Output,
 		Aliases:  t.Aliases,
 		Mode:     t.Mode.String(),
+		Env:      t.Env,
 	}
+
+
 
 	return installer.Install(data)
 }

@@ -14,7 +14,7 @@ type Condition struct {
 	Reason    string
 }
 
-func (s Skip) IsSkipped() (bool, string, error) {
+func (s Skip) True() (bool, string, error) {
 	for _, condition := range s {
 		if val, err := strconv.ParseBool(condition.Condition); err != nil {
 			return false, condition.Reason, err

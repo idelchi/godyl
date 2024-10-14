@@ -1,12 +1,9 @@
-- name: TomWright/dasel
-  # fallbacks:
-  #   - go
-  extensions:
-    - ""
-  source:
-    type: |-
-      {{- if has .Platform.OS.Name (list "linux" "darwin") -}}
-          github
-      {{- else -}}
-          go
-      {{- end -}}
+- name: kraanzu/dooit
+  env:
+    NAME: GO111MODULE
+  post:
+    - echo {{ .Env.NAME }} >> NAME.txt
+    - echo $NAME >> NAME.txt
+  exe:
+    patterns:
+      - "^{{ .Platform.OS }}-{{ .Exe.Name }}"

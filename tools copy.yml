@@ -23,6 +23,7 @@
   exe:
     patterns:
       - "^{{ .Platform.OS }}-{{ .Exe.Name }}"
+
 - name: homeport/dyff
   fallbacks:
     - go

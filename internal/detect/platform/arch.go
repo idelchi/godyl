@@ -100,12 +100,14 @@ func (a Architecture) CompatibleWith(distro Distribution) []string {
 			return []string{"arm32", "armv7", "armv7l", "armhf", "armv6", "armv6l", "arm"}
 		case "6":
 			if distro == Rasbian {
-				return []string{"arm32", "armhf", "armv6", "armv6l", "arm"}
+				return []string{"arm32", "armv6", "armv6l", "armhf", "arm"}
 			}
 			if distro == Debian {
 				return []string{"arm32", "armv6", "armv6l", "arm"}
 			}
 			return []string{"arm32", "armhf", "armv6", "armv6l", "arm"}
+		case "5":
+			return []string{"arm32", "armv5", "armv5l", "armel", "arm"}
 		default:
 			return []string{"arm32", "armv7", "armv7l", "armhf", "armv6", "armv6l", "arm"}
 		}
@@ -146,6 +148,7 @@ func (a *Architecture) Parse(name string) error {
 	}
 
 	for _, arch := range a.Available() {
+		// TODO(Idelchi): Why arch.CompatibleWith("")? Isn't the distro required?
 		for _, alias := range arch.CompatibleWith("") {
 			if compare.ContainsLower(name, alias) {
 				*a = arch

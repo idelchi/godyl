@@ -29,6 +29,8 @@ WORKDIR /tmp/go
 ENV GOMODCACHE=/home/${USER}/.cache/.go-mod
 ENV GOCACHE=/home/${USER}/.cache/.go
 
+RUN go mod download
+
 COPY go.mod go.sum ./
 RUN --mount=type=cache,target=${GOMODCACHE},uid=1001,gid=1001 \
     --mount=type=cache,target=${GOCACHE},uid=1001,gid=1001 \

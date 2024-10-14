@@ -29,14 +29,12 @@ func (t *Tools) Load(cfg string) (err error) {
 		return nil
 	}
 
-	file, err := os.Open(cfg)
+	file, err := os.ReadFile(cfg)
 	if err != nil {
 		return err
 	}
-
-	dec := yaml.NewDecoder(file)
-	dec.KnownFields(true)
-	if err := dec.Decode(t); err != nil {
+	err = yaml.Unmarshal(file, t)
+	if err != nil {
 		return err
 	}
 

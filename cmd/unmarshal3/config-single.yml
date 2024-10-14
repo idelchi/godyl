@@ -1,0 +1,3 @@
+names: my-name
+persons: {name: my-name, age: 20}
+ages: 1

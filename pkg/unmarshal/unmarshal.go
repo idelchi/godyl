@@ -1,54 +1,87 @@
 package unmarshal
 
 import (
+	"bytes"
 	"fmt"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
 
-// StringOrSlice is a type constraint for types that are slices of strings
-type StringOrSlice interface {
-	~[]string
+type SingleOrSlice[T any] []T
+
+func (ss *SingleOrSlice[T]) UnmarshalYAML(value *yaml.Node) error {
+	result, err := UnmarshalSingleOrSlice[T](value, true)
+	if err != nil {
+		return err
+	}
+	*ss = result
+	return nil
 }
 
-// UnmarshalStringOrSlice is a generic function to unmarshal YAML into either a single string or a slice of strings
-func UnmarshalStringOrSlice[T StringOrSlice](value *yaml.Node) (T, error) {
-	var result T
-
-	// Try unmarshalling into a single string
-	var single string
-	if err := value.Decode(&single); err == nil {
-		result = append(result, single)
-		return result, nil
+func UnmarshalSingleOrSlice[T any](node *yaml.Node, useKnownFields bool) ([]T, error) {
+	// If it's a scalar or mapping node, wrap it in a sequence node
+	if node.Kind == yaml.ScalarNode || node.Kind == yaml.MappingNode {
+		node = &yaml.Node{
+			Kind:    yaml.SequenceNode,
+			Content: []*yaml.Node{node},
+		}
 	}
-
-	// Try unmarshalling into a slice of strings
-	var multiple []string
-	if err := value.Decode(&multiple); err == nil {
-		result = T(multiple)
-		return result, nil
-	}
-
-	return result, fmt.Errorf("failed to unmarshal: expected string or slice of strings")
-}
-
-// UnmarshalStringOrSlice is a generic function to unmarshal YAML into either a single string or a slice of strings
-func UnmarshalSingleOrSlice[T any](value *yaml.Node) ([]T, error) {
 	var result []T
 
-	// Try unmarshalling into a single string
-	var single T
-	if err := value.Decode(&single); err == nil {
-		result = append(result, single)
-		return result, nil
+	// Use UnmarshalWithKnownFields instead of node.Decode
+	if err := DecodeWithOptionalKnownFields(node, &result, useKnownFields, result); err != nil {
+		return nil, err
 	}
 
-	// Try unmarshalling into a slice of T
-	var multiple []T
-	if err := value.Decode(&multiple); err == nil {
-		result = []T(multiple)
-		return result, nil
+	return result, nil
+}
+
+// unmarshalYAMLWithOptions is a helper function that unmarshals YAML with the option to use KnownFields.
+func DecodeWithOptionalKnownFields(value *yaml.Node, out any, useKnownFields bool, input any) error {
+	// Re-encode the yaml.Node to bytes
+	var buf bytes.Buffer
+	enc := yaml.NewEncoder(&buf)
+	if err := enc.Encode(value); err != nil {
+		return err
+	}
+	enc.Close()
+
+	// Decode from the buffer
+	decoder := yaml.NewDecoder(&buf)
+	if useKnownFields {
+		decoder.KnownFields(true)
 	}
 
-	return result, fmt.Errorf("failed to unmarshal: expected string or slice of strings")
+	// Decode into the provided interface
+	err := decoder.Decode(out)
+
+	return yamlTypeErrorConversion(err, input)
+}
+
+func yamlTypeErrorConversion(err error, input any) error {
+	if err == nil {
+		return nil
+	}
+
+	if _, ok := err.(*yaml.TypeError); !ok {
+		return err
+	}
+
+	if !strings.Contains(err.Error(), " not found in type") {
+		return err
+	}
+
+	typeErr := err.(*yaml.TypeError)
+
+	for i, err := range typeErr.Errors {
+		parts := strings.SplitN(err, " not found in type", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		typeErr.Errors[i] = fmt.Sprintf("%s not found in type %T", parts[0], input)
+	}
+
+	return err
 }

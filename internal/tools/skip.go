@@ -3,14 +3,14 @@ package tools
 import (
 	"fmt"
 
+	"github.com/idelchi/godyl/pkg/unmarshal"
 	"gopkg.in/yaml.v3"
 )
 
 type Skip struct {
-	Template     string `json:"-"`
-	Message      string
-	SkipTemplate string `json:"-" yaml:"skip" mapstructure:"skip"`
-	Skip         bool   `yaml:"-" mapstructure:"-"`
+	Template string
+	Message  string
+	Skip     bool
 }
 
 func (s *Skip) UnmarshalYAML(value *yaml.Node) error {
@@ -28,11 +28,6 @@ func (s *Skip) UnmarshalYAML(value *yaml.Node) error {
 		}
 	}
 
-	// If it's a mapping node, handle it as normal unmarshalling
-	if value.Kind == yaml.MappingNode {
-		type rawSkip Skip
-		return value.Decode((*rawSkip)(s))
-	}
-
-	return fmt.Errorf("unexpected node kind for Skip: %v", value.Kind)
+	type rawSkip Skip
+	return unmarshal.DecodeWithOptionalKnownFields(value, (*rawSkip)(s), true, s)
 }

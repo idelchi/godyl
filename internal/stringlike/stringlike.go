@@ -6,9 +6,15 @@ func SetIfEmpty[S ~string](input *S, value S) {
 	}
 }
 
-func SetSliceIfNil[S ~string](input *[]S, values ...S) {
+// func SetSliceIfNil[S ~string](input *[]S, values ...S) {
+// 	if *input == nil {
+// 		*input = append([]S(nil), values...)
+// 	}
+// }
+
+func SetSliceIfNil[S ~[]T, T any](input *S, values ...T) {
 	if *input == nil {
-		*input = append([]S(nil), values...)
+		*input = append([]T(nil), values...)
 	}
 }
 

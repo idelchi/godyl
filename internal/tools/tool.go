@@ -1,12 +1,11 @@
 package tools
 
 import (
-	"bytes"
-
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/pkg/unmarshal"
 	"gopkg.in/yaml.v3"
 )
 
@@ -60,26 +59,11 @@ func (t *Tool) UnmarshalYAML(value *yaml.Node) error {
 	// If it's a scalar (e.g., just the name), handle it directly
 	if value.Kind == yaml.ScalarNode {
 		t.Name = value.Value
+
 		return nil
 	}
 
-	// Re-encode the yaml.Node to bytes to leverage yaml.NewDecoder
-	var buf bytes.Buffer
-	enc := yaml.NewEncoder(&buf)
-	if err := enc.Encode(value); err != nil {
-		return err
-	}
-	enc.Close()
-
-	// Now decode from the buffer with KnownFields enabled
-	decoder := yaml.NewDecoder(&buf)
-	decoder.KnownFields(true)
-
-	// Decode the Tool
 	type rawTool Tool
-	if err := decoder.Decode((*rawTool)(t)); err != nil {
-		return err
-	}
 
-	return nil
+	return unmarshal.DecodeWithOptionalKnownFields(value, (*rawTool)(t), true, t)
 }

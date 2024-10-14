@@ -1,0 +1,8 @@
+names:
+  - my-name
+persons:
+  - name: my-name
+    age: 20
+    # raw: 1
+ages:
+  - 1

@@ -7,3 +7,4 @@ alias ggg="godyl --dry --log debug -c cmd/godyl/config.yml"
 
 
 echo "done!"
+alias d="go run ./cmd/godyl --dry --log debug"

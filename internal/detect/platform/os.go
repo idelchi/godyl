@@ -13,7 +13,7 @@ type OS string
 // Predefined OS values.
 const (
 	Linux   OS = "linux"   // Linux operating system
-	MacOS   OS = "macos"   // macOS operating system
+	Darwin  OS = "darwin"  // Darwin operating system
 	Windows OS = "windows" // Windows operating system
 	FreeBSD OS = "freebsd" // FreeBSD operating system
 	Android OS = "android" // Android operating system
@@ -23,7 +23,7 @@ const (
 
 // Available returns a slice of all supported operating systems.
 func (o *OS) Available() []OS {
-	return []OS{Linux, MacOS, Windows, FreeBSD, Android, NetBSD, OpenBSD}
+	return []OS{Linux, Darwin, Windows, FreeBSD, Android, NetBSD, OpenBSD}
 }
 
 // ErrNotFound is returned when no matching OS is found.
@@ -45,8 +45,8 @@ func (o OS) CompatibleWith() []string {
 	switch o {
 	case Linux:
 		return []string{"linux"}
-	case MacOS:
-		return []string{"macos", "mac", "osx", "darwin"}
+	case Darwin:
+		return []string{"darwin", "macos", "mac", "osx"}
 	case Windows:
 		return []string{"windows", "win"}
 	case FreeBSD:

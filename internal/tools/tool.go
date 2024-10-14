@@ -28,12 +28,12 @@ type Tool struct {
 	Platform     detect.Platform
 	Aliases      Aliases
 	Values       map[string]any
-	Fallbacks    []string
+	Fallbacks    Fallbacks
 	Hints        match.Hints
 	Source       sources.Source
 	Tags         Tags
 	Strategy     Strategy
-	Extensions   []string
+	Extensions   Extensions
 	Skip         Skip
 	Test         sources.Commands
 	AllowFailure bool `yaml:"allow_failure" mapstructure:"allow_failure"`

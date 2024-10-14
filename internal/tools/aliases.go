@@ -5,5 +5,4 @@ import (
 )
 
 // Aliases is a custom type for handling alias names.
-type Aliases unmarshal.SingleOrSlice[string]
-
+type Aliases = unmarshal.SingleOrSlice[string]

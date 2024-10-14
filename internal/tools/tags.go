@@ -1,8 +1,22 @@
 package tools
 
-import "slices"
+import (
+	"slices"
+
+	"github.com/idelchi/godyl/pkg/unmarshal"
+	"gopkg.in/yaml.v3"
+)
 
 type Tags []string
+
+func (t *Tags) UnmarshalYAML(value *yaml.Node) error {
+	result, err := unmarshal.UnmarshalSingleOrSlice[string](value, false)
+	if err != nil {
+		return err
+	}
+	*t = result
+	return nil
+}
 
 func (t *Tags) Append(tags ...string) {
 	for _, tag := range tags {

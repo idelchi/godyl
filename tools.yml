@@ -1,16 +1,23 @@
+# - name: kraanzu/dooit
+#   aliases:
+#     - ass
+#   # shet: true
+#   exe:
+#     #   # ass
+#     name: shet
+#     patterns: shets
+#     # ass: ass
+#   # bro: ho
+#   # skip: '{{ if  eq .Platform.OS "w" }}true{{ else }}false{{ end }}'
+#   skip:
+#     template: '{{ if  eq .Platform.OS "linux" }}true{{ else }}false{{ end }}'
+#     message: shet
+#     # ass: ass
+#     # shet: ass
+#   tags: shet
+
 - name: kraanzu/dooit
-  aliases:
-    - ass
-  # shet: true
+  tags: shetssss
+  aliases: ass
   exe:
-    #   # ass
-    name: shet
     patterns: shets
-    # ass: ass
-  # bro: ho
-  # skip: '{{ if  eq .Platform.OS "w" }}true{{ else }}false{{ end }}'
-  skip:
-    template: '{{ if  eq .Platform.OS "linux" }}true{{ else }}false{{ end }}'
-    message: shet
-    ass: ass
-    shet: ass

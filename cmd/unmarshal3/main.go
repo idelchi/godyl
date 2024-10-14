@@ -16,15 +16,15 @@ type Person struct {
 	Age  int    `yaml:"age"`
 }
 
-type (
-	Age  int
-	Name string
-)
+// type (
+// 	Age  int
+// 	Name string
+// )
 
 // Type aliases using the generic wrapper
 type (
-	Ages  = unmarshal.SingleOrSlice[Age]
-	Names = unmarshal.SingleOrSlice[Name]
+	Ages  = unmarshal.SingleOrSlice[int]
+	Names = unmarshal.SingleOrSlice[string]
 )
 
 type Persons []Person

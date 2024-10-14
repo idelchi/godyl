@@ -164,6 +164,7 @@ func (t *Tool) tryResolveFallback(fallback string, path string, withTags []strin
 	if err := t.Strategy.Upgrade(t); err != nil {
 		return err
 	}
+	t.Env.Expand()
 
 	// Validation
 	return t.Validate()
@@ -201,8 +202,6 @@ func (t *Tool) Download() (string, string, error) {
 		Mode:     t.Mode.String(),
 		Env:      t.Env,
 	}
-
-
 
 	return installer.Install(data)
 }

@@ -19,7 +19,5 @@ defaults:
   source:
     type: github
   strategy: none
-
-  values:
-    github:
-      token: $GODYL_DEFAULTS_SOURCE_GITHUB_TOKEN
+  env:
+    GH_TOKEN: $GODYL_DEFAULTS_SOURCE_GITHUB_TOKEN

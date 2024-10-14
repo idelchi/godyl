@@ -19,6 +19,35 @@ type Update struct {
 	Update   bool           `mapstructure:"update"`
 }
 
+type Tokens struct {
+	GitHub string `mapstructure:"github-token"`
+}
+
+// Config holds all the configuration options for godyl.
+type Flags struct {
+	Output   string
+	Tools    string
+	Tags     []string
+	Config   string `yaml:"-"`
+	Update   Update `mapstructure:",squash"`
+	Dry      bool
+	Detect   bool
+	Log      logger.Level
+	Tokens   Tokens `mapstructure:",squash"`
+	Mode     tools.Mode
+	Source   string
+	Strategy tools.Strategy
+	// Show help message
+	Help bool
+	// Show parsed configuration
+	Show bool
+	// Show version information
+	Version bool
+
+	// Number of parallel downloads
+	Parallel int `validate:"gte=0"`
+}
+
 // Config holds all the configuration options for godyl.
 type Config struct {
 	// Defaults for tools. Allows setting a default subset of values for tools

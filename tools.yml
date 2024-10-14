@@ -1,9 +1,8 @@
-- name: kraanzu/dooit
-  env:
-    NAME: GO111MODULE
-  post:
-    - echo {{ .Env.NAME }} >> NAME.txt
-    - echo $NAME >> NAME.txt
+- name: cli/cli
   exe:
+    name: gh
     patterns:
-      - "^{{ .Platform.OS }}-{{ .Exe.Name }}"
+      - bin/gh{{ .Platform.Extension }}$
+  post:
+    - "{{ .Output }}/{{ .Exe.Name }} extension install github/gh-copilot"
+    - "{{ .Output }}/{{ .Exe.Name }} extension upgrade gh-copilot"

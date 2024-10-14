@@ -63,3 +63,23 @@ func NormalizeMap(m map[string]any) map[string]any {
 
 	return normalizedMap
 }
+
+// DeepMergeMapsWithoutOverwrite merges two maps of map[string]any, adding values
+// from second to first without overwriting the existing values in first.
+// It performs a deep merge, handling nested maps recursively.
+func DeepMergeMapsWithoutOverwrite(first, second map[string]any) {
+	for key, secondVal := range second {
+		if firstVal, exists := first[key]; exists {
+			// If both values are maps, recursively merge them
+			if firstMap, ok1 := firstVal.(map[string]any); ok1 {
+				if secondMap, ok2 := secondVal.(map[string]any); ok2 {
+					DeepMergeMapsWithoutOverwrite(firstMap, secondMap)
+				}
+			}
+			// If the key exists but isn't a map, do nothing (keep the original value)
+		} else {
+			// If the key doesn't exist in first, add it from second
+			first[key] = secondVal
+		}
+	}
+}

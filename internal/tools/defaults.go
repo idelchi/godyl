@@ -34,6 +34,8 @@ func (d *Defaults) Defaults() error {
 	utils.SetSliceIfNil(&d.Extensions, p.CommonExtensions()...)
 	// stringlike.SetSliceIfNil(&d.Exe.Patterns, "{{ .Exe.Name }}.*")
 
+	d.Env = d.Env.Normalize()
+
 	return nil
 }
 
@@ -47,6 +49,8 @@ func (t *Tool) ApplyDefaults(d Defaults) {
 	utils.SetSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
 	utils.SetSliceIfNil(&t.Extensions, d.Extensions...)
 	utils.SetMapIfNil(&t.Values, d.Values)
+	utils.DeepMergeMapsWithoutOverwrite(t.Values, d.Values)
+	t.Env.Merge(d.Env)
 
 	t.Platform.Merge(d.Platform)
 	t.Hints.Add(d.Hints)

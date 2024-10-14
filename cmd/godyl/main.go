@@ -117,13 +117,17 @@ func main() {
 					logger.Info("  version: %s", tool.Version)
 				}
 				logger.Info("  picked download %q", filepath.Base(tool.Path))
-				logger.Info("  picked file %q", found)
-				logger.Info("  installed successfully at %q", filepath.Join(tool.Output, tool.Exe.Name))
-				if tool.Aliases != nil {
-					logger.Info("  symlinks:")
-					for _, alias := range tool.Aliases {
-						logger.Info("    - %q\n", filepath.Join(tool.Output, alias))
+				if tool.Mode == "find" {
+					logger.Info("  picked file %q", found)
+					logger.Info("  installed successfully at %q", filepath.Join(tool.Output, tool.Exe.Name))
+					if tool.Aliases != nil {
+						logger.Info("  symlinks:")
+						for _, alias := range tool.Aliases {
+							logger.Info("    - %q\n", filepath.Join(tool.Output, alias))
+						}
 					}
+				} else {
+					logger.Info("  extracted to %q", tool.Output)
 				}
 			}
 		}

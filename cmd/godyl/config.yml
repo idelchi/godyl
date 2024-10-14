@@ -15,3 +15,7 @@ defaults:
   #     - -version
   #     - version
   #     - -v
+  mode: find
+  source:
+    type: github
+  strategy: none

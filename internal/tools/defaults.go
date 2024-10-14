@@ -3,8 +3,8 @@ package tools
 import (
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/internal/stringlike"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/env"
 )
 
@@ -20,6 +20,7 @@ type Defaults struct {
 	Strategy   Strategy
 	Extensions []string
 	Env        env.Env
+	Mode       Mode
 }
 
 func (d *Defaults) Defaults() error {
@@ -30,20 +31,21 @@ func (d *Defaults) Defaults() error {
 
 	d.Platform.Merge(p)
 
-	stringlike.SetSliceIfNil(&d.Extensions, p.CommonExtensions()...)
+	utils.SetSliceIfNil(&d.Extensions, p.CommonExtensions()...)
 	// stringlike.SetSliceIfNil(&d.Exe.Patterns, "{{ .Exe.Name }}.*")
 
 	return nil
 }
 
 func (t *Tool) ApplyDefaults(d Defaults) {
-	stringlike.SetIfEmpty(&t.Output, d.Output)
-	stringlike.SetIfEmpty(&t.Source.Type, d.Source.Type)
-	stringlike.SetIfEmpty(&t.Source.Github.Token, d.Source.Github.Token)
-	stringlike.SetIfEmpty(&t.Strategy, d.Strategy)
-	stringlike.SetIfEmpty(&t.Skip.Template, "false")
-	stringlike.SetSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
-	stringlike.SetSliceIfNil(&t.Extensions, d.Extensions...)
+	utils.SetIfEmpty(&t.Output, d.Output)
+	utils.SetIfEmpty(&t.Source.Type, d.Source.Type)
+	utils.SetIfEmpty(&t.Source.Github.Token, d.Source.Github.Token)
+	utils.SetIfEmpty(&t.Strategy, d.Strategy)
+	utils.SetIfEmpty(&t.Skip.Template, "false")
+	utils.SetIfEmpty(&t.Mode, d.Mode)
+	utils.SetSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
+	utils.SetSliceIfNil(&t.Extensions, d.Extensions...)
 
 	t.Platform.Merge(d.Platform)
 	t.Hints.Add(d.Hints)

@@ -8,8 +8,8 @@ import (
 	"github.com/idelchi/godyl/internal/executable"
 	"github.com/idelchi/godyl/internal/folder"
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/internal/stringlike"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/internal/utils"
 )
 
 var (
@@ -32,6 +32,10 @@ func (t *Tool) Resolve(withTags []string, withoutTags []string) error {
 	}
 
 	t.Output = output.Path()
+
+	if t.Mode == "extract" {
+		t.Strategy = Force
+	}
 
 	// Save path to be templated last
 	path := t.Path
@@ -107,7 +111,7 @@ func (t *Tool) tryResolveFallback(fallback string, path string, withTags []strin
 		return err
 	}
 
-	stringlike.SetIfEmpty(&t.Exe.Name, populator.Get("exe"))
+	utils.SetIfEmpty(&t.Exe.Name, populator.Get("exe"))
 
 	if err := t.Template(); err != nil {
 		return err
@@ -117,19 +121,19 @@ func (t *Tool) tryResolveFallback(fallback string, path string, withTags []strin
 		return err
 	}
 
-	if stringlike.IsEmpty(t.Version) {
+	if utils.IsEmpty(t.Version) {
 		if err := populator.Version(t.Name); err != nil {
 			return err
 		}
 	}
 
-	stringlike.SetIfEmpty(&t.Version, populator.Get("version"))
+	utils.SetIfEmpty(&t.Version, populator.Get("version"))
 
 	if err := t.Template(); err != nil {
 		return err
 	}
 
-	if stringlike.IsEmpty(t.Path) {
+	if utils.IsEmpty(t.Path) {
 		if err := populator.Path(t.Name, t.Extensions, t.Version, match.Requirements{
 			Platform: t.Platform,
 			Hints:    t.Hints,
@@ -138,18 +142,18 @@ func (t *Tool) tryResolveFallback(fallback string, path string, withTags []strin
 		}
 	}
 
-	stringlike.SetIfEmpty(&t.Path, populator.Get("path"))
-	stringlike.SetIfEmpty(&t.Path, path)
+	utils.SetIfEmpty(&t.Path, populator.Get("path"))
+	utils.SetIfEmpty(&t.Path, path)
 
 	if err := t.Template(); err != nil {
 		return err
 	}
 
-	stringlike.SetIfEmpty(&t.Exe.Name, t.Name)
+	utils.SetIfEmpty(&t.Exe.Name, t.Name)
 
 	t.Exe.Name += t.Platform.Extension.String()
 
-	stringlike.SetSliceIfNil(&t.Exe.Patterns, fmt.Sprintf("^%s$", t.Exe.Name))
+	utils.SetSliceIfNil(&t.Exe.Patterns, fmt.Sprintf("^%s$", t.Exe.Name))
 
 	for i, alias := range t.Aliases {
 		t.Aliases[i] = alias + t.Platform.Extension.String()
@@ -194,6 +198,7 @@ func (t *Tool) Download() (string, string, error) {
 		Patterns: t.Exe.Patterns,
 		Output:   t.Output,
 		Aliases:  t.Aliases,
+		Mode:     t.Mode.String(),
 	}
 
 	return installer.Install(data)

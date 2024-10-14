@@ -6,33 +6,13 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/idelchi/godyl/internal/stringlike"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
+	"github.com/idelchi/godyl/internal/utils"
 )
 
 // NormalizeValues ensures all keys in Values are capitalized.
 func (t *Tool) NormalizeValues() {
-	t.Values = normalizeMap(t.Values)
-}
-
-func normalizeMap(m map[string]any) map[string]any {
-	normalizedMap := make(map[string]any)
-	c := cases.Title(language.English)
-
-	for key, value := range m {
-		upperKey := c.String(key)
-
-		switch v := value.(type) {
-		case map[string]any:
-			normalizedMap[upperKey] = normalizeMap(v)
-		default:
-			normalizedMap[upperKey] = v
-		}
-	}
-
-	return normalizedMap
+	t.Values = utils.NormalizeMap(t.Values)
 }
 
 // ApplyTemplate applies Go templates to a string field using the Tool struct as data
@@ -131,7 +111,7 @@ func (t *Tool) Template() error {
 			return err
 		}
 		// Convert the result (string) into an integer and store it in the actual Weight field
-		stringlike.SetIfEmpty(&output, "1")
+		utils.SetIfEmpty(&output, "1")
 		t.Hints[i].Weight, err = strconv.Atoi(output)
 		if err != nil {
 			return err

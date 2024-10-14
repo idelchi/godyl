@@ -2,7 +2,7 @@ package detect
 
 import (
 	"github.com/idelchi/godyl/internal/detect/platform"
-	"github.com/idelchi/godyl/internal/stringlike"
+	"github.com/idelchi/godyl/internal/utils"
 )
 
 type Info map[string]string
@@ -30,12 +30,12 @@ func (p *Platform) Default() {
 }
 
 func (p *Platform) Merge(other Platform) {
-	stringlike.SetIfEmpty(&p.OS, other.OS)
-	stringlike.SetIfEmpty(&p.Architecture.Type, other.Architecture.Type)
-	stringlike.SetIfEmpty(&p.Architecture.Version, other.Architecture.Version)
-	stringlike.SetIfEmpty(&p.Library, other.Library)
-	stringlike.SetIfEmpty(&p.Extension, other.Extension)
-	stringlike.SetIfEmpty(&p.Distribution, other.Distribution)
+	utils.SetIfEmpty(&p.OS, other.OS)
+	utils.SetIfEmpty(&p.Architecture.Type, other.Architecture.Type)
+	utils.SetIfEmpty(&p.Architecture.Version, other.Architecture.Version)
+	utils.SetIfEmpty(&p.Library, other.Library)
+	utils.SetIfEmpty(&p.Extension, other.Extension)
+	utils.SetIfEmpty(&p.Distribution, other.Distribution)
 }
 
 func (p *Platform) CommonExtensions() []string {

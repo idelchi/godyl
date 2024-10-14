@@ -43,17 +43,6 @@ type Tool struct {
 	Env          env.Env
 }
 
-type Settings struct {
-	// Organize here instead of in Tool
-}
-
-type Mode int
-
-const (
-	Extract Mode = iota
-	Find
-)
-
 // UnmarshalYAML implements custom unmarshaling for Tool with KnownFields check
 func (t *Tool) UnmarshalYAML(value *yaml.Node) error {
 	// If it's a scalar (e.g., just the name), handle it directly

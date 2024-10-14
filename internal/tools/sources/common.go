@@ -16,23 +16,29 @@ type InstallData struct {
 	Patterns []string
 	Output   string
 	Aliases  []string
+	Mode     string
 }
 
 func Download(d InstallData) (output, found string, err error) {
-	var tmp folder.Folder
-	if err := tmp.CreateRandomInTempDir(); err != nil {
-		return "", "", fmt.Errorf("creating temp dir: %w", err)
+	folder := folder.Folder(d.Output)
+
+	if d.Mode == "find" {
+		if err := folder.CreateRandomInTempDir(); err != nil {
+			return "", "", fmt.Errorf("creating temp dir: %w", err)
+		}
+		// defer folder.Remove()
 	}
-	// defer tmp.Remove()
 
 	downloader := download.New()
 
-	_, err = downloader.Download(d.Path, tmp.Path())
+	_, err = downloader.Download(d.Path, folder.Path())
 	if err != nil {
 		return "", "", fmt.Errorf("downloading %q: %w", d.Path, err)
 	}
 
-	found, err = FindAndSymlink(tmp.Path(), d)
+	if d.Mode == "find" {
+		found, err = FindAndSymlink(folder.Path(), d)
+	}
 
 	return "", found, err
 }

@@ -9,7 +9,7 @@ import (
 )
 
 // Executable consists of a full path to a file and its version.
-// The version can be attempted to parse by using a `Version` type.
+// An attempt to parse the version into a string can be done by using a `Version` type.
 type Executable struct {
 	Path    string
 	Version string

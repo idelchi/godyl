@@ -22,35 +22,6 @@ func (a *Asset) Parse() {
 	a.Platform.Parse(a.Name)
 }
 
-type Hints []Hint
-
-func (h *Hints) Add(hints Hints) {
-	for _, hint := range hints {
-		*h = append(*h, hint)
-	}
-}
-
-type Hint struct {
-	Pattern        string
-	WeightTemplate string `json:"-" yaml:"weight" mapstructure:"weight"`
-	Weight         int    `yaml:"-" mapstructure:"-"`
-	Regex          bool
-	Must           bool
-}
-
-func NewDefaultHint(pattern string) Hint {
-	return Hint{
-		Pattern: pattern,
-		Weight:  1,
-		Must:    true,
-	}
-}
-
-type Requirements struct {
-	Platform detect.Platform
-	Hints    []Hint
-}
-
 func (a Asset) MatchHint(hint Hint) bool {
 	if hint.Regex {
 		regex, err := regexp.Compile(hint.Pattern)

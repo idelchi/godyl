@@ -140,6 +140,7 @@ func (a *Architecture) Parse(name string) error {
 	for _, arch := range a.Available() {
 		if compare.ContainsLower(name, arch.Name()) {
 			*a = arch
+
 			return nil
 		}
 	}
@@ -148,6 +149,7 @@ func (a *Architecture) Parse(name string) error {
 		for _, alias := range arch.CompatibleWith("") {
 			if compare.ContainsLower(name, alias) {
 				*a = arch
+
 				return nil
 			}
 		}

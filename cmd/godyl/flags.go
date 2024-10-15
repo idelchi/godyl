@@ -22,33 +22,33 @@ func IsSet(flag string) bool {
 }
 
 func flags() {
-	pflag.String("output", "", "Output path for the downloaded tools")
-	pflag.String("tools", "", "Path to tools configuration file")
-	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
+	// General flags
+	pflag.BoolP("help", "h", false, "Show help message and exit")
+	pflag.Bool("version", false, "Show version information and exit")
+
+	// Configuration file flags
+	pflag.String("dot-env", ".env", "Path to .env file")
 	pflag.StringP("defaults", "d", "defaults.yml", "Path to defaults file")
 
-	// Update flags
-	pflag.Bool("update", false, "Update the tools")
-	pflag.String("strategy", "", "Strategy to use for updating tools")
-
-	pflag.Bool("dry", false, "Run without making any changes (dry run)")
-	pflag.String("log", string(logger.INFO), "Log level (DEBUG, INFO, WARN, ERROR)")
-
-	// Tokens flags
-	pflag.String("github-token", "", "GitHub token for authentication")
-
-	pflag.String("source", "", "Source from which to install the tools")
-
-	pflag.String("dot-env", ".env", "Path to .env file")
-
-	pflag.BoolP("help", "h", false, "Show help message and exit")
+	// Show flags
 	pflag.Bool("show-config", false, "Show the parsed configuration and exit")
 	pflag.Bool("show-defaults", false, "Show the parsed default configuration and exit")
 	pflag.Bool("show-env", false, "Show the parsed environment variables and exit")
 	pflag.Bool("show-platform", false, "Detect the platform and exit")
-	pflag.Bool("version", false, "Show version information and exit")
+	pflag.String("output", "", "Output path for the downloaded tools")
+	pflag.String("tools", "", "Path to tools configuration file")
+	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
 
+	// Application flags
+	pflag.Bool("update", false, "Update the tools")
+	pflag.Bool("dry", false, "Run without making any changes (dry run)")
+	pflag.String("log", string(logger.INFO), "Log level (DEBUG, INFO, WARN, ERROR)")
 	pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
+
+	// Tool flags
+	pflag.String("github-token", "", "GitHub token for authentication")
+	pflag.String("source", "github", "Source from which to install the tools")
+	pflag.String("strategy", "none", "Strategy to use for updating tools")
 
 	pflag.CommandLine.SortFlags = false
 	pflag.Usage = func() {

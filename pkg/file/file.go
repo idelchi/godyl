@@ -17,6 +17,14 @@ func New(paths ...string) File {
 	return File(filepath.Join(paths...))
 }
 
+func (f File) Create() (*os.File, error) {
+	return os.Create(f.String())
+}
+
+func (f File) Open() (*os.File, error) {
+	return os.Open(f.String())
+}
+
 func (f File) Name() string {
 	return f.String()
 }
@@ -85,23 +93,24 @@ func (f *File) Chmod(mode fs.FileMode) error {
 	return os.Chmod(f.String(), mode)
 }
 
-func (f File) Copy(destination File) error {
+func (f File) Copy(other File) error {
 	// Open the source file
-	sourceFile, err := os.Open(f.String())
+	source, err := f.Open()
 	if err != nil {
 		return fmt.Errorf("opening source file: %w", err)
 	}
-	defer sourceFile.Close()
+	defer source.Close()
 
 	// Create the destination file
-	destinationFile, err := os.Create(f.Name())
+	destination, err := other.Create()
 	if err != nil {
 		return fmt.Errorf("creating destination file: %w", err)
 	}
-	defer destinationFile.Close()
+	defer destination.Close()
 
 	// Copy the contents of the source file to the destination file
-	_, err = io.Copy(destinationFile, sourceFile)
+
+	_, err = io.Copy(destination, source)
 	if err != nil {
 		return fmt.Errorf("copying file: %w", err)
 	}

@@ -179,7 +179,9 @@ func (t *Tool) Validate() error {
 }
 
 func (t *Tool) Exists() bool {
-	return file.New(t.Output, t.Exe.Name).Exists()
+	f := file.New(t.Output, t.Exe.Name)
+
+	return f.Exists() && f.IsFile()
 }
 
 type Installer interface {

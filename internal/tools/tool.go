@@ -73,4 +73,5 @@ func (t *Tool) ApplyDefaults(d Defaults) {
 
 	t.Platform.Merge(d.Platform)
 	t.Hints.Add(d.Hints)
+
 }

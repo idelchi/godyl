@@ -27,11 +27,13 @@ func (Files) FromStrings(dir string, files ...string) Files {
 // The first File found is returned.
 func (es Files) Find(dir string) (File, error) {
 	for _, e := range es {
+
 		file, err := e.Find(dir)
 		if err == nil {
 			return file, nil
 		}
 	}
+
 	return "", fmt.Errorf("Files %v not found in %q", es.Paths(), dir)
 }
 

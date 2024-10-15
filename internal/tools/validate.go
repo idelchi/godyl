@@ -112,6 +112,7 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags [
 	}
 
 	utils.SetIfEmpty(&t.Exe.Name, populator.Get("exe"))
+	utils.SetIfEmpty(&t.Exe.Name, t.Name)
 
 	if err := t.Template(); err != nil {
 		return err
@@ -148,8 +149,6 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags [
 	if err := t.Template(); err != nil {
 		return err
 	}
-
-	utils.SetIfEmpty(&t.Exe.Name, t.Name)
 
 	t.Exe.Name += t.Platform.Extension.String()
 

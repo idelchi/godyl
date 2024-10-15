@@ -9,6 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/folder"
 	ginstaller "github.com/idelchi/godyl/internal/go"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/pkg/download"
 )
 
 type Go struct {
@@ -86,7 +87,7 @@ func (g *Go) Install(d InstallData) (output, found string, err error) {
 
 		if err == nil {
 			d.Path = path
-			found, err := FindAndSymlink(folder.Path(), d)
+			found, err := FindAndSymlink(download.Result(folder.Path()), d)
 
 			return output, found, err
 		} else {

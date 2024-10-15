@@ -6,6 +6,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/unmarshal"
+	"github.com/idelchi/godyl/pkg/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -55,4 +56,21 @@ func (t *Tool) UnmarshalYAML(value *yaml.Node) error {
 	type rawTool Tool
 
 	return unmarshal.DecodeWithOptionalKnownFields(value, (*rawTool)(t), true, t)
+}
+
+func (t *Tool) ApplyDefaults(d Defaults) {
+	utils.SetIfEmpty(&t.Output, d.Output)
+	utils.SetIfEmpty(&t.Source.Type, d.Source.Type)
+	utils.SetIfEmpty(&t.Source.Github.Token, d.Source.Github.Token)
+	utils.SetIfEmpty(&t.Strategy, d.Strategy)
+	utils.SetSliceIfNil(&t.Skip, Condition{Condition: "false"})
+	utils.SetIfEmpty(&t.Mode, d.Mode)
+	utils.SetSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
+	utils.SetSliceIfNil(&t.Extensions, d.Extensions...)
+	utils.SetMapIfNil(&t.Values, d.Values)
+	utils.DeepMergeMapsWithoutOverwrite(t.Values, d.Values)
+	t.Env.Merge(d.Env)
+
+	t.Platform.Merge(d.Platform)
+	t.Hints.Add(d.Hints)
 }

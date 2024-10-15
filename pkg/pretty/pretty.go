@@ -14,6 +14,10 @@ func PrintJSON(obj any) {
 	fmt.Println(JSON(obj))
 }
 
+func PrintYAML(obj any) {
+	fmt.Println(YAML(obj))
+}
+
 func YAML(obj any) string {
 	buf := bytes.Buffer{}
 	enc := yaml.NewEncoder(&buf)

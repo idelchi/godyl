@@ -6,7 +6,6 @@ import (
 	"text/template"
 
 	sprig "github.com/go-task/slim-sprig/v3"
-	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
@@ -39,10 +38,11 @@ func (t *Tool) Template() error {
 	// }
 
 	// Apply templating to all relevant fields
-	t.Source.Type, err = t.ApplyTemplate(t.Source.Type)
+	output, err := t.ApplyTemplate(t.Source.Type.String())
 	if err != nil {
 		return err
 	}
+	t.Source.Type.From(output)
 
 	for i, pattern := range t.Skip {
 		t.Skip[i].Condition, err = t.ApplyTemplate(pattern.Condition)
@@ -89,19 +89,19 @@ func (t *Tool) Template() error {
 	}
 
 	for i, cmd := range t.Source.Commands {
-		output, err := t.ApplyTemplate(string(cmd))
+		output, err := t.ApplyTemplate(cmd.String())
 		if err != nil {
 			return err
 		}
-		t.Source.Commands[i] = sources.Command(output)
+		t.Source.Commands[i].From(output)
 	}
 
 	for i, cmd := range t.Post {
-		output, err := t.ApplyTemplate(string(cmd))
+		output, err := t.ApplyTemplate(cmd.String())
 		if err != nil {
 			return err
 		}
-		t.Post[i] = sources.Command(output)
+		t.Post[i].From(output)
 	}
 
 	for i, hints := range t.Hints {

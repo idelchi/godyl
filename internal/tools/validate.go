@@ -40,14 +40,14 @@ func (t *Tool) Resolve(withTags []string, withoutTags []string) error {
 	// Save path to be templated last
 	path := t.Path
 
-	fallbacks := append([]string{t.Source.Type}, t.Fallbacks...)
+	fallbacks := append([]sources.Type{t.Source.Type}, t.Fallbacks...)
 
 	for i, fallback := range fallbacks {
-		output, err := t.ApplyTemplate(fallback)
+		output, err := t.ApplyTemplate(fallback.String())
 		if err != nil {
 			return err
 		}
-		fallbacks[i] = output
+		fallbacks[i].From(output)
 	}
 
 	fallbacks = slices.Compact(fallbacks)
@@ -89,7 +89,7 @@ func (t *Tool) CheckSkipConditions(withTags []string, withoutTags []string) erro
 	return nil
 }
 
-func (t *Tool) tryResolveFallback(fallback string, path string, withTags []string, withoutTags []string) error {
+func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags []string, withoutTags []string) error {
 	t.Tags.Append(t.Name)
 
 	if err := t.CheckSkipConditions(withTags, withoutTags); err != nil {

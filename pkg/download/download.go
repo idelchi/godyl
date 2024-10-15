@@ -3,11 +3,10 @@ package download
 
 import (
 	"context"
-	"fmt"
-	"os"
 	"time"
 
 	"github.com/hashicorp/go-getter/v2"
+	"github.com/idelchi/godyl/pkg/file"
 )
 
 type Downloader struct {
@@ -27,7 +26,7 @@ func New() *Downloader {
 // Download fetches a file from the given URL and saves it to the specified output path.
 // If the file is an archive, it will be extracted to the output directory.
 // It returns the destination path of the downloaded file (or folder) and any error encountered.
-func (d Downloader) Download(url string, output string) (string, error) {
+func (d Downloader) Download(url string, output string) (Result, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), d.ContextTimeout)
 	defer cancel()
 
@@ -47,49 +46,24 @@ func (d Downloader) Download(url string, output string) (string, error) {
 		},
 	}
 
-	res, err := client.Get(
-		ctx, req,
-	)
+	res, err := client.Get(ctx, req)
 	if err != nil {
-		return "", err
+		return Result(""), err
 	}
 
-	return res.Dst, err
+	return Result(res.Dst), nil
 }
 
-// Type represents the type of a file.
-type Type int
+type Result string
 
-const (
-	Unknown Type = iota
-	File
-	Directory
-)
-
-type Result struct {
-	Path string
-	Type Type
+func (r Result) IsFile() bool {
+	return file.File(r).Exists() && file.File(r).IsFile()
 }
 
-func NewResult(path string) (Result, error) {
-	r := Result{
-		Path: path,
-	}
+func (r Result) IsDir() bool {
+	return file.File(r).Exists() && file.File(r).IsDir()
+}
 
-	// Check if the path is a directory
-	info, err := os.Stat(r.Path)
-	if err != nil {
-		return r, fmt.Errorf("file info for path %q: %v", path, err)
-	}
-
-	switch mode := info.Mode(); {
-	case mode.IsDir():
-		r.Type = Directory
-		return r, nil
-	case mode.IsRegular():
-		r.Type = File
-		return r, nil
-	default:
-		return r, fmt.Errorf("unknown type %s", mode)
-	}
+func (r Result) String() string {
+	return string(r)
 }

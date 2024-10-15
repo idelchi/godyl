@@ -21,22 +21,22 @@ func (s Strategy) Check(t *Tool) error {
 }
 
 func (s Strategy) Upgrade(t *Tool) error {
+	if !t.Exists() {
+		return nil
+	}
+
 	switch t.Strategy {
 	case None:
-		if t.Exists() {
-			return ErrAlreadyExists
-		}
+		return ErrAlreadyExists
 	case Upgrade:
-		if t.Exists() {
-			exe := executable.New(t.Output, t.Exe.Name)
-			err := exe.ParseVersion()
-			if err != nil {
-				return nil
-			}
-			if version, err := executable.NewDefaultVersionParser().ParseString(t.Version); err == nil {
-				if exe.Version == version {
-					return ErrAlreadyExists
-				}
+		exe := executable.New(t.Output, t.Exe.Name)
+		err := exe.ParseVersion()
+		if err != nil {
+			return nil
+		}
+		if version, err := executable.NewDefaultVersionParser().ParseString(t.Version); err == nil {
+			if exe.Version == version {
+				return ErrAlreadyExists
 			}
 		}
 
@@ -46,6 +46,4 @@ func (s Strategy) Upgrade(t *Tool) error {
 	default:
 		return nil
 	}
-
-	return nil
 }

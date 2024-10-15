@@ -12,6 +12,14 @@ import (
 
 type Command string
 
+func (c Command) String() string {
+	return string(c)
+}
+
+func (c *Command) From(command string) {
+	*c = Command(command)
+}
+
 // Run executes the command using mvdan/sh, capturing output and returning it
 func (c Command) Shell(env ...string) (string, error) {
 	var stdoutBuf, stderrBuf bytes.Buffer

@@ -23,7 +23,7 @@ type Defaults struct {
 	Mode       Mode
 }
 
-func (d *Defaults) Defaults() error {
+func (d *Defaults) Initialize() error {
 	p := detect.Platform{}
 	if err := p.Detect(); err != nil {
 		return err
@@ -32,26 +32,6 @@ func (d *Defaults) Defaults() error {
 	d.Platform.Merge(p)
 
 	utils.SetSliceIfNil(&d.Extensions, p.CommonExtensions()...)
-	// stringlike.SetSliceIfNil(&d.Exe.Patterns, "{{ .Exe.Name }}.*")
-
-	d.Env = d.Env.Normalize()
 
 	return nil
-}
-
-func (t *Tool) ApplyDefaults(d Defaults) {
-	utils.SetIfEmpty(&t.Output, d.Output)
-	utils.SetIfEmpty(&t.Source.Type, d.Source.Type)
-	utils.SetIfEmpty(&t.Source.Github.Token, d.Source.Github.Token)
-	utils.SetIfEmpty(&t.Strategy, d.Strategy)
-	utils.SetSliceIfNil(&t.Skip, Condition{Condition: "false"})
-	utils.SetIfEmpty(&t.Mode, d.Mode)
-	utils.SetSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
-	utils.SetSliceIfNil(&t.Extensions, d.Extensions...)
-	utils.SetMapIfNil(&t.Values, d.Values)
-	utils.DeepMergeMapsWithoutOverwrite(t.Values, d.Values)
-	t.Env.Merge(d.Env)
-
-	t.Platform.Merge(d.Platform)
-	t.Hints.Add(d.Hints)
 }

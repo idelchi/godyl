@@ -33,25 +33,29 @@ func Download(d InstallData) (output, found string, err error) {
 
 	downloader := download.New()
 
-	_, err = downloader.Download(d.Path, folder.Path())
+	destination, err := downloader.Download(d.Path, folder.Path())
 	if err != nil {
 		return "", "", fmt.Errorf("downloading %q: %w", d.Path, err)
 	}
 
 	if d.Mode == "find" {
-		found, err = FindAndSymlink(folder.Path(), d)
+		found, err = FindAndSymlink(destination, d)
 	}
 
 	return "", found, err
 }
 
-func FindAndSymlink(destination string, d InstallData) (found string, err error) {
-	// Construct an executables item from all the possible names
-	executables := executable.Executables{}.FromStrings("", d.Patterns...)
-	// Find the specific executable that was downloaded
-	download, err := executables.Find(destination)
-	if err != nil {
-		return found, fmt.Errorf("finding executable: %w", err)
+func FindAndSymlink(destination download.Result, d InstallData) (found string, err error) {
+	download := executable.New("", destination.String())
+
+	if destination.IsDir() {
+		// Construct an executables item from all the possible names
+		executables := executable.Executables{}.FromStrings("", d.Patterns...)
+		// Find the specific executable that was downloaded
+		download, err = executables.Find(destination.String())
+		if err != nil {
+			return found, fmt.Errorf("finding executable: %w", err)
+		}
 	}
 
 	folder := folder.Folder(d.Output)

@@ -113,11 +113,8 @@
     patterns:
       - bin/gh{{ .Platform.Extension }}$
   post:
-    - export GH_TOKEN={{ .Values.Github.Token }}
     - "{{ .Output }}/{{ .Exe.Name }} extension install github/gh-copilot"
     - "{{ .Output }}/{{ .Exe.Name }} extension upgrade gh-copilot"
-  env:
-    GH_TOKEN: $GODYL_DEFAULTS_VALUES_GITHUB_TOKEN
 
 # Make this a post-installation step of gh
 - name: github/gh-copilot

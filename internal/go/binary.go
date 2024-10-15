@@ -134,7 +134,11 @@ func (b *Binary) Download(path string) error {
 		return fmt.Errorf("downloading %q: %w", url, err)
 	}
 
-	b.Path = executable.New(destination, filepath.Join("go", "bin", "go"))
+	if !destination.IsFile() {
+		return fmt.Errorf("downloaded file is not a file")
+	}
+
+	b.Path = executable.New(destination.String(), filepath.Join("go", "bin", "go"))
 
 	return nil
 }

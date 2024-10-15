@@ -38,12 +38,12 @@ func NewDefaultVersionParser() *Version {
 	}
 }
 
-// commandWithContext runs the executable with the provided arguments using a timeout.
-func (f Executable) Test(ctx context.Context, cmdArgs []string) error {
-	cmd := exec.CommandContext(ctx, f.Path, cmdArgs...)
+// // commandWithContext runs the executable with the provided arguments using a timeout.
+// func (f Executable) Test(ctx context.Context, cmdArgs []string) error {
+// 	cmd := exec.CommandContext(ctx, f.Path, cmdArgs...)
 
-	return cmd.Run()
-}
+// 	return cmd.Run()
+// }
 
 // commandWithContext runs the executable with the provided arguments using a timeout.
 func (f Executable) Command(ctx context.Context, cmdArgs []string) (string, error) {

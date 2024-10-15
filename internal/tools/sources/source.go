@@ -6,8 +6,27 @@ import (
 	"github.com/idelchi/godyl/internal/match"
 )
 
+type Type string
+
+func (t Type) String() string {
+	return string(t)
+}
+
+func (t *Type) From(name string) {
+	*t = Type(name)
+}
+
+const (
+	GITHUB  Type = "github"
+	GITLAB  Type = "gitlab"
+	DIRECT  Type = "url"
+	COMMAND Type = "command"
+	GO      Type = "go"
+	RUST    Type = "rust"
+)
+
 type Source struct {
-	Type     string
+	Type     Type
 	Github   GitHub
 	URL      URL
 	Go       Go
@@ -25,13 +44,13 @@ type Populater interface {
 
 func (s *Source) Installer() (Populater, error) {
 	switch s.Type {
-	case "github":
+	case GITHUB:
 		return &s.Github, nil
-	case "url":
+	case DIRECT:
 		return &s.URL, nil
-	case "command":
+	case COMMAND:
 		return &s.Commands, nil
-	case "go":
+	case GO:
 		s.Go.github = &s.Github
 		return &s.Go, nil
 	default:

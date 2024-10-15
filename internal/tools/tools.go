@@ -17,12 +17,14 @@ func (t *Tools) Load(cfg string) (err error) {
 				Tool{
 					Name: filepath.Base(cfg),
 					Path: cfg,
+					Mode: Extract,
 				},
 			}
 		} else {
 			*t = Tools{
 				Tool{
 					Name: cfg,
+					Mode: Extract,
 				},
 			}
 		}

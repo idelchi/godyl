@@ -1,4 +1,4 @@
-package executable
+package file
 
 import (
 	"fmt"
@@ -8,41 +8,31 @@ import (
 	"regexp"
 )
 
-// Executable consists of a full path to a file and its version.
-// An attempt to parse the version into a string can be done by using a `Version` type.
-type Executable struct {
-	Path    string
-	Version string
+type File string
+
+func (f File) Name() string {
+	return f.String()
 }
 
-// New creates a new Executable with the given directory and path.
-// The path is joined with the directory to create the full path.
-func New(dir string, path string) Executable {
-	return Executable{Path: filepath.Join(dir, path)}
+func (f File) String() string {
+	return string(f)
 }
 
-// Name returns the base name of the executable.
-func (e Executable) Name() string {
-	return filepath.Base(e.Path)
+func (f File) Dir() string {
+	return filepath.Dir(f.String())
 }
 
-// Dir returns the directory of the executable.
-func (e Executable) Dir() string {
-	return filepath.Dir(e.Path)
-}
-
-// CriteriaFunc is a function that takes an Executable and returns a boolean and an error.
-type CriteriaFunc func(Executable) (bool, error)
+type CriteriaFunc func(File) (bool, error)
 
 // Find searches for a file in the given directory that matches all provided criteria.
-func (e Executable) Find(dir string, criteria ...CriteriaFunc) (Executable, error) {
+func (f File) Find(dir string, criteria ...CriteriaFunc) (File, error) {
 	var filePath string
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		match := regexp.MustCompile(e.Name()).MatchString(info.Name())
+		match := regexp.MustCompile(f.Name()).MatchString(info.Name())
 
 		if match && !info.IsDir() {
 			if len(criteria) == 0 {
@@ -52,7 +42,7 @@ func (e Executable) Find(dir string, criteria ...CriteriaFunc) (Executable, erro
 			}
 
 			for _, criterion := range criteria {
-				matches, err := criterion(e)
+				matches, err := criterion(f)
 				if err != nil {
 					return err
 				}
@@ -66,18 +56,17 @@ func (e Executable) Find(dir string, criteria ...CriteriaFunc) (Executable, erro
 		return nil
 	})
 	if err != nil {
-		return e, err
+		return f, err
 	}
 
 	if filePath == "" {
-		return e, fmt.Errorf("file %q not found matching all criteria", e.Name())
+		return f, fmt.Errorf("file %q not found matching all criteria", f.Name())
 	}
-	return Executable{Path: filePath}, nil
+	return File(filePath), nil
 }
 
-// IsExecutable checks if the file is executable.
-func (e Executable) IsExecutable() (bool, error) {
-	info, err := os.Stat(e.Path)
+func (f File) IsExecutable() (bool, error) {
+	info, err := os.Stat(f.String())
 	if err != nil {
 		return false, fmt.Errorf("getting file info: %w", err)
 	}
@@ -85,10 +74,9 @@ func (e Executable) IsExecutable() (bool, error) {
 	return info.Mode()&0o111 != 0, nil
 }
 
-// Copy copies the file to the destination path and sets the executable permission.
-func (e Executable) Copy(destination string) error {
+func (f File) Copy(destination string) error {
 	// Open the source file
-	sourceFile, err := os.Open(e.Path)
+	sourceFile, err := os.Open(f.String())
 	if err != nil {
 		return fmt.Errorf("opening source file: %w", err)
 	}
@@ -117,12 +105,32 @@ func (e Executable) Copy(destination string) error {
 }
 
 // Exists checks if the file exists.
-func (e Executable) Exists() bool {
-	info, err := os.Stat(e.Path)
+func (f File) Exists() bool {
+	_, err := os.Stat(f.String())
+	if err != nil {
+		return false // File does not exist or error accessing it
+	}
+
+	return true
+}
+
+// Exists checks if the file exists.
+func (f File) IsFile() bool {
+	info, err := os.Stat(f.String())
 	if err != nil {
 		return false // File does not exist or error accessing it
 	}
 
 	// Check if the path is a regular file (not a folder or special file)
 	return info.Mode().IsRegular()
+}
+
+func (f File) IsDir() bool {
+	info, err := os.Stat(f.String())
+	if err != nil {
+		return false // File does not exist or error accessing it
+	}
+
+	// Check if the path is a regular file (not a folder or special file)
+	return info.Mode().IsDir()
 }

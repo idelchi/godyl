@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -10,47 +9,25 @@ import (
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/flagexp"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/pretty"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
-var config = ConfigFile{
-	"config.yml",
+func IsSet(flag string) bool {
+	return viper.IsSet(flag)
 }
 
-type ConfigFile struct {
-	Default string
-}
-
-func (c ConfigFile) Get() string {
-	env := c.Env()
-	if env != "" {
-		return env
-	}
-
-	return c.Default
-}
-
-func (ConfigFile) Env() string {
-	return os.Getenv("GODYL_CONFIG")
-}
-
-// configIsSet indicates whether the configuration flag is set,
-// either via the command-line or environment variable.
-func (c ConfigFile) IsSet() bool {
-	return pflag.CommandLine.Changed("config") || c.Env() != ""
-}
-
-func flags2() {
+func flags() {
 	pflag.String("output", "", "Output path for the downloaded tools")
 	pflag.String("tools", "", "Path to tools configuration file")
 	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
-	pflag.StringP("config", "c", config.Get(), "Path to configuration file")
+	pflag.StringP("defaults", "d", "defaults.yml", "Path to defaults file")
 
 	// Update flags
 	pflag.Bool("update", false, "Update the tools")
-	pflag.String("update-strategy", string(tools.Upgrade), "Strategy to use for updating tools")
+	pflag.String("strategy", string(tools.None), "Strategy to use for updating tools")
 
 	pflag.Bool("dry", false, "Run without making any changes (dry run)")
 	pflag.Bool("detect", false, "Detect the platform and exit")
@@ -59,51 +36,17 @@ func flags2() {
 	// Tokens flags
 	pflag.String("github-token", "", "GitHub token for authentication")
 
-	pflag.String("mode", string(tools.Find), "Mode for tool installation (default, interactive, etc.)")
 	pflag.String("source", "", "Source from which to install the tools")
-	pflag.String("strategy", string(tools.Upgrade), "Strategy to use for installing tools")
+
+	pflag.String("dot-env", ".env", "Path to .env file")
 
 	pflag.BoolP("help", "h", false, "Show help message and exit")
 	pflag.Bool("show", false, "Show the parsed configuration and exit")
+	pflag.Bool("show-default", false, "Show the parsed default configuration and exit")
+	pflag.Bool("show-env", false, "Show the parsed environment variables and exit")
 	pflag.Bool("version", false, "Show version information and exit")
 
 	pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
-
-	pflag.StringSlice("env", nil, "Environment variables to pass to the tools")
-
-	pflag.CommandLine.SortFlags = false
-	pflag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s [flags] [tools]\n\n", "godyl")
-		fmt.Fprintf(os.Stderr, "Tool manager that installs tools as specified in a YAML file.\n\n")
-		fmt.Fprintf(os.Stderr, "Flags:\n")
-		pflag.PrintDefaults()
-	}
-}
-
-func flags() {
-	// General flags
-	pflag.Bool("version", false, "Show the version information and exit")
-	pflag.BoolP("help", "h", false, "Show the help information and exit")
-	pflag.BoolP("show", "s", false, "Show the configuration and exit")
-	pflag.StringP("config", "c", config.Get(), "Path to configuration file")
-	pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
-	pflag.Bool("detect", false, "Detect the platform and exit")
-
-	// Selected custom flags
-	pflag.String("defaults.source.github.token", "", "GitHub token for API requests")
-	pflag.String("defaults.mode", "", "")
-	pflag.String("defaults.source.type", "", "")
-	pflag.String("defaults.strategy", "", "")
-	pflag.String("defaults.output", "", "")
-
-	pflag.String("log", string(logger.INFO), "")
-
-	pflag.Bool("dry", false, "")
-
-	pflag.Bool("update", false, "")
-	pflag.String("update-strategy", string(tools.Upgrade), "")
-
-	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
 
 	pflag.CommandLine.SortFlags = false
 	pflag.Usage = func() {
@@ -117,12 +60,9 @@ func flags() {
 // parseFlags parses the application configuration (in order of precedence) from:
 //   - command-line flags
 //   - environment variables
-//   - configuration file
 func parseFlags() (cfg Config, err error) {
 	flags()
 
-	// Parse the command-line flags
-	// pflag.Parse()
 	// Parse the command-line flags with suggestions enabled
 	if err := flagexp.ParseWithSuggestions(os.Args[1:]); err != nil {
 		return cfg, fmt.Errorf("parsing flags: %w", err)
@@ -135,19 +75,12 @@ func parseFlags() (cfg Config, err error) {
 
 	// Set viper to automatically read from environment variables
 	viper.SetEnvPrefix("godyl")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()
 
-	viper.SetConfigFile(viper.GetString("config"))
-	viper.SetConfigType("yaml")
-	// Only return errors if the config flag is set or the environment variable is set
-	// Otherwise, either read the configuration or try to read the default value
-	if err := viper.ReadInConfig(); err != nil && config.IsSet() {
-		return cfg, fmt.Errorf("reading config: %w", err)
-	} else if err != nil {
-		if err := viper.ReadConfig(bytes.NewReader(defaultConfigFile)); err != nil {
-			return cfg, fmt.Errorf("reading default config: %w", err)
-		}
+	viper.SetConfigFile(".env")
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Printf("Error reading config file, %s", err)
 	}
 
 	decoderConfig := func(dc *mapstructure.DecoderConfig) {
@@ -159,13 +92,13 @@ func parseFlags() (cfg Config, err error) {
 		return cfg, fmt.Errorf("unmarshalling config: %w", err)
 	}
 
-	// Handle the commandline flags that exit the application
-	handleExitFlags(cfg)
-
 	// Validate the input
 	if err := validateInput(&cfg); err != nil {
 		return cfg, fmt.Errorf("validating input: %w", err)
 	}
+
+	// Handle the commandline flags that exit the application
+	handleExitFlags(cfg)
 
 	return cfg, nil
 }
@@ -198,7 +131,7 @@ func handleExitFlags(cfg Config) {
 	}
 
 	if viper.GetBool("show") {
-		fmt.Println(PrintJSON(cfg))
+		pretty.PrintYAML(cfg)
 
 		os.Exit(0)
 	}

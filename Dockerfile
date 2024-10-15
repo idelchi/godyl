@@ -51,6 +51,10 @@ COPY .bashrc /home/${USER}/.bashrc
 ENV PATH=$PATH:/home/${USER}/.local/bin
 ENV PATH=$PATH:/root/.local/bin
 
+RUN mkdir -p /home/${USER}/.local/bin
+RUN cp bin/godyl /home/${USER}/.local/bin
+
+
 USER ${USER}
 WORKDIR /home/${USER}
 

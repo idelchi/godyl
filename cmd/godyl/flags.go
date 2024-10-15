@@ -40,7 +40,7 @@ func flags() {
 
 	pflag.String("source", "", "Source from which to install the tools")
 
-	pflag.String("dot-env", "", "Path to .env file")
+	pflag.String("dot-env", ".env", "Path to .env file")
 
 	pflag.BoolP("help", "h", false, "Show help message and exit")
 	pflag.Bool("show-config", false, "Show the parsed configuration and exit")
@@ -80,8 +80,8 @@ func parseFlags() (cfg Config, err error) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()
 
-	if IsSet("dot-env") {
-		if err := loadDotEnv(file.File(viper.GetString("dot-env"))); err != nil {
+	if err := loadDotEnv(file.File(viper.GetString("dot-env"))); err != nil {
+		if IsSet("dot-env") {
 			return cfg, fmt.Errorf("loading .env file: %w", err)
 		}
 	}

@@ -19,11 +19,7 @@ This uses simple heuristics to infer the correct binary to download, and will no
 
 Most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
 
-> [!NOTE]
-> This repo is a work in progress!
-> Needing both cleaning up and documenting.
-
-> **Warning**
+> [!WARNING]
 > This repo is a work in progress!
 > Needing both cleaning up and documenting.
 

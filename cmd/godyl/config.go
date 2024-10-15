@@ -26,6 +26,7 @@ type Show struct {
 	Config   bool `mapstructure:"show-config"`
 	Env      bool `mapstructure:"show-env"`
 	Defaults bool `mapstructure:"show-defaults"`
+	Platform bool `mapstructure:"show-platform"`
 }
 
 // Config holds all the configuration options for godyl.
@@ -35,7 +36,6 @@ type Config struct {
 	Defaults file.File
 	Update   Update `mapstructure:",squash"`
 	Dry      bool
-	Detect   bool
 	Log      logger.Level
 	DotEnv   file.File `mapstructure:"dot-env"`
 	// Number of parallel downloads

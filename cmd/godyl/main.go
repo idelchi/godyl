@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/logger"
@@ -67,13 +66,6 @@ func (app *App) run() error {
 		return nil
 	}
 
-	if app.cfg.Detect {
-		if err := app.detectPlatform(); err != nil {
-			return fmt.Errorf("error detecting platform: %v", err)
-		}
-		return nil
-	}
-
 	app.log = logger.New(app.cfg.Log)
 
 	toolsList, err := app.loadTools(app.cfg.Tools)
@@ -108,18 +100,6 @@ func (app *App) processUpdate() error {
 	if err := updater.Update(); err != nil {
 		return err
 	}
-
-	return nil
-}
-
-// detectPlatform detects the current platform and prints the information.
-func (app *App) detectPlatform() error {
-	p := detect.Platform{}
-	if err := p.Detect(); err != nil {
-		return err
-	}
-
-	pretty.PrintJSON(p)
 
 	return nil
 }

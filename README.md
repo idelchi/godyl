@@ -14,7 +14,7 @@ As an alternative to above, custom commands can be used as well.
 
 This uses simple heuristics to infer the correct binary to download, and will not work for all projects.
 
-Most properties can be overridden and `hints` can be used to help `godyl` make the correct decision.
+Most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
 
 ## Installation
 
@@ -24,7 +24,7 @@ Most properties can be overridden and `hints` can be used to help `godyl` make t
 go install github.com/idelchi/godyl/cmd/godyl@latest
 ```
 
-## From [installation script](https://raw.githubusercontent.com/idelchi/gocry/refs/heads/dev/scripts/install.sh)
+## From installation script
 
 ```sh
 curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts/install.sh | sh -s -- -v v0.0 -o ~/.local/bin
@@ -32,53 +32,157 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts
 
 ## Configuration
 
-A configuration may be used to specify default settings for all tools. These will override (or extend in some case) the settings for each tool.
+The tools can be configured by (in order of priority)
+
+- flags to the tool
+- environment variables
+- a `.env` file
+
+The following flags and their corresponding environment variables are available:
+
+| Flag              | Environment Variable  | Description                                    |
+| ----------------- | --------------------- | ---------------------------------------------- |
+| `--output`        | `GODYL_OUTPUT`        | Output path for the downloaded tools           |
+| `--tags`          | `GODYL_TAGS`          | Tags to filter tools by                        |
+| `--defaults`      | `GODYL_DEFAULTS`      | Path to defaults file                          |
+| `--update`        | `GODYL_UPDATE`        | Update the tools                               |
+| `--strategy`      | `GODYL_STRATEGY`      | Strategy to use for updating tools             |
+| `--dry`           | `GODYL_DRY`           | Run without making any changes (dry run)       |
+| `--log`           | `GODYL_LOG`           | Log level (DEBUG, INFO, WARN, ERROR)           |
+| `--github-token`  | `GODYL_GITHUB_TOKEN`  | GitHub token for authentication                |
+| `--source`        | `GODYL_SOURCE`        | Source from which to install the tools         |
+| `--dot-env`       | `GODYL_DOT_ENV`       | Path to .env file                              |
+| `--help`          | `GODYL_HELP`          | Show help message and exit                     |
+| `--show-config`   | `GODYL_SHOW_CONFIG`   | Show the parsed configuration and exit         |
+| `--show-defaults` | `GODYL_SHOW_DEFAULTS` | Show the parsed default configuration and exit |
+| `--show-env`      | `GODYL_SHOW_ENV`      | Show the parsed environment variables and exit |
+| `--show-platform` | `GODYL_SHOW_PLATFORM` | Show the detected platform and exit            |
+| `--version`       | `GODYL_VERSION`       | Show version information and exit              |
+| `--parallel`      | `GODYL_PARALLEL`      | Number of parallel downloads                   |
+
+The path to the tools file is provided as a positional argument, defaulting to `tools.yml`.
+
+An example [tools.yml](./tools.yml) is provided.
+
+## Defaults
+
+A default configuration may be used to specify default settings for all tools. These will override (or extend in some case) the settings for each tool.
 
 The following is embedded and used by default if no configuration is provided:
 
-[config.yml](./cmd/godyl/config.yml)
-
-```yaml
-defaults:
-  exe:
-    patterns:
-      - "{{ .Exe.Name }}.*"
-  hints:
-    - pattern: "{{ .Exe.Name }}"
-      weight: 1
-```
+[config.yml](./cmd/godyl/defaults.yml)
 
 The example above defines:
 
 - The default output directory for all tools
-- A pattern to use for when searching for the executable
-- The default source to use if not specified
-- A hint to use the executable name as a pattern (useful for repositories with multiple binaries, such as `ahmetb/kubectx`)
+- Patterns to use for when searching for the executable
+- Hints to:
+  - use the executable name as a pattern (useful for repositories with multiple binaries, such as `ahmetb/kubectx`)
+  - prefer `.zip` files for Windows
+- `find` mode for downloading, extracting and finding the executable
+- The default source type as GitHub
+- `none` strategy to skip tools which already exist
+- Settings the environment variable `GH_TOKEN` to the value of `GODYL_GITHUB_TOKEN`
 
 The full set of configuration options are:
 
+type Defaults struct {
+Exe Exe
+Output string
+Platform detect.Platform
+Values map[string]any
+Fallbacks []string
+Hints match.Hints
+Source sources.Source
+Tags Tags
+Strategy Strategy
+Extensions []string
+Env env.Env
+Mode Mode
+}
+
 ```yaml
-# path to tools file
-tools: string
-# list of tags to filter tools by
+exe:
+  name: string
+  patterns: []
+
+output: string
+platform:
+  os: string
+  architecture:
+    type: string
+    version: string
+  distribution: string
+  library: string
+  extension: string
+
+values: {}
+fallbacks: []
+hints:
+  - pattern: string
+    weight: int
+    regex: boolean
+    must: boolean
+source:
+  type: string
+  github:
+    owner: string
+    repo: string
+    token: string
+  url:
+    url: string
+    token: string
+  go:
+    command: string
+
 tags: []
-# whether to update `godyl` itself
-update: boolean
-# update strategy for `godyl`
-update-strategy: string
-# dry run to output chosen tools
-dry: boolean
-# log level, one of debug, info, warn, error
-log: string
-# help message
-help: boolean
-# show configuration
-show: boolean
-# show version
-version: boolean
-# number of parallel downloads
-parallel: int
+strategy: string
+extensions: []
+env: {}
+mode: string
 ```
+
+# path to tools file
+
+tools: string
+
+# list of tags to filter tools by
+
+tags: []
+
+# whether to update `godyl` itself
+
+update: boolean
+
+# update strategy for `godyl`
+
+update-strategy: string
+
+# dry run to output chosen tools
+
+dry: boolean
+
+# log level, one of debug, info, warn, error
+
+log: string
+
+# help message
+
+help: boolean
+
+# show configuration
+
+show: boolean
+
+# show version
+
+version: boolean
+
+# number of parallel downloads
+
+parallel: int
+
+````
 
 ## Tools
 
@@ -88,7 +192,7 @@ Examples are provided in [tools.yml](./tools.yml) and
 
 ```yaml
 - ajeetdsouza/zoxide
-```
+````
 
 Above is the `simple` form to attempt to download the latest release of `zoxide` from `ajeetdsouza/zoxide`.
 

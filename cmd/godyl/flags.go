@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/flagexp"
@@ -29,10 +29,9 @@ func flags() {
 
 	// Update flags
 	pflag.Bool("update", false, "Update the tools")
-	pflag.String("strategy", string(tools.None), "Strategy to use for updating tools")
+	pflag.String("strategy", "", "Strategy to use for updating tools")
 
 	pflag.Bool("dry", false, "Run without making any changes (dry run)")
-	pflag.Bool("detect", false, "Detect the platform and exit")
 	pflag.String("log", string(logger.INFO), "Log level (DEBUG, INFO, WARN, ERROR)")
 
 	// Tokens flags
@@ -46,6 +45,7 @@ func flags() {
 	pflag.Bool("show-config", false, "Show the parsed configuration and exit")
 	pflag.Bool("show-defaults", false, "Show the parsed default configuration and exit")
 	pflag.Bool("show-env", false, "Show the parsed environment variables and exit")
+	pflag.Bool("show-platform", false, "Detect the platform and exit")
 	pflag.Bool("version", false, "Show version information and exit")
 
 	pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
@@ -160,6 +160,18 @@ func handleExitFlags(cfg Config) {
 		pretty.PrintYAML(defaults)
 
 		os.Exit(0)
+	}
+
+	if cfg.Show.Platform {
+		p := detect.Platform{}
+		if err := p.Detect(); err != nil {
+			return err
+		}
+
+		pretty.PrintYAML(p)
+
+		os.Exit(0)
+
 	}
 }
 

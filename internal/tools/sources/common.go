@@ -56,9 +56,12 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 	if destination.IsDir() {
 		folder := folder.New(destination.Name())
 		// Construct an files item from all the possible names
+
 		files := file.Files{}.FromStrings("", d.Patterns...)
 		// Find the specific executable that was downloaded
 		var err error
+
+
 		destination, err = files.Find(folder.Path())
 		if err != nil {
 			return destination, fmt.Errorf("finding executable: %w", err)

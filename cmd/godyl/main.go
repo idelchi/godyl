@@ -196,7 +196,6 @@ func (app *App) processResult(res result) {
 	app.log.Debug(pretty.YAMLMasked(tool))
 	app.log.Debug("-------")
 	if err != nil {
-		app.log.Warn(tool.Name)
 		if errors.Is(err, tools.ErrAlreadyExists) || errors.Is(err, tools.ErrDoesNotHaveTags) || errors.Is(err, tools.ErrDoesHaveTags) || errors.Is(err, tools.ErrSkipped) {
 			app.log.Warn("  %v", err)
 		} else {

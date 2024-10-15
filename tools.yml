@@ -9,7 +9,6 @@
 - sharkdp/bat
 - traefik/traefik
 - casey/just
-- sorenisanerd/gotty
 - charmbracelet/glow
 - lsd-rs/lsd
 - sharkdp/diskus
@@ -18,6 +17,11 @@
 - FiloSottile/age
 - chmln/sd
 - rs/curlie
+
+- name: sorenisanerd/gotty
+  skip:
+    reason: "gotty is not available on windows"
+    condition: '{{ eq .Platform.OS "windows" }}'
 
 - name: kraanzu/dooit
   exe:
@@ -208,6 +212,8 @@
     condition: '{{ and (eq .Platform.OS "darwin") (ne .Platform.Architecture.Type "amd64") }}'
 
 - name: jarun/nnn
+  exe:
+    patterns: nnn.*
   skip:
     - reason: "nnn is only available for linux"
       condition: '{{ ne .Platform.OS "linux" }}'

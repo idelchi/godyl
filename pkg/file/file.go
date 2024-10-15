@@ -53,7 +53,7 @@ func (f File) Find(dir string, criteria ...CriteriaFunc) (File, error) {
 			return err
 		}
 
-		match := regexp.MustCompile(f.Name()).MatchString(relPath)
+		match := regexp.MustCompile(filepath.ToSlash(f.Name())).MatchString(filepath.ToSlash(relPath))
 
 		if match && !info.IsDir() {
 			if len(criteria) == 0 {

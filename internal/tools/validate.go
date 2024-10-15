@@ -158,7 +158,7 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags [
 		t.Aliases[i] = alias + t.Platform.Extension.String()
 	}
 
-	t.Name = t.Name + t.Platform.Extension.String()
+	// t.Name = t.Name + t.Platform.Extension.String()
 
 	if err := t.Strategy.Upgrade(t); err != nil {
 		return err

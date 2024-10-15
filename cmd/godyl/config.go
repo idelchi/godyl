@@ -22,25 +22,29 @@ type Tokens struct {
 	URL    string `mapstructure:"url-token"`
 }
 
+type Show struct {
+	Config   bool `mapstructure:"show-config"`
+	Env      bool `mapstructure:"show-env"`
+	Defaults bool `mapstructure:"show-defaults"`
+}
+
 // Config holds all the configuration options for godyl.
 type Config struct {
-	Tools       string
-	Tags        []string
-	Defaults    file.File
-	Update      Update `mapstructure:",squash"`
-	Dry         bool
-	Detect      bool
-	Log         logger.Level
-	DotEnv      file.File `mapstructure:"dot-env"`
-	ShowDefault bool      `mapstructure:"show-default"`
-	ShowEnv     bool      `mapstructure:"show-env"`
+	Tools    string
+	Tags     []string
+	Defaults file.File
+	Update   Update `mapstructure:",squash"`
+	Dry      bool
+	Detect   bool
+	Log      logger.Level
+	DotEnv   file.File `mapstructure:"dot-env"`
 	// Number of parallel downloads
 	Parallel int `validate:"gte=0"`
 
+	Show Show `mapstructure:",squash"`
+
 	// Show help message
 	Help bool
-	// Show parsed configuration
-	Show bool
 	// Show version information
 	Version bool
 

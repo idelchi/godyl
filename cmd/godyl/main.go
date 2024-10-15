@@ -10,7 +10,6 @@ import (
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/pretty"
 	"golang.org/x/sync/errgroup"
@@ -55,24 +54,11 @@ func (app *App) run() error {
 		return fmt.Errorf("error validating configuration: %v", err)
 	}
 
-	defaults, err := app.loadDefaults(app.cfg.Defaults.Name())
-	if err != nil {
+	app.defaults = Defaults{}
+	if err := app.defaults.Load(app.cfg.Defaults.Name()); err != nil {
 		return fmt.Errorf("error loading defaults: %v", err)
 	}
-	defaults.Merge(app.cfg)
-	app.defaults = defaults
-
-	if app.cfg.ShowEnv {
-		pretty.PrintJSON(env.FromEnv())
-
-		return nil
-	}
-
-	if app.cfg.ShowDefault {
-		pretty.PrintYAML(app.defaults)
-
-		return nil
-	}
+	app.defaults.Merge(app.cfg)
 
 	if app.cfg.Update.Update {
 		if err := app.processUpdate(); err != nil {
@@ -136,26 +122,6 @@ func (app *App) detectPlatform() error {
 	pretty.PrintJSON(p)
 
 	return nil
-}
-
-// loadDefaults loads the default configuration from the given path.
-func (app *App) loadDefaults(path string) (Defaults, error) {
-	var defaults Defaults
-	if defaults.IsSet() {
-		if err := defaults.FromFile(path); err != nil {
-			return defaults, fmt.Errorf("loading defaults from %q: %w", path, err)
-		}
-	} else {
-		if err := defaults.Default(); err != nil {
-			return defaults, fmt.Errorf("setting defaults: %w", err)
-		}
-	}
-
-	if err := defaults.Initialize(); err != nil {
-		return defaults, fmt.Errorf("setting tool defaults: %w", err)
-	}
-
-	return defaults, nil
 }
 
 // loadTools loads the tools configuration from the given path.

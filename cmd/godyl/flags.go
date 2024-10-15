@@ -43,8 +43,8 @@ func flags() {
 	pflag.String("dot-env", "", "Path to .env file")
 
 	pflag.BoolP("help", "h", false, "Show help message and exit")
-	pflag.Bool("show", false, "Show the parsed configuration and exit")
-	pflag.Bool("show-default", false, "Show the parsed default configuration and exit")
+	pflag.Bool("show-config", false, "Show the parsed configuration and exit")
+	pflag.Bool("show-defaults", false, "Show the parsed default configuration and exit")
 	pflag.Bool("show-env", false, "Show the parsed environment variables and exit")
 	pflag.Bool("version", false, "Show version information and exit")
 
@@ -122,19 +122,42 @@ func validateInput(cfg *Config) error {
 //nolint:forbidigo // Function will print & exit for various help messages.
 func handleExitFlags(cfg Config) {
 	// Check if the version flag was provided
-	if viper.GetBool("version") {
+	if cfg.Version {
 		fmt.Println(version)
+
 		os.Exit(0)
 	}
 
 	// Check if the help flag was provided
-	if viper.GetBool("help") {
+	if cfg.Help {
 		pflag.Usage()
+
 		os.Exit(0)
 	}
 
-	if viper.GetBool("show") {
+	if cfg.Show.Config {
 		pretty.PrintYAML(cfg)
+
+		os.Exit(0)
+	}
+
+	if cfg.Show.Env {
+		pretty.PrintYAML(env.FromEnv())
+
+		os.Exit(0)
+	}
+
+	if cfg.Show.Defaults {
+		defaults := Defaults{}
+		if err := defaults.Load(cfg.Defaults.Name()); err != nil {
+			fmt.Fprintf(os.Stderr, "Error loading defaults: %v\n", err)
+
+			os.Exit(1)
+		}
+
+		defaults.Merge(cfg)
+
+		pretty.PrintYAML(defaults)
 
 		os.Exit(0)
 	}
@@ -150,13 +173,15 @@ func PrintJSON(obj any) string {
 	return string(bytes)
 }
 
-func loadDotEnv(dotEnv file.File) error {
-	env, err := env.FromDotEnv(dotEnv.Name())
+func loadDotEnv(path file.File) error {
+	dotEnv, err := env.FromDotEnv(path.Name())
 	if err != nil {
-		return fmt.Errorf("loading environment variables from %q: %w", dotEnv.Name(), err)
+		return fmt.Errorf("loading environment variables from %q: %w", path.Name(), err)
 	}
 
-	if err := env.Normalized().ToEnv(); err != nil {
+	env := env.FromEnv().Normalized().Merged(dotEnv.Normalized())
+
+	if err := env.ToEnv(); err != nil {
 		return fmt.Errorf("setting environment variables: %w", err)
 	}
 

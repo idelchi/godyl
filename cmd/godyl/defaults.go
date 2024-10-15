@@ -20,7 +20,7 @@ type Defaults struct {
 	tools.Defaults `yaml:",inline"`
 }
 
-func (d *Defaults) Load(data []byte) error {
+func (d *Defaults) Unmarshal(data []byte) error {
 	return yaml.Unmarshal(data, d)
 }
 
@@ -30,11 +30,11 @@ func (d *Defaults) FromFile(path string) error {
 		return err
 	}
 
-	return d.Load(data)
+	return d.Unmarshal(data)
 }
 
 func (d *Defaults) Default() error {
-	return d.Load(defaultsFile)
+	return d.Unmarshal(defaultsFile)
 }
 
 // Validate the Defaultsuration.
@@ -44,10 +44,6 @@ func (d *Defaults) Validate() error {
 		return fmt.Errorf("validating Defaults: %w", err)
 	}
 	return nil
-}
-
-func (d Defaults) IsSet() bool {
-	return IsSet("defaults")
 }
 
 func (d *Defaults) Merge(cfg Config) {
@@ -66,4 +62,22 @@ func (d *Defaults) Merge(cfg Config) {
 	if IsSet("github-token") {
 		d.Source.Github.Token = cfg.Tokens.GitHub
 	}
+}
+
+func (d *Defaults) Load(path string) error {
+	if IsSet("defaults") {
+		if err := d.FromFile(path); err != nil {
+			return fmt.Errorf("loading defaults from %q: %w", path, err)
+		}
+	} else {
+		if err := d.Default(); err != nil {
+			return fmt.Errorf("setting defaults: %w", err)
+		}
+	}
+
+	if err := d.Initialize(); err != nil {
+		return fmt.Errorf("setting tool defaults: %w", err)
+	}
+
+	return nil
 }

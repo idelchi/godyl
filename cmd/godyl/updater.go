@@ -8,7 +8,6 @@ import (
 	"github.com/idelchi/godyl/internal/folder"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/pkg/pretty"
 	"github.com/inconshreveable/go-update"
 )
 
@@ -34,8 +33,6 @@ func (gu GodylUpdater) Update() error {
 	}
 
 	tool.ApplyDefaults(gu.Defaults)
-
-	pretty.PrintJSON(tool)
 
 	output, err := gu.Get(tool)
 	if err != nil {

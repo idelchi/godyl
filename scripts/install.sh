@@ -58,7 +58,7 @@ tmp=$(mktemp)
 
 # Download and extract/install
 echo "Downloading $BINARY_NAME from $URL"
-code=$(curl -w '%{http_code}' -L -o ${tmp} ${URL})
+code=$(curl -s -w '%{http_code}' -L -o ${tmp} ${URL})
 
 if [ "$code" != "200" ]; then
   echo "Failed to download $URL: $code"
@@ -74,4 +74,4 @@ fi
 
 rm -f $tmp
 
-echo "${BINARY} installed to $OUTPUT_DIR"
+echo "'${BINARY}' installed to '$OUTPUT_DIR'"

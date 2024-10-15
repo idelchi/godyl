@@ -62,10 +62,6 @@ func (app *App) run() error {
 	defaults.Merge(app.cfg)
 	app.defaults = defaults
 
-	if err := app.loadDotEnv(); err != nil {
-		return fmt.Errorf("error loading .env: %v", err)
-	}
-
 	if app.cfg.ShowEnv {
 		pretty.PrintJSON(env.FromEnv())
 
@@ -160,23 +156,6 @@ func (app *App) loadDefaults(path string) (Defaults, error) {
 	}
 
 	return defaults, nil
-}
-
-func (app *App) loadDotEnv() error {
-	if !app.cfg.DotEnv.Exists() {
-		return nil
-	}
-
-	env, err := env.FromDotEnv(app.cfg.DotEnv.Name())
-	if err != nil {
-		return fmt.Errorf("loading environment variables from %q: %w", app.cfg.DotEnv.Name(), err)
-	}
-
-	if err := env.Normalized().ToEnv(); err != nil {
-		return fmt.Errorf("setting environment variables: %w", err)
-	}
-
-	return nil
 }
 
 // loadTools loads the tools configuration from the given path.

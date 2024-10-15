@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/flagexp"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/pretty"
@@ -38,7 +40,7 @@ func flags() {
 
 	pflag.String("source", "", "Source from which to install the tools")
 
-	pflag.String("dot-env", ".env", "Path to .env file")
+	pflag.String("dot-env", "", "Path to .env file")
 
 	pflag.BoolP("help", "h", false, "Show help message and exit")
 	pflag.Bool("show", false, "Show the parsed configuration and exit")
@@ -78,9 +80,10 @@ func parseFlags() (cfg Config, err error) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()
 
-	viper.SetConfigFile(".env")
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Error reading config file, %s", err)
+	if IsSet("dot-env") {
+		if err := loadDotEnv(file.File(viper.GetString("dot-env"))); err != nil {
+			return cfg, fmt.Errorf("loading .env file: %w", err)
+		}
 	}
 
 	decoderConfig := func(dc *mapstructure.DecoderConfig) {
@@ -145,4 +148,17 @@ func PrintJSON(obj any) string {
 	}
 
 	return string(bytes)
+}
+
+func loadDotEnv(dotEnv file.File) error {
+	env, err := env.FromDotEnv(dotEnv.Name())
+	if err != nil {
+		return fmt.Errorf("loading environment variables from %q: %w", dotEnv.Name(), err)
+	}
+
+	if err := env.Normalized().ToEnv(); err != nil {
+		return fmt.Errorf("setting environment variables: %w", err)
+	}
+
+	return nil
 }

@@ -209,13 +209,15 @@
 
 - name: jarun/nnn
   skip:
-    reason: "nnn is only available for linux"
-    condition: '{{ ne .Platform.OS "linux" }}'
+    - reason: "nnn is only available for linux"
+      condition: '{{ ne .Platform.OS "linux" }}'
+    - reason: "nnn is only available for amd64 architecture"
+      condition: '{{ ne .Platform.Architecture.Type "amd64" }}'
   aliases:
     - nnn
   hints:
     - pattern: icons
-      weight: 1
+      weight: 2
 
 - name: helm
   version: 3.16.1

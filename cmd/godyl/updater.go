@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime/debug"
+	"strings"
 
 	"github.com/idelchi/godyl/internal/folder"
 	"github.com/idelchi/godyl/internal/tools"
@@ -24,8 +26,14 @@ func (gu GodylUpdater) Update() error {
 
 	fmt.Printf("Updating godyl with strategy: %q\n", gu.Strategy)
 
+	path := "idelchi/godyl"
+	info, ok := debug.ReadBuildInfo()
+	if ok {
+		path = strings.TrimPrefix(info.Main.Path, "github.com/")
+	}
+
 	tool := tools.Tool{
-		Name: "idelchi/godyl",
+		Name: path,
 		Source: sources.Source{
 			Type: sources.GITHUB,
 		},

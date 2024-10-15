@@ -1,8 +1,11 @@
 # godyl
 
-Tool is work in progress and needs both cleaning up and documenting.
+[![Go Reference](https://pkg.go.dev/badge/github.com/idelchi/godyl.svg)](https://pkg.go.dev/github.com/idelchi/godyl)
+[![Go Report Card](https://goreportcard.com/badge/github.com/idelchi/godyl)](https://goreportcard.com/report/github.com/idelchi/godyl)
+[![Build Status](https://github.com/idelchi/godyl/actions/workflows/go.yml/badge.svg)](https://github.com/idelchi/godyl/actions/workflows/go.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`godyl` helps with batch-downloading and installing statically compiled binaries from:
+godyl helps with batch-downloading and installing statically compiled binaries from:
 
 - GitHub releases
 - Go projects
@@ -15,6 +18,31 @@ As an alternative to above, custom commands can be used as well.
 This uses simple heuristics to infer the correct binary to download, and will not work for all projects.
 
 Most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Customization](#customization)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Features
+
+- Download statically compiled binaries from:
+  - GitHub releases
+  - Go projects
+  - URLs
+- Automatically infers platform and architecture
+- Supports custom commands
+- Flexible configuration with hints and skip options
+
+Tool is work in progress and needs both cleaning up and documenting.
 
 ## Installation
 

@@ -5,9 +5,9 @@ import (
 )
 
 // Symlink creates symlinks for the executable.
-func (f File) Symlink(symlinks []string) error {
+func (f File) Symlink(symlinks ...File) error {
 	for _, symlink := range symlinks {
-		if symlink == f.String() {
+		if symlink.Name() == f.Name() {
 			continue
 		}
 

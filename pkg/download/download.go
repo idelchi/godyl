@@ -26,7 +26,7 @@ func New() *Downloader {
 // Download fetches a file from the given URL and saves it to the specified output path.
 // If the file is an archive, it will be extracted to the output directory.
 // It returns the destination path of the downloaded file (or folder) and any error encountered.
-func (d Downloader) Download(url string, output string) (Result, error) {
+func (d Downloader) Download(url string, output string) (file.File, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), d.ContextTimeout)
 	defer cancel()
 
@@ -48,22 +48,8 @@ func (d Downloader) Download(url string, output string) (Result, error) {
 
 	res, err := client.Get(ctx, req)
 	if err != nil {
-		return Result(""), err
+		return file.New(), err
 	}
 
-	return Result(res.Dst), nil
-}
-
-type Result string
-
-func (r Result) IsFile() bool {
-	return file.File(r).Exists() && file.File(r).IsFile()
-}
-
-func (r Result) IsDir() bool {
-	return file.File(r).Exists() && file.File(r).IsDir()
-}
-
-func (r Result) String() string {
-	return string(r)
+	return file.New(res.Dst), nil
 }

@@ -8,8 +8,8 @@
 godyl helps with batch-downloading and installing statically compiled binaries from:
 
 - GitHub releases
-- Go projects
 - URLs
+- Go projects
 
 As an alternative to above, custom commands can be used as well.
 
@@ -19,11 +19,18 @@ This uses simple heuristics to infer the correct binary to download, and will no
 
 Most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
 
+> [!NOTE]
+> This repo is a work in progress!
+> Needing both cleaning up and documenting.
+
+> **Warning**
+> This repo is a work in progress!
+> Needing both cleaning up and documenting.
+
 ---
 
 ## Table of Contents
 
-- [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Customization](#customization)
@@ -31,18 +38,6 @@ Most properties can be overridden, with `hints` and `skip` used to help `godyl` 
 - [License](#license)
 
 ---
-
-## Features
-
-- Download statically compiled binaries from:
-  - GitHub releases
-  - Go projects
-  - URLs
-- Automatically infers platform and architecture
-- Supports custom commands
-- Flexible configuration with hints and skip options
-
-Tool is work in progress and needs both cleaning up and documenting.
 
 ## Installation
 

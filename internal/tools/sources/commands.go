@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/pkg/file"
 )
 
 type Commands []Command
@@ -50,7 +51,7 @@ func (c Commands) Combined() Command {
 	return Command(strings.Join(stringCommands, "; "))
 }
 
-func (c Commands) Install(d InstallData) (output, found string, err error) {
+func (c Commands) Install(d InstallData) (output string, found file.File, err error) {
 	cmd := c.Combined()
 
 	// Execute the combined command

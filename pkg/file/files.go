@@ -44,6 +44,6 @@ func (es Files) Paths() (paths []string) {
 }
 
 // SymlinksFor creates symlinks for all Files.
-func (es Files) SymlinksFor(exe File) error {
-	return exe.Symlink(es.Paths())
+func (es Files) SymlinksFor(file File) error {
+	return file.Symlink(es...)
 }

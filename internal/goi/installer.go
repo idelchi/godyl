@@ -1,4 +1,4 @@
-package ginstaller
+package goi
 
 import (
 	"bytes"
@@ -7,15 +7,15 @@ import (
 	"os/exec"
 )
 
-type GInstaller struct {
+type Installer struct {
 	Binary Binary
 }
 
-func (i *GInstaller) Install(path string) (output string, err error) {
+func (i *Installer) Install(path string) (output string, err error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 
 	// Prepare the command
-	cmd := exec.Command(i.Binary.Path.Path, "install", path)
+	cmd := exec.Command(i.Binary.File.Name(), "install", path)
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, i.Binary.Env.ToSlice()...)
 

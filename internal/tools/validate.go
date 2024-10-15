@@ -5,10 +5,10 @@ import (
 	"slices"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/idelchi/godyl/internal/executable"
-	"github.com/idelchi/godyl/internal/folder"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/folder"
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
@@ -179,14 +179,14 @@ func (t *Tool) Validate() error {
 }
 
 func (t *Tool) Exists() bool {
-	return executable.New(t.Output, t.Exe.Name).Exists()
+	return file.New(t.Output, t.Exe.Name).Exists()
 }
 
 type Installer interface {
 	Install(d sources.InstallData) (output string, err error)
 }
 
-func (t *Tool) Download() (string, string, error) {
+func (t *Tool) Download() (string, file.File, error) {
 	installer, err := t.Source.Installer()
 	if err != nil {
 		return "", "", err

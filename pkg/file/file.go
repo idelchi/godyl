@@ -3,12 +3,19 @@ package file
 import (
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
+
+	"github.com/idelchi/godyl/pkg/folder"
 )
 
 type File string
+
+func New(paths ...string) File {
+	return File(filepath.Join(paths...))
+}
 
 func (f File) Name() string {
 	return f.String()
@@ -18,8 +25,8 @@ func (f File) String() string {
 	return string(f)
 }
 
-func (f File) Dir() string {
-	return filepath.Dir(f.String())
+func (f File) Dir() folder.Folder {
+	return folder.New(filepath.Dir(f.String()))
 }
 
 type CriteriaFunc func(File) (bool, error)
@@ -74,7 +81,11 @@ func (f File) IsExecutable() (bool, error) {
 	return info.Mode()&0o111 != 0, nil
 }
 
-func (f File) Copy(destination string) error {
+func (f *File) Chmod(mode fs.FileMode) error {
+	return os.Chmod(f.String(), mode)
+}
+
+func (f File) Copy(destination File) error {
 	// Open the source file
 	sourceFile, err := os.Open(f.String())
 	if err != nil {
@@ -83,7 +94,7 @@ func (f File) Copy(destination string) error {
 	defer sourceFile.Close()
 
 	// Create the destination file
-	destinationFile, err := os.Create(destination)
+	destinationFile, err := os.Create(f.Name())
 	if err != nil {
 		return fmt.Errorf("creating destination file: %w", err)
 	}
@@ -96,8 +107,7 @@ func (f File) Copy(destination string) error {
 	}
 
 	// Set permissions on the destination file (executable permission)
-	err = os.Chmod(destination, 0o755)
-	if err != nil {
+	if err := destination.Chmod(0o755); err != nil {
 		return fmt.Errorf("setting permissions: %w", err)
 	}
 
@@ -131,6 +141,5 @@ func (f File) IsDir() bool {
 		return false // File does not exist or error accessing it
 	}
 
-	// Check if the path is a regular file (not a folder or special file)
 	return info.Mode().IsDir()
 }

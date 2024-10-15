@@ -165,7 +165,9 @@ func handleExitFlags(cfg Config) {
 	if cfg.Show.Platform {
 		p := detect.Platform{}
 		if err := p.Detect(); err != nil {
-			return err
+			fmt.Fprintf(os.Stderr, "Error detecting platform: %v\n", err)
+
+			os.Exit(1)
 		}
 
 		pretty.PrintYAML(p)

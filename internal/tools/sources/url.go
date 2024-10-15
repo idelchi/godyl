@@ -2,6 +2,7 @@ package sources
 
 import (
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/pkg/file"
 )
 
 type URL struct {
@@ -33,6 +34,6 @@ func (u *URL) Path(name string, _ []string, _ string, _ match.Requirements) erro
 	return nil
 }
 
-func (u *URL) Install(d InstallData) (output, found string, err error) {
+func (u *URL) Install(d InstallData) (output string, found file.File, err error) {
 	return Download(d)
 }

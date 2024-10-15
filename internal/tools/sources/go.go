@@ -6,10 +6,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/idelchi/godyl/internal/folder"
-	ginstaller "github.com/idelchi/godyl/internal/go"
+	"github.com/idelchi/godyl/internal/goi"
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/pkg/download"
+	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/folder"
 )
 
 type Go struct {
@@ -44,15 +44,15 @@ func (g *Go) Path(_ string, _ []string, version string, _ match.Requirements) er
 
 var mu sync.Mutex
 
-func (g *Go) Install(d InstallData) (output, found string, err error) {
+func (g *Go) Install(d InstallData) (output string, found file.File, err error) {
 	mu.Lock()
-	binary, err := ginstaller.New()
+	binary, err := goi.New()
 	if err != nil {
 		return "", "", err
 	}
 	mu.Unlock()
 
-	installer := ginstaller.GInstaller{
+	installer := goi.Installer{
 		Binary: binary,
 	}
 
@@ -60,7 +60,7 @@ func (g *Go) Install(d InstallData) (output, found string, err error) {
 	folder.CreateRandomInTempDir()
 
 	installer.Binary.Env.Append(
-		ginstaller.Env{
+		goi.Env{
 			"GOBIN": folder.Path(),
 		},
 	)
@@ -87,7 +87,7 @@ func (g *Go) Install(d InstallData) (output, found string, err error) {
 
 		if err == nil {
 			d.Path = path
-			found, err := FindAndSymlink(download.Result(folder.Path()), d)
+			found, err := FindAndSymlink(file.New(folder.Path()), d)
 
 			return output, found, err
 		} else {

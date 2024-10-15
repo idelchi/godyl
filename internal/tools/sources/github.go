@@ -5,6 +5,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/pkg/file"
 )
 
 type GitHub struct {
@@ -110,6 +111,6 @@ func (g *GitHub) Path(_ string, extensions []string, version string, requirement
 	return nil
 }
 
-func (g *GitHub) Install(d InstallData) (output, found string, err error) {
+func (g *GitHub) Install(d InstallData) (output string, found file.File, err error) {
 	return Download(d)
 }

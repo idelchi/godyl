@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/idelchi/godyl/internal/executable"
-	"github.com/idelchi/godyl/internal/folder"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/folder"
 )
 
 type InstallData struct {
@@ -21,14 +21,21 @@ type InstallData struct {
 	Env      env.Env
 }
 
-func Download(d InstallData) (output, found string, err error) {
+func Download(d InstallData) (string, file.File, error) {
+	var err error
+	var found file.File
+
 	folder := folder.Folder(d.Output)
 
 	if d.Mode == "find" {
 		if err := folder.CreateRandomInTempDir(); err != nil {
 			return "", "", fmt.Errorf("creating temp dir: %w", err)
 		}
-		// defer folder.Remove()
+		defer func() {
+			if err == nil {
+				folder.Remove()
+			}
+		}()
 	}
 
 	downloader := download.New()
@@ -45,35 +52,35 @@ func Download(d InstallData) (output, found string, err error) {
 	return "", found, err
 }
 
-func FindAndSymlink(destination download.Result, d InstallData) (found string, err error) {
-	download := executable.New("", destination.String())
-
+func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 	if destination.IsDir() {
-		// Construct an executables item from all the possible names
-		executables := executable.Executables{}.FromStrings("", d.Patterns...)
+		folder := folder.New(destination.Name())
+		// Construct an files item from all the possible names
+		files := file.Files{}.FromStrings("", d.Patterns...)
 		// Find the specific executable that was downloaded
-		download, err = executables.Find(destination.String())
+		var err error
+		destination, err = files.Find(folder.Path())
 		if err != nil {
-			return found, fmt.Errorf("finding executable: %w", err)
+			return destination, fmt.Errorf("finding executable: %w", err)
 		}
 	}
 
-	folder := folder.Folder(d.Output)
+	folder := folder.New(d.Output)
 	if !folder.Exists() {
 		if err := folder.Create(); err != nil {
-			return found, fmt.Errorf("creating output folder: %w", err)
+			return destination, fmt.Errorf("creating output folder: %w", err)
 		}
 	}
 
-	target := executable.New(d.Output, d.Exe)
+	target := file.New(d.Output, d.Exe)
 
-	if err := download.Copy(target.Path); err != nil {
-		return found, fmt.Errorf("copying %q to %q: %w", download.Path, target.Path, err)
+	if err := destination.Copy(target); err != nil {
+		return destination, fmt.Errorf("copying %q to %q: %w", destination, target, err)
 	}
 
-	aliases := executable.Executables{}.FromStrings(d.Output, d.Aliases...)
+	aliases := file.Files{}.FromStrings(d.Output, d.Aliases...)
 
-	return download.Path, aliases.SymlinksFor(target)
+	return destination, aliases.SymlinksFor(target)
 }
 
 func SplitName(name string) (parts [2]string, err error) {

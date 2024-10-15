@@ -9,12 +9,20 @@ import (
 
 type Folder string
 
+func New(paths ...string) Folder {
+	return Folder(filepath.Join(paths...))
+}
+
 func (f Folder) IsSet() bool {
 	return f != ""
 }
 
-func (f *Folder) IsParentOf(child Folder) bool {
-	return strings.HasPrefix(child.Path(), f.Path())
+func (f *Folder) Set(path string) {
+	*f = Folder(path)
+}
+
+func (f *Folder) IsParentOf(other Folder) bool {
+	return strings.HasPrefix(other.Path(), f.Path())
 }
 
 func (f *Folder) Expand() error {
@@ -23,14 +31,19 @@ func (f *Folder) Expand() error {
 		if err != nil {
 			return fmt.Errorf("getting user home directory: %w", err)
 		}
-		*f = Folder(filepath.Join(homeDir, f.Path()[2:]))
+
+		f.Set(filepath.Join(homeDir, f.Path()[2:]))
 	}
 
 	return nil
 }
 
-func (f Folder) Path() string {
+func (f Folder) String() string {
 	return string(f)
+}
+
+func (f Folder) Path() string {
+	return f.String()
 }
 
 func (f Folder) Exists() bool {
@@ -48,7 +61,7 @@ func (f Folder) Name() string {
 
 func (f *Folder) CreateRandomInTempDir() error {
 	name, err := os.MkdirTemp("", "godyl-*")
-	*f = Folder(name)
+	f.Set(name)
 
 	return err
 }
@@ -58,7 +71,7 @@ func (f *Folder) CreateInTempDir() error {
 
 	err := os.Mkdir(name, 0o755)
 
-	*f = Folder(name)
+	f.Set(name)
 
 	return err
 }

@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/idelchi/godyl/internal/executable"
+	"github.com/idelchi/godyl/internal/version"
 )
 
 type Strategy string
@@ -29,12 +29,12 @@ func (s Strategy) Upgrade(t *Tool) error {
 	case None:
 		return ErrAlreadyExists
 	case Upgrade:
-		exe := executable.New(t.Output, t.Exe.Name)
+		exe := version.NewExecutable(t.Output, t.Exe.Name)
 		err := exe.ParseVersion()
 		if err != nil {
 			return nil
 		}
-		if version, err := executable.NewDefaultVersionParser().ParseString(t.Version); err == nil {
+		if version, err := version.NewDefaultVersionParser().ParseString(t.Version); err == nil {
 			if exe.Version == version {
 				return ErrAlreadyExists
 			}

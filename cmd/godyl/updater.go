@@ -7,9 +7,9 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/idelchi/godyl/internal/folder"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/pkg/folder"
 	"github.com/inconshreveable/go-update"
 )
 

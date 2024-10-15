@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/pkg/file"
 )
 
 type Type string
@@ -38,7 +39,7 @@ type Populater interface {
 	Exe() error
 	Version(string) error
 	Path(string, []string, string, match.Requirements) error
-	Install(InstallData) (string, string, error)
+	Install(InstallData) (string, file.File, error)
 	Get(string) string
 }
 

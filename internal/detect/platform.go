@@ -5,7 +5,8 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
-// Platform defines the characteristics of the platform, including OS, architecture, library, extension, and distribution.
+// Platform defines the characteristics of the platform, including OS, architecture, library, extension, and
+// distribution.
 type Platform struct {
 	OS           platform.OS           // OS represents the operating system (e.g., Linux, Windows, macOS).
 	Architecture platform.Architecture // Architecture defines the platform's CPU architecture and version.

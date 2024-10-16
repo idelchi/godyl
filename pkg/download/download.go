@@ -31,6 +31,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-getter/v2"
+
 	"github.com/idelchi/godyl/pkg/file"
 )
 
@@ -57,7 +58,7 @@ func New() *Downloader {
 // Download fetches a file from the given URL and saves it to the specified output path.
 // If the file is an archive, it will be extracted to the output directory.
 // It returns the destination path of the downloaded file (or folder) and any error encountered.
-func (d Downloader) Download(url string, output string) (file.File, error) {
+func (d Downloader) Download(url, output string) (file.File, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), d.ContextTimeout)
 	defer cancel()
 

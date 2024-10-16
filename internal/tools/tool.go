@@ -4,13 +4,15 @@ import (
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/internal/tools/sources/command"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/unmarshal"
 	"github.com/idelchi/godyl/pkg/utils"
+
 	"gopkg.in/yaml.v3"
 )
 
-// Tool represents a single tool configuration
+// Tool represents a single tool configuration.
 type Tool struct {
 	// Name of the tool
 	Name string
@@ -36,15 +38,15 @@ type Tool struct {
 	Strategy     Strategy
 	Extensions   Extensions
 	Skip         Skip
-	Test         sources.Commands
-	AllowFailure bool `yaml:"allow_failure" mapstructure:"allow_failure"`
-	Post         sources.Commands
+	Test         command.Commands
+	AllowFailure bool `mapstructure:"allow_failure" yaml:"allow_failure"`
+	Post         command.Commands
 	Mode         Mode
 	Settings     Settings
 	Env          env.Env
 }
 
-// UnmarshalYAML implements custom unmarshaling for Tool with KnownFields check
+// UnmarshalYAML implements custom unmarshaling for Tool with KnownFields check.
 func (t *Tool) UnmarshalYAML(value *yaml.Node) error {
 	// If it's a scalar (e.g., just the name), handle it directly
 	if value.Kind == yaml.ScalarNode {
@@ -73,5 +75,4 @@ func (t *Tool) ApplyDefaults(d Defaults) {
 
 	t.Platform.Merge(d.Platform)
 	t.Hints.Add(d.Hints)
-
 }

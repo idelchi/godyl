@@ -8,8 +8,9 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/idelchi/godyl/pkg/stringman"
 	"github.com/spf13/pflag"
+
+	"github.com/idelchi/godyl/pkg/stringman"
 )
 
 // ParseWithSuggestions parses the command-line arguments and suggests the closest flag name if a typo is detected.

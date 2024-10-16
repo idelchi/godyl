@@ -6,6 +6,7 @@ import (
 	"text/template"
 
 	sprig "github.com/go-task/slim-sprig/v3"
+
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
@@ -14,7 +15,7 @@ func (t *Tool) NormalizeValues() {
 	t.Values = utils.NormalizeMap(t.Values)
 }
 
-// ApplyTemplate applies Go templates to a string field using the Tool struct as data
+// ApplyTemplate applies Go templates to a string field using the Tool struct as data.
 func (t *Tool) ApplyTemplate(field string) (string, error) {
 	var buf bytes.Buffer
 	tmpl, err := template.New("tmpl").Funcs(sprig.FuncMap()).Parse(field)
@@ -27,7 +28,7 @@ func (t *Tool) ApplyTemplate(field string) (string, error) {
 	return buf.String(), nil
 }
 
-// Template applies templating to the Tool's fields
+// Template applies templating to the Tool's fields.
 func (t *Tool) Template() error {
 	var err error
 

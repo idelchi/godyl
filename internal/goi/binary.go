@@ -89,7 +89,6 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 		}
 
 		return file.File(""), fmt.Errorf("go binary not found: %w", err)
-
 	}
 
 	return file.New(binary), nil

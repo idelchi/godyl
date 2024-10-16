@@ -1,7 +1,8 @@
-package sources
+package url
 
 import (
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/file"
 )
 
@@ -9,7 +10,7 @@ type URL struct {
 	URL   string
 	Token string
 
-	Data Metadata `yaml:"-"`
+	Data common.Metadata `yaml:"-"`
 }
 
 func (u *URL) Get(attribute string) string {
@@ -34,6 +35,6 @@ func (u *URL) Path(name string, _ []string, _ string, _ match.Requirements) erro
 	return nil
 }
 
-func (u *URL) Install(d InstallData) (output string, found file.File, err error) {
-	return Download(d)
+func (u *URL) Install(d common.InstallData) (output string, found file.File, err error) {
+	return common.Download(d)
 }

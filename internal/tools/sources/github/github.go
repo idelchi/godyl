@@ -1,10 +1,11 @@
-package sources
+package github
 
 import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/file"
 )
 
@@ -13,7 +14,7 @@ type GitHub struct {
 	Owner string
 	Token string `mask:"fixed"`
 
-	Data Metadata `yaml:"-"`
+	Data common.Metadata `yaml:"-"`
 }
 
 func (g *GitHub) Get(attribute string) string {
@@ -32,7 +33,11 @@ func (g *GitHub) LatestVersion() (string, error) {
 	return release.Tag, nil
 }
 
-func (g *GitHub) MatchAssetsToRequirements(filters []string, version string, requirements match.Requirements) (string, error) {
+func (g *GitHub) MatchAssetsToRequirements(
+	filters []string,
+	version string,
+	requirements match.Requirements,
+) (string, error) {
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
@@ -111,6 +116,6 @@ func (g *GitHub) Path(_ string, extensions []string, version string, requirement
 	return nil
 }
 
-func (g *GitHub) Install(d InstallData) (output string, found file.File, err error) {
-	return Download(d)
+func (g *GitHub) Install(d common.InstallData) (output string, found file.File, err error) {
+	return common.Download(d)
 }

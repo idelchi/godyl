@@ -1,13 +1,14 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"os"
 
-	_ "embed"
-
 	"github.com/go-playground/validator/v10"
+
 	"github.com/idelchi/godyl/internal/tools"
+
 	"gopkg.in/yaml.v3"
 )
 

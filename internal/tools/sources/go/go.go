@@ -1,4 +1,4 @@
-package sources
+package goc
 
 import (
 	"fmt"
@@ -8,16 +8,22 @@ import (
 
 	"github.com/idelchi/godyl/internal/goi"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/folder"
 )
 
 type Go struct {
-	github *GitHub
+	github *github.GitHub
 
 	Command string `yaml:"command"`
 
-	Data Metadata `yaml:"-"`
+	Data common.Metadata `yaml:"-"`
+}
+
+func (g *Go) SetGitHub(gh *github.GitHub) {
+	g.github = gh
 }
 
 func (g *Go) Get(attribute string) string {
@@ -44,7 +50,7 @@ func (g *Go) Path(_ string, _ []string, version string, _ match.Requirements) er
 
 var mu sync.Mutex
 
-func (g *Go) Install(d InstallData) (output string, found file.File, err error) {
+func (g *Go) Install(d common.InstallData) (output string, found file.File, err error) {
 	mu.Lock()
 	binary, err := goi.New()
 	if err != nil {
@@ -74,7 +80,9 @@ func (g *Go) Install(d InstallData) (output string, found file.File, err error) 
 	}
 
 	if g.Command != "" {
-		paths = []string{(strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/%s@", name, g.Command), 1))}
+		paths = []string{
+			(strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/%s@", name, g.Command), 1)),
+		}
 	}
 
 	for i, path := range paths {
@@ -87,7 +95,7 @@ func (g *Go) Install(d InstallData) (output string, found file.File, err error) 
 
 		if err == nil {
 			d.Path = path
-			found, err := FindAndSymlink(file.New(folder.Path()), d)
+			found, err := common.FindAndSymlink(file.New(folder.Path()), d)
 
 			return output, found, err
 		} else {

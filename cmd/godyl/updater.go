@@ -7,10 +7,11 @@ import (
 	"runtime/debug"
 	"strings"
 
+	"github.com/inconshreveable/go-update"
+
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/folder"
-	"github.com/inconshreveable/go-update"
 )
 
 // GodylUpdater is responsible for updating the godyl tool using the specified update strategy and defaults.

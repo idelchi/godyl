@@ -4,6 +4,11 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/tools/sources/command"
+	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/internal/tools/sources/github"
+	goc "github.com/idelchi/godyl/internal/tools/sources/go"
+	"github.com/idelchi/godyl/internal/tools/sources/url"
 	"github.com/idelchi/godyl/pkg/file"
 )
 
@@ -28,10 +33,10 @@ const (
 
 type Source struct {
 	Type     Type
-	Github   GitHub
-	URL      URL
-	Go       Go
-	Commands Commands
+	Github   github.GitHub
+	URL      url.URL
+	Go       goc.Go
+	Commands command.Commands
 }
 
 type Populater interface {
@@ -39,7 +44,7 @@ type Populater interface {
 	Exe() error
 	Version(string) error
 	Path(string, []string, string, match.Requirements) error
-	Install(InstallData) (string, file.File, error)
+	Install(common.InstallData) (string, file.File, error)
 	Get(string) string
 }
 
@@ -52,7 +57,7 @@ func (s *Source) Installer() (Populater, error) {
 	case COMMAND:
 		return &s.Commands, nil
 	case GO:
-		s.Go.github = &s.Github
+		s.Go.SetGitHub(&s.Github)
 		return &s.Go, nil
 	default:
 		return nil, fmt.Errorf("unknown source type: %s", s.Type)

@@ -6,6 +6,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/mitchellh/mapstructure"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
+
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/env"
@@ -13,9 +17,6 @@ import (
 	"github.com/idelchi/godyl/pkg/flagexp"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/pretty"
-	"github.com/mitchellh/mapstructure"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 )
 
 func IsSet(flag string) bool {
@@ -174,7 +175,6 @@ func handleExitFlags(cfg Config) {
 		pretty.PrintYAML(p)
 
 		os.Exit(0)
-
 	}
 }
 

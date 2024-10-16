@@ -1,4 +1,4 @@
-package sources
+package command
 
 import (
 	"bytes"
@@ -20,7 +20,7 @@ func (c *Command) From(command string) {
 	*c = Command(command)
 }
 
-// Run executes the command using mvdan/sh, capturing output and returning it
+// Run executes the command using mvdan/sh, capturing output and returning it.
 func (c Command) Shell(env ...string) (string, error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 
@@ -43,7 +43,12 @@ func (c Command) Shell(env ...string) (string, error) {
 	// Execute the parsed command
 	err = runner.Run(context.TODO(), file)
 	if err != nil {
-		return "", fmt.Errorf("running shell command: %w: stdout: %s: stderr: %s", err, stdoutBuf.String(), stderrBuf.String())
+		return "", fmt.Errorf(
+			"running shell command: %w: stdout: %s: stderr: %s",
+			err,
+			stdoutBuf.String(),
+			stderrBuf.String(),
+		)
 	}
 
 	// Return the captured output

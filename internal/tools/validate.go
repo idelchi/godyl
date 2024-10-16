@@ -5,8 +5,10 @@ import (
 	"slices"
 
 	"github.com/go-playground/validator/v10"
+
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/folder"
 	"github.com/idelchi/godyl/pkg/utils"
@@ -20,7 +22,7 @@ var (
 	ErrFailed          = fmt.Errorf("tool failed")
 )
 
-func (t *Tool) Resolve(withTags []string, withoutTags []string) error {
+func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	// Normalize values given in .Values map such that the first letter of keys
 	// are capitalized.
 	t.NormalizeValues()
@@ -69,7 +71,7 @@ func (t *Tool) Resolve(withTags []string, withoutTags []string) error {
 	return lastErr
 }
 
-func (t *Tool) CheckSkipConditions(withTags []string, withoutTags []string) error {
+func (t *Tool) CheckSkipConditions(withTags, withoutTags []string) error {
 	if !t.Tags.Has(withTags) {
 		return fmt.Errorf("%w: %v: tool tags: %v", ErrDoesNotHaveTags, withTags, t.Tags)
 	}
@@ -89,7 +91,7 @@ func (t *Tool) CheckSkipConditions(withTags []string, withoutTags []string) erro
 	return nil
 }
 
-func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags []string, withoutTags []string) error {
+func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, withoutTags []string) error {
 	t.Tags.Append(t.Name)
 
 	if err := t.CheckSkipConditions(withTags, withoutTags); err != nil {
@@ -184,7 +186,7 @@ func (t *Tool) Exists() bool {
 }
 
 type Installer interface {
-	Install(d sources.InstallData) (output string, err error)
+	Install(d common.InstallData) (output string, err error)
 }
 
 func (t *Tool) Download() (string, file.File, error) {
@@ -193,7 +195,7 @@ func (t *Tool) Download() (string, file.File, error) {
 		return "", "", err
 	}
 
-	data := sources.InstallData{
+	data := common.InstallData{
 		Path:     t.Path,
 		Name:     t.Name,
 		Exe:      t.Exe.Name,

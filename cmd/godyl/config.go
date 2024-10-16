@@ -5,6 +5,7 @@ import (
 	"slices"
 
 	"github.com/go-playground/validator/v10"
+
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/file"

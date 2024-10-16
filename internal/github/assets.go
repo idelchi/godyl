@@ -76,8 +76,10 @@ func (as Assets) Match(requirements match.Requirements) (matches match.Results, 
 
 	for _, a := range as {
 		asset := match.Asset{Name: a.Name}
-		asset.Parse()                                                       // Parse the asset name to extract additional info (platform, architecture, etc.)
-		asset.Platform.Extension = platform.Extension(filepath.Ext(a.Name)) // Assign the file extension to the platform field
+		asset.Parse() // Parse the asset name to extract additional info (platform, architecture, etc.)
+		asset.Platform.Extension = platform.Extension(
+			filepath.Ext(a.Name),
+		) // Assign the file extension to the platform field
 
 		assets = append(assets, asset)
 	}

@@ -1,10 +1,11 @@
-package sources
+package command
 
 import (
 	"fmt"
 	"strings"
 
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/file"
 )
 
@@ -30,19 +31,7 @@ func (*Commands) Path(_ string, _ []string, _ string, _ match.Requirements) erro
 	return nil
 }
 
-func (c *Commands) Install2(_ InstallData) (output, found string, err error) {
-	for _, command := range *c {
-		output, err := command.Shell()
-		output += output + "\n"
-		if err != nil {
-			return strings.TrimRight(output, "\n"), "", fmt.Errorf("running commands: %w", err)
-		}
-	}
-
-	return strings.TrimRight(output, "\n"), "", nil
-}
-
-// Combined returns all commands as a single Command, joined by semicolons
+// Combined returns all commands as a single Command, joined by semicolons.
 func (c Commands) Combined() Command {
 	stringCommands := make([]string, len(c))
 	for i, cmd := range c {
@@ -51,7 +40,7 @@ func (c Commands) Combined() Command {
 	return Command(strings.Join(stringCommands, "; "))
 }
 
-func (c Commands) Install(d InstallData) (output string, found file.File, err error) {
+func (c Commands) Install(d common.InstallData) (output string, found file.File, err error) {
 	cmd := c.Combined()
 
 	// Execute the combined command

@@ -28,7 +28,8 @@ func (e Env) Normalize() Env {
 }
 
 // Expand expands environment variables in the Env values using os.ExpandEnv.
-// Each value in the Env is processed, replacing any occurrences of ${var} or $var with the corresponding value from the environment.
+// Each value in the Env is processed, replacing any occurrences of ${var} or $var with the corresponding value from the
+// environment.
 func (e *Env) Expand() {
 	for k, v := range *e {
 		(*e)[k] = os.ExpandEnv(v)

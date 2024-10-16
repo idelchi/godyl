@@ -14,8 +14,8 @@ func (h *Hints) Add(hints Hints) {
 // It can be a regular expression or a simple string pattern.
 type Hint struct {
 	Pattern        string // Pattern to match against the asset's name.
-	WeightTemplate string `json:"-" yaml:"weight" mapstructure:"weight"` // Template for calculating the weight (not used in matching).
-	Weight         int    `yaml:"-" mapstructure:"-"`                    // Weight used to adjust the score for non-mandatory hints.
+	WeightTemplate string `json:"-"         mapstructure:"weight" yaml:"weight"` // Template for calculating the weight (not used in matching).
+	Weight         int    `mapstructure:"-" yaml:"-"`      // Weight used to adjust the score for non-mandatory hints.
 	Regex          bool   // Whether the pattern is a regular expression.
 	Must           bool   // Indicates if the hint is mandatory for a match.
 }

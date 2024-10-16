@@ -7,12 +7,13 @@ import (
 	"path/filepath"
 	"sync"
 
+	"golang.org/x/sync/errgroup"
+
 	"github.com/idelchi/godyl/internal/tools"
-	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/pretty"
-	"golang.org/x/sync/errgroup"
 )
 
 // Global variable for CI stamping.
@@ -116,7 +117,7 @@ func (app *App) loadTools(path string) (tools.Tools, error) {
 }
 
 // processTools processes each tool in the tools list concurrently.
-func (app *App) processTools(t []string, wt []string) error {
+func (app *App) processTools(t, wt []string) error {
 	// Create a channel to collect the results.
 	resultCh := make(chan result)
 
@@ -161,7 +162,7 @@ func (app *App) processTools(t []string, wt []string) error {
 				return nil
 			}
 
-			output, _, err := tool.Post.Install(sources.InstallData{Env: tool.Env})
+			output, _, err := tool.Post.Install(common.InstallData{Env: tool.Env})
 			if err != nil {
 				resultCh <- result{tool: &tool, err: err, msg: output}
 			}
@@ -196,7 +197,9 @@ func (app *App) processResult(res result) {
 	app.log.Debug(pretty.YAMLMasked(tool))
 	app.log.Debug("-------")
 	if err != nil {
-		if errors.Is(err, tools.ErrAlreadyExists) || errors.Is(err, tools.ErrDoesNotHaveTags) || errors.Is(err, tools.ErrDoesHaveTags) || errors.Is(err, tools.ErrSkipped) {
+		if errors.Is(err, tools.ErrAlreadyExists) || errors.Is(err, tools.ErrDoesNotHaveTags) ||
+			errors.Is(err, tools.ErrDoesHaveTags) ||
+			errors.Is(err, tools.ErrSkipped) {
 			app.log.Warn("  %v", err)
 		} else {
 			app.log.Error("  failed to install")

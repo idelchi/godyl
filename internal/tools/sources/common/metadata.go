@@ -1,4 +1,4 @@
-package sources
+package common
 
 type Metadata map[string]string
 

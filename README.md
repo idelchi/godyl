@@ -199,6 +199,7 @@ env:
 ![Required](https://img.shields.io/badge/Required-red)
 ![Optional](https://img.shields.io/badge/Optional-green)
 ![Not Implemented](https://img.shields.io/badge/Not%20Implemented-gray)
+![Required if source is GitHub](https://img.shields.io/badge/Required%20if-source%20is%20GitHub-yellow)
 
 ### Name
 
@@ -386,8 +387,8 @@ They will be tried in order until the tool is found or all have been tried.
 
 #### Usage
 
-- `repo` and `owner` will be inferred from `name` if not given
-- `token` will be set according to [flags and environment variables](#configuration) if not given
+- `repo` and `owner` will be inferred from `name` if not given, or set according to [defaults](#defaults) (not recommended)
+- `token` will be set according to [flags and environment variables](#configuration) or [defaults](#defaults) if not given
 
 #### URL
 
@@ -413,6 +414,123 @@ They will be tried in order until the tool is found or all have been tried.
 | `N/A`    | No        | No          |
 
 `source.go` is a dictionary containing the command to run to install the tool.
+
+#### Commands
+
+![Optional](https://img.shields.io/badge/Optional-green)
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | Yes       | No          |
+
+`commands` is a list of commands to run to install the tool.
+
+### Tags
+
+![Inferred](https://img.shields.io/badge/Inferred-blue)
+![Optional](https://img.shields.io/badge/Optional-green)
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`tags` is a list of tags to filter tools by.
+
+#### Usage
+
+- the `name` of the tool will always be added as a tag
+
+### Strategy
+
+![Required](https://img.shields.io/badge/Required-red)
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`strategy` is the strategy to use for updating the tool.
+
+Accepted values are:
+
+- `none`
+- `upgrade`
+- `force`
+
+#### Usage
+
+- Set according to [flags and environment variables](#configuration) or [defaults](#defaults) if not given
+- `none` will skip the tool if it already exists
+- `upgrade` will attempt to parse the version of an existing tool and upgrade if necessary
+- `force` will always download and install the tool
+
+### Extensions
+
+![Optional](https://img.shields.io/badge/Optional-green)
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`extensions` is a list of extensions to add to the tool name when matching the tools (used only for `github` source type).
+
+#### Usage
+
+- Set according to [defaults](#defaults) if not given
+- Can be used to for example prefer `.zip` files for Windows
+
+### Skip
+
+![Optional](https://img.shields.io/badge/Optional-green)
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | Yes       | No          |
+
+`skip` is a list of conditions under which the tool should be skipped.
+
+#### Usage
+
+- `reason` is a description of why the tool was skipped
+- `condition` is a condition to check, and can use templating
+
+### Test
+
+![Not Implemented](https://img.shields.io/badge/Not%20Implemented-gray)
+
+### Allow Failure
+
+![Not Implemented](https://img.shields.io/badge/Not%20Implemented-gray)
+
+### Post
+
+![Optional](https://img.shields.io/badge/Optional-green)
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | Yes       | No          |
+
+`post` is a list of commands to run after the tool has been installed.
+
+### Mode
+
+![Required](https://img.shields.io/badge/Required-red)
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`mode` is the mode to use for the tool.
+
+Accepted values are:
+
+- `find`
+- `download`
+
+#### Usage
+
+- `find` will download, extract and find the executable
+- `download` will download the tool and extract it directly to the output directory
+- Set according to [flags and environment variables](#configuration) or [defaults](#defaults) if not given
 
 ## Defaults
 

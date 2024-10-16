@@ -234,8 +234,7 @@ exe:
 
 #### Usage
 
-- Used to infer `exe.name` if not given
-- Used to infer `sources.github.repo` and `sources.github.owner` if not given, by splitting on `/`
+- Used as display name and for inferring other fields (see [GitHub](#github) and [exe](#exe))
 
 ### Description
 

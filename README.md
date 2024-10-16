@@ -53,9 +53,9 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts
 
 The tools can be configured by (in order of priority)
 
-- flags to the tool
+- flags
 - environment variables
-- a `.env` file
+- `.env` file
 
 The following flags and their corresponding environment variables are available:
 
@@ -79,13 +79,47 @@ The following flags and their corresponding environment variables are available:
 | `--strategy`       | `GODYL_STRATEGY`      | `none`         | Strategy to use for updating tools             |
 | `--github-token`   | `GODYL_GITHUB_TOKEN`  | `""`           | GitHub token for authentication                |
 
-The path to the tools file is provided as a positional argument, defaulting to `tools.yml`.
+The path to the file containing the tool installation instructions is provided as a positional argument, defaulting to `tools.yml`.
 
 An example [tools.yml](./tools.yml) is provided.
 
+In general, settings can be set in the following ways (order of priority):
+
+- as a field in the [tools.yml](./tools.yml) definition
+
+  ```yaml
+  output: ~/.local/bin
+  ```
+
+- as a flag to the tool
+
+  ```sh
+  godyl --output ~/.local/bin
+  ```
+
+- as an environment variable
+
+  ```sh
+  GODYL_OUTPUT=~/.local/bin godyl
+  ```
+
+- in an `.env` file
+
+  ```
+  GODYL_OUTPUT=~/.local/bin
+  ```
+
+- by setting the value in a `defaults.yml` file (see [defaults](#defaults))
+
+  ```yaml
+  output: ~/.local/bin
+  ```
+
+If none of the above are fulfilled, the default configuration embedded from [defaults.yml](./cmd/godyl/defaults.yml) will be used.
+
 ## Tools
 
-A YAML file controls the tools to download and install. Alternative, if the positional argument to the tool is not a YAML file, it will be treated as a single tool name.
+A YAML file controls the tools to download and install. Alternatively, if the positional argument to the tool is not a YAML file, it will be treated as a single tool name or URL.
 
 Examples are provided in [tools.yml](./tools.yml) and
 
@@ -94,6 +128,9 @@ Examples are provided in [tools.yml](./tools.yml) and
 ```
 
 Above is the `simple` form to attempt to download the latest release of `zoxide` from `ajeetdsouza/zoxide`.
+
+If it is a simply two-part string, it will be considered as a `source.github` type.
+If it is a URL, it will be considered as a `source.url` type.
 
 The full form is
 
@@ -381,7 +418,7 @@ They will be tried in order until the tool is found or all have been tried.
 
 A default configuration may be used to specify default settings for all tools. These will override (or extend in some case) the settings for each tool.
 
-The following is embedded and used by default if no configuration is provided:
+The following is embedded and used by default if no default configuration is provided:
 
 [config.yml](./cmd/godyl/defaults.yml)
 
@@ -458,54 +495,25 @@ env:
 mode: string
 ```
 
-## Settings
+pflag.Bool("version", false, "Show the version information and exit")
+pflag.BoolP("help", "h", false, "Show the help information and exit")
+pflag.BoolP("show", "s", false, "Show the configuration and exit")
+pflag.StringP("config", "c", config.Get(), "Path to configuration file")
+pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
 
-In general, settings can be set in the following ways:
+// Selected custom flags
+pflag.String("defaults.source.github.token", "", "GitHub token for API requests")
+pflag.String("defaults.strategy", "none", "")
+pflag.String("defaults.output", "~/.local/bin", "")
 
-- as a field in the tool definition
+pflag.String("log", string(logger.INFO), "")
 
-  ```yaml
-  output: ~/.local/bin
-  ```
+pflag.Bool("dry", false, "")
 
-- as a flag to the tool
+pflag.Bool("update", false, "")
+pflag.String("update-strategy", string(tools.Upgrade), "")
 
-  ```sh
-  godyl --defaults.output ~/.local/bin
-  ```
-
-- as an environment variable
-
-  ```sh
-  GODYL_DEFAULTS_OUTPUT=~/.local/bin godyl
-  ```
-
-- in the configuration file
-
-  ```yaml
-  defaults:
-    output: ~/.local/bin
-  ```
-
-  pflag.Bool("version", false, "Show the version information and exit")
-  pflag.BoolP("help", "h", false, "Show the help information and exit")
-  pflag.BoolP("show", "s", false, "Show the configuration and exit")
-  pflag.StringP("config", "c", config.Get(), "Path to configuration file")
-  pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
-
-  // Selected custom flags
-  pflag.String("defaults.source.github.token", "", "GitHub token for API requests")
-  pflag.String("defaults.strategy", "none", "")
-  pflag.String("defaults.output", "~/.local/bin", "")
-
-  pflag.String("log", string(logger.INFO), "")
-
-  pflag.Bool("dry", false, "")
-
-  pflag.Bool("update", false, "")
-  pflag.String("update-strategy", string(tools.Upgrade), "")
-
-  pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
+pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
 
 The following `config` parameters are available:
 

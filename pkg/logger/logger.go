@@ -8,16 +8,19 @@ import (
 	"github.com/fatih/color"
 )
 
-// Level represents the severity of a log message
+// Level represents the severity of a log message.
+// It can be one of DEBUG, INFO, WARN, or ERROR.
 type Level string
 
 const (
-	DEBUG Level = "debug"
-	INFO  Level = "info"
-	WARN  Level = "warn"
-	ERROR Level = "error"
+	DEBUG Level = "debug" // DEBUG represents debug-level messages, useful for development and troubleshooting.
+	INFO  Level = "info"  // INFO represents informational messages, typically used for normal operation.
+	WARN  Level = "warn"  // WARN represents warning messages, which indicate potential issues but not failures.
+	ERROR Level = "error" // ERROR represents error messages, indicating failure in operation.
 )
 
+// Int returns the integer representation of the log Level.
+// DEBUG is 0, INFO is 1, WARN is 2, and ERROR is 3.
 func (l Level) Int() int {
 	switch l {
 	case DEBUG:
@@ -33,6 +36,7 @@ func (l Level) Int() int {
 	}
 }
 
+// IsAllowed checks if the log Level is a valid value (DEBUG, INFO, WARN, ERROR).
 func (l Level) IsAllowed() bool {
 	switch l {
 	case DEBUG, INFO, WARN, ERROR:
@@ -42,18 +46,19 @@ func (l Level) IsAllowed() bool {
 	}
 }
 
-// Logger struct to hold the log level, output writer, and color functions
+// Logger holds the configuration for logging.
+// It includes the current logging level, the output writer, and color mappings for each log level.
 type Logger struct {
-	level  Level
-	output io.Writer
-	colors map[Level]*color.Color
+	level  Level                  // level is the current logging level. Messages with lower severity will be ignored.
+	output io.Writer              // output is the writer where log messages will be written (e.g., stdout, a file).
+	colors map[Level]*color.Color // colors holds color settings for each log Level to make log messages more readable.
 }
 
-// New creates a new Logger instance
+// NewCustom creates a new Logger instance with the specified log level and output writer.
+// If an invalid log level is provided, it defaults to INFO.
 func NewCustom(level Level, output io.Writer) *Logger {
 	if !level.IsAllowed() {
 		fmt.Fprintf(os.Stderr, "Invalid log level: %q, setting to %q\n", level, INFO)
-
 		level = INFO
 	}
 
@@ -69,10 +74,11 @@ func NewCustom(level Level, output io.Writer) *Logger {
 	}
 }
 
+// New creates a new Logger instance with the specified log level and writes to stdout.
+// If an invalid log level is provided, it defaults to INFO.
 func New(level Level) *Logger {
 	if !level.IsAllowed() {
 		fmt.Fprintf(os.Stderr, "Invalid log level: %q, setting to %q\n", level, INFO)
-
 		level = INFO
 	}
 
@@ -88,7 +94,8 @@ func New(level Level) *Logger {
 	}
 }
 
-// log prints a colored message if the log level is sufficient
+// log prints a log message with the specified log level, applying colors based on the level if available.
+// The message will only be logged if the level's severity is equal to or higher than the Logger's current level.
 func (l *Logger) log(level Level, format string, args ...any) {
 	if level.Int() >= l.level.Int() {
 		message := fmt.Sprintf(format, args...)
@@ -100,26 +107,27 @@ func (l *Logger) log(level Level, format string, args ...any) {
 	}
 }
 
+// Always logs a message at the INFO level, regardless of the current log level.
 func (l *Logger) Always(format string, args ...any) {
 	l.log(INFO, format, args...)
 }
 
-// Debug logs a debug message
+// Debug logs a debug-level message if the current log level allows it.
 func (l *Logger) Debug(format string, args ...any) {
 	l.log(DEBUG, format, args...)
 }
 
-// Info logs an info message
+// Info logs an informational message if the current log level allows it.
 func (l *Logger) Info(format string, args ...any) {
 	l.log(INFO, format, args...)
 }
 
-// Warn logs a warning message
+// Warn logs a warning message if the current log level allows it.
 func (l *Logger) Warn(format string, args ...any) {
 	l.log(WARN, format, args...)
 }
 
-// Error logs an error message
+// Error logs an error message if the current log level allows it.
 func (l *Logger) Error(format string, args ...any) {
 	l.log(ERROR, format, args...)
 }

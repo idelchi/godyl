@@ -11,7 +11,7 @@ import (
 type GitHub struct {
 	Repo  string
 	Owner string
-	Token string // `mask:"fixed"`
+	Token string `mask:"fixed"`
 
 	Data Metadata `yaml:"-"`
 }

@@ -59,8 +59,6 @@ The tools can be configured by (in order of priority)
 
 The following flags and their corresponding environment variables are available:
 
-Here's the aligned and reordered markdown table based on the Go program:
-
 | Flag               | Environment Variable  | Default        | Description                                    |
 | ------------------ | --------------------- | -------------- | ---------------------------------------------- |
 | `--help`, `-h`     | `GODYL_HELP`          | `false`        | Show help message and exit                     |
@@ -84,6 +82,264 @@ Here's the aligned and reordered markdown table based on the Go program:
 The path to the tools file is provided as a positional argument, defaulting to `tools.yml`.
 
 An example [tools.yml](./tools.yml) is provided.
+
+## Tools
+
+A YAML file controls the tools to download and install. Alternative, if the positional argument to the tool is not a YAML file, it will be treated as a single tool name.
+
+Examples are provided in [tools.yml](./tools.yml) and
+
+```yaml
+- ajeetdsouza/zoxide
+```
+
+Above is the `simple` form to attempt to download the latest release of `zoxide` from `ajeetdsouza/zoxide`.
+
+The full form is
+
+```yaml
+name: string
+description: string
+version: string
+path: string
+checksum: string
+output: string
+exe:
+  name: string
+  patterns:
+    - string
+platform:
+  os: string
+  architecture:
+    type: string
+    version: string
+  library: string
+  extension: string
+  distribution: string
+aliases: []
+values: {}
+fallbacks: []
+hints:
+  - pattern: string
+    weight: int
+    regex: boolean
+    must: boolean
+source:
+  type: string
+  github:
+    repo: string
+    owner: string
+    token: string
+    data:
+      exe: string
+      version: string
+  url:
+    url: string
+    token: string
+  go:
+    command: string
+  commands: []
+tags:
+  - string
+strategy: string
+extensions:
+  - string
+skip:
+  - condition: string
+    reason: string
+test: []
+allowFailure: boolean
+post: []
+mode: string
+settings: {}
+env:
+  key: string
+```
+
+![Template: {{ .Name }}](https://img.shields.io/badge/Template-{{%20.Name%20}}-blue)
+![Templated: No](https://img.shields.io/badge/Templated-Yes-green)
+![As Template: No](https://img.shields.io/badge/As_Template-No-red)
+
+### Name
+
+| Template      | Templated | As Template |
+| ------------- | --------- | ----------- |
+| `{{ .Name }}` | No        | No          |
+
+`name` is the name of the tool to download.
+
+#### Usage
+
+- Used to infer `exe.name` if not given
+- Used to infer `sources.github.repo` and `sources.github.owner` if not given, by splitting on `/`
+
+### Description
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`description` is an optional description of the tool, for documentation purposes.
+
+#### Usage
+
+None
+
+### Version
+
+| Template         | Templated | As Template |
+| ---------------- | --------- | ----------- |
+| `{{ .Version }}` | No        | Yes         |
+
+`version` is the version of the tool to download.
+
+#### Usage
+
+- Will be inferred and populated by the `source` method if not given
+
+### Path
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | Yes       | No          |
+
+`path` is the path to the tool to download. Currently only supports URLs.
+
+#### Usage
+
+- Will be inferred and populated by the `source` method if not given
+
+### Checksum
+
+Not implemented.
+
+### Output
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`output` is the path to the directory where the tool will be installed.
+
+#### Usage
+
+- Set according to [flags and environment variables](#configuration) or [defaults](#defaults) if not given
+
+### Exe
+
+| Template              | Templated | As Template |
+| --------------------- | --------- | ----------- |
+| `{{ .Exe.Name }}`     | Yes       | Yes         |
+| `{{ .Exe.Patterns }}` | Yes       | No          |
+
+`exe` is a dictionary containing the name of the executable and patterns to use for finding the executable.
+
+#### Usage
+
+- `exe.name` is the name of the executable, inferred from `name` if not given
+- `exe.patterns` is a list of patterns to use for finding the executable, inferred from `name` if not given
+- Set according to [defaults](#defaults) if not given
+
+### Platform
+
+| Template             | Templated | As Template |
+| -------------------- | --------- | ----------- |
+| `{{ .Platform.<> }}` | No        | Yes         |
+
+`platform` is a dictionary containing the platform and architecture information.
+
+#### Usage
+
+- Any field not given will be inferred from the system
+- Set according to [defaults](#defaults) if not given
+
+### Aliases
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`aliases` is a list of aliases for the tool. Will be used to create symlinks (or copies on `Windows`) for the tool.
+
+### Values
+
+| Template           | Templated | As Template |
+| ------------------ | --------- | ----------- |
+| `{{ .Values.<> }}` | No        | Yes         |
+
+`values` is an arbitrary values map, which can be used for templating in other fields.
+
+### Fallbacks
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`fallbacks` is a list of fallback strategies to use if the tool cannot be found.
+
+They will be tried in order until the tool is found or all have been tried.
+
+### Hints
+
+| Template               | Templated | As Template |
+| ---------------------- | --------- | ----------- |
+| `{{ .Hints.Weight }}`  | Yes       | No          |
+| `{{ .Hints.Pattern }}` | Yes       | No          |
+| `{{ .Hints.Regex }}`   | No        | No          |
+| `{{ .Hints.Must }}`    | No        | No          |
+
+`hints` is a list of hints for matching, which can be used to help `godyl` find the correct tool.
+
+```yaml
+name: ajeetdsouza/zoxide
+# Description of the tool
+description: A smart autojump tool
+# Version of the tool, can use Go templates
+version: v{{ .Values.Version }}
+# Path to fetch the tool, can use Go templates. Will be inferred if not given
+path: ""
+# Checksum for the downloaded file (NOT IMPLEMENTED)
+checksum: ""
+# Output path for the tool
+output: "{{ .Output }}"
+exe:
+  # Name of the executable itself, inferred from name if not given, can use Go templates
+  name:
+  # Patterns to use for finding the executable, can use Go templates
+  patterns:
+    - "{{ .Exe.Name }}.*"
+platform: "{{ .Platform }}" # Platform detection. Any field not given will be detected from the system.
+aliases: # Aliases for the tool
+  - z
+values: # Arbitrary values map, can be used for templating in other fields
+  version: v0.9.6
+fallbacks: # List of fallback strategies
+  - go
+hints: # Hints for matching, can use Go templates in pattern and weight fields
+  - pattern: ""
+    weight: 1
+    regex: false
+    must: false
+source:
+  type: # Source type, can be github, go, or url
+  github:
+    owner:
+    repo:
+    token:
+  url:
+    url:
+    token:
+  go:
+    command:
+tags: # Tags for categorizing tools, can use Go templates
+  - terminal
+strategy: none # Strategy for installation, can be none, upgrade or force
+extensions:
+  - .gz
+skip: false # Whether to skip installation (evaluated as boolean)
+test: # Test commands, can use Go templates
+  - zoxide --version
+```
 
 ## Defaults
 
@@ -164,130 +420,6 @@ extensions:
 env:
   key: string
 mode: string
-```
-
-```yaml
-name: string
-description: string
-version: string
-path: string
-checksum: string
-output: string
-exe:
-  name: string
-  patterns:
-    - string
-platform:
-  os: string
-  architecture:
-    type: string
-    version: string
-  library: string
-  extension: string
-  distribution: string
-aliases: []
-values: {}
-fallbacks: []
-hints:
-  - pattern: string
-    weight: int
-    regex: boolean
-    must: boolean
-source:
-  type: string
-  github:
-    repo: string
-    owner: string
-    token: string
-    data:
-      exe: string
-      version: string
-  url:
-    url: string
-    token: string
-  go:
-    command: string
-  commands: []
-tags:
-  - string
-strategy: string
-extensions:
-  - string
-skip:
-  - condition: string
-    reason: string
-test: []
-allowFailure: boolean
-post: []
-mode: string
-settings: {}
-env:
-  key: string
-```
-
-## Tools
-
-A YAML file controls the tools to download and install. Alternative, if the positional argument to the tool is not a YAML file, it will be treated as a single tool name.
-
-Examples are provided in [tools.yml](./tools.yml) and
-
-```yaml
-- ajeetdsouza/zoxide
-```
-
-Above is the `simple` form to attempt to download the latest release of `zoxide` from `ajeetdsouza/zoxide`.
-
-The full form is
-
-```yaml
-name: ajeetdsouza/zoxide
-# Description of the tool
-description: A smart autojump tool
-# Version of the tool, can use Go templates
-version: v{{ .Values.Version }}
-# Path to fetch the tool, can use Go templates. Will be inferred if not given
-path: ""
-# Checksum for the downloaded file (NOT IMPLEMENTED)
-checksum: ""
-# Output path for the tool
-output: "{{ .Output }}"
-exe:
-  # Name of the executable itself, inferred from name if not given, can use Go templates
-  name:
-  # Patterns to use for finding the executable, can use Go templates
-  patterns:
-    - "{{ .Exe.Name }}.*"
-platform: "{{ .Platform }}" # Platform detection. Any field not given will be detected from the system.
-aliases: # Aliases for the tool
-  - z
-values: # Arbitrary values map, can be used for templating in other fields
-  version: v0.9.6
-fallbacks: # List of fallback strategies
-  - go
-hints: # Hints for matching, can use Go templates in pattern and weight fields
-  - pattern: ""
-    weight: 1
-    regex: false
-    must: false
-source:
-  type: # Source type, can be github, go, or url
-  github:
-    owner:
-    repo:
-    token:
-  url:
-    url:
-    token:
-  go:
-    command:
-tags: # Tags for categorizing tools, can use Go templates
-  - terminal
-strategy: none # Strategy for installation, can be none, upgrade or force
-extensions:
-  - .gz
-skip: false # Whether to skip installation (evaluated as boolean)
-test: # Test commands, can use Go templates
-  - zoxide --version
 ```
 
 ## Settings

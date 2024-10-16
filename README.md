@@ -156,11 +156,16 @@ env:
   key: string
 ```
 
-![Template: {{ .Name }}](https://img.shields.io/badge/Template-{{%20.Name%20}}-blue)
-![Templated: No](https://img.shields.io/badge/Templated-Yes-green)
-![As Template: No](https://img.shields.io/badge/As_Template-No-red)
+### Badges
+
+![Inferred](https://img.shields.io/badge/Inferred-blue)
+![Required](https://img.shields.io/badge/Required-red)
+![Optional](https://img.shields.io/badge/Optional-green)
+![Not Implemented](https://img.shields.io/badge/Not%20Implemented-gray)
 
 ### Name
+
+![Required](https://img.shields.io/badge/Required-Yes-green)
 
 | Template      | Templated | As Template |
 | ------------- | --------- | ----------- |
@@ -175,17 +180,18 @@ env:
 
 ### Description
 
+![Optional](https://img.shields.io/badge/Optional-Yes-blue)
+
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
 | `N/A`    | No        | No          |
 
 `description` is an optional description of the tool, for documentation purposes.
 
-#### Usage
-
-None
-
 ### Version
+
+![Inferred](https://img.shields.io/badge/Inferred-blue)
+![Optional](https://img.shields.io/badge/Optional-green)
 
 | Template         | Templated | As Template |
 | ---------------- | --------- | ----------- |
@@ -199,6 +205,9 @@ None
 
 ### Path
 
+![Inferred](https://img.shields.io/badge/Inferred-blue)
+![Optional](https://img.shields.io/badge/Optional-green)
+
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
 | `N/A`    | Yes       | No          |
@@ -211,9 +220,11 @@ None
 
 ### Checksum
 
-Not implemented.
+![Not Implemented](https://img.shields.io/badge/Not%20Implemented-gray)
 
 ### Output
+
+![Required](https://img.shields.io/badge/Required-red)
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
@@ -226,6 +237,9 @@ Not implemented.
 - Set according to [flags and environment variables](#configuration) or [defaults](#defaults) if not given
 
 ### Exe
+
+![Inferred](https://img.shields.io/badge/Inferred-blue)
+![Optional](https://img.shields.io/badge/Optional-green)
 
 | Template              | Templated | As Template |
 | --------------------- | --------- | ----------- |
@@ -242,6 +256,9 @@ Not implemented.
 
 ### Platform
 
+![Inferred](https://img.shields.io/badge/Inferred-blue)
+![Optional](https://img.shields.io/badge/Optional-green)
+
 | Template             | Templated | As Template |
 | -------------------- | --------- | ----------- |
 | `{{ .Platform.<> }}` | No        | Yes         |
@@ -255,6 +272,8 @@ Not implemented.
 
 ### Aliases
 
+![Optional](https://img.shields.io/badge/Optional-green)
+
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
 | `N/A`    | No        | No          |
@@ -263,6 +282,8 @@ Not implemented.
 
 ### Values
 
+![Optional](https://img.shields.io/badge/Optional-green)
+
 | Template           | Templated | As Template |
 | ------------------ | --------- | ----------- |
 | `{{ .Values.<> }}` | No        | Yes         |
@@ -270,6 +291,8 @@ Not implemented.
 `values` is an arbitrary values map, which can be used for templating in other fields.
 
 ### Fallbacks
+
+![Optional](https://img.shields.io/badge/Optional-green)
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
@@ -281,6 +304,8 @@ They will be tried in order until the tool is found or all have been tried.
 
 ### Hints
 
+![Optional](https://img.shields.io/badge/Optional-green)
+
 | Template               | Templated | As Template |
 | ---------------------- | --------- | ----------- |
 | `{{ .Hints.Weight }}`  | Yes       | No          |
@@ -290,56 +315,67 @@ They will be tried in order until the tool is found or all have been tried.
 
 `hints` is a list of hints for matching, which can be used to help `godyl` find the correct tool.
 
-```yaml
-name: ajeetdsouza/zoxide
-# Description of the tool
-description: A smart autojump tool
-# Version of the tool, can use Go templates
-version: v{{ .Values.Version }}
-# Path to fetch the tool, can use Go templates. Will be inferred if not given
-path: ""
-# Checksum for the downloaded file (NOT IMPLEMENTED)
-checksum: ""
-# Output path for the tool
-output: "{{ .Output }}"
-exe:
-  # Name of the executable itself, inferred from name if not given, can use Go templates
-  name:
-  # Patterns to use for finding the executable, can use Go templates
-  patterns:
-    - "{{ .Exe.Name }}.*"
-platform: "{{ .Platform }}" # Platform detection. Any field not given will be detected from the system.
-aliases: # Aliases for the tool
-  - z
-values: # Arbitrary values map, can be used for templating in other fields
-  version: v0.9.6
-fallbacks: # List of fallback strategies
-  - go
-hints: # Hints for matching, can use Go templates in pattern and weight fields
-  - pattern: ""
-    weight: 1
-    regex: false
-    must: false
-source:
-  type: # Source type, can be github, go, or url
-  github:
-    owner:
-    repo:
-    token:
-  url:
-    url:
-    token:
-  go:
-    command:
-tags: # Tags for categorizing tools, can use Go templates
-  - terminal
-strategy: none # Strategy for installation, can be none, upgrade or force
-extensions:
-  - .gz
-skip: false # Whether to skip installation (evaluated as boolean)
-test: # Test commands, can use Go templates
-  - zoxide --version
-```
+#### Usage
+
+- Set according to [defaults](#defaults) if not given
+
+### Source
+
+#### Type
+
+![Required](https://img.shields.io/badge/Required-red)
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`source.type` is the source type. Accepted values are:
+
+- `github`
+- `url`
+- `go`
+- `commands`
+
+#### GitHub
+
+![Inferred](https://img.shields.io/badge/Inferred-blue)
+![Optional](https://img.shields.io/badge/Optional-green)
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`source.github` is a dictionary containing the owner, repository and token of the tool.
+
+#### Usage
+
+- `repo` and `owner` will be inferred from `name` if not given
+- `token` will be set according to [flags and environment variables](#configuration) if not given
+
+#### URL
+
+![Optional](https://img.shields.io/badge/Optional-green)
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`source.url` is a dictionary containing the URL and token of the tool.
+
+#### Usage
+
+- `token` will be set according to [flags and environment variables](#configuration) if not given
+
+#### Go
+
+![Inferred](https://img.shields.io/badge/Inferred-blue)
+![Optional](https://img.shields.io/badge/Optional-green)
+
+| Template | Templated | As Template |
+| -------- | --------- | ----------- |
+| `N/A`    | No        | No          |
+
+`source.go` is a dictionary containing the command to run to install the tool.
 
 ## Defaults
 

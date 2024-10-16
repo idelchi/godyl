@@ -1,6 +1,6 @@
 package file
 
-// Extension represents a file extension.
+// Extension represents a file extension type.
 type Extension int
 
 const (
@@ -12,6 +12,6 @@ const (
 	GZ
 	// ZIP represents the ".zip" file extension.
 	ZIP
-	// Other represents any other file extension.
+	// Other represents any other, unrecognized file extension.
 	Other
 )

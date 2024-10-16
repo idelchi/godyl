@@ -7,7 +7,9 @@ import (
 	"os"
 )
 
-// Symlink creates symlinks for the executable.
+// Symlink creates symbolic links for the File to each of the provided symlink Files on Linux or Darwin systems.
+// If a symlink already exists, it will skip that symlink and continue without returning an error.
+// Returns an error if any symlink creation fails (excluding existing symlinks).
 func (f File) Symlink(symlinks ...File) error {
 	for _, symlink := range symlinks {
 		if symlink.Name() == f.Name() {

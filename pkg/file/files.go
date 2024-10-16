@@ -5,9 +5,10 @@ import (
 	"path/filepath"
 )
 
+// Files represents a collection of File objects.
 type Files []File
 
-// FromStrings creates a list of File from a list of strings.
+// FromStrings creates a Files collection from a list of string paths, relative to the provided directory.
 func (Files) FromStrings(dir string, files ...string) Files {
 	f := Files{}
 
@@ -24,10 +25,9 @@ func (Files) FromStrings(dir string, files ...string) Files {
 }
 
 // Find searches for any of the Files in the given directory.
-// The first File found is returned.
+// It returns the first File found or an error if none are found.
 func (es Files) Find(dir string) (File, error) {
 	for _, e := range es {
-
 		file, err := e.Find(dir)
 		if err == nil {
 			return file, nil
@@ -37,7 +37,7 @@ func (es Files) Find(dir string) (File, error) {
 	return "", fmt.Errorf("Files %v not found in %q", es.Paths(), dir)
 }
 
-// Paths returns a list of paths for all Files.
+// Paths returns a list of string paths representing all Files in the collection.
 func (es Files) Paths() (paths []string) {
 	for _, e := range es {
 		paths = append(paths, e.String())
@@ -45,7 +45,8 @@ func (es Files) Paths() (paths []string) {
 	return paths
 }
 
-// SymlinksFor creates symlinks for all Files.
+// SymlinksFor creates symbolic links for all Files in the collection, linking them to the specified target File.
+// It returns an error if the operation fails.
 func (es Files) SymlinksFor(file File) error {
 	return file.Symlink(es...)
 }

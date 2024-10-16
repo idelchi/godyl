@@ -159,7 +159,7 @@ values: {}
 fallbacks: []
 hints:
   - pattern: string
-    weight: int
+    weight: int (or template string)
     regex: boolean
     must: boolean
 source:
@@ -190,8 +190,6 @@ checker:
   checksum:
     enabled: boolean
     path: string
-
-allowFailure: boolean
 post: []
 mode: string
 settings: {}
@@ -609,19 +607,21 @@ The example above defines:
 The full set of default options are:
 
 ```yaml
-exe: {}
-output: string
-platform: {}
-values: {}
-fallbacks: []
-hints: {}
-source: {}
-tags: []
-strategy: string
-extensions: []
-env: {}
-mode: string
+exe:
+output:
+platform:
+values:
+fallbacks:
+hints:
+source:
+tags:
+strategy:
+extensions:
+env:
+mode:
 ```
+
+For reference full reference of what values you can set, see the [tools](#tools) section.
 
 <!-- Badges -->
 

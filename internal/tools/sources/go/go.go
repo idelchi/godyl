@@ -1,3 +1,7 @@
+// Package goc provides functionality for handling Go-based installations and
+// managing Go commands using GitHub repositories. It integrates with GitHub
+// to fetch and install Go projects, set paths, and manage metadata related
+// to the installation process.
 package goc
 
 import (
@@ -14,42 +18,48 @@ import (
 	"github.com/idelchi/godyl/pkg/folder"
 )
 
+// Go represents a Go project sourced from a GitHub repository.
 type Go struct {
-	github *github.GitHub
-
-	Command string `yaml:"command"`
-
-	Data common.Metadata `yaml:"-"`
+	github  *github.GitHub
+	Command string          `yaml:"command"` // Optional custom command for the Go project
+	Data    common.Metadata `yaml:"-"`       // Metadata about the Go project
 }
 
+// SetGitHub sets the GitHub repository used for the Go project.
 func (g *Go) SetGitHub(gh *github.GitHub) {
 	g.github = gh
 }
 
+// Get retrieves a specific attribute from the GitHub repository's metadata.
 func (g *Go) Get(attribute string) string {
 	return g.github.Data.Get(attribute)
 }
 
+// Initialize sets up the Go project based on the given name, using the associated GitHub repository.
 func (g *Go) Initialize(name string) error {
 	return g.github.Initialize(name)
 }
 
+// Exe sets the executable for the Go project.
 func (g *Go) Exe() error {
 	return g.github.Exe()
 }
 
+// Version fetches and sets the version for the Go project.
 func (g *Go) Version(name string) error {
 	return g.github.Version(name)
 }
 
+// Path sets the path for the Go project based on its version, using the format github.com/{owner}/{repo}@{version}.
 func (g *Go) Path(_ string, _ []string, version string, _ match.Requirements) error {
 	g.github.Data.Set("path", fmt.Sprintf("github.com/%s/%s@%s", g.github.Owner, g.github.Repo, version))
-
 	return nil
 }
 
 var mu sync.Mutex
 
+// Install installs the Go project by downloading and setting up the required files,
+// and returns the output, the found file, and any error encountered during installation.
 func (g *Go) Install(d common.InstallData) (output string, found file.File, err error) {
 	mu.Lock()
 	binary, err := goi.New()
@@ -81,12 +91,11 @@ func (g *Go) Install(d common.InstallData) (output string, found file.File, err 
 
 	if g.Command != "" {
 		paths = []string{
-			(strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/%s@", name, g.Command), 1)),
+			strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/%s@", name, g.Command), 1),
 		}
 	}
 
 	for i, path := range paths {
-		// Lowercase the path
 		paths[i] = strings.ToLower(path)
 	}
 

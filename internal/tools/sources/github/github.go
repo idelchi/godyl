@@ -9,18 +9,22 @@ import (
 	"github.com/idelchi/godyl/pkg/file"
 )
 
+// GitHub represents a GitHub repository with optional authentication token and metadata.
 type GitHub struct {
 	Repo  string
 	Owner string
 	Token string `mask:"fixed"`
 
+	// Data holds additional metadata related to the repository.
 	Data common.Metadata `yaml:"-"`
 }
 
+// Get retrieves a specific attribute from the GitHub repository's metadata.
 func (g *GitHub) Get(attribute string) string {
 	return g.Data.Get(attribute)
 }
 
+// LatestVersion fetches the latest release version of the GitHub repository.
 func (g *GitHub) LatestVersion() (string, error) {
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
@@ -33,6 +37,8 @@ func (g *GitHub) LatestVersion() (string, error) {
 	return release.Tag, nil
 }
 
+// MatchAssetsToRequirements matches release assets to specific file extensions and requirements,
+// returning the URL of the matched asset.
 func (g *GitHub) MatchAssetsToRequirements(
 	filters []string,
 	version string,
@@ -55,10 +61,12 @@ func (g *GitHub) MatchAssetsToRequirements(
 		return "", err
 	}
 
-	// TODO(Idelchi): Will this fail if match is empty?
+	// TODO: Will this fail if match is empty?
 	return assets.FilterByName(match[0].Name)[0].URL, match.Status()
 }
 
+// PopulateOwnerAndRepo sets the Owner and Repo fields based on the given name.
+// If Owner and Repo are already set, this method does nothing.
 func (g *GitHub) PopulateOwnerAndRepo(name string) error {
 	switch {
 	case g.Owner != "" && g.Repo != "":
@@ -80,6 +88,7 @@ func (g *GitHub) PopulateOwnerAndRepo(name string) error {
 	return nil
 }
 
+// Initialize populates the GitHub repository's owner and name from the given input.
 func (g *GitHub) Initialize(name string) error {
 	if err := g.PopulateOwnerAndRepo(name); err != nil {
 		return err
@@ -88,12 +97,13 @@ func (g *GitHub) Initialize(name string) error {
 	return nil
 }
 
+// Exe sets the executable name in the metadata to the repository name.
 func (g *GitHub) Exe() error {
 	g.Data.Set("exe", g.Repo)
-
 	return nil
 }
 
+// Version fetches and sets the latest release version in the metadata.
 func (g *GitHub) Version(name string) error {
 	version, err := g.LatestVersion()
 	if err != nil {
@@ -101,10 +111,10 @@ func (g *GitHub) Version(name string) error {
 	}
 
 	g.Data.Set("version", version)
-
 	return nil
 }
 
+// Path sets the download URL of the matched asset in the metadata, based on version, file extensions, and requirements.
 func (g *GitHub) Path(_ string, extensions []string, version string, requirements match.Requirements) error {
 	url, err := g.MatchAssetsToRequirements(extensions, version, requirements)
 	if err != nil {
@@ -112,10 +122,10 @@ func (g *GitHub) Path(_ string, extensions []string, version string, requirement
 	}
 
 	g.Data.Set("path", url)
-
 	return nil
 }
 
+// Install downloads the asset from GitHub and returns the output, the found file, and any error encountered.
 func (g *GitHub) Install(d common.InstallData) (output string, found file.File, err error) {
 	return common.Download(d)
 }

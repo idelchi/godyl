@@ -8,29 +8,49 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
+// Defaults holds default configuration values for a tool.
+// These values can be applied to a tool configuration to provide sensible defaults
+// for executable paths, output locations, platform-specific settings, and more.
 type Defaults struct {
-	Exe        Exe
-	Output     string
-	Platform   detect.Platform
-	Values     map[string]any
-	Fallbacks  []string
-	Hints      match.Hints
-	Source     sources.Source
-	Tags       Tags
-	Strategy   Strategy
+	// Exe specifies default executable details such as patterns for identifying the binary.
+	Exe Exe
+	// Output specifies the default output path for the tool.
+	Output string
+	// Platform defines default platform-specific settings (e.g., OS and architecture).
+	Platform detect.Platform
+	// Values contains default custom values for the tool configuration.
+	Values map[string]any
+	// Fallbacks defines default fallback configurations or sources in case the primary configuration fails.
+	Fallbacks []string
+	// Hints provide default matching patterns or heuristics for the tool.
+	Hints match.Hints
+	// Source defines the default source configuration for fetching the tool (e.g., GitHub, local files).
+	Source sources.Source
+	// Tags are default labels or markers for categorizing the tool.
+	Tags Tags
+	// Strategy defines the default deployment or fetching strategy for the tool.
+	Strategy Strategy
+	// Extensions lists default additional file extensions related to the tool.
 	Extensions []string
-	Env        env.Env
-	Mode       Mode
+	// Env defines default environment variables applied when running the tool.
+	Env env.Env
+	// Mode specifies the default operating mode for the tool (e.g., silent mode, verbose mode).
+	Mode Mode
 }
 
+// Initialize detects the current platform and applies platform-specific defaults to the Defaults struct.
+// It also sets up default extensions based on the detected platform.
 func (d *Defaults) Initialize() error {
+	// Detect the current platform (e.g., OS, architecture).
 	p := detect.Platform{}
 	if err := p.Detect(); err != nil {
 		return err
 	}
 
+	// Merge the detected platform details with the default platform settings.
 	d.Platform.Merge(p)
 
+	// Set default extensions based on common extensions for the detected platform.
 	utils.SetSliceIfNil(&d.Extensions, p.CommonExtensions()...)
 
 	return nil

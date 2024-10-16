@@ -5,7 +5,6 @@ import (
 	"slices"
 
 	"github.com/go-playground/validator/v10"
-
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
@@ -15,35 +14,41 @@ import (
 )
 
 var (
-	ErrAlreadyExists   = fmt.Errorf("tool already exists")
-	ErrDoesHaveTags    = fmt.Errorf("tool contains excluded tags")
+	// ErrAlreadyExists indicates that the tool already exists in the system.
+	ErrAlreadyExists = fmt.Errorf("tool already exists")
+	// ErrDoesHaveTags indicates that the tool has tags that are in the excluded tags list.
+	ErrDoesHaveTags = fmt.Errorf("tool contains excluded tags")
+	// ErrDoesNotHaveTags indicates that the tool does not contain required tags.
 	ErrDoesNotHaveTags = fmt.Errorf("tool does not contain included tags")
-	ErrSkipped         = fmt.Errorf("tool skipped")
-	ErrFailed          = fmt.Errorf("tool failed")
+	// ErrSkipped indicates that the tool has been skipped due to conditions.
+	ErrSkipped = fmt.Errorf("tool skipped")
+	// ErrFailed indicates that the tool has failed to install or resolve.
+	ErrFailed = fmt.Errorf("tool failed")
 )
 
+// Resolve attempts to resolve the tool's source and strategy based on the provided tags.
+// It handles fallbacks and applies templating to the tool's fields as needed.
 func (t *Tool) Resolve(withTags, withoutTags []string) error {
-	// Normalize values given in .Values map such that the first letter of keys
-	// are capitalized.
+	// Normalize values to ensure consistency in the .Values map.
 	t.NormalizeValues()
 
-	// Create instance of folder.Folder for the output
+	// Expand and set the output folder path.
 	output := folder.Folder(t.Output)
 	if err := output.Expand(); err != nil {
 		return err
 	}
-
 	t.Output = output.Path()
 
+	// Set the strategy to Force if the mode is "extract".
 	if t.Mode == "extract" {
 		t.Strategy = Force
 	}
 
-	// Save path to be templated last
+	// Save the path for templating later.
 	path := t.Path
 
+	// Build the fallback sources from the primary source type and additional fallbacks.
 	fallbacks := append([]sources.Type{t.Source.Type}, t.Fallbacks...)
-
 	for i, fallback := range fallbacks {
 		output, err := t.ApplyTemplate(fallback.String())
 		if err != nil {
@@ -51,26 +56,23 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 		}
 		fallbacks[i].From(output)
 	}
-
-	fallbacks = slices.Compact(fallbacks)
+	fallbacks = slices.Compact(fallbacks) // Remove any empty fallback entries.
 
 	var lastErr error
-
+	// Try resolving with each fallback in order.
 	for _, fallback := range fallbacks {
 		if err := t.tryResolveFallback(fallback, path, withTags, withoutTags); err != nil {
 			lastErr = err
-
-			continue // Try the next fallback
+			continue // Move on to the next fallback.
 		}
-
-		// If successful, return nil
-		return nil
+		return nil // Success, no need to try further fallbacks.
 	}
 
-	// If none of the fallbacks worked, return the last error encountered
+	// If all fallbacks fail, return the last encountered error.
 	return lastErr
 }
 
+// CheckSkipConditions verifies whether the tool should be skipped based on its tags or strategy.
 func (t *Tool) CheckSkipConditions(withTags, withoutTags []string) error {
 	if !t.Tags.Has(withTags) {
 		return fmt.Errorf("%w: %v: tool tags: %v", ErrDoesNotHaveTags, withTags, t.Tags)
@@ -91,28 +93,36 @@ func (t *Tool) CheckSkipConditions(withTags, withoutTags []string) error {
 	return nil
 }
 
+// tryResolveFallback attempts to resolve a tool using a specific fallback source type.
 func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, withoutTags []string) error {
+	// Append the tool's name as a tag.
 	t.Tags.Append(t.Name)
 
+	// Check if the tool should be skipped based on its conditions.
 	if err := t.CheckSkipConditions(withTags, withoutTags); err != nil {
 		return err
 	}
 
+	// Set the source type to the current fallback.
 	t.Source.Type = fallback
 
+	// Get the installer for the current source type.
 	populator, err := t.Source.Installer()
 	if err != nil {
 		return err
 	}
 
+	// Initialize the installer.
 	if err := populator.Initialize(t.Name); err != nil {
 		return err
 	}
 
+	// Retrieve executable details from the installer.
 	if err := populator.Exe(); err != nil {
 		return err
 	}
 
+	// Apply templating to the tool's fields.
 	utils.SetIfEmpty(&t.Exe.Name, populator.Get("exe"))
 	utils.SetIfEmpty(&t.Exe.Name, t.Name)
 
@@ -120,22 +130,25 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 		return err
 	}
 
+	// Re-check skip conditions after applying templates.
 	if err := t.CheckSkipConditions(withTags, withoutTags); err != nil {
 		return err
 	}
 
+	// Retrieve the tool's version from the installer if it is not already set.
 	if utils.IsEmpty(t.Version) {
 		if err := populator.Version(t.Name); err != nil {
 			return err
 		}
 	}
-
 	utils.SetIfEmpty(&t.Version, populator.Get("version"))
 
+	// Apply templates again after retrieving the version.
 	if err := t.Template(); err != nil {
 		return err
 	}
 
+	// Determine the tool's path if not already set.
 	if utils.IsEmpty(t.Path) {
 		if err := populator.Path(t.Name, t.Extensions, t.Version, match.Requirements{
 			Platform: t.Platform,
@@ -144,33 +157,38 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 			return err
 		}
 	}
-
 	utils.SetIfEmpty(&t.Path, populator.Get("path"))
 	utils.SetIfEmpty(&t.Path, path)
 
+	// Apply templates again after determining the path.
 	if err := t.Template(); err != nil {
 		return err
 	}
 
+	// Append platform-specific file extension to the executable name.
 	t.Exe.Name += t.Platform.Extension.String()
 
+	// Set patterns for finding the executable.
 	utils.SetSliceIfNil(&t.Exe.Patterns, fmt.Sprintf("^%s$", t.Exe.Name))
 
+	// Append platform-specific extensions to aliases.
 	for i, alias := range t.Aliases {
 		t.Aliases[i] = alias + t.Platform.Extension.String()
 	}
 
-	// t.Name = t.Name + t.Platform.Extension.String()
-
+	// Attempt to upgrade the tool using the current strategy.
 	if err := t.Strategy.Upgrade(t); err != nil {
 		return err
 	}
+
+	// Expand environment variables.
 	t.Env.Expand()
 
-	// Validation
+	// Validate the tool's configuration.
 	return t.Validate()
 }
 
+// Validate validates the Tool's configuration using the validator package.
 func (t *Tool) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(t); err != nil {
@@ -179,16 +197,13 @@ func (t *Tool) Validate() error {
 	return nil
 }
 
+// Exists checks if the tool's executable already exists in the output path.
 func (t *Tool) Exists() bool {
 	f := file.New(t.Output, t.Exe.Name)
-
 	return f.Exists() && f.IsFile()
 }
 
-type Installer interface {
-	Install(d common.InstallData) (output string, err error)
-}
-
+// Download downloads the tool using its configured source and installer.
 func (t *Tool) Download() (string, file.File, error) {
 	installer, err := t.Source.Installer()
 	if err != nil {

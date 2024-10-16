@@ -17,6 +17,7 @@
 - FiloSottile/age
 - chmln/sd
 - rs/curlie
+- mikefarah/yq
 
 - name: sorenisanerd/gotty
   skip:

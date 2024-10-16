@@ -59,25 +59,27 @@ The tools can be configured by (in order of priority)
 
 The following flags and their corresponding environment variables are available:
 
-| Flag              | Environment Variable  | Description                                    |
-| ----------------- | --------------------- | ---------------------------------------------- |
-| `--output`        | `GODYL_OUTPUT`        | Output path for the downloaded tools           |
-| `--tags`          | `GODYL_TAGS`          | Tags to filter tools by                        |
-| `--defaults`      | `GODYL_DEFAULTS`      | Path to defaults file                          |
-| `--update`        | `GODYL_UPDATE`        | Update the tools                               |
-| `--strategy`      | `GODYL_STRATEGY`      | Strategy to use for updating tools             |
-| `--dry`           | `GODYL_DRY`           | Run without making any changes (dry run)       |
-| `--log`           | `GODYL_LOG`           | Log level (DEBUG, INFO, WARN, ERROR)           |
-| `--github-token`  | `GODYL_GITHUB_TOKEN`  | GitHub token for authentication                |
-| `--source`        | `GODYL_SOURCE`        | Source from which to install the tools         |
-| `--dot-env`       | `GODYL_DOT_ENV`       | Path to .env file                              |
-| `--help`          | `GODYL_HELP`          | Show help message and exit                     |
-| `--show-config`   | `GODYL_SHOW_CONFIG`   | Show the parsed configuration and exit         |
-| `--show-defaults` | `GODYL_SHOW_DEFAULTS` | Show the parsed default configuration and exit |
-| `--show-env`      | `GODYL_SHOW_ENV`      | Show the parsed environment variables and exit |
-| `--show-platform` | `GODYL_SHOW_PLATFORM` | Show the detected platform and exit            |
-| `--version`       | `GODYL_VERSION`       | Show version information and exit              |
-| `--parallel`      | `GODYL_PARALLEL`      | Number of parallel downloads                   |
+Here's the aligned and reordered markdown table based on the Go program:
+
+| Flag               | Environment Variable  | Default        | Description                                    |
+| ------------------ | --------------------- | -------------- | ---------------------------------------------- |
+| `--help`, `-h`     | `GODYL_HELP`          | `false`        | Show help message and exit                     |
+| `--version`        | `GODYL_VERSION`       | `false`        | Show version information and exit              |
+| `--dot-env`        | `GODYL_DOT_ENV`       | `.env`         | Path to .env file                              |
+| `--defaults`, `-d` | `GODYL_DEFAULTS`      | `defaults.yml` | Path to defaults file                          |
+| `--show-config`    | `GODYL_SHOW_CONFIG`   | `false`        | Show the parsed configuration and exit         |
+| `--show-defaults`  | `GODYL_SHOW_DEFAULTS` | `false`        | Show the parsed default configuration and exit |
+| `--show-env`       | `GODYL_SHOW_ENV`      | `false`        | Show the parsed environment variables and exit |
+| `--show-platform`  | `GODYL_SHOW_PLATFORM` | `false`        | Detect the platform and exit                   |
+| `--update`         | `GODYL_UPDATE`        | `false`        | Update the tools                               |
+| `--dry`            | `GODYL_DRY`           | `false`        | Run without making any changes (dry run)       |
+| `--log`            | `GODYL_LOG`           | `info`         | Log level (debug, info, warn, error)           |
+| `--parallel`, `-j` | `GODYL_PARALLEL`      | `0`            | Number of parallel downloads (0 is unlimited)  |
+| `--output`         | `GODYL_OUTPUT`        | `""`           | Output path for the downloaded tools           |
+| `--tags`, `-t`     | `GODYL_TAGS`          | `["!native"]`  | Tags to filter tools by                        |
+| `--source`         | `GODYL_SOURCE`        | `github`       | Source from which to install the tools         |
+| `--strategy`       | `GODYL_STRATEGY`      | `none`         | Strategy to use for updating tools             |
+| `--github-token`   | `GODYL_GITHUB_TOKEN`  | `""`           | GitHub token for authentication                |
 
 The path to the tools file is provided as a positional argument, defaulting to `tools.yml`.
 
@@ -93,48 +95,97 @@ The following is embedded and used by default if no configuration is provided:
 
 The example above defines:
 
-- The default output directory for all tools
-- Patterns to use for when searching for the executable
+- The default output directory for all tools (`~/.local/bin`)
+- Patterns to use for when searching for the executable (`"{{ .Exe.Name }}{{ .Platform.Extension }}$"`)
 - Hints to:
+
   - use the executable name as a pattern (useful for repositories with multiple binaries, such as `ahmetb/kubectx`)
+
+    ```yaml
+    pattern: "{{ .Exe.Name }}"
+    weight: 1
+    ```
+
   - prefer `.zip` files for Windows
+
+    ```yaml
+    pattern: zip
+    weight: '{{ if eq .Platform.OS "windows" }}1{{ else }}0{{ end }}'
+    ```
+
 - `find` mode for downloading, extracting and finding the executable
-- The default source type as GitHub
+- The default source type as `github`
 - `none` strategy to skip tools which already exist
 - Settings the environment variable `GH_TOKEN` to the value of `GODYL_GITHUB_TOKEN`
 
-The full set of configuration options are:
-
-type Defaults struct {
-Exe Exe
-Output string
-Platform detect.Platform
-Values map[string]any
-Fallbacks []string
-Hints match.Hints
-Source sources.Source
-Tags Tags
-Strategy Strategy
-Extensions []string
-Env env.Env
-Mode Mode
-}
+The full set of default options are:
 
 ```yaml
 exe:
   name: string
-  patterns: []
-
+  patterns:
+    - string
 output: string
 platform:
   os: string
   architecture:
     type: string
     version: string
-  distribution: string
   library: string
   extension: string
+  distribution: string
+values:
+  key: any
+fallbacks:
+  - string
+hints:
+  - pattern: string
+    weight: int
+    regex: boolean
+    must: boolean
+source:
+  type: string
+  github:
+    repo: string
+    owner: string
+    token: string
+  url:
+    url: string
+    token: string
+  go:
+    command: string
+  commands:
+    - string
+tags:
+  - string
+strategy: string
+extensions:
+  - string
+env:
+  key: string
+mode: string
+```
 
+```yaml
+name: string
+description: string
+version: string
+path: string
+checksum: string
+output: string
+exe:
+  name: string
+  patterns:
+    - string
+platform:
+  os: string
+  architecture:
+    type: string
+    version: string
+  library: string
+  extension: string
+  distribution: string
+aliases: []
 values: {}
 fallbacks: []
 hints:
@@ -145,63 +196,34 @@ hints:
 source:
   type: string
   github:
-    owner: string
     repo: string
+    owner: string
     token: string
+    data:
+      exe: string
+      version: string
   url:
     url: string
     token: string
   go:
     command: string
-
-tags: []
+  commands: []
+tags:
+  - string
 strategy: string
-extensions: []
-env: {}
+extensions:
+  - string
+skip:
+  - condition: string
+    reason: string
+test: []
+allowFailure: boolean
+post: []
 mode: string
+settings: {}
+env:
+  key: string
 ```
-
-# path to tools file
-
-tools: string
-
-# list of tags to filter tools by
-
-tags: []
-
-# whether to update `godyl` itself
-
-update: boolean
-
-# update strategy for `godyl`
-
-update-strategy: string
-
-# dry run to output chosen tools
-
-dry: boolean
-
-# log level, one of debug, info, warn, error
-
-log: string
-
-# help message
-
-help: boolean
-
-# show configuration
-
-show: boolean
-
-# show version
-
-version: boolean
-
-# number of parallel downloads
-
-parallel: int
-
-````
 
 ## Tools
 
@@ -211,14 +233,13 @@ Examples are provided in [tools.yml](./tools.yml) and
 
 ```yaml
 - ajeetdsouza/zoxide
-````
+```
 
 Above is the `simple` form to attempt to download the latest release of `zoxide` from `ajeetdsouza/zoxide`.
 
 The full form is
 
 ```yaml
-# Name of the tool, can use Go templates
 name: ajeetdsouza/zoxide
 # Description of the tool
 description: A smart autojump tool

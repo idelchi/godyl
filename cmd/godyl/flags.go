@@ -45,7 +45,6 @@ func flags() {
 	pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
 
 	// Tool flags
-	pflag.String("tools", "", "Path to tools configuration file")
 	pflag.String("output", "", "Output path for the downloaded tools")
 	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
 	pflag.String("source", string(sources.GITHUB), "Source from which to install the tools")

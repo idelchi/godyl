@@ -1,4 +1,4 @@
-//go:generate stringer -type Status
+//go:generate go run golang.org/x/tools/cmd/stringer -type Status -output status_string___generated.go
 package tools
 
 type Status int

@@ -13,33 +13,17 @@ import (
 type Level string
 
 const (
-	DEBUG Level = "debug" // DEBUG represents debug-level messages, useful for development and troubleshooting.
-	INFO  Level = "info"  // INFO represents informational messages, typically used for normal operation.
-	WARN  Level = "warn"  // WARN represents warning messages, which indicate potential issues but not failures.
-	ERROR Level = "error" // ERROR represents error messages, indicating failure in operation.
+	SILENT Level = "silent" // SILENT represents no logging, effectively muting all log messages.
+	DEBUG  Level = "debug"  // DEBUG represents debug-level messages, useful for development and troubleshooting.
+	INFO   Level = "info"   // INFO represents informational messages, typically used for normal operation.
+	WARN   Level = "warn"   // WARN represents warning messages, which indicate potential issues but not failures.
+	ERROR  Level = "error"  // ERROR represents error messages, indicating failure in operation.
 )
-
-// Int returns the integer representation of the log Level.
-// DEBUG is 0, INFO is 1, WARN is 2, and ERROR is 3.
-func (l Level) Int() int {
-	switch l {
-	case DEBUG:
-		return 0
-	case INFO:
-		return 1
-	case WARN:
-		return 2
-	case ERROR:
-		return 3
-	default:
-		return 0
-	}
-}
 
 // IsAllowed checks if the log Level is a valid value (DEBUG, INFO, WARN, ERROR).
 func (l Level) IsAllowed() bool {
 	switch l {
-	case DEBUG, INFO, WARN, ERROR:
+	case SILENT, DEBUG, INFO, WARN, ERROR:
 		return true
 	default:
 		return false
@@ -97,7 +81,11 @@ func New(level Level) *Logger {
 // log prints a log message with the specified log level, applying colors based on the level if available.
 // The message will only be logged if the level's severity is equal to or higher than the Logger's current level.
 func (l *Logger) log(level Level, format string, args ...any) {
-	if level.Int() >= l.level.Int() {
+	if level == SILENT {
+		return
+	}
+
+	if level >= l.level {
 		message := fmt.Sprintf(format, args...)
 		if c, ok := l.colors[level]; ok {
 			c.Fprintln(l.output, message)

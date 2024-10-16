@@ -141,7 +141,6 @@ name: string
 description: string
 version: string
 path: string
-checksum: string
 output: string
 exe:
   name: string
@@ -186,7 +185,12 @@ extensions:
 skip:
   - condition: string
     reason: string
-test: []
+checker:
+  test: []
+  checksum:
+    enabled: boolean
+    path: string
+
 allowFailure: boolean
 post: []
 mode: string
@@ -274,7 +278,7 @@ exe:
 
 - Will be inferred and populated by the `source` method if not given
 
-### Checksum
+### Checker
 
 ![Not Implemented](https://img.shields.io/badge/Not%20Implemented-gray)
 
@@ -536,12 +540,6 @@ is equivalent to:
 skip:
   - condition: <condition>
 ```
-
-### Test
-
-![Not Implemented](https://img.shields.io/badge/Not%20Implemented-gray)
-
-### Allow Failure
 
 ![Not Implemented](https://img.shields.io/badge/Not%20Implemented-gray)
 

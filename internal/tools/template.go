@@ -66,11 +66,6 @@ func (t *Tool) Template() error {
 		return err
 	}
 
-	t.Checksum, err = t.ApplyTemplate(t.Checksum)
-	if err != nil {
-		return err
-	}
-
 	t.Output, err = t.ApplyTemplate(t.Output)
 	if err != nil {
 		return err

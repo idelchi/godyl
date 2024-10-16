@@ -24,8 +24,6 @@ type Tool struct {
 	Version string
 	// Path represents the URL or file path where the tool can be fetched or downloaded from.
 	Path string
-	// Checksum is used for verifying the integrity of the tool (e.g., via a hash).
-	Checksum string
 	// Output defines the output path where the tool will be installed or extracted.
 	Output string
 	// Exe specifies the executable details for the tool, such as patterns or names for locating the binary.
@@ -50,10 +48,6 @@ type Tool struct {
 	Extensions Extensions
 	// Skip defines conditions under which certain steps (e.g., downloading, testing) are skipped.
 	Skip Skip
-	// Test defines the commands that should be run to test or validate the tool's functionality.
-	Test command.Commands
-	// AllowFailure indicates whether failures in execution (e.g., during test or installation) are allowed to continue without halting the process.
-	AllowFailure bool `mapstructure:"allow_failure" yaml:"allow_failure"`
 	// Post defines commands that should be run after the main operation, such as post-installation steps.
 	Post command.Commands
 	// Mode defines the operating mode for the tool, potentially controlling behavior such as silent mode or verbose mode.
@@ -62,6 +56,8 @@ type Tool struct {
 	Settings Settings
 	// Env defines the environment variables that are applied when running the tool.
 	Env env.Env
+	// Check defines a set of instructions for verifying the tool's integrity or functionality.
+	Check Checker
 }
 
 // UnmarshalYAML implements custom unmarshaling for Tool with KnownFields check.

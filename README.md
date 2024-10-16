@@ -121,7 +121,9 @@ If none of the above are fulfilled, the default configuration embedded from [def
 
 A YAML file controls the tools to download and install. Alternatively, if the positional argument to the tool is not a YAML file, it will be treated as a single tool name or URL.
 
-Examples are provided in [tools.yml](./tools.yml) and
+Examples are provided in [tools.yml](./tools.yml).
+
+### Simple form
 
 ```yaml
 - ajeetdsouza/zoxide
@@ -132,7 +134,7 @@ Above is the `simple` form to attempt to download the latest release of `zoxide`
 If it is a simply two-part string, it will be considered as a `source.github` type.
 If it is a URL, it will be considered as a `source.url` type.
 
-The full form is
+### Full form
 
 ```yaml
 name: string
@@ -193,21 +195,13 @@ env:
   key: string
 ```
 
-### Badges
-
-![Inferred](https://img.shields.io/badge/Inferred-blue)
-![Required](https://img.shields.io/badge/Required-red)
-![Optional](https://img.shields.io/badge/Optional-green)
-![Not Implemented](https://img.shields.io/badge/Not%20Implemented-gray)
-![Required if source is GitHub](https://img.shields.io/badge/Required%20if-source%20is%20GitHub-yellow)
-
 ### Name
 
 ![Required](https://img.shields.io/badge/Required-Yes-green)
 
 | Template      | Templated | As Template |
 | ------------- | --------- | ----------- |
-| `{{ .Name }}` | No        | No          |
+| `{{ .Name }}` | ![no]     | ![yes]      |
 
 `name` is the name of the tool to download.
 
@@ -222,7 +216,7 @@ env:
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `description` is an optional description of the tool, for documentation purposes.
 
@@ -233,8 +227,9 @@ env:
 
 | Template         | Templated | As Template |
 | ---------------- | --------- | ----------- |
-| `{{ .Version }}` | No        | Yes         |
+| `{{ .Version }}` | ![no]     | ![yes]      |
 
+[version]: https://img.shields.io/badge/Version-{{ .Version }}-blue
 `version` is the version of the tool to download.
 
 #### Usage
@@ -248,7 +243,7 @@ env:
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | Yes       | No          |
+| ![na]    | ![yes]    | ![no]       |
 
 `path` is the path to the tool to download. Currently only supports URLs.
 
@@ -266,7 +261,7 @@ env:
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `output` is the path to the directory where the tool will be installed.
 
@@ -281,8 +276,8 @@ env:
 
 | Template              | Templated | As Template |
 | --------------------- | --------- | ----------- |
-| `{{ .Exe.Name }}`     | Yes       | Yes         |
-| `{{ .Exe.Patterns }}` | Yes       | No          |
+| `{{ .Exe.Name }}`     | ![yes]    | ![yes]      |
+| `{{ .Exe.Patterns }}` | ![yes]    | ![no]       |
 
 `exe` is a dictionary containing the name of the executable and patterns to use for finding the executable.
 
@@ -299,7 +294,7 @@ env:
 
 | Template             | Templated | As Template |
 | -------------------- | --------- | ----------- |
-| `{{ .Platform.<> }}` | No        | Yes         |
+| `{{ .Platform.<> }}` | ![no]     | ![yes]      |
 
 `platform` is a dictionary containing the platform and architecture information.
 
@@ -314,7 +309,7 @@ env:
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `aliases` is a list of aliases for the tool. Will be used to create symlinks (or copies on `Windows`) for the tool.
 
@@ -324,7 +319,7 @@ env:
 
 | Template           | Templated | As Template |
 | ------------------ | --------- | ----------- |
-| `{{ .Values.<> }}` | No        | Yes         |
+| `{{ .Values.<> }}` | ![no]     | ![yes]      |
 
 `values` is an arbitrary values map, which can be used for templating in other fields.
 
@@ -334,7 +329,7 @@ env:
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `fallbacks` is a list of fallback strategies to use if the tool cannot be found.
 
@@ -346,10 +341,10 @@ They will be tried in order until the tool is found or all have been tried.
 
 | Template               | Templated | As Template |
 | ---------------------- | --------- | ----------- |
-| `{{ .Hints.Weight }}`  | Yes       | No          |
-| `{{ .Hints.Pattern }}` | Yes       | No          |
-| `{{ .Hints.Regex }}`   | No        | No          |
-| `{{ .Hints.Must }}`    | No        | No          |
+| `{{ .Hints.Weight }}`  | ![yes]    | ![no]       |
+| `{{ .Hints.Pattern }}` | ![yes]    | ![no]       |
+| `{{ .Hints.Regex }}`   | ![no]     | ![no]       |
+| `{{ .Hints.Must }}`    | ![no]     | ![no]       |
 
 `hints` is a list of hints for matching, which can be used to help `godyl` find the correct tool.
 
@@ -365,7 +360,7 @@ They will be tried in order until the tool is found or all have been tried.
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `source.type` is the source type. Accepted values are:
 
@@ -381,7 +376,7 @@ They will be tried in order until the tool is found or all have been tried.
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `source.github` is a dictionary containing the owner, repository and token of the tool.
 
@@ -396,7 +391,7 @@ They will be tried in order until the tool is found or all have been tried.
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `source.url` is a dictionary containing the URL and token of the tool.
 
@@ -411,7 +406,7 @@ They will be tried in order until the tool is found or all have been tried.
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `source.go` is a dictionary containing the command to run to install the tool.
 
@@ -421,7 +416,7 @@ They will be tried in order until the tool is found or all have been tried.
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | Yes       | No          |
+| ![na]    | ![yes]    | ![no]       |
 
 `commands` is a list of commands to run to install the tool.
 
@@ -432,7 +427,7 @@ They will be tried in order until the tool is found or all have been tried.
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `tags` is a list of tags to filter tools by.
 
@@ -446,7 +441,7 @@ They will be tried in order until the tool is found or all have been tried.
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `strategy` is the strategy to use for updating the tool.
 
@@ -469,7 +464,7 @@ Accepted values are:
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `extensions` is a list of extensions to add to the tool name when matching the tools (used only for `github` source type).
 
@@ -484,7 +479,7 @@ Accepted values are:
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | Yes       | No          |
+| ![na]    | ![yes]    | ![no]       |
 
 `skip` is a list of conditions under which the tool should be skipped.
 
@@ -507,7 +502,7 @@ Accepted values are:
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | Yes       | No          |
+| ![na]    | ![yes]    | ![no]       |
 
 `post` is a list of commands to run after the tool has been installed.
 
@@ -517,7 +512,7 @@ Accepted values are:
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| `N/A`    | No        | No          |
+| ![na]    | ![no]     | ![no]       |
 
 `mode` is the mode to use for the tool.
 
@@ -538,7 +533,7 @@ A default configuration may be used to specify default settings for all tools. T
 
 The following is embedded and used by default if no default configuration is provided:
 
-[config.yml](./cmd/godyl/defaults.yml)
+[defaults.yml](./cmd/godyl/defaults.yml)
 
 The example above defines:
 
@@ -568,186 +563,28 @@ The example above defines:
 The full set of default options are:
 
 ```yaml
-exe:
-  name: string
-  patterns:
-    - string
-output: string
-platform:
-  os: string
-  architecture:
-    type: string
-    version: string
-  library: string
-  extension: string
-  distribution: string
-values:
-  key: any
-fallbacks:
-  - string
-hints:
-  - pattern: string
-    weight: int
-    regex: boolean
-    must: boolean
-source:
-  type: string
-  github:
-    repo: string
-    owner: string
-    token: string
-  url:
-    url: string
-    token: string
-  go:
-    command: string
-  commands:
-    - string
-tags:
-  - string
-strategy: string
-extensions:
-  - string
-env:
-  key: string
-mode: string
+exe: {}
+output: str
+platform: {}
+values: {}
+fallbacks: []
+hints: {}
+source: {}
+tags: []
+strategy: str
+extensions: []
+env: {}
+mode: str
 ```
 
-pflag.Bool("version", false, "Show the version information and exit")
-pflag.BoolP("help", "h", false, "Show the help information and exit")
-pflag.BoolP("show", "s", false, "Show the configuration and exit")
-pflag.StringP("config", "c", config.Get(), "Path to configuration file")
-pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
+<!-- Badges -->
 
-// Selected custom flags
-pflag.String("defaults.source.github.token", "", "GitHub token for API requests")
-pflag.String("defaults.strategy", "none", "")
-pflag.String("defaults.output", "~/.local/bin", "")
+[yes]: https://img.shields.io/badge/Yes-green
+[no]: https://img.shields.io/badge/No-red
+[inferred]: https://img.shields.io/badge/Inferred-blue
+[required]: https://img.shields.io/badge/Required-red
+[optional]: https://img.shields.io/badge/Optional-green
+[not-implemented]: https://img.shields.io/badge/Not%20Implemented-gray
+[na]: https://img.shields.io/badge/N%2FA-lightgrey
 
-pflag.String("log", string(logger.INFO), "")
-
-pflag.Bool("dry", false, "")
-
-pflag.Bool("update", false, "")
-pflag.String("update-strategy", string(tools.Upgrade), "")
-
-pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
-
-The following `config` parameters are available:
-
-| Field               | Type          | `config.yml`          | Flag                           | Environment Variable          | Default                                 |
-| ------------------- | ------------- | --------------------- | ------------------------------ | ----------------------------- | --------------------------------------- |
-| output              | string        | defaults.output       | `--defaults.output`            | `GODYL_DEFAULTS_OUTPUT`       | `~/.local/bin`                          |
-| exe                 | list of dicts | defaults.exe          |                                |                               | [config.yml](./cmd/godyl/config.yml#L3) |
-| hints               | list of dicts | defaults.hints        |                                |                               | [config.yml](./cmd/godyl/config.yml#L5) |
-| source.type         | string        | defaults.exe.patterns | `defaults.source.type`         | `GODYL_DEFAULTS_SOURCE_TYPE`  | `github`                                |
-| source.github.token | string        | defaults.github.token | `defaults.source.github.token` | `GODYL_DEFAULTS_GITHUB_TOKEN` |                                         |
-
-| Field | Type          | `config.yml` | Flag | Environment Variable | Default                                                                                   |
-| ----- | ------------- | ------------ | ---- | -------------------- | ----------------------------------------------------------------------------------------- |
-| exe   | list of dicts | defaults.exe | -    | -                    | <pre>exe:<br>&nbsp;&nbsp;patterns: "{{ .Exe.Name }}.\*"<br></pre> [refer](#configuration) |
-
-### output
-
-`output` is the path to the directory where the tool will be installed.
-
-This can be set with (in order of priority):
-
-- as a field in the tool definition
-
-  ```yaml
-  output: ~/.local/bin
-  ```
-
-- as a flag to the tool
-
-  ```sh
-  godyl --defaults.output ~/.local/bin
-  ```
-
-- as an environment variable
-
-  ```sh
-  GODYL_DEFAULTS_OUTPUT=~/.local/bin godyl
-  ```
-
-- in the configuration file
-
-  ```yaml
-  defaults:
-    output: ~/.local/bin
-  ```
-
-| Field           | Type     | Template | Default            |
-| --------------- | -------- | -------- | ------------------ |
-| output          | string   | yes      | ~/.local/bin       |
-| exe.patterns    | string[] | yes      | {{ .Exe.Name }}.\* |
-| hints[].pattern | string   | yes      | {{ .Exe.Name }}    |
-| hints[].weight  | number   | yes      | 1                  |
-| source.type     | string   | no       | GitHub             |
-
-| Field       | Type     | Template | Alt-form                                | Inferrence                             | Implemented |
-| ----------- | -------- | -------- | --------------------------------------- | -------------------------------------- | ----------- |
-| name        | string   | yes      | no                                      | no                                     | yes         |
-| description | string   | yes      | no                                      | no                                     | yes         |
-| version     | string   | yes      | no                                      | if left blank, from chosen source type | yes         |
-| path        | string   | yes      | no                                      | if left blank, from chosen source type | yes         |
-| checksum    | string   | no       | no                                      | no                                     | **no**      |
-| output      | string   | yes      | no                                      | no                                     | yes         |
-| aliases     | string[] | no       | `aliases: string -> aliases[0]: string` | no                                     | yes         |
-
-| Field        | Type     | Template | Alt-form                                  | Inferrence                                        | Implemented |
-| ------------ | -------- | -------- | ----------------------------------------- | ------------------------------------------------- | ----------- |
-| exe          | dict     | no       | `exe: string -> exe.name: string`         | yes                                               | yes         |
-| exe.name     | string   | yes      | no                                        | if left blank, from `name` if on form `<>/<name>` | yes         |
-| exe.patterns | string[] | yes      | `patterns: string -> patterns[0]: string` | no                                                | yes         |
-
-| Field                         | Type   | Template | Alt-form | Inferrence                                                              | Implemented |
-| ----------------------------- | ------ | -------- | -------- | ----------------------------------------------------------------------- | ----------- |
-| platform                      | dict   | yes      | no       | any attribute left blank under `platform.` will have its value inferred | yes         |
-| platform.os                   | string | no       | no       | yes                                                                     | yes         |
-| platform.architecture         | dict   | no       | no       | yes                                                                     | yes         |
-| platform.architecture.type    | dict   | no       | no       | yes                                                                     | yes         |
-| platform.architecture.version | dict   | no       | no       | yes                                                                     | yes         |
-| platform.distribution         | string | no       | no       | yes                                                                     | yes         |
-| platform.library              | string | no       | no       | yes                                                                     | yes         |
-| platform.extension            | string | no       | no       | yes                                                                     | yes         |
-
-| Field      | Type     | Template | Alt-form | Inferrence | Implemented |
-| ---------- | -------- | -------- | -------- | ---------- | ----------- |
-| values     | dict     | yes      | no       | no         | yes         |
-| fallbacks  | string[] | no       | no       | no         | yes         |
-| tags       | string[] | yes      | no       | no         | yes         |
-| strategy   | string   | no       | no       | no         | yes         |
-| extensions | string[] | no       | no       | no         | yes         |
-| skip       | boolean  | no       | no       | no         | yes         |
-| test       | string[] | yes      | no       | no         | yes         |
-
-| Field         | Type    | Template | Alt-form | Inferrence | Implemented |
-| ------------- | ------- | -------- | -------- | ---------- | ----------- |
-| hints.pattern | string  | yes      | yes      | no         | yes         |
-| hints.weight  | string  | yes      | yes      | no         | yes         |
-| hints.regex   | boolean | no       | no       | no         | yes         |
-| hints.must    | boolean | no       | no       | no         | yes         |
-
-| Field       | Type   | Template | Alt-form | Inferrence | Implemented |
-| ----------- | ------ | -------- | -------- | ---------- | ----------- |
-| source.type | string | no       | no       | no         | yes         |
-
-| Field               | Type   | Template | Alt-form | Inferrence | Implemented |
-| ------------------- | ------ | -------- | -------- | ---------- | ----------- |
-| source.github       | dict   | no       | no       | no         | yes         |
-| source.github.owner | string | no       | no       | no         | yes         |
-| source.github.repo  | string | no       | no       | no         | yes         |
-| source.github.token | string | no       | no       | no         | yes         |
-
-| Field            | Type   | Template | Alt-form | Inferrence | Implemented |
-| ---------------- | ------ | -------- | -------- | ---------- | ----------- |
-| source.url       | dict   | no       | no       | no         | yes         |
-| source.url.url   | string | no       | no       | no         | yes         |
-| source.url.token | string | no       | no       | no         | yes         |
-
-| Field             | Type   | Template | Alt-form | Inferrence | Implemented |
-| ----------------- | ------ | -------- | -------- | ---------- | ----------- |
-| source.go         | dict   | no       | no       | no         | yes         |
-| source.go.command | string | no       | no       | no         | yes         |
+<!-- Badges -->

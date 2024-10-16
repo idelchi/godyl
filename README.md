@@ -566,13 +566,14 @@ skip:
 Accepted values are:
 
 - `find`
-- `download`
+- `extract`
 
 #### Usage
 
 - `find` will download, extract and find the executable
-- `download` will download the tool and extract it directly to the output directory
+- `extract` will download the tool and extract it directly to the output directory
 - Set according to [flags and environment variables](#configuration) or [defaults](#defaults) if not given
+- Automatically set to `extract` if the tool is used without `tools.yml` (e.g. `godyl ajeetdsouza/zoxide`)
 
 ## Defaults
 

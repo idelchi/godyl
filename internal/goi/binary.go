@@ -15,14 +15,17 @@ import (
 	"github.com/idelchi/godyl/pkg/folder"
 )
 
+// Binary represents a Go binary, including its associated file, directory, and environment variables.
 type Binary struct {
-	File file.File
-	Dir  folder.Folder
-	Env  Env
+	File file.File     // File holds the file information for the Go binary.
+	Dir  folder.Folder // Dir refers to the directory where the binary is stored.
+	Env  Env           // Env contains the environment variables for running the binary.
 }
 
 var mu sync.Mutex
 
+// New creates a new Binary instance, setting up the directory, downloading the latest release if necessary,
+// and initializing environment variables. It ensures thread-safe execution by using a mutex lock.
 func New() (binary Binary, err error) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -73,6 +76,7 @@ func New() (binary Binary, err error) {
 	return binary, nil
 }
 
+// Find searches for the Go binary in the given paths or system path, returning the file if found.
 func (b *Binary) Find(paths ...string) (file.File, error) {
 	binary, err := exec.LookPath("go")
 	if err != nil {
@@ -91,6 +95,8 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 	return file.New(binary), nil
 }
 
+// Download downloads the Go binary from the provided path and saves it to the directory.
+// It returns an error if the download or file validation fails.
 func (b *Binary) Download(path string) error {
 	url := fmt.Sprintf("https://go.dev/dl/%s", path)
 
@@ -112,6 +118,8 @@ func (b *Binary) Download(path string) error {
 	return nil
 }
 
+// CleanUp removes the temporary directory associated with the binary.
+// It returns an error if the directory removal fails.
 func (b *Binary) CleanUp() error {
 	if !b.Dir.IsSet() {
 		return nil
@@ -126,6 +134,8 @@ func (b *Binary) CleanUp() error {
 	return nil
 }
 
+// Latest fetches the latest Go release information from the official Go download page.
+// It returns the most recent release or an error if the process fails.
 func (b Binary) Latest() (Release, error) {
 	client := resty.New()
 	resp, err := client.R().Get("https://go.dev/dl/?mode=json")

@@ -1,5 +1,3 @@
-// Package env provides utilities for working with environment variables,
-// including methods to normalize, merge, retrieve, and manipulate them in a map-like structure.
 package env
 
 import (
@@ -8,7 +6,7 @@ import (
 	"strings"
 )
 
-// Get retrieves the value associated with the given key or an error if the key is not found.
+// Get retrieves the value associated with the given key or returns an error if the key is not found.
 func (e Env) Get(key string) (string, error) {
 	if v, ok := e[key]; ok {
 		return v, nil
@@ -17,6 +15,7 @@ func (e Env) Get(key string) (string, error) {
 	return "", fmt.Errorf("%w: %q", ErrEnvVarNotFound, key)
 }
 
+// GetOrDefault retrieves the value for the given key, or returns the provided defaultValue if the key is not found.
 func (e Env) GetOrDefault(key, defaultValue string) string {
 	if value, err := e.Get(key); err != nil {
 		return defaultValue
@@ -24,7 +23,6 @@ func (e Env) GetOrDefault(key, defaultValue string) string {
 		return value
 	}
 }
-
 
 // GetAll returns a new Env containing all key-value pairs that satisfy the given predicate function.
 func (e Env) GetAll(predicate func(key, value string) bool) Env {
@@ -36,8 +34,6 @@ func (e Env) GetAll(predicate func(key, value string) bool) Env {
 	}
 	return result
 }
-
-// Examples of using GetAll with different predicates:
 
 // GetAllWithPrefix returns all environment variables with keys starting with the given prefix.
 func (e Env) GetAllWithPrefix(prefix string) Env {
@@ -54,6 +50,7 @@ func (e Env) GetAllWithSuffix(suffix string) Env {
 }
 
 // GetAllMatching returns all environment variables with keys matching the given regex pattern.
+// It returns an error if the provided regex pattern is invalid.
 func (e Env) GetAllMatching(pattern string) (Env, error) {
 	re, err := regexp.Compile(pattern)
 	if err != nil {

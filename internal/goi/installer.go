@@ -7,10 +7,13 @@ import (
 	"os/exec"
 )
 
+// Installer handles the installation of Go binaries using the provided Binary.
 type Installer struct {
-	Binary Binary
+	Binary Binary // Binary represents the Go binary used for the installation process.
 }
 
+// Install executes the `go install` command for the provided package path.
+// It captures both stdout and stderr, returning them as output, and reports errors if the installation fails.
 func (i *Installer) Install(path string) (output string, err error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 

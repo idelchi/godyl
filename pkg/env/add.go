@@ -1,5 +1,3 @@
-// Package env provides utilities for working with environment variables,
-// including methods to normalize, merge, retrieve, and manipulate them in a map-like structure.
 package env
 
 import (
@@ -9,7 +7,7 @@ import (
 )
 
 // Add splits a `key=value` string and adds it to the Env map.
-// It returns an error if the input is not properly formatted.
+// It returns an error if the input is not properly formatted, expecting exactly one '=' separator.
 func (e *Env) Add(kv string) error {
 	parts := strings.SplitN(kv, "=", 2)
 	if len(parts) != 2 {
@@ -21,16 +19,17 @@ func (e *Env) Add(kv string) error {
 }
 
 // Merge merges another Env into the current Env, without overwriting existing keys in the current Env.
+// If a key in the other Env already exists in the current Env, it is not updated.
 func (e *Env) Merge(envs ...Env) {
 	for _, env := range envs {
 		maps.Copy(env, *e)
-
 		*e = env
 	}
 }
 
 // Merged returns a new Env by merging the given Env into the current Env,
 // without overwriting existing keys in the original Env.
+// This method does not mutate the original Env.
 func (e Env) Merged(envs ...Env) Env {
 	merged := maps.Clone(e)
 

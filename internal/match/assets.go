@@ -1,7 +1,10 @@
 package match
 
+// Assets is a slice of Asset, representing a collection of downloadable files.
 type Assets []Asset
 
+// FromNames creates a collection of assets from the provided names.
+// It initializes each asset with the given name.
 func (as Assets) FromNames(names ...string) Assets {
 	assets := make(Assets, len(names))
 
@@ -12,6 +15,8 @@ func (as Assets) FromNames(names ...string) Assets {
 	return assets
 }
 
+// Select filters and sorts the assets based on the provided requirements.
+// It returns the best matching assets, sorted by score, if any are qualified.
 func (as Assets) Select(req Requirements) Results {
 	results := as.Match(req)
 
@@ -22,7 +27,8 @@ func (as Assets) Select(req Requirements) Results {
 	return results.Best().Sorted()
 }
 
-// Results evaluates all assets against requirements and returns Results.
+// Match evaluates all assets against the provided requirements and returns a list of results.
+// Each result contains the asset's name, its matching score, and whether it qualifies.
 func (as Assets) Match(req Requirements) Results {
 	var results Results
 	for _, a := range as {

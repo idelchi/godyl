@@ -1,5 +1,3 @@
-// Package env provides utilities for working with environment variables,
-// including methods to normalize, merge, retrieve, and manipulate them in a map-like structure.
 package env
 
 import (
@@ -7,9 +5,13 @@ import (
 )
 
 var (
+	// ErrEnvVarNotFound is returned when an expected environment variable is not found.
 	ErrEnvVarNotFound = errors.New("environment variable not found")
-	ErrEnvMalformed   = errors.New("environment variable is malformed")
+
+	// ErrEnvMalformed is returned when an environment variable is malformed or contains invalid data.
+	ErrEnvMalformed = errors.New("environment variable is malformed")
 )
 
-// Env represents a map of environment variables with string keys and values.
+// Env represents a map of environment variables, where the keys and values are strings.
+// It can be used to access and manage environment settings.
 type Env map[string]string

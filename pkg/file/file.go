@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/idelchi/godyl/pkg/folder"
 )
@@ -157,4 +158,23 @@ func (f File) IsDir() bool {
 	}
 
 	return info.Mode().IsDir()
+}
+
+// Extension returns the file extension of the asset based on its name.
+// It maps common file extensions to predefined constants.
+func (f File) Extension() Extension {
+	ext := filepath.Ext(f.Name())
+
+	switch strings.ToLower(ext) {
+	case ".exe":
+		return EXE
+	case ".gz":
+		return GZ
+	case ".zip":
+		return ZIP
+	case "":
+		return None
+	default:
+		return Other
+	}
 }

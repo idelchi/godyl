@@ -1,4 +1,29 @@
-// Package download provides functionality for downloading files from URLs.
+// Package download provides functionality for downloading files from URLs,
+// with support for various protocols and automatic extraction of archives.
+// The Downloader struct allows configuration of timeout settings for the download
+// context, read operations, and HTTP HEAD requests.
+//
+// This package is built on top of HashiCorp's go-getter library, which supports
+// downloading files from a variety of protocols (HTTP, HTTPS, FTP, etc.), and
+// includes automatic handling of archives such as zip or tar files.
+//
+// Example usage:
+//
+//	package main
+//
+//	import (
+//	    "log"
+//	    "github.com/idelchi/godyl/pkg/download"
+//	)
+//
+//	func main() {
+//	    d := download.New()
+//	    file, err := d.Download("https://example.com/file.zip", "/path/to/output")
+//	    if err != nil {
+//	        log.Fatal(err)
+//	    }
+//	    log.Println("Downloaded to:", file)
+//	}
 package download
 
 import (
@@ -9,12 +34,18 @@ import (
 	"github.com/idelchi/godyl/pkg/file"
 )
 
+// Downloader manages the configuration for downloading files, including
+// timeouts for different stages of the process.
 type Downloader struct {
+	// ContextTimeout is the maximum duration to wait for the download context.
 	ContextTimeout time.Duration
-	ReadTimeout    time.Duration
-	HeadTimeout    time.Duration
+	// ReadTimeout is the maximum duration to wait for reading data from the URL.
+	ReadTimeout time.Duration
+	// HeadTimeout is the maximum duration to wait for the HTTP HEAD request.
+	HeadTimeout time.Duration
 }
 
+// New returns a new Downloader instance with default timeout values set to 5 minutes.
 func New() *Downloader {
 	return &Downloader{
 		ContextTimeout: 5 * time.Minute,

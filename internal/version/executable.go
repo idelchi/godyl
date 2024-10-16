@@ -15,14 +15,19 @@ import (
 // Executable consists of a full path to a file and its version.
 // An attempt to parse the version into a string can be done by using a `Version` type.
 type Executable struct {
-	File    file.File
+	// File represents the full path to the executable file.
+	File file.File
+	// Version holds the parsed version of the executable.
 	Version string
 }
 
+// NewExecutable creates a new Executable instance from the provided paths.
 func NewExecutable(paths ...string) Executable {
 	return Executable{File: file.New(paths...)}
 }
 
+// Command runs the specified command arguments on the executable using the provided context.
+// It returns the output of the command as a trimmed string and any error encountered during execution.
 func (e Executable) Command(ctx context.Context, cmdArgs []string) (string, error) {
 	var out bytes.Buffer
 
@@ -36,6 +41,8 @@ func (e Executable) Command(ctx context.Context, cmdArgs []string) (string, erro
 }
 
 // ParseVersion attempts to parse the version of the executable using the provided Version object.
+// It iterates over predefined command strategies and tries to parse the version from the command output.
+// If successful, it sets the Version field of Executable; otherwise, it returns an error.
 func (e *Executable) ParseVersion() error {
 	timeout := 30 * time.Second
 

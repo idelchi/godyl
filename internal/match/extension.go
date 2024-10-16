@@ -16,8 +16,12 @@ const (
 	GZ
 	// ZIP represents the ".zip" file extension.
 	ZIP
+	// Other represents any other file extension.
+	Other
 )
 
+// Extension returns the file extension of the asset based on its name.
+// It maps common file extensions to predefined constants.
 func (a *Asset) Extension() Extension {
 	ext := filepath.Ext(a.NameLower())
 
@@ -28,7 +32,9 @@ func (a *Asset) Extension() Extension {
 		return GZ
 	case ".zip":
 		return ZIP
-	default:
+	case "":
 		return None
+	default:
+		return Other
 	}
 }

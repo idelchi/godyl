@@ -1,5 +1,3 @@
-// Package env provides utilities for working with environment variables,
-// including methods to normalize, merge, retrieve, and manipulate them in a map-like structure.
 package env
 
 import (
@@ -10,6 +8,7 @@ import (
 )
 
 // FromEnv returns the current environment variables as an Env.
+// It uses os.Environ to fetch all the environment variables and normalizes them before returning.
 func FromEnv() Env {
 	env, _ := FromSlice(os.Environ()...)
 
@@ -17,6 +16,7 @@ func FromEnv() Env {
 }
 
 // FromSlice constructs an Env from a slice of `key=value` strings.
+// It returns an error if any string in the slice is malformed.
 func FromSlice(slice ...string) (Env, error) {
 	e := make(Env, len(slice))
 
@@ -29,6 +29,8 @@ func FromSlice(slice ...string) (Env, error) {
 	return e.Normalized(), nil
 }
 
+// FromDotEnv loads environment variables from a .env file specified by the path.
+// It returns an error if there is an issue reading the file or processing its contents.
 func FromDotEnv(path string) (Env, error) {
 	env, err := godotenv.Read(path)
 	if err != nil {

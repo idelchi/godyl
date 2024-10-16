@@ -1,3 +1,11 @@
+// Package unmarshal provides utilities for unmarshalling YAML data that can
+// represent either a single item or a slice of items. It includes a generic
+// type `SingleOrSlice` to handle this pattern, allowing flexible unmarshalling
+// from YAML input.
+//
+// The package also provides functions to decode YAML nodes while optionally
+// enforcing that only known fields are present, improving error handling
+// in case of unexpected fields in the YAML input.
 package unmarshal
 
 import (
@@ -8,8 +16,14 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// SingleOrSlice represents a custom type that can unmarshal from YAML as either
+// a single element or a slice of elements. It is a generic type that works for
+// any type T.
 type SingleOrSlice[T any] []T
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface for SingleOrSlice.
+// It allows the YAML value to be unmarshaled either as a single element or a slice.
+// The unmarshaled result is assigned to the receiver.
 func (ss *SingleOrSlice[T]) UnmarshalYAML(value *yaml.Node) error {
 	result, err := UnmarshalSingleOrSlice[T](value, true)
 	if err != nil {
@@ -19,6 +33,10 @@ func (ss *SingleOrSlice[T]) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
+// UnmarshalSingleOrSlice is a helper function that unmarshals a YAML node into
+// a slice of type T. It handles cases where the node could represent a single
+// item or a list. If the node is a scalar or a mapping, it wraps it in a sequence node.
+// The useKnownFields parameter controls whether unknown fields trigger an error.
 func UnmarshalSingleOrSlice[T any](node *yaml.Node, useKnownFields bool) ([]T, error) {
 	// If it's a scalar or mapping node, wrap it in a sequence node
 	if node.Kind == yaml.ScalarNode || node.Kind == yaml.MappingNode {
@@ -30,7 +48,7 @@ func UnmarshalSingleOrSlice[T any](node *yaml.Node, useKnownFields bool) ([]T, e
 
 	var result []T
 
-	// Use UnmarshalWithKnownFields instead of node.Decode
+	// Use DecodeWithOptionalKnownFields to decode the node into the result slice.
 	if err := DecodeWithOptionalKnownFields(node, &result, useKnownFields, result); err != nil {
 		return nil, err
 	}
@@ -38,7 +56,10 @@ func UnmarshalSingleOrSlice[T any](node *yaml.Node, useKnownFields bool) ([]T, e
 	return result, nil
 }
 
-// unmarshalYAMLWithOptions is a helper function that unmarshals YAML with the option to use KnownFields.
+// DecodeWithOptionalKnownFields is a helper function that decodes a YAML node into
+// the provided output (out) interface. It optionally enforces that all fields in the YAML
+// node are known to the target type if useKnownFields is set to true.
+// The input parameter is used for error message formatting.
 func DecodeWithOptionalKnownFields(value *yaml.Node, out any, useKnownFields bool, input any) error {
 	// Re-encode the yaml.Node to bytes
 	var buf bytes.Buffer
@@ -60,6 +81,9 @@ func DecodeWithOptionalKnownFields(value *yaml.Node, out any, useKnownFields boo
 	return yamlTypeErrorConversion(err, input)
 }
 
+// yamlTypeErrorConversion converts yaml.TypeError errors into more informative messages
+// by including the actual type of the input. It modifies the error message when it detects
+// a "not found in type" message, appending the input type to the message.
 func yamlTypeErrorConversion(err error, input any) error {
 	if err == nil {
 		return nil

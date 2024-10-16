@@ -195,6 +195,29 @@ env:
   key: string
 ```
 
+Any field that accepts a list, can also be provided as a string.
+
+For example:
+
+```yaml
+aliases: z
+fallbacks: go
+exe:
+  patterns: "{{ .Exe.Name }}{{ .Platform.Extension }}$"
+```
+
+is equivalent to:
+
+```yaml
+aliases:
+  - z
+fallbacks:
+  - go
+exe:
+  patterns:
+    - "{{ .Exe.Name }}{{ .Platform.Extension }}$"
+```
+
 ### Name
 
 ![Required](https://img.shields.io/badge/Required-Yes-green)
@@ -286,6 +309,19 @@ env:
 - `exe.name` is the name of the executable, inferred from `name` if not given
 - `exe.patterns` is a list of patterns to use for finding the executable, inferred from `name` if not given
 - Set according to [defaults](#defaults) if not given
+
+#### Alternative form
+
+```yaml
+exe: zoxide
+```
+
+is equivalent to:
+
+```yaml
+exe:
+  name: zoxide
+```
 
 ### Platform
 
@@ -487,6 +523,19 @@ Accepted values are:
 
 - `reason` is a description of why the tool was skipped
 - `condition` is a condition to check, and can use templating
+
+#### Alternative form
+
+```yaml
+skip: <condition>
+```
+
+is equivalent to:
+
+```yaml
+skip:
+  - condition: <condition>
+```
 
 ### Test
 

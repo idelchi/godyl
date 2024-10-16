@@ -12,47 +12,72 @@ import (
 )
 
 type Update struct {
+	// Strategy to use for updating tools
 	Strategy tools.Strategy `mapstructure:"strategy"`
-	Update   bool           `mapstructure:"update"`
+	// Update the tools
+	Update bool `mapstructure:"update"`
 }
 
 type Tokens struct {
+	// GitHub token for authentication
 	GitHub string `mapstructure:"github-token"`
+	// GitLab token for authentication
 	GitLab string `mapstructure:"gitlab-token"`
-	URL    string `mapstructure:"url-token"`
+	// URL token for authentication
+	URL string `mapstructure:"url-token"`
 }
 
 type Show struct {
-	Config   bool `mapstructure:"show-config"`
-	Env      bool `mapstructure:"show-env"`
+	// Show the parsed configuration and exit
+	Config bool `mapstructure:"show-config"`
+	// Show the parsed environment variables and exit
+	Env bool `mapstructure:"show-env"`
+	// Show the parsed default configuration and exit
 	Defaults bool `mapstructure:"show-defaults"`
+	// Detect the platform and exit
 	Platform bool `mapstructure:"show-platform"`
 }
 
 // Config holds all the configuration options for godyl.
 type Config struct {
-	Tools    string
-	Tags     []string
-	Defaults file.File
-	Update   Update `mapstructure:",squash"`
-	Dry      bool
-	Log      logger.Level
-	DotEnv   file.File `mapstructure:"dot-env"`
-	// Number of parallel downloads
-	Parallel int `validate:"gte=0"`
-
-	Show Show `mapstructure:",squash"`
-
-	// Show help message
+	// Show help message and exit
 	Help bool
-	// Show version information
+	// Show version information and exit
 	Version bool
 
+	// Path to .env file
+	DotEnv file.File `mapstructure:"dot-env"`
+	// Path to defaults file
+	Defaults file.File
+
+	// Show various configurations
+	Show Show `mapstructure:",squash"`
+
+	// Update the tools
+	Update Update `mapstructure:",squash"`
+	// Run without making any changes (dry run)
+	Dry bool
+	// Log level (DEBUG, INFO, WARN, ERROR)
+	Log logger.Level
+	// Number of parallel downloads (>= 0)
+	Parallel int `validate:"gte=0"`
+
+	// Path to tools configuration file
+	Tools string
+	// Output path for the downloaded tools
 	Output string
-	Tokens Tokens `mapstructure:",squash"`
+	// Tags to filter tools by
+	Tags []string
+	// Source from which to install the tools
 	Source sources.Type
+	// Strategy to use for updating tools
+	Strategy tools.Strategy `mapstructure:"strategy"`
+
+	// Tokens for authentication
+	Tokens Tokens `mapstructure:",squash"`
 }
 
+// Validate checks the configuration for errors.
 func (c *Config) Validate() error {
 	allowedUpdateStrategies := []tools.Strategy{tools.None, tools.Upgrade, tools.Force}
 	if !slices.Contains(allowedUpdateStrategies, c.Update.Strategy) {

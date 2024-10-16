@@ -3,7 +3,7 @@ package platform
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/pkg/compare"
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // Type represents a CPU architecture type, such as "amd64" or "arm64".
@@ -69,7 +69,7 @@ func (a Architecture) Available() []Architecture {
 // From sets the architecture based on the provided name and distribution, if found.
 func (a *Architecture) From(architecture string, distro Distribution) error {
 	for _, arch := range a.Available() {
-		if compare.Lower(architecture, arch.Name()) {
+		if utils.EqualLower(architecture, arch.Name()) {
 			*a = arch
 			return nil
 		}
@@ -140,7 +140,7 @@ func (a Architecture) IsCompatibleWith(arch string, distro Distribution) bool {
 // Parse attempts to parse a string and set the architecture accordingly, based on its name or aliases.
 func (a *Architecture) Parse(name string) error {
 	for _, arch := range a.Available() {
-		if compare.ContainsLower(name, arch.Name()) {
+		if utils.ContainsLower(name, arch.Name()) {
 			*a = arch
 
 			return nil
@@ -150,7 +150,7 @@ func (a *Architecture) Parse(name string) error {
 	for _, arch := range a.Available() {
 		// TODO(Idelchi): Why arch.CompatibleWith("")? Isn't the distro required?
 		for _, alias := range arch.CompatibleWith("") {
-			if compare.ContainsLower(name, alias) {
+			if utils.ContainsLower(name, alias) {
 				*a = arch
 
 				return nil

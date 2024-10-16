@@ -3,7 +3,7 @@ package platform
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/pkg/compare"
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // Library represents a system library or ABI (Application Binary Interface) used by an operating system or platform.
@@ -44,7 +44,7 @@ func (l Library) Available() []Library {
 // From sets the Library based on the provided string, if it matches any available library.
 func (l *Library) From(library string) error {
 	for _, lib := range l.Available() {
-		if compare.Lower(library, lib.Name()) {
+		if utils.EqualLower(library, lib.Name()) {
 			*l = lib
 			return nil
 		}
@@ -99,7 +99,7 @@ func (l Library) String() string {
 // Parse attempts to parse a string and set the Library accordingly, based on its name or aliases.
 func (l *Library) Parse(name string) error {
 	for _, library := range l.Available() {
-		if compare.ContainsLower(name, library.Name()) {
+		if utils.ContainsLower(name, library.Name()) {
 			*l = library
 			return nil
 		}
@@ -107,7 +107,7 @@ func (l *Library) Parse(name string) error {
 
 	for _, library := range l.Available() {
 		for _, alias := range library.CompatibleWith() {
-			if compare.ContainsLower(name, alias) {
+			if utils.ContainsLower(name, alias) {
 				*l = library
 				return nil
 			}

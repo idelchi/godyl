@@ -14,30 +14,32 @@ import (
 //go:embed defaults.yml
 var defaultsFile []byte
 
-// Defaults holds all the Defaultsuration options for godyl.
+// Defaults holds all the configuration options for godyl, including tool-specific defaults.
 type Defaults struct {
-	// Defaults for tools. Allows setting a default subset of values for tools
+	// Inline tool-specific defaults.
 	tools.Defaults `yaml:",inline"`
 }
 
+// Unmarshal parses the provided YAML data into the Defaults struct.
 func (d *Defaults) Unmarshal(data []byte) error {
 	return yaml.Unmarshal(data, d)
 }
 
+// FromFile reads and parses a YAML file from the given path into the Defaults struct.
 func (d *Defaults) FromFile(path string) error {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
-
 	return d.Unmarshal(data)
 }
 
+// Default loads the embedded default YAML configuration.
 func (d *Defaults) Default() error {
 	return d.Unmarshal(defaultsFile)
 }
 
-// Validate the Defaultsuration.
+// Validate checks the Defaults struct to ensure all required fields are properly set.
 func (d *Defaults) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(d); err != nil {
@@ -46,6 +48,7 @@ func (d *Defaults) Validate() error {
 	return nil
 }
 
+// Merge applies values from a Config object into the Defaults struct, only if corresponding values are set.
 func (d *Defaults) Merge(cfg Config) {
 	if IsSet("output") {
 		d.Output = cfg.Output
@@ -64,6 +67,7 @@ func (d *Defaults) Merge(cfg Config) {
 	}
 }
 
+// Load loads configuration defaults from a file or uses embedded defaults if not specified.
 func (d *Defaults) Load(path string) error {
 	if IsSet("defaults") {
 		if err := d.FromFile(path); err != nil {

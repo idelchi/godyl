@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/idelchi/godyl/internal/detect"
+	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/flagexp"
@@ -35,9 +36,6 @@ func flags() {
 	pflag.Bool("show-defaults", false, "Show the parsed default configuration and exit")
 	pflag.Bool("show-env", false, "Show the parsed environment variables and exit")
 	pflag.Bool("show-platform", false, "Detect the platform and exit")
-	pflag.String("output", "", "Output path for the downloaded tools")
-	pflag.String("tools", "", "Path to tools configuration file")
-	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
 
 	// Application flags
 	pflag.Bool("update", false, "Update the tools")
@@ -46,9 +44,12 @@ func flags() {
 	pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
 
 	// Tool flags
-	pflag.String("github-token", "", "GitHub token for authentication")
-	pflag.String("source", "github", "Source from which to install the tools")
+	pflag.String("tools", "", "Path to tools configuration file")
+	pflag.String("output", "", "Output path for the downloaded tools")
+	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
+	pflag.String("source", string(sources.GITHUB), "Source from which to install the tools")
 	pflag.String("strategy", "none", "Strategy to use for updating tools")
+	pflag.String("github-token", "", "GitHub token for authentication")
 
 	pflag.CommandLine.SortFlags = false
 	pflag.Usage = func() {

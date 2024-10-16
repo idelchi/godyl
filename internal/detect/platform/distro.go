@@ -3,7 +3,7 @@ package platform
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/pkg/compare"
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // Distribution represents a Linux distribution, with several predefined values.
@@ -28,7 +28,7 @@ func (d Distribution) Available() []Distribution {
 // From sets the Distribution based on the provided string, if it matches any available distribution.
 func (d *Distribution) From(distribution string) error {
 	for _, distro := range d.Available() {
-		if compare.Lower(distro.String(), distribution) {
+		if utils.EqualLower(distro.String(), distribution) {
 			*d = distro
 			return nil
 		}

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/idelchi/godyl/pkg/compare"
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // OS represents an operating system type.
@@ -85,7 +85,7 @@ func (o OS) IsCompatibleWith(os string) bool {
 // Parse attempts to parse a string and set the OS accordingly, based on its name or aliases.
 func (o *OS) Parse(name string) error {
 	for _, os := range o.Available() {
-		if compare.ContainsLower(name, os.Name()) {
+		if utils.ContainsLower(name, os.Name()) {
 			*o = os
 			return nil
 		}
@@ -93,7 +93,7 @@ func (o *OS) Parse(name string) error {
 
 	for _, os := range o.Available() {
 		for _, alias := range os.CompatibleWith() {
-			if compare.ContainsLower(name, alias) {
+			if utils.ContainsLower(name, alias) {
 				*o = os
 				return nil
 			}

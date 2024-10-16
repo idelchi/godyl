@@ -255,11 +255,10 @@ exe:
 | ---------------- | --------- | ----------- |
 | `{{ .Version }}` | ![no]     | ![yes]      |
 
-[version]: https://img.shields.io/badge/Version-{{ .Version }}-blue
-`version` is the version of the tool to download.
-
 #### Usage
 
+- As template for other fields
+- To compare tool versions if `strategy` is set to `upgrade`
 - Will be inferred and populated by the `source` method if not given
 
 ### Path
@@ -611,17 +610,17 @@ The full set of default options are:
 
 ```yaml
 exe: {}
-output: str
+output: string
 platform: {}
 values: {}
 fallbacks: []
 hints: {}
 source: {}
 tags: []
-strategy: str
+strategy: string
 extensions: []
 env: {}
-mode: str
+mode: string
 ```
 
 <!-- Badges -->

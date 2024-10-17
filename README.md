@@ -1,11 +1,21 @@
-# godyl
+<p align="center">
+    <img src="assets/go.png" height="250" />
+</p>
+
+<p align="center">
+  <img alt="golangci-lint logo" src="assets/go.png" height="150" />
+  <h3 align="center">godyl</h3>
+  <p align="center">Asset downloader</p>
+</p>
+
+---
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/idelchi/godyl.svg)](https://pkg.go.dev/github.com/idelchi/godyl)
 [![Go Report Card](https://goreportcard.com/badge/github.com/idelchi/godyl)](https://goreportcard.com/report/github.com/idelchi/godyl)
 [![Build Status](https://github.com/idelchi/godyl/actions/workflows/go.yml/badge.svg)](https://github.com/idelchi/godyl/actions/workflows/go.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-godyl helps with batch-downloading and installing statically compiled binaries from:
+`godyl` helps with batch-downloading and installing statically compiled binaries from:
 
 - GitHub releases
 - URLs

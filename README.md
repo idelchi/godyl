@@ -31,7 +31,7 @@ However, most properties can be overridden, with `hints` and `skip` used to help
 
 Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
 
-> [!INFO]
+> [!IMPORTANT]
 > This project serves as a learning exercise for Go and its surrounding ecosystem and tooling.
 > As such, it might be of limited use for others, but feel free to use it if you find it useful.
 

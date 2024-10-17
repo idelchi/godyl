@@ -5,4 +5,4 @@
 !**/*.go
 !go.mod
 !go.sum
-!.bashrc
+!cmd/godyl/defaults.yml

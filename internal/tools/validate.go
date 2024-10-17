@@ -2,148 +2,194 @@ package tools
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/idelchi/godyl/internal/executable"
-	"github.com/idelchi/godyl/internal/folder"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
 var (
-	ErrAlreadyExists   = fmt.Errorf("tool already exists")
-	ErrDoesNotHaveTags = fmt.Errorf("tool does not have required tags")
-	ErrSkipped         = fmt.Errorf("tool skipped")
+	// ErrAlreadyExists indicates that the tool already exists in the system.
+	ErrAlreadyExists = fmt.Errorf("tool already exists")
+	// ErrDoesHaveTags indicates that the tool has tags that are in the excluded tags list.
+	ErrDoesHaveTags = fmt.Errorf("tool contains excluded tags")
+	// ErrDoesNotHaveTags indicates that the tool does not contain required tags.
+	ErrDoesNotHaveTags = fmt.Errorf("tool does not contain included tags")
+	// ErrSkipped indicates that the tool has been skipped due to conditions.
+	ErrSkipped = fmt.Errorf("tool skipped")
+	// ErrFailed indicates that the tool has failed to install or resolve.
+	ErrFailed = fmt.Errorf("tool failed")
 )
 
-func SetStringIfEmpty(input *string, value string) {
-	if *input == "" {
-		*input = value
-	}
-}
-
-func StringIsEmpty(input string) bool {
-	return input == ""
-}
-
-func (t *Tool) Resolve(withTags []string, withoutTags []string) error {
-	if t.Skip {
-		return ErrSkipped
+// Resolve attempts to resolve the tool's source and strategy based on the provided tags.
+// It handles fallbacks and applies templating to the tool's fields as needed.
+func (t *Tool) Resolve(withTags, withoutTags []string) error {
+	if len(t.Name) == 0 {
+		return fmt.Errorf("%w: tool name is empty", ErrFailed)
 	}
 
-	t.NormalizeValues()
+	// Normalize values to ensure consistency in the .Values map.
+	t.Values = utils.NormalizeMap(t.Values)
 
-	output := folder.Folder(t.Output)
+	// Load environment variables from the system.
+	t.Env.Merge(env.FromEnv())
+
+	// Expand and set the output folder path.
+	output := file.Folder(t.Output)
 	if err := output.Expand(); err != nil {
 		return err
 	}
-
 	t.Output = output.Path()
 
-	// Save path to be templated last
+	// Set the strategy to Force if the mode is "extract".
+	if t.Mode == "extract" {
+		t.Strategy = Force
+	}
+
+	// Save the path for templating later.
 	path := t.Path
 
-	fallbacks := append([]string{t.Source.Type}, t.Fallbacks...)
+	t.Extensions = slices.Compact(t.Extensions)
+	t.Aliases = slices.Compact(t.Aliases)
+	t.Fallbacks = slices.Compact(t.Fallbacks)
+
+	// Build the fallback sources from the primary source type and additional fallbacks.
+	fallbacks := append([]sources.Type{t.Source.Type}, t.Fallbacks...)
+
+	// Expand environment variables.
+	t.Env.Expand()
+
+	if err := t.TemplateFirst(); err != nil {
+		return err
+	}
 
 	var lastErr error
-
+	// Try resolving with each fallback in order.
 	for _, fallback := range fallbacks {
 		if err := t.tryResolveFallback(fallback, path, withTags, withoutTags); err != nil {
 			lastErr = err
-
-			continue // Try the next fallback
+			continue // Move on to the next fallback.
 		}
-
-		// If successful, return nil
-		return nil
+		return nil // Success, no need to try further fallbacks.
 	}
 
-	// If none of the fallbacks worked, return the last error encountered
+	// If all fallbacks fail, return the last encountered error.
 	return lastErr
 }
 
-func (t *Tool) tryResolveFallback(fallback string, path string, withTags []string, withoutTags []string) error {
-	t.Source.Type = fallback
-
-	populator, err := t.Source.Installer()
-	if err != nil {
-		return err
-	}
-
-	if err := populator.Initialize(t.Name); err != nil {
-		return err
-	}
-
-	if err := populator.Exe(); err != nil {
-		return err
-	}
-
-	SetStringIfEmpty(&t.Exe, populator.Get("exe"))
-
-	t.Tags.Append(t.Name)
-
+// CheckSkipConditions verifies whether the tool should be skipped based on its tags or strategy.
+func (t *Tool) CheckSkipConditions(withTags, withoutTags []string) error {
 	if !t.Tags.Has(withTags) {
-		return ErrDoesNotHaveTags
+		return fmt.Errorf("%w: %v: tool tags: %v", ErrDoesNotHaveTags, withTags, t.Tags)
 	}
 
 	if !t.Tags.HasNot(withoutTags) {
-		return ErrDoesNotHaveTags
+		return fmt.Errorf("%w: %v: tool tags: %v", ErrDoesHaveTags, withoutTags, t.Tags)
 	}
 
 	if err := t.Strategy.Check(t); err != nil {
 		return err
 	}
 
-	if err := t.Template(); err != nil {
+	if skip, msg, _ := t.Skip.True(); skip {
+		return fmt.Errorf("%w: %q", ErrSkipped, msg)
+	}
+
+	return nil
+}
+
+// tryResolveFallback attempts to resolve a tool using a specific fallback source type.
+func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, withoutTags []string) error {
+	// Append the tool's name as a tag.
+	t.Tags.Append(t.Name)
+
+	// Check if the tool should be skipped based on its conditions.
+	if err := t.CheckSkipConditions(withTags, withoutTags); err != nil {
 		return err
 	}
 
-	if t.Skip {
-		return ErrSkipped
+	// Set the source type to the current fallback.
+	t.Source.Type = fallback
+
+	// Get the installer for the current source type.
+	populator, err := t.Source.Installer()
+	if err != nil {
+		return err
 	}
 
-	if StringIsEmpty(t.Version) {
+	// Initialize the installer.
+	if err := populator.Initialize(t.Name); err != nil {
+		return err
+	}
+
+	// Retrieve executable details from the installer.
+	if err := populator.Exe(); err != nil {
+		return err
+	}
+
+	// Apply templating to the tool's fields.
+	utils.SetIfEmpty(&t.Exe.Name, populator.Get("exe"))
+	utils.SetIfEmpty(&t.Exe.Name, t.Name)
+
+	// Re-check skip conditions after applying templates.
+	if err := t.CheckSkipConditions(withTags, withoutTags); err != nil {
+		return err
+	}
+
+	// Retrieve the tool's version from the installer if it is not already set.
+	if utils.IsEmpty(t.Version) {
 		if err := populator.Version(t.Name); err != nil {
 			return err
 		}
 	}
 
-	SetStringIfEmpty(&t.Version, populator.Get("version"))
+	utils.SetIfEmpty(&t.Version, populator.Get("version"))
 
-	if StringIsEmpty(t.Path) {
-		if err := populator.Path(t.Name, t.Extensions, t.Version, match.Requirements{
+	if err := t.TemplateLast(); err != nil {
+		return err
+	}
+
+	// Determine the tool's path if not already set.
+	if utils.IsEmpty(t.Path) {
+		hints := t.Hints
+		hints.Add(ExtensionsToHint(t.Extensions))
+
+		if err := populator.Path(t.Name, nil, t.Version, match.Requirements{
 			Platform: t.Platform,
-			Hints:    t.Hints,
+			Hints:    hints,
 		}); err != nil {
 			return err
 		}
-
-		SetStringIfEmpty(&t.Path, populator.Get("path"))
-	} else {
-		t.Path = path
-		if err := t.Template(); err != nil {
-			return err
-		}
 	}
+	utils.SetIfEmpty(&t.Path, populator.Get("path"))
+	utils.SetIfEmpty(&t.Path, path)
 
-	SetStringIfEmpty(&t.Exe, t.Name)
+	// Append platform-specific file extension to the executable name.
+	t.Exe.Name += t.Platform.Extension.String()
 
-	t.Exe = t.Exe + t.Platform.Extension.String()
+	// Set patterns for finding the executable.
+	utils.SetSliceIfNil(&t.Exe.Patterns, fmt.Sprintf("^%s$", t.Exe.Name))
 
+	// Append platform-specific extensions to aliases.
 	for i, alias := range t.Aliases {
 		t.Aliases[i] = alias + t.Platform.Extension.String()
 	}
 
-	t.Name = t.Name + t.Platform.Extension.String()
-
+	// Attempt to upgrade the tool using the current strategy.
 	if err := t.Strategy.Upgrade(t); err != nil {
 		return err
 	}
 
-	// Validation
+	// Validate the tool's configuration.
 	return t.Validate()
 }
 
+// Validate validates the Tool's configuration using the validator package.
 func (t *Tool) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(t); err != nil {
@@ -152,33 +198,28 @@ func (t *Tool) Validate() error {
 	return nil
 }
 
+// Exists checks if the tool's executable already exists in the output path.
 func (t *Tool) Exists() bool {
-	files := executable.Executables{}.FromStrings(t.Output, append([]string{t.Name, t.Exe}, t.Aliases...)...)
-
-	for _, file := range files {
-		if file.Exists() {
-			return true
-		}
-	}
-	return false
+	f := file.NewFile(t.Output, t.Exe.Name)
+	return f.Exists() && f.IsFile()
 }
 
-type Installer interface {
-	Install(d sources.InstallData) (output string, err error)
-}
-
-func (t *Tool) Download() (string, error) {
+// Download downloads the tool using its configured source and installer.
+func (t *Tool) Download() (string, file.File, error) {
 	installer, err := t.Source.Installer()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	data := sources.InstallData{
-		Path:    t.Path,
-		Name:    t.Name,
-		Exe:     t.Exe,
-		Output:  t.Output,
-		Aliases: t.Aliases,
+	data := common.InstallData{
+		Path:     t.Path,
+		Name:     t.Name,
+		Exe:      t.Exe.Name,
+		Patterns: t.Exe.Patterns,
+		Output:   t.Output,
+		Aliases:  t.Aliases,
+		Mode:     t.Mode.String(),
+		Env:      t.Env,
 	}
 
 	return installer.Install(data)

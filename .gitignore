@@ -7,8 +7,12 @@
 .bash_history
 .gitconfig
 .env
+*___generated.go
 
 # Ignored folders
 .build
 .cache
 .task
+dist/
+.bin-*
+.local

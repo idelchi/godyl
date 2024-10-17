@@ -1,59 +1,56 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/idelchi/godyl/internal/flagexp"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+
+	"github.com/idelchi/godyl/internal/detect"
+	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/flagexp"
+	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/pretty"
 )
 
-var config = ConfigFile{
-	"config.yml",
-}
-
-type ConfigFile struct {
-	Default string
-}
-
-func (c ConfigFile) Get() string {
-	env := c.Env()
-	if env != "" {
-		return env
-	}
-
-	return c.Default
-}
-
-func (ConfigFile) Env() string {
-	return os.Getenv("GODYL_CONFIG")
-}
-
-// configIsSet indicates whether the configuration flag is set,
-// either via the command-line or environment variable.
-func (c ConfigFile) IsSet() bool {
-	return pflag.CommandLine.Changed("config") || c.Env() != ""
+func IsSet(flag string) bool {
+	return viper.IsSet(flag)
 }
 
 func flags() {
 	// General flags
-	pflag.Bool("version", false, "Show the version information and exit")
-	pflag.BoolP("help", "h", false, "Show the help information and exit")
-	pflag.BoolP("show", "s", false, "Show the configuration and exit")
-	pflag.StringP("config", "c", config.Get(), "Path to configuration file")
+	pflag.BoolP("help", "h", false, "Show help message and exit")
+	pflag.Bool("version", false, "Show version information and exit")
+
+	// Configuration file flags
+	pflag.String("dot-env", ".env", "Path to .env file")
+	pflag.StringP("defaults", "d", "defaults.yml", "Path to defaults file")
+
+	// Show flags
+	pflag.Bool("show-config", false, "Show the parsed configuration and exit")
+	pflag.Bool("show-defaults", false, "Show the parsed default configuration and exit")
+	pflag.Bool("show-env", false, "Show the parsed environment variables and exit")
+	pflag.Bool("show-platform", false, "Detect the platform and exit")
+
+	// Application flags
+	pflag.Bool("update", false, "Update the tools")
+	pflag.Bool("dry", false, "Run without making any changes (dry run)")
+	pflag.String("log", string(logger.INFO), "Log level (DEBUG, INFO, WARN, ERROR)")
 	pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
 
-	// Selected custom flags
-	pflag.String("defaults.source.github.token", "", "GitHub token for API requests")
-	pflag.StringSliceP("defaults.extensions", "e", nil, "Extensions to filter tools by")
-	pflag.String("defaults.strategy", "none", "")
-	pflag.String("defaults.output", "~/.local/bin", "")
-
-	pflag.StringSliceP("tags", "t", nil, "Tags to filter tools by")
+	// Tool flags
+	pflag.String("output", "", "Output path for the downloaded tools")
+	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
+	pflag.String("source", string(sources.GITHUB), "Source from which to install the tools")
+	pflag.String("strategy", "none", "Strategy to use for updating tools")
+	pflag.String("github-token", "", "GitHub token for authentication")
+	pflag.String("os", "", "Operating system to install the tools for")
+	pflag.String("arch", "", "Architecture to install the tools for")
 
 	pflag.CommandLine.SortFlags = false
 	pflag.Usage = func() {
@@ -67,12 +64,9 @@ func flags() {
 // parseFlags parses the application configuration (in order of precedence) from:
 //   - command-line flags
 //   - environment variables
-//   - configuration file
 func parseFlags() (cfg Config, err error) {
 	flags()
 
-	// Parse the command-line flags
-	// pflag.Parse()
 	// Parse the command-line flags with suggestions enabled
 	if err := flagexp.ParseWithSuggestions(os.Args[1:]); err != nil {
 		return cfg, fmt.Errorf("parsing flags: %w", err)
@@ -85,21 +79,13 @@ func parseFlags() (cfg Config, err error) {
 
 	// Set viper to automatically read from environment variables
 	viper.SetEnvPrefix("godyl")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()
 
-	viper.SetConfigFile(viper.GetString("config"))
-	viper.SetConfigType("yaml")
-	// Only return errors if the config flag is set or the environment variable is set
-	// Otherwise, either read the configuration or try to read the default value
-	if err := viper.ReadInConfig(); err != nil && config.IsSet() {
-		fmt.Println("Error reading config file:", err)
-
-		return cfg, err
-	} else if err != nil {
-		fmt.Println("Setting defaults to config file")
-
-		cfg.Default()
+	if err := loadDotEnv(file.File(viper.GetString("dot-env"))); err != nil {
+		if IsSet("dot-env") {
+			return cfg, fmt.Errorf("loading .env file: %w", err)
+		}
 	}
 
 	decoderConfig := func(dc *mapstructure.DecoderConfig) {
@@ -111,13 +97,13 @@ func parseFlags() (cfg Config, err error) {
 		return cfg, fmt.Errorf("unmarshalling config: %w", err)
 	}
 
-	// Handle the commandline flags that exit the application
-	handleExitFlags(cfg)
-
 	// Validate the input
 	if err := validateInput(&cfg); err != nil {
 		return cfg, fmt.Errorf("validating input: %w", err)
 	}
+
+	// Handle the commandline flags that exit the application
+	handleExitFlags(cfg)
 
 	return cfg, nil
 }
@@ -138,30 +124,84 @@ func validateInput(cfg *Config) error {
 //nolint:forbidigo // Function will print & exit for various help messages.
 func handleExitFlags(cfg Config) {
 	// Check if the version flag was provided
-	if viper.GetBool("version") {
+	if cfg.Version {
 		fmt.Println(version)
+
 		os.Exit(0)
 	}
 
 	// Check if the help flag was provided
-	if viper.GetBool("help") {
+	if cfg.Help {
 		pflag.Usage()
+
 		os.Exit(0)
 	}
 
-	if viper.GetBool("show") {
-		fmt.Println(PrintJSON(cfg))
+	if cfg.Show.Config {
+		pretty.PrintYAMLMasked(cfg)
+
+		os.Exit(0)
+	}
+
+	if cfg.Show.Env {
+		pretty.PrintYAMLMasked(env.FromEnv())
+
+		os.Exit(0)
+	}
+
+	if cfg.Show.Defaults {
+		defaults := Defaults{}
+		if err := defaults.Load(cfg.Defaults.Name()); err != nil {
+			fmt.Fprintf(os.Stderr, "Error loading defaults: %v\n", err)
+
+			os.Exit(1)
+		}
+
+		defaults.Merge(cfg)
+
+		pretty.PrintYAMLMasked(defaults)
+
+		os.Exit(0)
+	}
+
+	if cfg.Show.Platform {
+		p := detect.Platform{}
+		if err := p.Detect(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error detecting platform: %v\n", err)
+
+			os.Exit(1)
+		}
+
+		pretty.PrintYAML(p)
 
 		os.Exit(0)
 	}
 }
 
-// PrintJSON returns a pretty-printed JSON representation of the provided object.
-func PrintJSON(obj any) string {
-	bytes, err := json.MarshalIndent(obj, "  ", "    ")
+func loadDotEnv(path file.File) error {
+	dotEnv, err := env.FromDotEnv(path.Name())
 	if err != nil {
-		return err.Error()
+		return fmt.Errorf("loading environment variables from %q: %w", path.Name(), err)
 	}
 
-	return string(bytes)
+	env := env.FromEnv().Normalized().Merged(dotEnv.Normalized())
+
+	if err := env.ToEnv(); err != nil {
+		return fmt.Errorf("setting environment variables: %w", err)
+	}
+
+	return nil
 }
+
+// func setEnv(envs ...env.Env) error {
+// 	env := env.Env{}
+// 	for _, e := range envs {
+// 		env = env.Merged(e.Normalized())
+// 	}
+
+// 	if err := env.ToEnv(); err != nil {
+// 		return fmt.Errorf("setting environment variables: %w", err)
+// 	}
+
+// 	return nil
+// }

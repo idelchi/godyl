@@ -1,0 +1,21 @@
+output: ~/.local/bin
+exe:
+  patterns:
+    - "^{{ .Exe }}{{ .EXTENSION }}$"
+    - ".*/{{ .Exe }}{{ .EXTENSION }}$"
+hints:
+  - pattern: "{{ .Exe }}"
+    weight: 1
+  - pattern: zip
+    weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
+extensions:
+  - '{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}'
+  - '{{ if eq .OS "windows" }}.zip{{ else }}{{ end }}'
+  - '{{ if eq .OS "windows" }}.zip{{ else }}{{ end }}'
+  - .tar.gz
+mode: find
+source:
+  type: github
+strategy: none
+env:
+  GH_TOKEN: $GODYL_GITHUB_TOKEN

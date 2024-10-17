@@ -2,80 +2,102 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
+	"slices"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/idelchi/godyl/internal/match"
+
+	"github.com/idelchi/godyl/internal/detect/platform"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/logger"
 )
+
+type Update struct {
+	// Strategy to use for updating tools
+	Strategy tools.Strategy `mapstructure:"strategy"`
+	// Update the tools
+	Update bool `mapstructure:"update"`
+}
+
+type Tokens struct {
+	// GitHub token for authentication
+	GitHub string `mapstructure:"github-token" mask:"fixed"`
+	// GitLab token for authentication
+	GitLab string `mapstructure:"gitlab-token" mask:"fixed"`
+	// URL token for authentication
+	URL string `mapstructure:"url-token" mask:"fixed"`
+}
+
+type Show struct {
+	// Show the parsed configuration and exit
+	Config bool `mapstructure:"show-config"`
+	// Show the parsed environment variables and exit
+	Env bool `mapstructure:"show-env"`
+	// Show the parsed default configuration and exit
+	Defaults bool `mapstructure:"show-defaults"`
+	// Detect the platform and exit
+	Platform bool `mapstructure:"show-platform"`
+}
 
 // Config holds all the configuration options for godyl.
 type Config struct {
-	// Defaults for tools. Allows setting a default subset of values for tools
-	Defaults tools.Defaults
-
-	// Path to file to load tools from
-	Tools string
-
-	// Tags to consider when selecting tools
-	Tags []string
-
-	// Config file to load
-	Config string
-
-	// Show help message
+	// Show help message and exit
 	Help bool
-	// Show parsed configuration
-	Show bool
-	// Show version information
+	// Show version information and exit
 	Version bool
 
-	// Number of parallel downloads
+	// Path to .env file
+	DotEnv file.File `mapstructure:"dot-env"`
+	// Path to defaults file
+	Defaults file.File
+
+	// Show various configurations
+	Show Show `mapstructure:",squash"`
+
+	// Update the tools
+	Update Update `mapstructure:",squash"`
+	// Run without making any changes (dry run)
+	Dry bool
+	// Log level (DEBUG, INFO, WARN, ERROR)
+	Log logger.Level
+	// Number of parallel downloads (>= 0)
 	Parallel int `validate:"gte=0"`
+
+	// Path to tools configuration file
+	Tools string
+	// Output path for the downloaded tools
+	Output string
+	// Tags to filter tools by
+	Tags []string
+	// Source from which to install the tools
+	Source sources.Type
+	// Strategy to use for updating tools
+	Strategy tools.Strategy `mapstructure:"strategy"`
+	// Operating system to install the tools for
+	OS platform.OS `mapstructure:"os"`
+	// Architecture to install the tools for
+	Arch string `mapstructure:"arch"`
+
+	// Tokens for authentication
+	Tokens Tokens `mapstructure:",squash"`
 }
 
-// Default method sets the default configuration values for godyl.
-func (c *Config) Default() {
-	dirname, err := os.UserHomeDir()
-	if err != nil {
-		dirname = "/tmp"
-	}
-
-	c.Defaults = tools.Defaults{
-		Output: filepath.Join(dirname, ".local", "bin"),
-		Source: sources.Source{
-			Type: "github",
-		},
-		Hints: []match.Hint{
-			{
-				Pattern: `{{ .Exe }}`,
-				Weight:  1,
-			},
-			// {
-			// 	Pattern: "static",
-			// 	Weight:  1,
-			// },
-			// {
-			// 	Pattern: `.*{{ if eq .Platform.OS "linux" }}\.tar\.gz{{ else }}\.zip{{ end }}$`,
-			// 	Weight:  1,
-			// 	Regex:   true,
-			// },
-			// {
-			// 	Pattern:        `musl`,
-			// 	WeightTemplate: `{{ if and (eq .Platform.OS "linux") (eq .Platform.Distribution "alpine") }}1{{ else }}0{{ end }}`,
-			// },
-			// {
-			// 	Pattern:        `gnu`,
-			// 	WeightTemplate: `{{ if and (eq .Platform.OS "linux") (ne .Platform.Distribution "alpine") }}1{{ else }}0{{ end }}`,
-			// },
-		},
-	}
-}
-
-// Validate the configuration.
+// Validate checks the configuration for errors.
 func (c *Config) Validate() error {
+	allowedUpdateStrategies := []tools.Strategy{tools.None, tools.Upgrade, tools.Force}
+	if !slices.Contains(allowedUpdateStrategies, c.Update.Strategy) {
+		return fmt.Errorf("invalid update strategy: %q: allowed are %v", c.Update.Strategy, allowedUpdateStrategies)
+	}
+
+	if IsSet("config") && !c.Defaults.Exists() {
+		return fmt.Errorf("defaults file %q does not exist", c.Defaults)
+	}
+
+	if IsSet("dot-env") && !c.DotEnv.Exists() {
+		return fmt.Errorf("dot-env file %q does not exist", c.DotEnv)
+	}
+
 	validate := validator.New()
 	if err := validate.Struct(c); err != nil {
 		return fmt.Errorf("validating config: %w", err)

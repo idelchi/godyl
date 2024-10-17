@@ -9,14 +9,17 @@ import (
 	"github.com/google/go-github/v64/github"
 )
 
+// Repository represents a GitHub repository with its owner and name.
+// It contains a GitHub client and context for making API calls.
 type Repository struct {
-	Owner string
-	Repo  string
-
-	client *github.Client
-	ctx    context.Context
+	Owner  string          // Owner is the owner of the repository (GitHub username or organization).
+	Repo   string          // Repo is the name of the repository.
+	client *github.Client  // client is the GitHub client used to interact with the GitHub API.
+	ctx    context.Context // ctx is the context used for API requests.
 }
 
+// NewRepository creates a new instance of Repository.
+// It requires the repository owner, repository name, and a GitHub client.
 func NewRepository(owner, repo string, client *github.Client) *Repository {
 	ctx := context.Background()
 
@@ -28,7 +31,7 @@ func NewRepository(owner, repo string, client *github.Client) *Repository {
 	}
 }
 
-// GetLatestRelease gets the latest release for the repository.
+// LatestRelease retrieves the latest release for the repository.
 func (g *Repository) LatestRelease() (*Release, error) {
 	ctx := context.TODO()
 
@@ -40,6 +43,7 @@ func (g *Repository) LatestRelease() (*Release, error) {
 	return g.release(release)
 }
 
+// Languages retrieves the programming languages used in the repository, sorted by usage in descending order.
 func (g *Repository) Languages() ([]string, error) {
 	ctx := context.TODO()
 
@@ -62,17 +66,20 @@ func (g *Repository) Languages() ([]string, error) {
 	return keys, nil
 }
 
+// GetRelease retrieves a specific release for the repository based on the provided tag.
 func (g *Repository) GetRelease(tag string) (*Release, error) {
 	ctx := context.TODO()
 
 	release, _, err := g.client.Repositories.GetReleaseByTag(ctx, g.Owner, g.Repo, tag)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get assets for release tags %q: %w", tag, err)
+		return nil, fmt.Errorf("failed to get assets for release tag %q: %w", tag, err)
 	}
 
 	return g.release(release)
 }
 
+// release processes the provided GitHub release and retrieves its associated assets.
+// It returns a Release object containing the release name, tag, and assets.
 func (g *Repository) release(release *github.RepositoryRelease) (*Release, error) {
 	ctx := context.TODO()
 

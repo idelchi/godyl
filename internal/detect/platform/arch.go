@@ -3,16 +3,19 @@ package platform
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/pkg/compare"
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
+// Type represents a CPU architecture type, such as "amd64" or "arm64".
 type Type string
 
+// Architecture defines a platform architecture, consisting of a type and an optional version.
 type Architecture struct {
-	Type    Type
-	Version string
+	Type    Type   // Type indicates the architecture type (e.g., amd64, arm64).
+	Version string // Version specifies the version for architectures that have variants, such as arm.
 }
 
+// Name returns the full name of the architecture, including version if present.
 func (a Architecture) Name() string {
 	if a.Version != "" {
 		return fmt.Sprintf("%sv%s", a.Type, a.Version)
@@ -20,23 +23,37 @@ func (a Architecture) Name() string {
 	return string(a.Type)
 }
 
+// Short returns a short identifier for certain architectures.
+func (a Architecture) Short() string {
+	switch a.Type {
+	case AMD64, ARM64:
+		return "amd"
+	case AMD32, ARM32:
+		return "arm"
+	default:
+		return string(a.Type)
+	}
+}
+
 const (
-	AMD64 Type = "amd64"
-	AMD32 Type = "amd32"
-	ARM64 Type = "arm64"
-	ARM32 Type = "arm"
-	MIPS  Type = "mips"
-	PPC64 Type = "ppc64"
-	RISCV Type = "riscv"
+	AMD64 Type = "amd64" // AMD64 represents the 64-bit x86 architecture.
+	AMD32 Type = "amd32" // AMD32 represents the 32-bit x86 architecture.
+	ARM64 Type = "arm64" // ARM64 represents the 64-bit ARM architecture.
+	ARM32 Type = "arm"   // ARM32 represents the 32-bit ARM architecture.
+	MIPS  Type = "mips"  // MIPS represents the MIPS architecture.
+	PPC64 Type = "ppc64" // PPC64 represents the 64-bit PowerPC architecture.
+	RISCV Type = "riscv" // RISCV represents the RISC-V architecture.
 )
 
+// Default returns the default Architecture, which is AMD64.
 func (a Architecture) Default() Architecture {
 	return Architecture{
 		Type: AMD64,
 	}
 }
 
-func (a Architecture) Supported() []Architecture {
+// Available returns a list of all supported architectures.
+func (a Architecture) Available() []Architecture {
 	return []Architecture{
 		{AMD64, ""},
 		{AMD32, ""},
@@ -49,19 +66,18 @@ func (a Architecture) Supported() []Architecture {
 	}
 }
 
+// From sets the architecture based on the provided name and distribution, if found.
 func (a *Architecture) From(architecture string, distro Distribution) error {
-	for _, arch := range a.Supported() {
-		if compare.Lower(architecture, arch.Name()) {
+	for _, arch := range a.Available() {
+		if utils.EqualLower(architecture, arch.Name()) {
 			*a = arch
-
 			return nil
 		}
 	}
 
-	for _, arch := range a.Supported() {
+	for _, arch := range a.Available() {
 		if arch.IsCompatibleWith(architecture, distro) {
 			*a = arch
-
 			return nil
 		}
 	}
@@ -69,6 +85,7 @@ func (a *Architecture) From(architecture string, distro Distribution) error {
 	return fmt.Errorf("%w: architecture %q", ErrNotFound, architecture)
 }
 
+// CompatibleWith returns a list of architecture aliases that are compatible with the given distribution.
 func (a Architecture) CompatibleWith(distro Distribution) []string {
 	switch a.Type {
 	case AMD64:
@@ -83,12 +100,14 @@ func (a Architecture) CompatibleWith(distro Distribution) []string {
 			return []string{"arm32", "armv7", "armv7l", "armhf", "armv6", "armv6l", "arm"}
 		case "6":
 			if distro == Rasbian {
-				return []string{"arm32", "armhf", "armv6", "armv6l", "arm"}
+				return []string{"arm32", "armv6", "armv6l", "armhf", "arm"}
 			}
 			if distro == Debian {
 				return []string{"arm32", "armv6", "armv6l", "arm"}
 			}
 			return []string{"arm32", "armhf", "armv6", "armv6l", "arm"}
+		case "5":
+			return []string{"arm32", "armv5", "armv5l", "armel", "arm"}
 		default:
 			return []string{"arm32", "armv7", "armv7l", "armhf", "armv6", "armv6l", "arm"}
 		}
@@ -103,10 +122,12 @@ func (a Architecture) CompatibleWith(distro Distribution) []string {
 	}
 }
 
+// String returns the architecture name as a string.
 func (a Architecture) String() string {
 	return a.Name()
 }
 
+// IsCompatibleWith checks if the provided architecture string matches any of the aliases for this architecture.
 func (a Architecture) IsCompatibleWith(arch string, distro Distribution) bool {
 	for _, compatible := range a.CompatibleWith(distro) {
 		if arch == compatible {
@@ -116,18 +137,22 @@ func (a Architecture) IsCompatibleWith(arch string, distro Distribution) bool {
 	return false
 }
 
+// Parse attempts to parse a string and set the architecture accordingly, based on its name or aliases.
 func (a *Architecture) Parse(name string) error {
-	for _, arch := range a.Supported() {
-		if compare.ContainsLower(name, arch.Name()) {
+	for _, arch := range a.Available() {
+		if utils.ContainsLower(name, arch.Name()) {
 			*a = arch
+
 			return nil
 		}
 	}
 
-	for _, arch := range a.Supported() {
+	for _, arch := range a.Available() {
+		// TODO(Idelchi): Why arch.CompatibleWith("")? Isn't the distro required?
 		for _, alias := range arch.CompatibleWith("") {
-			if compare.ContainsLower(name, alias) {
+			if utils.ContainsLower(name, alias) {
 				*a = arch
+
 				return nil
 			}
 		}

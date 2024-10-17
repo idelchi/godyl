@@ -9,47 +9,115 @@
 - sharkdp/bat
 - traefik/traefik
 - casey/just
-- pemistahl/grex
-- sorenisanerd/gotty
 - charmbracelet/glow
-- gopasspw/gopass
 - lsd-rs/lsd
-- homeport/dyff
-- moncho/dry
-- rs/curlie
-- so-fancy/diff-so-fancy
 - sharkdp/diskus
 - muesli/duf
-- name: trntv/sshed
-  skip: '{{ if eq .Platform.Architecture.Name "arm64" }}true{{ else }}false{{ end }}'
 - AlDanial/cloc
 - FiloSottile/age
 - chmln/sd
-- kraanzu/dooit
-- cespare/reflex
-- logdyhq/logdy-core
+- rs/curlie
+
+- name: mikefarah/yq
+  extensions: "{{ .EXTENSION }}"
+
+- name: sorenisanerd/gotty
+  skip:
+    reason: "gotty is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+
+- name: kraanzu/dooit
+  exe:
+    patterns:
+      - "^{{ .OS }}-{{ .Exe }}"
+
+- name: homeport/dyff
+  fallbacks:
+    - go
+
+- name: moncho/dry
+  exe:
+    name: dry
+    patterns: ^dry
+  extensions: ""
+
+- name: so-fancy/diff-so-fancy
+  exe:
+    name: diff-so-fancy
+    patterns: ^diff-so-fancy$
+  extensions: ""
+
+- name: logdyhq/logdy-core
+  exe:
+    name: logdy
+    patterns: ^logdy
+  fallbacks:
+    - go
+
+- name: cespare/reflex
+  skip:
+    - reason: "reflex does not work on Windows"
+      condition: '{{ eq .OS "windows" }}'
+  fallbacks:
+    - go
+
+- name: trntv/sshed
+  exe:
+    name: sshed
+    patterns:
+      - sshed
+      - ^cmd$
+  fallbacks:
+    - go
+  hints:
+    - pattern: "{{ .OS }}"
+      must: true
+  source:
+    type: github
+
+- name: pemistahl/grex
+  skip:
+    - reason: "grex is not available for ARM architecture"
+      condition: '{{ eq .ARCH "arm" }}'
+  fallbacks:
+    - rust
 
 - name: nivekuil/rip
-  skip: '{{ if eq .Platform.Architecture.Name "arm64" }}true{{ else }}false{{ end }}'
   version: 0.11.4
+  fallbacks:
+    - rust
+  skip:
+    - reason: "rip is only available for Linux"
+      condition: '{{ne .OS "linux"}}'
+    - reason: "rip is only available for arm32 and amd64 architectures"
+      condition: |-
+        {{- and
+            (ne .ARCH "arm32")
+            (ne .ARCH "amd64")
+        -}}
 
 - name: mgunyho/tere
-  extensions:
-    - .zip
+  skip:
+    - reason: "tere is not available for ARM architecture"
+      condition: '{{ eq .ARCH "arm" }}'
+  extensions: .zip
+  fallbacks:
+    - rust
 
 - name: cli/cli
-  aliases:
-    - gh
-
-- name: github/gh-copilot
-  aliases:
-    - ghc
+  exe:
+    name: gh
+    patterns:
+      - bin/gh{{ .EXTENSION }}$
+  post:
+    - "{{ .Output }}/{{ .Exe }} extension install github/gh-copilot"
+    - "{{ .Output }}/{{ .Exe }} extension upgrade gh-copilot"
+    - echo 'eval "$(gh copilot alias -- bash)"' >> ~/.bashrc
 
 - name: jesseduffield/lazydocker
   aliases: lazy
   tags:
     - docker
-
 - name: ahmetb/kubectx
   aliases: kbx
   tags:
@@ -73,9 +141,20 @@
     type: github
   fallbacks:
     - go
+
 - name: TomWright/dasel
-  extensions:
-    - ""
+  fallbacks:
+    - go
+  extensions: ""
+  source:
+    type: |-
+      {{- if has .OS (list "linux" "darwin") -}}
+          github
+      {{- else -}}
+          go
+      {{- end -}}
+    go:
+      command: v2/cmd/dasel
 
 - name: kdash-rs/kdash
   tags:
@@ -88,52 +167,52 @@
 
 - name: jqlang/jq
   hints:
-    - pattern: jq-linux-amd64
+    - pattern: amd64
       weight: |-
-        {{ if and
-            (eq .Platform.OS "linux")
-            (eq .Platform.Architecture.Name "amd64")
-        }}1{{ else }}0{{ end }}
+        {{- if eq .ARCH "amd64" -}}
+        1
+        {{- else -}}
+        0
+        {{- end -}}
+
+    - pattern: armhf
+      weight: |-
+        {{- if eq .ARCH "arm" -}}
+        1
+        {{- else -}}
+        0
+        {{- end -}}
 
 - name: BurntSushi/ripgrep
   exe: rg
-  # hints:
-  #   - pattern: musl
-  #     weight: |-
-  #       {{ if and
-  #           (eq .Platform.OS "linux")
-  #           (eq .Platform.Architecture.Name "amd64")
-  #       }}2{{ else }}0{{ end }}
+  skip:
+    - reason: "ripgrep is only available for Linux"
+      condition: '{{ ne .OS "linux" }}'
 
 - name: jesseduffield/lazygit
   aliases: lazyg
+
 - name: Byron/dua-cli
   exe: dua
-
-  # hints:
-  #   - pattern: musl
-  #     weight: |-
-  #       {{ if and
-  #           (eq .Platform.OS "linux")
-  #           (eq .Platform.Architecture.Name "amd64")
-  #       }}1{{ else }}0{{ end }}
+  skip:
+    reason: "dua-cli is for the Darwin platform only supporting amd64"
+    condition: '{{ and (eq .OS "darwin") (ne .ARCH "amd64") }}'
 
 - name: jarun/nnn
-  skip: '{{ if eq .Platform.Architecture.Name "arm64" }}true{{ else }}false{{ end }}'
-  exe: nnn-musl-static
-  aliases:
-    - nnn
-  # hints:
-  #   - pattern: musl
-  #     weight: |-
-  #       {{ if and
-  #           (eq .Platform.OS "linux")
-  #           (eq .Platform.Architecture.Name "amd64")
-  #       }}1{{ else }}0{{ end }}
+  exe:
+    patterns: ^nnn.*
+  skip:
+    - reason: "nnn is only available for linux"
+      condition: '{{ ne .OS "linux" }}'
+    - reason: "nnn is only available for amd64 architecture"
+      condition: '{{ ne .ARCH "amd64" }}'
+  hints:
+    - pattern: icons
+      weight: 2
 
 - name: helm
   version: 3.16.1
-  path: https://get.helm.sh/helm-v{{ .Version }}-{{ .Platform.OS }}-{{ .Platform.Architecture.Type }}.tar.gz
+  path: https://get.helm.sh/helm-v{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
   source:
     type: url
   tags:
@@ -141,7 +220,7 @@
 
 - name: kubectl
   version: 1.31.0
-  path: https://dl.k8s.io/v{{ .Version }}/bin/{{ .Platform.OS }}/{{ .Platform.Architecture.Type }}/kubectl{{ .Platform.Extension }}
+  path: https://dl.k8s.io/v{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}
   aliases: kc
   source:
     type: url
@@ -150,7 +229,7 @@
 
 - name: terraform
   version: 1.9.5
-  path: https://releases.hashicorp.com/terraform/{{ .Version }}/terraform_{{ .Version }}_{{ .Platform.OS }}_{{ .Platform.Architecture.Type }}.zip
+  path: https://releases.hashicorp.com/terraform/{{ .Version }}/terraform_{{ .Version }}_{{ .OS }}_{{ .ARCH }}.zip
   aliases: tf
   source:
     type: url
@@ -162,7 +241,7 @@
     type: command
     commands:
       - |
-        {{ if eq .Platform.OS "linux" }}
+        {{ if eq .OS "linux" }}
         pip install {{ .Exe }}=={{ .Version }} --user --break-system-packages
         {{ else }}
         echo "installation skipped"
@@ -178,7 +257,7 @@
     type: command
     commands:
       - |
-        {{ if eq .Platform.OS "linux" }}
+        {{ if eq .OS "linux" }}
         cd {{ .Output }}
         rm -rf PathPicker
         git clone https://github.com/facebook/PathPicker.git
@@ -231,7 +310,7 @@
     type: command
     commands:
       - |
-        {{ if eq .Platform.OS "linux" }}
+        {{ if eq .OS "linux" }}
         apt-get update
         apt-get install -y {{ .Exe }}
         {{ else }}
@@ -244,6 +323,7 @@
 
 - name: bcicen/ctop
   extensions: []
+
 - name: 89luca89/distrobox
   exe: distrobox
   version: 1.7.2.1
@@ -251,7 +331,7 @@
     type: command
     commands:
       - |
-        {{ if eq .Platform.OS "linux" }}
+        {{ if eq .OS "linux" }}
         apt-get update
         apt-get install -y {{ .Exe }}
         {{ else }}
@@ -287,7 +367,7 @@
     type: command
     commands:
       - |
-        {{ if eq .Platform.OS "linux" }}
+        {{ if eq .OS "linux" }}
         apt-get update
         apt-get install -y {{ .Name }}={{ .Version }}
         {{ else }}

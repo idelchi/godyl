@@ -111,6 +111,8 @@
   skip:
     - reason: "tere is not available for ARM architecture"
       condition: '{{ eq .ARCH "arm" }}'
+    - reason: "tere is not available for Darwin"
+      condition: '{{ eq .OS "darwin" }}'
   extensions: .zip
   fallbacks:
     - rust

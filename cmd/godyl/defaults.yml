@@ -8,6 +8,11 @@ hints:
     weight: 1
   - pattern: zip
     weight: '{{ if eq .Platform.OS "windows" }}1{{ else }}0{{ end }}'
+extensions:
+  - '{{ if eq .Platform.OS "windows" }}.exe{{ else }}{{ end }}'
+  - '{{ if eq .Platform.OS "windows" }}.zip{{ else }}{{ end }}'
+  - .tar.gz
+
 # tests:
 #   allow-failure: true
 #   args:

@@ -2,6 +2,7 @@ package tools
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/idelchi/godyl/internal/match"
@@ -16,7 +17,7 @@ func ExtensionsToHint(exts Extensions) match.Hint {
 	var noExtensionPart string
 	var extensionParts []string
 
-	for _, ext := range exts {
+	for _, ext := range slices.Compact(exts) {
 		if ext == "" {
 			noExtensionPart = "^[^.]+$"
 		} else {

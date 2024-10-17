@@ -41,20 +41,3 @@ func (p *Platform) Merge(other Platform) {
 	utils.SetIfEmpty(&p.Extension, other.Extension)
 	utils.SetIfEmpty(&p.Distribution, other.Distribution)
 }
-
-// CommonExtensions returns a list of common file extensions for the platform, depending on the OS.
-func (p *Platform) CommonExtensions() []string {
-	switch p.OS {
-	case platform.Windows:
-		return []string{
-			".zip",
-			".exe",
-			".gz",
-		}
-	default:
-		return []string{
-			".gz",
-			"",
-		}
-	}
-}

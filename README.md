@@ -145,8 +145,8 @@ Examples are provided in [tools.yml](./tools.yml).
 
 Above is the `simple` form to attempt to download the latest release of `zoxide` from `ajeetdsouza/zoxide`.
 
-If it is a simply two-part string, it will be considered as a `source.github` type.
 If it is a URL, it will be considered as a `source.url` type.
+Otherwise, it will be assumed to be a `source.github` type on the form `owner/repo`.
 
 ### Full form
 
@@ -159,7 +159,7 @@ output: string
 exe:
   name: string
   patterns:
-    - regex pattern
+    - regex
 platform:
   os: string
   architecture:
@@ -172,8 +172,8 @@ aliases: []
 values: {}
 fallbacks: []
 hints:
-  - pattern: regex pattern
-    weight: int (or template string)
+  - pattern: regex
+    weight: string
     must: boolean
 source:
   type: string

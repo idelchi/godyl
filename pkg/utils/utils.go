@@ -1,11 +1,13 @@
 package utils
 
 import (
+	"net/url"
+
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
-/
+// IsUrl checks if the input string is a valid URL.
 func IsUrl(str string) bool {
 	u, err := url.Parse(str)
 	return err == nil && u.Scheme != "" && u.Host != ""

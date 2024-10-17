@@ -5,7 +5,6 @@ import (
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/env"
-	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // Defaults holds default configuration values for a tool.
@@ -49,9 +48,6 @@ func (d *Defaults) Initialize() error {
 
 	// Merge the detected platform details with the default platform settings.
 	d.Platform.Merge(p)
-
-	// Set default extensions based on common extensions for the detected platform.
-	utils.SetSliceIfNil(&d.Extensions, p.CommonExtensions()...)
 
 	return nil
 }

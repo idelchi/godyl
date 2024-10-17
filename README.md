@@ -36,11 +36,13 @@ However, most properties can be overridden, with `hints` and `skip` used to help
 > [!NOTE]
 > Tested on:
 >
-> _Linux_: `amd64`, `arm64`, `armv7l`, `armv6l`
+> **Linux**: `amd64`, `arm64`, `armv7l`, `armv6l`
 >
-> _Windows_: `amd64`
+> **Windows**: `amd64`
 >
-> _MacOS_: `arm64`
+> **MacOS**: `arm64`
+>
+> for tools listed in [tools.yml](./tools.yml)
 
 Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
 

@@ -26,14 +26,18 @@ func ExtensionsToHints(exts Extensions) match.Hint {
 		}
 	}
 
+	var pattern string
 	// Combine both parts
 	if noExtensionPart != "" && len(extensionParts) > 0 {
-		return fmt.Sprintf("(%s|%s)", noExtensionPart, strings.Join(extensionParts, "|"))
+		pattern = fmt.Sprintf("(%s|%s)", noExtensionPart, strings.Join(extensionParts, "|"))
 	} else if noExtensionPart != "" {
-		return noExtensionPart
+		pattern = noExtensionPart
 	} else {
-		return strings.Join(extensionParts, "|")
+		pattern = strings.Join(extensionParts, "|")
 	}
 
-	return match.Hints{}
+	return match.Hint{
+		Pattern: pattern,
+		Must:    true,
+	}
 }

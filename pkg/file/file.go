@@ -63,7 +63,11 @@ func (f File) Find(dir string, criteria ...CriteriaFunc) (File, error) {
 			return err
 		}
 
-		match := regexp.MustCompile(filepath.ToSlash(f.Name())).MatchString(filepath.ToSlash(relPath))
+		pattern := filepath.ToSlash(f.Name())
+		name := filepath.ToSlash(relPath)
+
+		match := regexp.MustCompile(pattern).FindString(name) != ""
+		// match := regexp.MustCompile(filepath.ToSlash(f.Name())).MatchString(filepath.ToSlash(relPath))
 
 		if match && !info.IsDir() {
 			if len(criteria) == 0 {

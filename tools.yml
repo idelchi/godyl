@@ -74,8 +74,6 @@
       must: true
   source:
     type: github
-    go:
-      command: cmd
 
 - name: pemistahl/grex
   skip:

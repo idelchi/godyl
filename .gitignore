@@ -14,5 +14,5 @@
 .cache
 .task
 dist/
-bin/
+.bin-*
 .local

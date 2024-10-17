@@ -98,8 +98,6 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 func (b *Binary) Download(path string) error {
 	url := fmt.Sprintf("https://go.dev/dl/%s", path)
 
-	fmt.Fprintf(os.Stderr, "Downloading %q\n", url)
-
 	downloader := download.New()
 
 	destination, err := downloader.Download(url, b.Dir.Path())

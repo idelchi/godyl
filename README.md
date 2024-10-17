@@ -522,7 +522,9 @@ They will be tried in order until the tool is found or all have been tried.
 | -------- | --------- | ----------- |
 | ![na]    | ![no]     | ![no]       |
 
-`source.go` is a dictionary containing the command to run to install the tool.
+`source.go` can be set to the relative path of the go `command` to download, if non-standard (i.e not matching `<name>`, `cmd/<name>` or `cmd`).
+
+#### Usage
 
 #### Commands
 

@@ -106,9 +106,6 @@ func (g *Go) Install(d common.InstallData) (output string, found file.File, err 
 			found, err := common.FindAndSymlink(file.NewFile(folder.Path()), d)
 
 			return output, found, err
-		} else {
-			fmt.Println(err)
-			fmt.Println(output)
 		}
 	}
 

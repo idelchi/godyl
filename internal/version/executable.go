@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"fmt"
 	"os/exec"
 	"strings"
 	"time"
@@ -57,7 +56,6 @@ func (e *Executable) ParseVersion() error {
 		// Get the output of the command
 		output, err := e.Command(ctx, cmdArgs)
 		if err != nil {
-			fmt.Printf("Error parsing version: %v: %q\n", err, output)
 			continue
 		}
 
@@ -66,8 +64,6 @@ func (e *Executable) ParseVersion() error {
 
 			return nil
 		} else {
-			fmt.Printf("Error parsing version: %v: %q: %q\n", err, version, output)
-
 			continue
 		}
 	}

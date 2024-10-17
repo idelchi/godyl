@@ -72,13 +72,29 @@ ARG USER=user
 RUN groupadd -r -g 1001 ${USER} && \
     useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 
+# Install Go
+# ARG GO_VERSION=go1.23.2
+# ARG GO_ARCH=${TARGETARCH}
+# ARG TARGETARCH
+# ARG GO_ARCH=${TARGETARCH}
+# RUN apt-get update && apt-get install -y \
+#     wget \
+#     && rm -rf /var/lib/apt/lists/*
+
+# RUN mkdir -p /go
+# RUN wget -qO- https://go.dev/dl/${GO_VERSION}.linux-${GO_ARCH}.tar.gz | tar -xz -C /go
+# ENV GOPATH=/opt/go
+# RUN mkdir ${GOPATH} && chown -R ${USER}:${USER} ${GOPATH}
+
 USER ${USER}
 WORKDIR /home/${USER}
 
 COPY --from=build --chown=${USER}:{USER} /tmp/go/bin/godyl /home/${USER}/.local/bin/godyl
 
 COPY --chown=${USER}:{USER} .bashrc /home/${USER}/.bashrc
+# RUN echo "alias goo=/go/go/bin/go" >> /home/${USER}/.bashrc
 
+ENV PATH=$PATH:/go/go/bin
 ENV PATH=$PATH:/home/${USER}/.local/bin
 ENV PATH=$PATH:/root/.local/bin
 

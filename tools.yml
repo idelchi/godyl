@@ -65,7 +65,7 @@
   exe:
     name: sshed
     patterns:
-      # - sshed
+      - sshed
       - ^cmd$
   fallbacks:
     - go
@@ -208,7 +208,7 @@
       condition: '{{ ne .ARCH "amd64" }}'
   hints:
     - pattern: icons
-      weight: 2
+      weight: 3
 
 - name: helm
   version: 3.16.1

@@ -109,20 +109,18 @@ func (f Folder) FindFile(criteria ...CriteriaFunc) (File, error) {
 			return err
 		}
 
+		if File(path).IsDir() {
+			return nil // Skip directories
+		}
+
 		path, err = filepath.Rel(f.Path(), path)
 		if err != nil {
 			return err
 		}
 
-		file = File(path)
-
-		if file.IsDir() {
-			return nil // Skip directories
-		}
-
 		// Check if the file matches all criteria
 		for _, criterion := range criteria {
-			matches, err := criterion(file)
+			matches, err := criterion(File(path))
 			if err != nil {
 				return err
 			}

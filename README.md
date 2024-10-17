@@ -1,8 +1,4 @@
 <p align="center">
-    <img src="assets/go.png" height="250" />
-</p>
-
-<p align="center">
   <img alt="golangci-lint logo" src="assets/go.png" height="150" />
   <h3 align="center">godyl</h3>
   <p align="center">Asset downloader</p>

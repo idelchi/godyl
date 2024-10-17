@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -177,16 +176,6 @@ func handleExitFlags(cfg Config) {
 	}
 }
 
-// PrintJSON returns a pretty-printed JSON representation of the provided object.
-func PrintJSON(obj any) string {
-	bytes, err := json.MarshalIndent(obj, "  ", "    ")
-	if err != nil {
-		return err.Error()
-	}
-
-	return string(bytes)
-}
-
 func loadDotEnv(path file.File) error {
 	dotEnv, err := env.FromDotEnv(path.Name())
 	if err != nil {
@@ -201,3 +190,16 @@ func loadDotEnv(path file.File) error {
 
 	return nil
 }
+
+// func setEnv(envs ...env.Env) error {
+// 	env := env.Env{}
+// 	for _, e := range envs {
+// 		env = env.Merged(e.Normalized())
+// 	}
+
+// 	if err := env.ToEnv(); err != nil {
+// 		return fmt.Errorf("setting environment variables: %w", err)
+// 	}
+
+// 	return nil
+// }

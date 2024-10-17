@@ -82,7 +82,7 @@ func (app *App) run() error {
 	app.log.Info("godyl running with:")
 	app.log.Info("*** ***")
 	app.log.Info("platform:")
-	app.log.Info(PrintJSON(app.defaults.Platform))
+	app.log.Info(pretty.YAML(app.defaults.Platform))
 	app.log.Info("*** ***")
 
 	if err := app.processTools(t, wt); err != nil {

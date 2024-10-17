@@ -11,6 +11,7 @@ hints:
 extensions:
   - '{{ if eq .Platform.OS "windows" }}.exe{{ else }}{{ end }}'
   - '{{ if eq .Platform.OS "windows" }}.zip{{ else }}{{ end }}'
+  - '{{ if eq .Platform.OS "windows" }}.zip{{ else }}{{ end }}'
   - .tar.gz
 mode: find
 source:

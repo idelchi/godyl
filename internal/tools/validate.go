@@ -8,6 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/utils"
 )
@@ -31,6 +32,9 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	// Normalize values to ensure consistency in the .Values map.
 	t.NormalizeValues()
 
+	// Load environment variables from the system.
+	t.Env.Merge(env.FromEnv())
+
 	// Expand and set the output folder path.
 	output := file.Folder(t.Output)
 	if err := output.Expand(); err != nil {
@@ -53,8 +57,10 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 		if err != nil {
 			return err
 		}
+
 		fallbacks[i].From(output)
 	}
+
 	fallbacks = slices.Compact(fallbacks) // Remove any empty fallback entries.
 
 	var lastErr error

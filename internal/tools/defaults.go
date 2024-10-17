@@ -41,13 +41,13 @@ type Defaults struct {
 // It also sets up default extensions based on the detected platform.
 func (d *Defaults) Initialize() error {
 	// Detect the current platform (e.g., OS, architecture).
-	p := detect.Platform{}
-	if err := p.Detect(); err != nil {
+	platform := detect.Platform{}
+	if err := platform.Detect(); err != nil {
 		return err
 	}
 
 	// Merge the detected platform details with the default platform settings.
-	d.Platform.Merge(p)
+	d.Platform.Merge(platform)
 
 	return nil
 }

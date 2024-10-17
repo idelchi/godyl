@@ -34,8 +34,6 @@ RUN --mount=type=cache,target=${GOMODCACHE},uid=1001,gid=1001 \
     --mount=type=cache,target=${GOCACHE},uid=1001,gid=1001 \
     go mod download
 
-RUN go mod download
-
 ARG TARGETOS TARGETARCH
 
 COPY . .
@@ -56,7 +54,6 @@ RUN mkdir -p /home/${USER}/.local/bin
 RUN cp bin/godyl /home/${USER}/.local/bin
 
 
-USER ${USER}
 WORKDIR /home/${USER}
 
 # Timezone
@@ -78,9 +75,9 @@ RUN groupadd -r -g 1001 ${USER} && \
 USER ${USER}
 WORKDIR /home/${USER}
 
-COPY --from=build --chown=1001:1001 /tmp/go/bin/godyl /home/${USER}/.local/bin/godyl
+COPY --from=build --chown=${USER}:{USER} /tmp/go/bin/godyl /home/${USER}/.local/bin/godyl
 
-COPY --chown=1001:1001 .bashrc /home/${USER}/.bashrc
+COPY --chown=${USER}:{USER} .bashrc /home/${USER}/.bashrc
 
 ENV PATH=$PATH:/home/${USER}/.local/bin
 ENV PATH=$PATH:/root/.local/bin

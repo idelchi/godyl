@@ -38,7 +38,9 @@ Tool is inspired by [task](https://github.com/go-task/task), [dra](https://githu
 > [!NOTE]
 > Tested on:
 > Linux: `amd64`, `arm64`, `armv7l`, `armv6l`
+>
 > Windows: `amd64`
+>
 > MacOS: `arm64`
 
 ---

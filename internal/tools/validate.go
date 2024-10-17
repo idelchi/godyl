@@ -9,7 +9,6 @@ import (
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/folder"
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
@@ -33,7 +32,7 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	t.NormalizeValues()
 
 	// Expand and set the output folder path.
-	output := folder.Folder(t.Output)
+	output := file.Folder(t.Output)
 	if err := output.Expand(); err != nil {
 		return err
 	}
@@ -199,7 +198,7 @@ func (t *Tool) Validate() error {
 
 // Exists checks if the tool's executable already exists in the output path.
 func (t *Tool) Exists() bool {
-	f := file.New(t.Output, t.Exe.Name)
+	f := file.NewFile(t.Output, t.Exe.Name)
 	return f.Exists() && f.IsFile()
 }
 

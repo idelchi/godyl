@@ -20,6 +20,23 @@ const (
 	ERROR  Level = "error"  // ERROR represents error messages, indicating failure in operation.
 )
 
+func (l Level) AsInt() int {
+	switch l {
+	case DEBUG:
+		return 0
+	case INFO:
+		return 1
+	case WARN:
+		return 2
+	case ERROR:
+		return 3
+	case SILENT:
+		return 4
+	default:
+		return 1
+	}
+}
+
 // IsAllowed checks if the log Level is a valid value (DEBUG, INFO, WARN, ERROR).
 func (l Level) IsAllowed() bool {
 	switch l {
@@ -85,7 +102,7 @@ func (l *Logger) log(level Level, format string, args ...any) {
 		return
 	}
 
-	if level >= l.level {
+	if level.AsInt() >= l.level.AsInt() {
 		message := fmt.Sprintf(format, args...)
 		if c, ok := l.colors[level]; ok {
 			c.Fprintln(l.output, message)

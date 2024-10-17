@@ -29,11 +29,8 @@ func (a *Asset) Parse() {
 // MatchHint checks if the asset's name matches the provided hint.
 // The hint can be a regular expression or a simple substring match.
 func (a Asset) MatchHint(hint Hint) bool {
-	if hint.Regex {
-		regex, err := regexp.Compile(hint.Pattern)
-		return err == nil && regex.MatchString(a.NameLower())
-	}
-	return strings.Contains(a.NameLower(), hint.Pattern)
+	regex, err := regexp.Compile(hint.Pattern)
+	return err == nil && regex.MatchString(a.NameLower())
 }
 
 // PlatformMatch evaluates whether the asset's platform matches the required platform.
@@ -100,7 +97,7 @@ func (a Asset) Match(req Requirements) (int, bool) {
 	// Check non-mandatory hints and adjust the score
 	for _, hint := range req.Hints {
 		if !hint.Must && a.MatchHint(hint) {
-			score += hint.Weight
+			score += hint.WeightInt
 		}
 	}
 

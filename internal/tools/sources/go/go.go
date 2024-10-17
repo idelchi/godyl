@@ -15,7 +15,6 @@ import (
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/folder"
 )
 
 // Go represents a Go project sourced from a GitHub repository.
@@ -72,7 +71,7 @@ func (g *Go) Install(d common.InstallData) (output string, found file.File, err 
 		Binary: binary,
 	}
 
-	var folder folder.Folder
+	var folder file.Folder
 	folder.CreateRandomInTempDir()
 
 	installer.Binary.Env.Append(
@@ -104,7 +103,7 @@ func (g *Go) Install(d common.InstallData) (output string, found file.File, err 
 
 		if err == nil {
 			d.Path = path
-			found, err := common.FindAndSymlink(file.New(folder.Path()), d)
+			found, err := common.FindAndSymlink(file.NewFile(folder.Path()), d)
 
 			return output, found, err
 		} else {

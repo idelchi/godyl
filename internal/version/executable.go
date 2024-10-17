@@ -23,7 +23,7 @@ type Executable struct {
 
 // NewExecutable creates a new Executable instance from the provided paths.
 func NewExecutable(paths ...string) Executable {
-	return Executable{File: file.New(paths...)}
+	return Executable{File: file.NewFile(paths...)}
 }
 
 // Command runs the specified command arguments on the executable using the provided context.

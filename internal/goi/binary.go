@@ -12,14 +12,13 @@ import (
 
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/folder"
 )
 
 // Binary represents a Go binary, including its associated file, directory, and environment variables.
 type Binary struct {
-	File file.File     // File holds the file information for the Go binary.
-	Dir  folder.Folder // Dir refers to the directory where the binary is stored.
-	Env  Env           // Env contains the environment variables for running the binary.
+	File file.File   // File holds the file information for the Go binary.
+	Dir  file.Folder // Dir refers to the directory where the binary is stored.
+	Env  Env         // Env contains the environment variables for running the binary.
 }
 
 var mu sync.Mutex
@@ -30,7 +29,7 @@ func New() (binary Binary, err error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	dir := folder.New(".godyl-go")
+	dir := file.NewFolder(".godyl-go")
 	if err := dir.CreateInTempDir(); err != nil && !errors.Is(err, os.ErrExist) {
 		return binary, fmt.Errorf("creating temp dir: %w", err)
 	}
@@ -42,7 +41,7 @@ func New() (binary Binary, err error) {
 			binary.Env.Default(binary.Dir.Path())
 		} else {
 			binary.Env = Env{}
-			binary.Dir = folder.New()
+			binary.Dir = file.Dir()
 		}
 		return binary, nil
 	} else {
@@ -81,7 +80,7 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 	binary, err := exec.LookPath("go")
 	if err != nil {
 		for _, path := range paths {
-			file := file.New(path, "go", "bin", "go")
+			file := file.NewFile(path, "go", "bin", "go")
 
 			if file.Exists() {
 				return file, nil
@@ -91,7 +90,7 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 		return file.File(""), fmt.Errorf("go binary not found: %w", err)
 	}
 
-	return file.New(binary), nil
+	return file.NewFile(binary), nil
 }
 
 // Download downloads the Go binary from the provided path and saves it to the directory.
@@ -112,7 +111,7 @@ func (b *Binary) Download(path string) error {
 		return fmt.Errorf("downloaded file is not a file")
 	}
 
-	b.File = file.New(destination.String(), "go", "bin", "go")
+	b.File = file.NewFile(destination.String(), "go", "bin", "go")
 
 	return nil
 }

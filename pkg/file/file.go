@@ -6,18 +6,25 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
-
-	"github.com/idelchi/godyl/pkg/folder"
 )
 
 // File represents a file path as a string, providing methods for file operations.
 type File string
 
-// New creates a new File by joining the provided paths.
-func New(paths ...string) File {
+// NewFile creates a new File by joining the provided paths.
+func NewFile(paths ...string) File {
 	return File(filepath.Join(paths...))
+}
+
+// Normalize converts the file path to use forward slashes.
+func (f *File) Normalize() {
+	*f = File(filepath.ToSlash(f.Name()))
+}
+
+// Normalize converts the file path to use forward slashes.
+func (f File) Normalized() File {
+	return File(filepath.ToSlash(f.Name()))
 }
 
 // Create creates a new file and returns a pointer to the os.File object, or an error.
@@ -40,64 +47,13 @@ func (f File) String() string {
 	return string(f)
 }
 
-// Dir returns the folder.Folder object representing the directory of the file.
-func (f File) Dir() folder.Folder {
-	return folder.New(filepath.Dir(f.String()))
-}
-
-// CriteriaFunc defines a function type for filtering files during search operations.
-type CriteriaFunc func(File) (bool, error)
-
-// Find searches for a file in the given directory that matches all provided criteria.
-// It returns the first matching File or an error if no match is found.
-func (f File) Find(dir string, criteria ...CriteriaFunc) (File, error) {
-	var filePath string
-	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		// Get the relative path from the base directory
-		relPath, err := filepath.Rel(dir, path)
-		if err != nil {
-			return err
-		}
-
-		pattern := filepath.ToSlash(f.Name())
-		name := filepath.ToSlash(relPath)
-
-		match := regexp.MustCompile(pattern).FindString(name) != ""
-		// match := regexp.MustCompile(filepath.ToSlash(f.Name())).MatchString(filepath.ToSlash(relPath))
-
-		if match && !info.IsDir() {
-			if len(criteria) == 0 {
-				// If no criteria provided, accept the first file matching the name
-				filePath = path
-				return filepath.SkipDir
-			}
-
-			for _, criterion := range criteria {
-				matches, err := criterion(f)
-				if err != nil {
-					return err
-				}
-				if !matches {
-					return nil // Skip this file if it doesn't match all criteria
-				}
-			}
-			filePath = path
-			return filepath.SkipDir // Stop walking, we found a match
-		}
-		return nil
-	})
-	if err != nil {
-		return f, err
+// Dir returns the file.Folder object representing the directory of the file.
+func (f File) Dir() Folder {
+	if f.IsDir() {
+		return NewFolder(f.String())
 	}
 
-	if filePath == "" {
-		return f, fmt.Errorf("file %q not found matching all criteria", f.Name())
-	}
-	return File(filePath), nil
+	return NewFolder(filepath.Dir(f.String()))
 }
 
 // IsExecutable checks if the file has executable permissions.

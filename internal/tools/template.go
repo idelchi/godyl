@@ -2,7 +2,6 @@ package tools
 
 import (
 	"bytes"
-	"strconv"
 	"text/template"
 
 	sprig "github.com/go-task/slim-sprig/v3"
@@ -108,14 +107,14 @@ func (t *Tool) Template() error {
 		if err != nil {
 			return err
 		}
-		output, err := t.ApplyTemplate(hints.WeightTemplate)
+		t.Hints[i].Weight, err = t.ApplyTemplate(hints.Weight)
 		if err != nil {
 			return err
 		}
 		// Set a default weight of "1" if not specified and convert it to an integer
-		utils.SetIfEmpty(&output, "1")
-		t.Hints[i].Weight, err = strconv.Atoi(output)
-		if err != nil {
+		utils.SetIfEmpty(&t.Hints[i].Weight, "1")
+
+		if err := t.Hints[i].SetWeight(); err != nil {
 			return err
 		}
 	}

@@ -11,7 +11,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/pkg/folder"
+	"github.com/idelchi/godyl/pkg/file"
 )
 
 // GodylUpdater is responsible for updating the godyl tool using the specified update strategy and defaults.
@@ -81,7 +81,7 @@ func (gu GodylUpdater) Replace(path string) error {
 // Get downloads the tool based on its source, placing it in a temporary directory, and returns the output path.
 func (gu GodylUpdater) Get(tool tools.Tool) (string, error) {
 	// Create a temporary directory to store the downloaded tool.
-	var dir folder.Folder
+	var dir file.Folder
 	if err := dir.CreateRandomInTempDir(); err != nil {
 		return "", fmt.Errorf("creating temporary directory: %w", err)
 	}

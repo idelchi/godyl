@@ -1,7 +1,8 @@
 output: ~/.local/bin
 exe:
   patterns:
-    - "{{ .Exe.Name }}{{ .Platform.Extension }}$"
+    - "^{{ .Exe.Name }}{{ .Platform.Extension }}$"
+    - ".*/{{ .Exe.Name }}{{ .Platform.Extension }}$"
 hints:
   - pattern: "{{ .Exe.Name }}"
     weight: 1

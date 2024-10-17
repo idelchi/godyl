@@ -80,6 +80,8 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 		// Match patterns in order of priority
 		for _, pattern := range d.Patterns {
 			match := func(file file.File) (bool, error) {
+				fmt.Printf("Matching %q with %q\n", file.Normalized().Name(), pattern)
+
 				re, err := regexp.Compile(pattern)
 				if err != nil {
 					return false, fmt.Errorf("compiling pattern %q: %w", pattern, err)

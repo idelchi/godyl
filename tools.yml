@@ -65,7 +65,7 @@
   exe:
     name: sshed
     patterns:
-      - sshed
+      # - sshed
       - ^cmd$
   fallbacks:
     - go

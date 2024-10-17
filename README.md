@@ -95,13 +95,13 @@ Use together with `yaml` file:
 godyl tools.yml  --output ./bin
 ```
 
-Or use as a single tool:
+Or use to download a single tool:
 
 ```sh
 godyl idelchi/godyl --output ./bin
 ```
 
-When with a `single tool` mode, the `mode` will be set to `extract` by default.
+When used to download a single tool, the `mode` will be set to `extract` by default.
 
 Override `os` and `arch` to download a specific binary:
 

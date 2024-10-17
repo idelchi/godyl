@@ -75,7 +75,7 @@ The following flags and their corresponding environment variables are available:
 | `--show-defaults`  | `GODYL_SHOW_DEFAULTS` | `false`        | Show the parsed default configuration and exit |
 | `--show-env`       | `GODYL_SHOW_ENV`      | `false`        | Show the parsed environment variables and exit |
 | `--show-platform`  | `GODYL_SHOW_PLATFORM` | `false`        | Detect the platform and exit                   |
-| `--update`         | `GODYL_UPDATE`        | `false`        | Update the tools                               |
+| `--update`         | `GODYL_UPDATE`        | `false`        | Update `godyl` itself                          |
 | `--dry`            | `GODYL_DRY`           | `false`        | Run without making any changes (dry run)       |
 | `--log`            | `GODYL_LOG`           | `info`         | Log level (debug, info, warn, error)           |
 | `--parallel`, `-j` | `GODYL_PARALLEL`      | `0`            | Number of parallel downloads (0 is unlimited)  |
@@ -151,7 +151,7 @@ output: string
 exe:
   name: string
   patterns:
-    - string
+    - regex pattern
 platform:
   os: string
   architecture:
@@ -164,9 +164,8 @@ aliases: []
 values: {}
 fallbacks: []
 hints:
-  - pattern: string
+  - pattern: regex pattern
     weight: int (or template string)
-    regex: boolean
     must: boolean
 source:
   type: string

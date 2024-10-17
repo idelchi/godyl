@@ -17,7 +17,9 @@
 - FiloSottile/age
 - chmln/sd
 - rs/curlie
-- mikefarah/yq
+
+- name: mikefarah/yq
+  extensions: "{{ .Platform.Extension }}"
 
 - name: sorenisanerd/gotty
   skip:
@@ -220,8 +222,6 @@
       condition: '{{ ne .Platform.OS "linux" }}'
     - reason: "nnn is only available for amd64 architecture"
       condition: '{{ ne .Platform.Architecture.Type "amd64" }}'
-  aliases:
-    - nnn
   hints:
     - pattern: icons
       weight: 2

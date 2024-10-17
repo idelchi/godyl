@@ -83,6 +83,14 @@ func (t *Tool) Template() error {
 		}
 	}
 
+	// Apply templating to Extensions
+	for i, pattern := range t.Extensions {
+		t.Extensions[i], err = t.ApplyTemplate(pattern)
+		if err != nil {
+			return err
+		}
+	}
+
 	// Apply templating to Source.Commands
 	for i, cmd := range t.Source.Commands {
 		output, err := t.ApplyTemplate(cmd.String())

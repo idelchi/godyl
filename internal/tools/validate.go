@@ -149,9 +149,12 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 
 	// Determine the tool's path if not already set.
 	if utils.IsEmpty(t.Path) {
-		if err := populator.Path(t.Name, t.Extensions, t.Version, match.Requirements{
+		hints := t.Hints
+		hints.Add(ExtensionsToHint(t.Extensions))
+
+		if err := populator.Path(t.Name, nil, t.Version, match.Requirements{
 			Platform: t.Platform,
-			Hints:    t.Hints,
+			Hints:    hints,
 		}); err != nil {
 			return err
 		}

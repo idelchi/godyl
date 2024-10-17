@@ -95,5 +95,5 @@ func (t *Tool) ApplyDefaults(d Defaults) {
 
 	// Apply platform-specific defaults and hints.
 	t.Platform.Merge(d.Platform)
-	t.Hints.Add(d.Hints)
+	t.Hints.Append(d.Hints)
 }

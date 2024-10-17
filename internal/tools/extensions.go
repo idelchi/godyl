@@ -13,7 +13,7 @@ import (
 // when configuring tools that may involve multiple file types.
 type Extensions = unmarshal.SingleOrSlice[string]
 
-func ExtensionsToHints(exts Extensions) match.Hint {
+func ExtensionsToHint(exts Extensions) match.Hint {
 	var noExtensionPart string
 	var extensionParts []string
 

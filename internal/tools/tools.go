@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/utils"
 	"gopkg.in/yaml.v3"
 )
@@ -19,13 +20,18 @@ func (t *Tools) Load(cfg string) (err error) {
 	if !strings.HasSuffix(cfg, ".yml") && !strings.HasSuffix(cfg, ".yaml") {
 		// If the configuration starts with "http", assume it's a URL.
 		if utils.IsURL(cfg) {
+
+			tool := Tool{
+				Name: filepath.Base(cfg),
+				Path: cfg,
+				Mode: Extract,
+			}
+
+			tool.Source.Type = sources.DIRECT
+
 			// Create a new Tool with the URL as the Path and Name.
 			*t = Tools{
-				Tool{
-					Name: filepath.Base(cfg),
-					Path: cfg,
-					Mode: Extract,
-				},
+				tool,
 			}
 		} else {
 			// If it's not a URL, treat it as a simple tool name.

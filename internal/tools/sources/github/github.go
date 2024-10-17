@@ -11,10 +11,9 @@ import (
 
 // GitHub represents a GitHub repository with optional authentication token and metadata.
 type GitHub struct {
-	Repo       string
-	Owner      string
-	Token      string `mask:"fixed"`
-	Extensions Extensions
+	Repo  string
+	Owner string
+	Token string `mask:"fixed"`
 
 	// Data holds additional metadata related to the repository.
 	Data common.Metadata `yaml:"-"`

@@ -233,8 +233,6 @@ source:
     repo: string
     owner: string
     token: string
-    extensions:
-      - string
   url:
     url: string
     token: string
@@ -244,7 +242,8 @@ source:
 tags:
   - string
 strategy: string
-
+extensions:
+  - string
 skip:
   - condition: string
     reason: string
@@ -781,13 +780,11 @@ Only certain fields are templated. Below is a list of fields where templating is
       - "^{{ .OS }}-{{ .Exe}}"
   ```
 
-- `source.github.extensions`
+- `extensions`
 
   ```yaml
-  source:
-    github:
-      extensions:
-        - '{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}'
+  extensions:
+    - '{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}'
   ```
 
 - `source.commands`

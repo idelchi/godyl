@@ -8,7 +8,6 @@ import (
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
-	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/utils"
@@ -55,7 +54,7 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	// Save the path for templating later.
 	path := t.Path
 
-	t.Source.Github.Extensions = slices.Compact(t.Source.Github.Extensions)
+	t.Extensions = slices.Compact(t.Extensions)
 	t.Aliases = slices.Compact(t.Aliases)
 	t.Fallbacks = slices.Compact(t.Fallbacks)
 
@@ -158,7 +157,7 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 	// Determine the tool's path if not already set.
 	if utils.IsEmpty(t.Path) {
 		hints := t.Hints
-		hints.Add(github.ExtensionsToHint(t.Source.Github.Extensions))
+		hints.Add(ExtensionsToHint(t.Extensions))
 
 		if err := populator.Path(t.Name, nil, t.Version, match.Requirements{
 			Platform: t.Platform,

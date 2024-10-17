@@ -45,7 +45,8 @@ type Tool struct {
 	Tags Tags
 	// Strategy defines how the tool is deployed, fetched, or managed (e.g., download strategies, handling retries).
 	Strategy Strategy
-
+	// Extensions lists additional files or behaviors that are tied to the tool.
+	Extensions Extensions
 	// Skip defines conditions under which certain steps (e.g., downloading, testing) are skipped.
 	Skip Skip
 	// Post defines commands that should be run after the main operation, such as post-installation steps.
@@ -68,6 +69,11 @@ func (t *Tool) UnmarshalYAML(value *yaml.Node) error {
 	if value.Kind == yaml.ScalarNode {
 		t.Name = value.Value
 
+		if utils.IsURL(t.Name) {
+			t.Path = t.Name
+			t.Source.Type = sources.DIRECT
+		}
+
 		return nil
 	}
 
@@ -89,7 +95,7 @@ func (t *Tool) ApplyDefaults(d Defaults) {
 	utils.SetSliceIfNil(&t.Skip, Condition{Condition: "false"})
 	utils.SetIfEmpty(&t.Mode, d.Mode)
 	utils.SetSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
-	utils.SetSliceIfNil(&t.Source.Github.Extensions, d.Extensions...)
+	utils.SetSliceIfNil(&t.Extensions, d.Extensions...)
 	utils.SetMapIfNil(&t.Values, d.Values)
 	utils.DeepMergeMapsWithoutOverwrite(t.Values, d.Values)
 	t.Env.Merge(d.Env)

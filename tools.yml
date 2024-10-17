@@ -1,4 +1,1 @@
-- name: ajeetdsouza/zoxide
-  skip: "{{ .Values.Thing }}"
-  values:
-    thing: true
+- https://ajeetdsouza/zoxide

@@ -75,8 +75,8 @@ func (t *Tool) TemplateLast() error {
 	}
 
 	// Apply templating to Extensions
-	for i := range t.Extensions {
-		if err := templates.ApplyAndSet(&t.Extensions[i], values); err != nil {
+	for i := range t.Source.Github.Extensions {
+		if err := templates.ApplyAndSet(&t.Source.Github.Extensions[i], values); err != nil {
 			return err
 		}
 	}

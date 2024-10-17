@@ -233,9 +233,8 @@ source:
     repo: string
     owner: string
     token: string
-    data:
-      exe: string
-      version: string
+    extensions:
+      - string
   url:
     url: string
     token: string
@@ -245,8 +244,7 @@ source:
 tags:
   - string
 strategy: string
-extensions:
-  - string
+
 skip:
   - condition: string
     reason: string
@@ -661,7 +659,11 @@ The following is embedded and used by default if no default configuration is pro
 The example above defines:
 
 - The default output directory for all tools (`~/.local/bin`)
-- Patterns to use for when searching for the executable (`"{{ .Exe }}{{ .EXTENSION }}$"`)
+- Patterns to use for when searching for the executable
+
+  - ^{{ .Exe }}{{ .EXTENSION }}$
+  - .\*/{{ .Exe }}{{ .EXTENSION }}$
+
 - Hints to:
 
   - use the executable name as a pattern (useful for repositories with multiple binaries, such as `ahmetb/kubectx`)
@@ -675,8 +677,14 @@ The example above defines:
 
     ```yaml
     pattern: zip
-    weight: '{{ if eq .Platform.OS "windows" }}1{{ else }}0{{ end }}'
+    weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
     ```
+
+- Extensions to use when filtering assets
+
+  - `.exe` for Windows, empty for Linux and MacOS
+  - `.zip` for Windows
+  - `.tar.gz` for all platforms
 
 - `find` mode for downloading, extracting and finding the executable
 - The default source type as `github`
@@ -695,7 +703,6 @@ hints:
 source:
 tags:
 strategy:
-extensions:
 env:
 mode:
 ```
@@ -774,11 +781,13 @@ Only certain fields are templated. Below is a list of fields where templating is
       - "^{{ .OS }}-{{ .Exe}}"
   ```
 
-- `extensions`
+- `source.github.extensions`
 
   ```yaml
-  extensions:
-    - '{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}'
+  source:
+    github:
+      extensions:
+        - '{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}'
   ```
 
 - `source.commands`

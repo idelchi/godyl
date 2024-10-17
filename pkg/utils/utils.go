@@ -5,6 +5,12 @@ import (
 	"golang.org/x/text/language"
 )
 
+/
+func IsUrl(str string) bool {
+	u, err := url.Parse(str)
+	return err == nil && u.Scheme != "" && u.Host != ""
+}
+
 // SetIfEmpty sets the value of input to the specified value if it is empty.
 // S must be a comparable type.
 func SetIfEmpty[S comparable](input *S, value S) {

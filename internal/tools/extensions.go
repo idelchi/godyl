@@ -8,11 +8,10 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
-// Extensions represents a collection of file extensions related to the tool.
-// It can either be a single string or a slice of strings, providing flexibility
-// when configuring tools that may involve multiple file types.
+// Extensions represents a collection of file extensions.
 type Extensions = unmarshal.SingleOrSlice[string]
 
+// ExtensionsToHint converts a list of extensions into a match.Hint.
 func ExtensionsToHint(exts Extensions) match.Hint {
 	var noExtensionPart string
 	var extensionParts []string

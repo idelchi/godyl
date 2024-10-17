@@ -29,6 +29,8 @@ Most properties can be overridden, with `hints` and `skip` used to help `godyl` 
 > This repo is a work in progress!
 > Needing both cleaning up and documenting.
 
+Tool is inspired by [task](https://github.com/go-task/task) and [dra](https://github.com/devmatteini/dra)
+
 ---
 
 ## Table of Contents
@@ -53,6 +55,12 @@ go install github.com/idelchi/godyl/cmd/godyl@latest
 
 ```sh
 curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts/install.sh | sh -s -- -v v0.0 -o ~/.local/bin
+```
+
+## Update
+
+```sh
+godyl --update
 ```
 
 ## Configuration

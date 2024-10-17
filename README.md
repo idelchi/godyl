@@ -59,7 +59,7 @@ Tool is inspired by [task](https://github.com/go-task/task), [dra](https://githu
 - [Template overview](#template-overview)
   - [Variables](#variables)
   - [Allowed in](#allowed-in)
-- [Inferrence](#inferrence)
+- [Inference](#Inference)
   - [Operating Systems](#operating-systems)
   - [Architectures](#architectures)
   - [Libraries](#libraries)
@@ -95,13 +95,13 @@ Use together with `yaml` file:
 godyl tools.yml  --output ./bin
 ```
 
-Or use as a single tool:
+Or use to download a single tool:
 
 ```sh
 godyl idelchi/godyl --output ./bin
 ```
 
-When with a `single tool` mode, the `mode` will be set to `extract` by default.
+When used to download a single tool, the `mode` will be set to `extract` by default.
 
 Override `os` and `arch` to download a specific binary:
 
@@ -524,6 +524,9 @@ They will be tried in order until the tool is found or all have been tried.
 
 `source.go` can be set to the relative path of the go `command` to download, if non-standard (i.e not matching `<name>`, `cmd/<name>` or `cmd`).
 
+> [!WARNING]
+> Go will be downloaded into a temporary directory `/tmp/.godyl-go` if not present.
+
 #### Usage
 
 #### Commands
@@ -662,8 +665,8 @@ The example above defines:
 - The default output directory for all tools (`~/.local/bin`)
 - Patterns to use for when searching for the executable
 
-  - ^{{ .Exe }}{{ .EXTENSION }}$
-  - .\*/{{ .Exe }}{{ .EXTENSION }}$
+  - `^{{ .Exe }}{{ .EXTENSION }}$`
+  - `.\*/{{ .Exe }}{{ .EXTENSION }}$`
 
 - Hints to:
 
@@ -835,7 +838,7 @@ Only certain fields are templated. Below is a list of fields where templating is
 > - `source.commands`
 > - `post`
 
-## Inferrence
+## Inference
 
 ### Operating Systems
 

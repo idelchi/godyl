@@ -3,7 +3,7 @@ version: "3"
 # .env file variables are available here, with the exception of `includes`,
 # where externally defined environment variables and regular variables are available.
 # It's therefore recommended to also source the .env file before running.
-dotenv: [".env"]
+dotenv: ["taskfile.env"]
 
 vars:
   # This environment variable must exist (i.e it's not enough that it's set in the .env file)

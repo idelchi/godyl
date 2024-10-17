@@ -47,7 +47,7 @@ RUN --mount=type=cache,target=${GOMODCACHE},uid=1001,gid=1001 \
 
 # RUN go mod download
 
-COPY .bashrc /home/${USER}/.bashrc
+COPY --chown=${USER}:{USER} .bashrc /home/${USER}/.bashrc
 
 ENV PATH=$PATH:/home/${USER}/.local/bin
 ENV PATH=$PATH:/root/.local/bin

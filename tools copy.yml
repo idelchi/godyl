@@ -17,7 +17,9 @@
 - FiloSottile/age
 - chmln/sd
 - rs/curlie
-- mikefarah/yq
+
+- name: mikefarah/yq
+  extensions: "{{ .Platform.Extension }}"
 
 - name: sorenisanerd/gotty
   skip:
@@ -118,14 +120,7 @@
   post:
     - "{{ .Output }}/{{ .Exe.Name }} extension install github/gh-copilot"
     - "{{ .Output }}/{{ .Exe.Name }} extension upgrade gh-copilot"
-
-# Make this a post-installation step of gh
-- name: github/gh-copilot
-  exe:
-    name: github-copilot
-    patterns:
-      - "^{{ .Platform.OS }}-"
-  aliases: ghc
+    - echo 'eval "$(gh copilot alias -- bash)"' >> ~/.bashrc
 
 - name: jesseduffield/lazydocker
   aliases: lazy
@@ -214,14 +209,12 @@
 
 - name: jarun/nnn
   exe:
-    patterns: nnn.*
+    patterns: ^nnn.*
   skip:
     - reason: "nnn is only available for linux"
       condition: '{{ ne .Platform.OS "linux" }}'
     - reason: "nnn is only available for amd64 architecture"
       condition: '{{ ne .Platform.Architecture.Type "amd64" }}'
-  aliases:
-    - nnn
   hints:
     - pattern: icons
       weight: 2
@@ -339,6 +332,7 @@
 
 - name: bcicen/ctop
   extensions: []
+
 - name: 89luca89/distrobox
   exe: distrobox
   version: 1.7.2.1

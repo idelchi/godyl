@@ -221,7 +221,7 @@ func (app *App) processResult(res result) {
 			if tool.Aliases != nil {
 				app.log.Info("  symlinks:")
 				for _, alias := range tool.Aliases {
-					app.log.Info("    - %q\n", filepath.Join(tool.Output, alias))
+					app.log.Info("    - %q", filepath.Join(tool.Output, alias))
 				}
 			}
 		} else {

@@ -687,7 +687,7 @@ The example above defines:
 - Extensions to use when filtering assets
 
   - `.exe` for Windows, empty for Linux and MacOS
-  - `.zip` for Windows
+  - `.zip` for Windows and Darwin
   - `.tar.gz` for all platforms
 
 - `find` mode for downloading, extracting and finding the executable

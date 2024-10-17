@@ -12,7 +12,7 @@ hints:
 extensions:
   - '{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}'
   - '{{ if eq .OS "windows" }}.zip{{ else }}{{ end }}'
-  - '{{ if eq .OS "windows" }}.zip{{ else }}{{ end }}'
+  - '{{ if eq .OS "darwin" }}.zip{{ else }}{{ end }}'
   - .tar.gz
 mode: find
 source:

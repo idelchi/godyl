@@ -29,8 +29,6 @@ However, most properties can be overridden, with `hints` and `skip` used to help
 > This repo is a work in progress!
 > Needing both cleaning up and documenting.
 
-Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
-
 > [!CAUTION]
 > This project serves as a learning exercise for Go and its surrounding ecosystem and tooling.
 > As such, it might be of limited use for others, but feel free to use it if you find it useful.
@@ -43,6 +41,8 @@ Tool is inspired by [task](https://github.com/go-task/task), [dra](https://githu
 > _Windows_: `amd64`
 >
 > _MacOS_: `arm64`
+
+Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
 
 ---
 

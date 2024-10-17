@@ -39,7 +39,7 @@ jobs:
         run: go run ./cmd/godyl --detect
 
       - name: Run godyl
-        run: go run ./cmd/godyl --log=error
+        run: go run ./cmd/godyl --log=info
 
   tag:
     needs: test

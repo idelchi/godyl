@@ -36,7 +36,7 @@ jobs:
           check-latest: true
 
       - name: Run tests
-        run: go run ./cmd/godyl --detect
+        run: go run ./cmd/godyl --show-platform
 
       - name: Run godyl
         run: go run ./cmd/godyl --log=info

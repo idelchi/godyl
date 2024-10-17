@@ -28,13 +28,45 @@ func (t *Tool) ApplyTemplate(field string) (string, error) {
 	return buf.String(), nil
 }
 
+func (t *Tool) ApplyTemplateFrom(field string, values any) (string, error) {
+	var buf bytes.Buffer
+	tmpl, err := template.New("tmpl").Funcs(sprig.FuncMap()).Parse(field)
+	if err != nil {
+		return "", err
+	}
+	if err := tmpl.Execute(&buf, values); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
+}
+
+func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
+	templateMap := map[string]any{
+		"Env":     t.Env,
+		"Values":  t.Values,
+		"Version": t.Version,
+		"Exe":     t.Exe,
+		"Output":  t.Output,
+	}
+
+	for _, o := range flatten {
+		for k, v := range o {
+			templateMap[k] = v
+		}
+	}
+
+	return templateMap
+}
+
 // Template applies templating to various fields of the Tool struct, such as version, path, and checksum.
 // It processes these fields using Go templates and updates them with the templated values.
 func (t *Tool) Template() error {
+	values := t.ToTemplateMap(t.Platform.ToMap())
+
 	var err error
 
 	// Apply templating to Source.Type
-	output, err := t.ApplyTemplate(t.Source.Type.String())
+	output, err := t.ApplyTemplateFrom(t.Source.Type.String(), values)
 	if err != nil {
 		return err
 	}

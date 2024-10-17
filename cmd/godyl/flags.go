@@ -136,13 +136,13 @@ func handleExitFlags(cfg Config) {
 	}
 
 	if cfg.Show.Config {
-		pretty.PrintYAML(cfg)
+		pretty.PrintYAMLMasked(cfg)
 
 		os.Exit(0)
 	}
 
 	if cfg.Show.Env {
-		pretty.PrintYAML(env.FromEnv())
+		pretty.PrintYAMLMasked(env.FromEnv())
 
 		os.Exit(0)
 	}
@@ -157,7 +157,7 @@ func handleExitFlags(cfg Config) {
 
 		defaults.Merge(cfg)
 
-		pretty.PrintYAML(defaults)
+		pretty.PrintYAMLMasked(defaults)
 
 		os.Exit(0)
 	}

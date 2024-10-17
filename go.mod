@@ -5,6 +5,7 @@ go 1.23
 require (
 	github.com/agnivade/levenshtein v1.2.0
 	github.com/fatih/color v1.17.0
+	github.com/fatih/structs v1.1.0
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/go-resty/resty/v2 v2.15.3
 	github.com/go-task/slim-sprig/v3 v3.0.0

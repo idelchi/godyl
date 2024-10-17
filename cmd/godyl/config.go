@@ -21,11 +21,11 @@ type Update struct {
 
 type Tokens struct {
 	// GitHub token for authentication
-	GitHub string `mapstructure:"github-token"`
+	GitHub string `mapstructure:"github-token" mask:"fixed"`
 	// GitLab token for authentication
-	GitLab string `mapstructure:"gitlab-token"`
+	GitLab string `mapstructure:"gitlab-token" mask:"fixed"`
 	// URL token for authentication
-	URL string `mapstructure:"url-token"`
+	URL string `mapstructure:"url-token" mask:"fixed"`
 }
 
 type Show struct {

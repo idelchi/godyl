@@ -17,8 +17,8 @@ func YAML(obj any) string {
 	buf := bytes.Buffer{}
 	enc := yaml.NewEncoder(&buf)
 	enc.SetIndent(2)
-	err := enc.Encode(&obj)
-	if err != nil {
+
+	if err := enc.Encode(&obj); err != nil {
 		return err.Error()
 	}
 

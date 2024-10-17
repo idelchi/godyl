@@ -49,7 +49,7 @@ func UnmarshalSingleOrSlice[T any](node *yaml.Node, useKnownFields bool) ([]T, e
 	var result []T
 
 	// Use DecodeWithOptionalKnownFields to decode the node into the result slice.
-	if err := DecodeWithOptionalKnownFields(node, &result, useKnownFields, result); err != nil {
+	if err := DecodeWithOptionalKnownFields(node, &result, useKnownFields, "any"); err != nil {
 		return nil, err
 	}
 
@@ -60,7 +60,7 @@ func UnmarshalSingleOrSlice[T any](node *yaml.Node, useKnownFields bool) ([]T, e
 // the provided output (out) interface. It optionally enforces that all fields in the YAML
 // node are known to the target type if useKnownFields is set to true.
 // The input parameter is used for error message formatting.
-func DecodeWithOptionalKnownFields(value *yaml.Node, out any, useKnownFields bool, input any) error {
+func DecodeWithOptionalKnownFields(value *yaml.Node, out any, useKnownFields bool, input string) error {
 	// Re-encode the yaml.Node to bytes
 	var buf bytes.Buffer
 	enc := yaml.NewEncoder(&buf)
@@ -84,7 +84,7 @@ func DecodeWithOptionalKnownFields(value *yaml.Node, out any, useKnownFields boo
 // yamlTypeErrorConversion converts yaml.TypeError errors into more informative messages
 // by including the actual type of the input. It modifies the error message when it detects
 // a "not found in type" message, appending the input type to the message.
-func yamlTypeErrorConversion(err error, input any) error {
+func yamlTypeErrorConversion(err error, input string) error {
 	if err == nil {
 		return nil
 	}
@@ -105,7 +105,7 @@ func yamlTypeErrorConversion(err error, input any) error {
 			continue
 		}
 
-		typeErr.Errors[i] = fmt.Sprintf("%s not found in type %T", parts[0], input)
+		typeErr.Errors[i] = fmt.Sprintf("%s not found in type %q", parts[0], input)
 	}
 
 	return err

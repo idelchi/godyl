@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"github.com/fatih/structs"
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
@@ -74,7 +75,8 @@ func (t *Tool) UnmarshalYAML(value *yaml.Node) error {
 	type rawTool Tool
 
 	// Use custom unmarshal logic with KnownFields check to ensure field validation.
-	return unmarshal.DecodeWithOptionalKnownFields(value, (*rawTool)(t), true, t)
+
+	return unmarshal.DecodeWithOptionalKnownFields(value, (*rawTool)(t), true, structs.New(t).Name())
 }
 
 // ApplyDefaults applies default values to the Tool configuration.

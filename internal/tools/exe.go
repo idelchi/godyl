@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"github.com/fatih/structs"
 	"github.com/idelchi/godyl/pkg/unmarshal"
 	"gopkg.in/yaml.v3"
 )
@@ -37,5 +38,6 @@ func (e *Exe) UnmarshalYAML(value *yaml.Node) error {
 
 	// Perform custom unmarshaling with field validation, allowing only known fields.
 	type raw Exe
-	return unmarshal.DecodeWithOptionalKnownFields(value, (*raw)(e), true, e)
+
+	return unmarshal.DecodeWithOptionalKnownFields(value, (*raw)(e), true, structs.New(e).Name())
 }

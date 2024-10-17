@@ -14,18 +14,10 @@ import (
 type Extensions = unmarshal.SingleOrSlice[string]
 
 func ExtensionsToHints(exts Extensions) match.Hint {
-	var hints Hint
-	for _, ext := range exts {
-		hints = append(hints, NewDefaultHint(`\.`+ext+`$`))
-	}
-	return hints
-}
-
-func buildRegex(extensions []string) string {
 	var noExtensionPart string
 	var extensionParts []string
 
-	for _, ext := range extensions {
+	for _, ext := range exts {
 		if ext == "" {
 			noExtensionPart = "^[^.]+$"
 		} else {
@@ -42,10 +34,6 @@ func buildRegex(extensions []string) string {
 	} else {
 		return strings.Join(extensionParts, "|")
 	}
-}
 
-func main() {
-	extensions := []string{"", ".zip", ".tar.gz"}
-	regex := buildRegex(extensions)
-	fmt.Println(regex)
+	return match.Hints{}
 }

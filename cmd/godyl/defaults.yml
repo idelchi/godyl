@@ -12,14 +12,6 @@ extensions:
   - '{{ if eq .Platform.OS "windows" }}.exe{{ else }}{{ end }}'
   - '{{ if eq .Platform.OS "windows" }}.zip{{ else }}{{ end }}'
   - .tar.gz
-
-# tests:
-#   allow-failure: true
-#   args:
-#     - --version
-#     - -version
-#     - version
-#     - -v
 mode: find
 source:
   type: github

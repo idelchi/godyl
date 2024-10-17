@@ -21,15 +21,19 @@ As an alternative to above, custom commands can be used as well.
 
 `godyl` will infer the platform and architecture from the system it is running on, and will attempt to download the appropriate binary.
 
-This uses simple heuristics to infer the correct binary to download, and will not work for all projects.
+This uses simple heuristics to select the correct binary to download, and will not work for all projects.
 
-Most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
+However, most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
 
 > [!WARNING]
 > This repo is a work in progress!
 > Needing both cleaning up and documenting.
 
-Tool is inspired by [task](https://github.com/go-task/task) and [dra](https://github.com/devmatteini/dra)
+Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
+
+> [!INFO]
+> This project serves as a learning exercise for Go and its surrounding ecosystem and tooling.
+> As such, it might be of limited use for others, but feel free to use it if you find it useful.
 
 ---
 

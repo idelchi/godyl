@@ -105,10 +105,6 @@ func (b *Binary) Download(path string) error {
 		return fmt.Errorf("downloading %q: %w", url, err)
 	}
 
-	if !destination.IsFile() {
-		return fmt.Errorf("downloaded file %q is not a file", destination)
-	}
-
 	b.File = file.NewFile(destination.String(), "go", "bin", "go")
 
 	return nil

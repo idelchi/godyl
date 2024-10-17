@@ -35,6 +35,12 @@ Tool is inspired by [task](https://github.com/go-task/task), [dra](https://githu
 > This project serves as a learning exercise for Go and its surrounding ecosystem and tooling.
 > As such, it might be of limited use for others, but feel free to use it if you find it useful.
 
+> [!NOTE]
+> Tested on:
+> Linux: `amd64`, `arm64`, `armv7l`, `armv6l`
+> Windows: `amd64`
+> MacOS: `arm64`
+
 ---
 
 ## Table of Contents

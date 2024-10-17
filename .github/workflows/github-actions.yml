@@ -22,7 +22,7 @@ jobs:
           - macos-14
     runs-on: ${{ matrix.os }}
     env:
-      GODYL_DEFAULTS_SOURCE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GODYL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,7 +39,7 @@ jobs:
         run: go run ./cmd/godyl --show-platform
 
       - name: Run godyl
-        run: go run ./cmd/godyl --log=info
+        run: go run ./cmd/godyl --log=error
 
   tag:
     needs: test

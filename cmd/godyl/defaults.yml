@@ -1,10 +1,10 @@
 output: ~/.local/bin
 exe:
   patterns:
-    - "^{{ .Exe.Name }}{{ .EXTENSION }}$"
-    - ".*/{{ .Exe.Name }}{{ .EXTENSION }}$"
+    - "^{{ .Exe }}{{ .EXTENSION }}$"
+    - ".*/{{ .Exe }}{{ .EXTENSION }}$"
 hints:
-  - pattern: "{{ .Exe.Name }}"
+  - pattern: "{{ .Exe }}"
     weight: 1
   - pattern: zip
     weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'

@@ -11,7 +11,7 @@ func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
 		"Env":     t.Env,
 		"Values":  t.Values,
 		"Version": t.Version,
-		"Exe":     t.Exe,
+		"Exe":     t.Exe.Name,
 		"Output":  t.Output,
 	}
 

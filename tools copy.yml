@@ -29,7 +29,7 @@
 - name: kraanzu/dooit
   exe:
     patterns:
-      - "^{{ .OS }}-{{ .Exe.Name }}"
+      - "^{{ .OS }}-{{ .Exe }}"
 
 - name: homeport/dyff
   fallbacks:
@@ -112,8 +112,8 @@
     patterns:
       - bin/gh{{ .EXTENSION }}$
   post:
-    - "{{ .Output }}/{{ .Exe.Name }} extension install github/gh-copilot"
-    - "{{ .Output }}/{{ .Exe.Name }} extension upgrade gh-copilot"
+    - "{{ .Output }}/{{ .Exe }} extension install github/gh-copilot"
+    - "{{ .Output }}/{{ .Exe }} extension upgrade gh-copilot"
     - echo 'eval "$(gh copilot alias -- bash)"' >> ~/.bashrc
 
 - name: jesseduffield/lazydocker
@@ -314,7 +314,7 @@
       - |
         {{ if eq .OS "linux" }}
         apt-get update
-        apt-get install -y {{ .Exe.Name }}
+        apt-get install -y {{ .Exe }}
         {{ else }}
         echo "installation skipped"
         {{ end }}
@@ -335,7 +335,7 @@
       - |
         {{ if eq .OS "linux" }}
         apt-get update
-        apt-get install -y {{ .Exe.Name }}
+        apt-get install -y {{ .Exe }}
         {{ else }}
         echo "installation skipped"
         {{ end }}
@@ -355,7 +355,7 @@
         export CARGO_HOME=${TMPDIR}/cargo
         curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
         dir=$(dirname {{ .Output }})
-        ${TMPDIR}/cargo/bin/cargo install {{ .Exe.Name }} --root ${dir}
+        ${TMPDIR}/cargo/bin/cargo install {{ .Exe }} --root ${dir}
         rm -rf ${TMPDIR}
   tags:
     - rust

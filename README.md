@@ -59,6 +59,11 @@ Tool is inspired by [task](https://github.com/go-task/task), [dra](https://githu
 - [Template overview](#template-overview)
   - [Variables](#variables)
   - [Allowed in](#allowed-in)
+- [Inferrence](#inferrence)
+  - [Operating Systems](#operating-systems)
+  - [Architectures](#architectures)
+  - [Libraries](#libraries)
+- [Notes](#notes)
 
 ---
 
@@ -133,7 +138,7 @@ The following flags and their corresponding environment variables are available:
 | `--log`            | `GODYL_LOG`           | `info`         | Log level (debug, info, warn, error)           |
 | `--parallel`, `-j` | `GODYL_PARALLEL`      | `0`            | Number of parallel downloads (0 is unlimited)  |
 | `--output`         | `GODYL_OUTPUT`        | `""`           | Output path for the downloaded tools           |
-| `--tags`, `-t`     | `GODYL_TAGS`          | `["!native"]`  | Tags to filter tools by                        |
+| `--tags`, `-t`     | `GODYL_TAGS`          | `["!native"]`  | Tags to filter tools by. Use `!` to exclude    |
 | `--source`         | `GODYL_SOURCE`        | `github`       | Source from which to install the tools         |
 | `--strategy`       | `GODYL_STRATEGY`      | `none`         | Strategy to use for updating tools             |
 | `--os`             | `GODYL_OS`            | `""`           | Operating system to use for downloading        |
@@ -265,7 +270,7 @@ For example:
 aliases: z
 fallbacks: go
 exe:
-  patterns: "{{ .Exe.Name }}{{ .Platform.Extension }}$"
+  patterns: "{{ .Exe }}{{ .EXTENSION }}$"
 ```
 
 is equivalent to:
@@ -277,7 +282,23 @@ fallbacks:
   - go
 exe:
   patterns:
-    - "{{ .Exe.Name }}{{ .Platform.Extension }}$"
+    - "{{ .Exe }}{{ .EXTENSION }}$"
+```
+
+and
+
+```yaml
+skip:
+  reason: "tool is not available on windows"
+  condition: '{{ eq .OS "windows" }}'
+```
+
+is equivalent to:
+
+```yaml
+skip:
+  - reason: "tool is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
 ```
 
 ### Name
@@ -311,7 +332,7 @@ exe:
 
 | Template         | Templated | As Template |
 | ---------------- | --------- | ----------- |
-| `{{ .Version }}` | ![no]     | ![yes]      |
+| `{{ .Version }}` | ![yes]    | ![yes]      |
 
 #### Usage
 
@@ -344,7 +365,7 @@ exe:
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| ![na]    | ![no]     | ![no]       |
+| ![na]    | ![yes]    | ![yes]      |
 
 `output` is the path to the directory where the tool will be installed.
 
@@ -359,7 +380,7 @@ exe:
 
 | Template              | Templated | As Template |
 | --------------------- | --------- | ----------- |
-| `{{ .Exe.Name }}`     | ![yes]    | ![yes]      |
+| `{{ .Exe}}`           | ![yes]    | ![yes]      |
 | `{{ .Exe.Patterns }}` | ![yes]    | ![no]       |
 
 `exe` is a dictionary containing the name of the executable and patterns to use for finding the executable.
@@ -388,9 +409,9 @@ exe:
 ![Inferred](https://img.shields.io/badge/Inferred-blue)
 ![Optional](https://img.shields.io/badge/Optional-green)
 
-| Template             | Templated | As Template |
-| -------------------- | --------- | ----------- |
-| `{{ .Platform.<> }}` | ![no]     | ![yes]      |
+| Template             | Templated | As Template                 |
+| -------------------- | --------- | --------------------------- |
+| `{{ .Platform.<> }}` | ![no]     | See [variables](#variables) |
 
 `platform` is a dictionary containing the platform and architecture information.
 
@@ -560,7 +581,7 @@ Accepted values are:
 
 | Template | Templated | As Template |
 | -------- | --------- | ----------- |
-| ![na]    | ![no]     | ![no]       |
+| ![na]    | ![yes]    | ![no]       |
 
 `extensions` is a list of extensions to add to the tool name when matching the tools (used only for `github` source type).
 
@@ -596,8 +617,6 @@ is equivalent to:
 skip:
   - condition: <condition>
 ```
-
-![Not Implemented](https://img.shields.io/badge/Not%20Implemented-gray)
 
 ### Post
 
@@ -642,13 +661,13 @@ The following is embedded and used by default if no default configuration is pro
 The example above defines:
 
 - The default output directory for all tools (`~/.local/bin`)
-- Patterns to use for when searching for the executable (`"{{ .Exe.Name }}{{ .Platform.Extension }}$"`)
+- Patterns to use for when searching for the executable (`"{{ .Exe }}{{ .EXTENSION }}$"`)
 - Hints to:
 
   - use the executable name as a pattern (useful for repositories with multiple binaries, such as `ahmetb/kubectx`)
 
     ```yaml
-    pattern: "{{ .Exe.Name }}"
+    pattern: "{{ .Exe }}"
     weight: 1
     ```
 
@@ -699,12 +718,12 @@ The following table lists the available template variables, where they may be us
 | `{{ .Env.<> }}`       | Any environment variable                                  |
 | `{{ .Values.<> }}`    | Custom values for templating                              |
 | `{{ .Version }}`      | The version of the tool or project                        |
-| `{{ .OS }}`           | The operating system (e.g., "linux", "darwin", "windows") |
-| `{{ .ARCH }}`         | The architecture type (e.g., "amd64", "arm64")            |
+| `{{ .OS }}`           | The operating system (e.g., `linux`, `darwin`, `windows`) |
+| `{{ .ARCH }}`         | The architecture type (e.g., `amd64`, `arm64`)            |
 | `{{ .ARCH_VERSION }}` | The version of the architecture, if applicable            |
-| `{{ .LIBRARY }}`      | The system library (e.g., "gnu", "musl")                  |
+| `{{ .LIBRARY }}`      | The system library (e.g., `gnu`, `musl`)                  |
 | `{{ .EXTENSION }}`    | The file extension specific to the platform               |
-| `{{ .DISTRIBUTION }}` | The distribution name (e.g., "debian", "alpine")          |
+| `{{ .DISTRIBUTION }}` | The distribution name (e.g., `debian`, `alpine`)          |
 
 ### Allowed in
 
@@ -752,7 +771,7 @@ Only certain fields are templated. Below is a list of fields where templating is
   ```yaml
   exe:
     patterns:
-      - "^{{ .OS }}-{{ .Exe.Name }}"
+      - "^{{ .OS }}-{{ .Exe}}"
   ```
 
 - `extensions`
@@ -766,7 +785,7 @@ Only certain fields are templated. Below is a list of fields where templating is
 
   ```yaml
   commands:
-    - pip install {{ .Exe.Name }}=={{ .Version }}
+    - pip install {{ .Exe}}=={{ .Version }}
   ```
 
 - `hints[].pattern`
@@ -810,7 +829,7 @@ Only certain fields are templated. Below is a list of fields where templating is
 
 ## Inferrence
 
-## Operating Systems
+### Operating Systems
 
 | OS      | Inferred from           |
 | ------- | ----------------------- |
@@ -822,7 +841,7 @@ Only certain fields are templated. Below is a list of fields where templating is
 | NetBSD  | netbsd                  |
 | OpenBSD | openbsd                 |
 
-## Architectures
+### Architectures
 
 | Architecture  | Inferred from                                   |
 | ------------- | ----------------------------------------------- |
@@ -842,7 +861,7 @@ Only certain fields are templated. Below is a list of fields where templating is
 - On Debian: arm32, armv6, armv6l, arm
 - On other distributions: arm32, armhf, armv6, armv6l, arm
 
-## Libraries
+### Libraries
 
 | Library    | Inferred from |
 | ---------- | ------------- |
@@ -850,6 +869,10 @@ Only certain fields are templated. Below is a list of fields where templating is
 | Musl       | musl          |
 | MSVC       | msvc          |
 | LibAndroid | android       |
+
+## Notes
+
+All `regex` expressions are evaluated using `search`, meaning that `^` and `$` are necessary to match the start and end of the string.
 
 <!-- Badges -->
 

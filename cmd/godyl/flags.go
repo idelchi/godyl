@@ -45,7 +45,7 @@ func flags() {
 
 	// Tool flags
 	pflag.String("output", "", "Output path for the downloaded tools")
-	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by")
+	pflag.StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
 	pflag.String("source", string(sources.GITHUB), "Source from which to install the tools")
 	pflag.String("strategy", "none", "Strategy to use for updating tools")
 	pflag.String("github-token", "", "GitHub token for authentication")

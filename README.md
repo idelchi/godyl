@@ -646,6 +646,132 @@ mode:
 
 For reference full reference of what values you can set, see the [tools](#tools) section.
 
+## Template overview
+
+All functions available in the [slim-sprig](https://github.com/go-task/slim-sprig) library are available for use in templates.
+
+### Variables
+
+The following table lists the available template variables, where they may be used, and their descriptions:
+
+| Variable              | Description                                               |
+| --------------------- | --------------------------------------------------------- |
+| `{{ .Name }}`         | The name of the tool or project                           |
+| `{{ .Output }}`       | The output path template for built artifacts              |
+| `{{ .Exe }}`          | The name of the executable                                |
+| `{{ .Env.<> }}`       | Any environment variable                                  |
+| `{{ .Values.<> }}`    | Custom values for templating                              |
+| `{{ .Version }}`      | The version of the tool or project                        |
+| `{{ .Platform.<> }}`  | The struct containing platform information                |
+| `{{ .OS }}`           | The operating system (e.g., "linux", "darwin", "windows") |
+| `{{ .ARCH }}`         | The architecture type (e.g., "amd64", "arm64")            |
+| `{{ .ARCH_VERSION }}` | The version of the architecture, if applicable            |
+| `{{ .LIBRARY }}`      | The system library (e.g., "gnu", "musl")                  |
+| `{{ .EXTENSION }}`    | The file extension specific to the platform               |
+| `{{ .DISTRIBUTION }}` | The distribution name (e.g., "debian", "alpine")          |
+
+### Allowed in
+
+Only certain fields are templated. Below is a list of fields where templating is allowed, along with examples of how they might be used:
+
+- `output`
+
+  ```yaml
+  output: bin/{{ .OS }}-{{ .ARCH }}
+  ```
+
+- `skip`
+
+  ```yaml
+  skip:
+    reason: "tool is not available for windows"
+    condition: '{{ eq .OS "windows" }}'
+  ```
+
+- `version`
+
+  ```yaml
+  version: |-
+    {{- if has .OS (list "linux" "darwin") -}}
+        v0.1.0
+    {{- else -}}
+        v0.2.0
+    {{- end -}}
+  ```
+
+- `source.type`
+
+  ```yaml
+  source:
+    type: |-
+      {{- if has .OS (list "linux" "darwin") -}}
+          github
+      {{- else -}}
+          go
+      {{- end -}}
+  ```
+
+- `exe.patterns`
+
+  ```yaml
+  exe:
+    patterns:
+      - "^{{ .OS }}-{{ .Exe.Name }}"
+  ```
+
+- `extensions`
+
+  ```yaml
+  extensions:
+    - '{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}'
+  ```
+
+- `source.commands`
+
+  ```yaml
+  commands:
+    - pip install {{ .Exe.Name }}=={{ .Version }}
+  ```
+
+- `hints[].pattern`
+
+  ```yaml
+  hints:
+    - pattern: "{{ .OS }}"
+      must: true
+  ```
+
+- `hints[].weight`
+
+  ```yaml
+  hints:
+    - pattern: armhf
+      weight: |-
+        {{- if eq .ARCH "arm" -}}
+        1
+        {{- else -}}
+        0
+        {{- end -}}
+  ```
+
+- `path`
+
+  ```yaml
+  path: https://get.helm.sh/helm-v{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
+  ```
+
+> [!NOTE]
+> Not that if `Version` is not provided, it will be evaluated to an empty string. If it is being inferred, it will be available in the following fields:
+>
+> - `exe.name`
+> - `exe.patterns`
+> - `extensions`
+> - `hints[].pattern`
+> - `hints[].weight`
+> - `path`
+> - `source.commands`
+> - `post`
+
 <!-- Badges -->
 
 [yes]: https://img.shields.io/badge/Yes-green
@@ -657,3 +783,7 @@ For reference full reference of what values you can set, see the [tools](#tools)
 [na]: https://img.shields.io/badge/N%2FA-lightgrey
 
 <!-- Badges -->
+
+```
+
+```

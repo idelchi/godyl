@@ -19,7 +19,7 @@
 - rs/curlie
 
 - name: mikefarah/yq
-  extensions: "{{ .Platform.Extension }}"
+  extensions: "{{ .EXTENSION }}"
 
 - name: sorenisanerd/gotty
   skip:
@@ -38,24 +38,19 @@
 - name: moncho/dry
   exe:
     name: dry
-    patterns:
-      - ^dry
-  extensions:
-    - ""
+    patterns: ^dry
+  extensions: ""
 
 - name: so-fancy/diff-so-fancy
   exe:
     name: diff-so-fancy
-    patterns:
-      - ^diff-so-fancy$
-  extensions:
-    - ""
+    patterns: ^diff-so-fancy$
+  extensions: ""
 
 - name: logdyhq/logdy-core
   exe:
     name: logdy
-    patterns:
-      - ^logdy
+    patterns: ^logdy
   fallbacks:
     - go
 
@@ -107,8 +102,7 @@
   skip:
     - reason: "tere is not available for ARM architecture"
       condition: '{{ eq .Platform.Architecture.Type "arm" }}'
-  extensions:
-    - .zip
+  extensions: .zip
   fallbacks:
     - rust
 
@@ -153,8 +147,7 @@
 - name: TomWright/dasel
   fallbacks:
     - go
-  extensions:
-    - ""
+  extensions: ""
   source:
     type: |-
       {{- if has .Platform.OS.Name (list "linux" "darwin") -}}

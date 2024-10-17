@@ -30,7 +30,7 @@ var (
 // It handles fallbacks and applies templating to the tool's fields as needed.
 func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	// Normalize values to ensure consistency in the .Values map.
-	t.NormalizeValues()
+	t.Values = utils.NormalizeMap(t.Values)
 
 	// Load environment variables from the system.
 	t.Env.Merge(env.FromEnv())
@@ -50,18 +50,19 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	// Save the path for templating later.
 	path := t.Path
 
+	t.Extensions = slices.Compact(t.Extensions)
+	t.Aliases = slices.Compact(t.Aliases)
+	t.Fallbacks = slices.Compact(t.Fallbacks)
+
 	// Build the fallback sources from the primary source type and additional fallbacks.
 	fallbacks := append([]sources.Type{t.Source.Type}, t.Fallbacks...)
-	for i, fallback := range fallbacks {
-		output, err := t.ApplyTemplate(fallback.String())
-		if err != nil {
-			return err
-		}
 
-		fallbacks[i].From(output)
+	// Expand environment variables.
+	t.Env.Expand()
+
+	if err := t.TemplateFirst(); err != nil {
+		return err
 	}
-
-	fallbacks = slices.Compact(fallbacks) // Remove any empty fallback entries.
 
 	var lastErr error
 	// Try resolving with each fallback in order.
@@ -131,10 +132,6 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 	utils.SetIfEmpty(&t.Exe.Name, populator.Get("exe"))
 	utils.SetIfEmpty(&t.Exe.Name, t.Name)
 
-	if err := t.Template(); err != nil {
-		return err
-	}
-
 	// Re-check skip conditions after applying templates.
 	if err := t.CheckSkipConditions(withTags, withoutTags); err != nil {
 		return err
@@ -146,10 +143,10 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 			return err
 		}
 	}
+
 	utils.SetIfEmpty(&t.Version, populator.Get("version"))
 
-	// Apply templates again after retrieving the version.
-	if err := t.Template(); err != nil {
+	if err := t.TemplateLast(); err != nil {
 		return err
 	}
 
@@ -168,11 +165,6 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 	utils.SetIfEmpty(&t.Path, populator.Get("path"))
 	utils.SetIfEmpty(&t.Path, path)
 
-	// Apply templates again after determining the path.
-	if err := t.Template(); err != nil {
-		return err
-	}
-
 	// Append platform-specific file extension to the executable name.
 	t.Exe.Name += t.Platform.Extension.String()
 
@@ -188,9 +180,6 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 	if err := t.Strategy.Upgrade(t); err != nil {
 		return err
 	}
-
-	// Expand environment variables.
-	t.Env.Expand()
 
 	// Validate the tool's configuration.
 	return t.Validate()

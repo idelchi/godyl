@@ -1,52 +1,19 @@
 package tools
 
 import (
-	"bytes"
-	"text/template"
-
-	sprig "github.com/go-task/slim-sprig/v3"
+	"github.com/idelchi/godyl/internal/templates"
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
-// NormalizeValues ensures that all keys in the Values map are capitalized.
-// This helps to standardize the keys for consistent access and usage.
-func (t *Tool) NormalizeValues() {
-	t.Values = utils.NormalizeMap(t.Values)
-}
-
-// ApplyTemplate applies Go templates to a given string field using the Tool struct as the template data.
-// It uses the slim-sprig library to provide additional template functions.
-func (t *Tool) ApplyTemplate(field string) (string, error) {
-	var buf bytes.Buffer
-	tmpl, err := template.New("tmpl").Funcs(sprig.FuncMap()).Parse(field)
-	if err != nil {
-		return "", err
-	}
-	if err := tmpl.Execute(&buf, t); err != nil {
-		return "", err
-	}
-	return buf.String(), nil
-}
-
-func (t *Tool) ApplyTemplateFrom(field string, values any) (string, error) {
-	var buf bytes.Buffer
-	tmpl, err := template.New("tmpl").Funcs(sprig.FuncMap()).Parse(field)
-	if err != nil {
-		return "", err
-	}
-	if err := tmpl.Execute(&buf, values); err != nil {
-		return "", err
-	}
-	return buf.String(), nil
-}
-
 func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
 	templateMap := map[string]any{
-		"Env":     t.Env,
-		"Values":  t.Values,
-		"Version": t.Version,
-		"Exe":     t.Exe,
-		"Output":  t.Output,
+		"Name":     t.Name,
+		"Env":      t.Env,
+		"Values":   t.Values,
+		"Version":  t.Version,
+		"Exe":      t.Exe,
+		"Output":   t.Output,
+		"Platform": t.Platform,
 	}
 
 	for _, o := range flatten {
@@ -60,72 +27,64 @@ func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
 
 // Template applies templating to various fields of the Tool struct, such as version, path, and checksum.
 // It processes these fields using Go templates and updates them with the templated values.
-func (t *Tool) Template() error {
+func (t *Tool) TemplateFirst() error {
 	values := t.ToTemplateMap(t.Platform.ToMap())
 
-	var err error
-
 	// Apply templating to Source.Type
-	output, err := t.ApplyTemplateFrom(t.Source.Type.String(), values)
+	output, err := templates.Apply(t.Source.Type.String(), values)
 	if err != nil {
 		return err
 	}
 	t.Source.Type.From(output)
 
 	// Apply templating to the Skip conditions
-	for i, pattern := range t.Skip {
-		t.Skip[i].Condition, err = t.ApplyTemplate(pattern.Condition)
+	for i := range t.Skip {
+		err = templates.ApplyAndSet(&t.Skip[i].Condition, values)
 		if err != nil {
 			return err
 		}
 	}
 
 	// Validate the Skip conditions
-	_, _, err = t.Skip.True()
-	if err != nil {
+	if _, _, err := t.Skip.True(); err != nil {
 		return err
 	}
 
-	// Apply templating to various fields like Version, Path, Checksum, Output, and Exe.Name
-	t.Version, err = t.ApplyTemplate(t.Version)
-	if err != nil {
+	if err := templates.ApplyAndSet(&t.Output, values); err != nil {
 		return err
 	}
 
-	t.Path, err = t.ApplyTemplate(t.Path)
-	if err != nil {
+	if err := templates.ApplyAndSet(&t.Version, values); err != nil {
 		return err
 	}
 
-	t.Output, err = t.ApplyTemplate(t.Output)
-	if err != nil {
-		return err
-	}
+	return nil
+}
 
-	t.Exe.Name, err = t.ApplyTemplate(t.Exe.Name)
-	if err != nil {
+func (t *Tool) TemplateLast() error {
+	values := t.ToTemplateMap(t.Platform.ToMap())
+
+	if err := templates.ApplyAndSet(&t.Exe.Name, values); err != nil {
 		return err
 	}
 
 	// Apply templating to Exe.Patterns
-	for i, pattern := range t.Exe.Patterns {
-		t.Exe.Patterns[i], err = t.ApplyTemplate(pattern)
-		if err != nil {
+	for i := range t.Exe.Patterns {
+		if err := templates.ApplyAndSet(&t.Exe.Patterns[i], values); err != nil {
 			return err
 		}
 	}
 
 	// Apply templating to Extensions
-	for i, pattern := range t.Extensions {
-		t.Extensions[i], err = t.ApplyTemplate(pattern)
-		if err != nil {
+	for i := range t.Extensions {
+		if err := templates.ApplyAndSet(&t.Extensions[i], values); err != nil {
 			return err
 		}
 	}
 
 	// Apply templating to Source.Commands
 	for i, cmd := range t.Source.Commands {
-		output, err := t.ApplyTemplate(cmd.String())
+		output, err := templates.Apply(cmd.String(), values)
 		if err != nil {
 			return err
 		}
@@ -134,7 +93,7 @@ func (t *Tool) Template() error {
 
 	// Apply templating to Post commands
 	for i, cmd := range t.Post {
-		output, err := t.ApplyTemplate(cmd.String())
+		output, err := templates.Apply(cmd.String(), values)
 		if err != nil {
 			return err
 		}
@@ -142,13 +101,11 @@ func (t *Tool) Template() error {
 	}
 
 	// Apply templating to Hints patterns and weights
-	for i, hints := range t.Hints {
-		t.Hints[i].Pattern, err = t.ApplyTemplate(hints.Pattern)
-		if err != nil {
+	for i := range t.Hints {
+		if err := templates.ApplyAndSet(&t.Hints[i].Pattern, values); err != nil {
 			return err
 		}
-		t.Hints[i].Weight, err = t.ApplyTemplate(hints.Weight)
-		if err != nil {
+		if err := templates.ApplyAndSet(&t.Hints[i].Weight, values); err != nil {
 			return err
 		}
 		// Set a default weight of "1" if not specified and convert it to an integer
@@ -157,6 +114,10 @@ func (t *Tool) Template() error {
 		if err := t.Hints[i].SetWeight(); err != nil {
 			return err
 		}
+	}
+
+	if err := templates.ApplyAndSet(&t.Path, values); err != nil {
+		return err
 	}
 
 	return nil

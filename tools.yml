@@ -216,7 +216,7 @@
 
 - name: jarun/nnn
   exe:
-    patterns: nnn.*
+    patterns: ^nnn.*
   skip:
     - reason: "nnn is only available for linux"
       condition: '{{ ne .Platform.OS "linux" }}'

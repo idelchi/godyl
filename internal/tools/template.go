@@ -7,13 +7,12 @@ import (
 
 func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
 	templateMap := map[string]any{
-		"Name":     t.Name,
-		"Env":      t.Env,
-		"Values":   t.Values,
-		"Version":  t.Version,
-		"Exe":      t.Exe,
-		"Output":   t.Output,
-		"Platform": t.Platform,
+		"Name":    t.Name,
+		"Env":     t.Env,
+		"Values":  t.Values,
+		"Version": t.Version,
+		"Exe":     t.Exe,
+		"Output":  t.Output,
 	}
 
 	for _, o := range flatten {

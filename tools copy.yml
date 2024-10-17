@@ -24,12 +24,12 @@
 - name: sorenisanerd/gotty
   skip:
     reason: "gotty is not available on windows"
-    condition: '{{ eq .Platform.OS "windows" }}'
+    condition: '{{ eq .OS "windows" }}'
 
 - name: kraanzu/dooit
   exe:
     patterns:
-      - "^{{ .Platform.OS }}-{{ .Exe.Name }}"
+      - "^{{ .OS }}-{{ .Exe.Name }}"
 
 - name: homeport/dyff
   fallbacks:
@@ -57,7 +57,7 @@
 - name: cespare/reflex
   skip:
     - reason: "reflex does not work on Windows"
-      condition: '{{ eq .Platform.OS "windows" }}'
+      condition: '{{ eq .OS "windows" }}'
   fallbacks:
     - go
 
@@ -70,7 +70,7 @@
   fallbacks:
     - go
   hints:
-    - pattern: "{{ .Platform.OS }}"
+    - pattern: "{{ .OS }}"
       must: true
   source:
     type: github
@@ -80,7 +80,7 @@
 - name: pemistahl/grex
   skip:
     - reason: "grex is not available for ARM architecture"
-      condition: '{{ eq .Platform.Architecture.Type "arm" }}'
+      condition: '{{ eq .ARCH "arm" }}'
   fallbacks:
     - rust
 
@@ -90,18 +90,18 @@
     - rust
   skip:
     - reason: "rip is only available for Linux"
-      condition: '{{ne .Platform.OS "linux"}}'
+      condition: '{{ne .OS "linux"}}'
     - reason: "rip is only available for arm32 and amd64 architectures"
       condition: |-
         {{- and
-            (ne .Platform.Architecture.Type "arm32")
-            (ne .Platform.Architecture.Type "amd64")
+            (ne .ARCH "arm32")
+            (ne .ARCH "amd64")
         -}}
 
 - name: mgunyho/tere
   skip:
     - reason: "tere is not available for ARM architecture"
-      condition: '{{ eq .Platform.Architecture.Type "arm" }}'
+      condition: '{{ eq .ARCH "arm" }}'
   extensions: .zip
   fallbacks:
     - rust
@@ -110,7 +110,7 @@
   exe:
     name: gh
     patterns:
-      - bin/gh{{ .Platform.Extension }}$
+      - bin/gh{{ .EXTENSION }}$
   post:
     - "{{ .Output }}/{{ .Exe.Name }} extension install github/gh-copilot"
     - "{{ .Output }}/{{ .Exe.Name }} extension upgrade gh-copilot"
@@ -150,7 +150,7 @@
   extensions: ""
   source:
     type: |-
-      {{- if has .Platform.OS.Name (list "linux" "darwin") -}}
+      {{- if has .OS (list "linux" "darwin") -}}
           github
       {{- else -}}
           go
@@ -171,7 +171,7 @@
   hints:
     - pattern: amd64
       weight: |-
-        {{- if eq .Platform.Architecture.Name "amd64" -}}
+        {{- if eq .ARCH "amd64" -}}
         1
         {{- else -}}
         0
@@ -179,7 +179,7 @@
 
     - pattern: armhf
       weight: |-
-        {{- if eq .Platform.Architecture.Type "arm" -}}
+        {{- if eq .ARCH "arm" -}}
         1
         {{- else -}}
         0
@@ -189,7 +189,7 @@
   exe: rg
   skip:
     - reason: "ripgrep is only available for Linux"
-      condition: '{{ ne .Platform.OS "linux" }}'
+      condition: '{{ ne .OS "linux" }}'
 
 - name: jesseduffield/lazygit
   aliases: lazyg
@@ -198,23 +198,23 @@
   exe: dua
   skip:
     reason: "dua-cli is for the Darwin platform only supporting amd64"
-    condition: '{{ and (eq .Platform.OS "darwin") (ne .Platform.Architecture.Type "amd64") }}'
+    condition: '{{ and (eq .OS "darwin") (ne .ARCH "amd64") }}'
 
 - name: jarun/nnn
   exe:
     patterns: ^nnn.*
   skip:
     - reason: "nnn is only available for linux"
-      condition: '{{ ne .Platform.OS "linux" }}'
+      condition: '{{ ne .OS "linux" }}'
     - reason: "nnn is only available for amd64 architecture"
-      condition: '{{ ne .Platform.Architecture.Type "amd64" }}'
+      condition: '{{ ne .ARCH "amd64" }}'
   hints:
     - pattern: icons
       weight: 2
 
 - name: helm
   version: 3.16.1
-  path: https://get.helm.sh/helm-v{{ .Version }}-{{ .Platform.OS }}-{{ .Platform.Architecture.Type }}.tar.gz
+  path: https://get.helm.sh/helm-v{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
   source:
     type: url
   tags:
@@ -222,7 +222,7 @@
 
 - name: kubectl
   version: 1.31.0
-  path: https://dl.k8s.io/v{{ .Version }}/bin/{{ .Platform.OS }}/{{ .Platform.Architecture.Type }}/kubectl{{ .Platform.Extension }}
+  path: https://dl.k8s.io/v{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}
   aliases: kc
   source:
     type: url
@@ -231,7 +231,7 @@
 
 - name: terraform
   version: 1.9.5
-  path: https://releases.hashicorp.com/terraform/{{ .Version }}/terraform_{{ .Version }}_{{ .Platform.OS }}_{{ .Platform.Architecture.Type }}.zip
+  path: https://releases.hashicorp.com/terraform/{{ .Version }}/terraform_{{ .Version }}_{{ .OS }}_{{ .ARCH }}.zip
   aliases: tf
   source:
     type: url
@@ -243,7 +243,7 @@
     type: command
     commands:
       - |
-        {{ if eq .Platform.OS "linux" }}
+        {{ if eq .OS "linux" }}
         pip install {{ .Exe }}=={{ .Version }} --user --break-system-packages
         {{ else }}
         echo "installation skipped"
@@ -259,7 +259,7 @@
     type: command
     commands:
       - |
-        {{ if eq .Platform.OS "linux" }}
+        {{ if eq .OS "linux" }}
         cd {{ .Output }}
         rm -rf PathPicker
         git clone https://github.com/facebook/PathPicker.git
@@ -312,7 +312,7 @@
     type: command
     commands:
       - |
-        {{ if eq .Platform.OS "linux" }}
+        {{ if eq .OS "linux" }}
         apt-get update
         apt-get install -y {{ .Exe.Name }}
         {{ else }}
@@ -333,7 +333,7 @@
     type: command
     commands:
       - |
-        {{ if eq .Platform.OS "linux" }}
+        {{ if eq .OS "linux" }}
         apt-get update
         apt-get install -y {{ .Exe.Name }}
         {{ else }}
@@ -369,7 +369,7 @@
     type: command
     commands:
       - |
-        {{ if eq .Platform.OS "linux" }}
+        {{ if eq .OS "linux" }}
         apt-get update
         apt-get install -y {{ .Name }}={{ .Version }}
         {{ else }}

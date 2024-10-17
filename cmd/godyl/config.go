@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 
+	"github.com/idelchi/godyl/internal/detect/platform"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/file"
@@ -73,6 +74,10 @@ type Config struct {
 	Source sources.Type
 	// Strategy to use for updating tools
 	Strategy tools.Strategy `mapstructure:"strategy"`
+	// Operating system to install the tools for
+	OS platform.OS `mapstructure:"os"`
+	// Architecture to install the tools for
+	Arch string `mapstructure:"arch"`
 
 	// Tokens for authentication
 	Tokens Tokens `mapstructure:",squash"`

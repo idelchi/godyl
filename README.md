@@ -51,10 +51,14 @@ Tool is inspired by [task](https://github.com/go-task/task), [dra](https://githu
 ## Table of Contents
 
 - [Installation](#installation)
-- [Usage](#usage)
-- [Customization](#customization)
-- [Contributing](#contributing)
-- [License](#license)
+- [Configuration](#configuration)
+- [Tools](#tools)
+  - [Simple form](#simple-form)
+  - [Full form](#full-form)
+- [Defaults](#defaults)
+- [Template overview](#template-overview)
+  - [Variables](#variables)
+  - [Allowed in](#allowed-in)
 
 ---
 
@@ -78,9 +82,35 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts
 godyl --update
 ```
 
+## Usage
+
+Use together with `yaml` file:
+
+```sh
+godyl tools.yml  --output ./bin
+```
+
+Or use as a single tool:
+
+```sh
+godyl idelchi/godyl --output ./bin
+```
+
+When with a `single tool` mode, the `mode` will be set to `extract` by default.
+
+Override `os` and `arch` to download a specific binary:
+
+```sh
+godyl idelchi/godyl --os linux --arch amd64 --output ./bin
+```
+
+> [!NOTE]
+> Set up a GitHub API token to avoid rate limiting when using `github` as a source type.
+> See [configuration](#configuration) for more information, or simply `export GODYL_GITHUB=<token>`
+
 ## Configuration
 
-The tools can be configured by (in order of priority)
+The tools can be configured (in order of priority) by
 
 - flags
 - environment variables
@@ -106,6 +136,8 @@ The following flags and their corresponding environment variables are available:
 | `--tags`, `-t`     | `GODYL_TAGS`          | `["!native"]`  | Tags to filter tools by                        |
 | `--source`         | `GODYL_SOURCE`        | `github`       | Source from which to install the tools         |
 | `--strategy`       | `GODYL_STRATEGY`      | `none`         | Strategy to use for updating tools             |
+| `--os`             | `GODYL_OS`            | `""`           | Operating system to use for downloading        |
+| `--arch`           | `GODYL_ARCH`          | `""`           | Architecture to use for downloading            |
 | `--github-token`   | `GODYL_GITHUB_TOKEN`  | `""`           | GitHub token for authentication                |
 
 The path to the file containing the tool installation instructions is provided as a positional argument, defaulting to `tools.yml`.
@@ -667,7 +699,6 @@ The following table lists the available template variables, where they may be us
 | `{{ .Env.<> }}`       | Any environment variable                                  |
 | `{{ .Values.<> }}`    | Custom values for templating                              |
 | `{{ .Version }}`      | The version of the tool or project                        |
-| `{{ .Platform.<> }}`  | The struct containing platform information                |
 | `{{ .OS }}`           | The operating system (e.g., "linux", "darwin", "windows") |
 | `{{ .ARCH }}`         | The architecture type (e.g., "amd64", "arm64")            |
 | `{{ .ARCH_VERSION }}` | The version of the architecture, if applicable            |
@@ -776,6 +807,49 @@ Only certain fields are templated. Below is a list of fields where templating is
 > - `path`
 > - `source.commands`
 > - `post`
+
+## Inferrence
+
+## Operating Systems
+
+| OS      | Inferred from           |
+| ------- | ----------------------- |
+| Linux   | linux                   |
+| Darwin  | darwin, macos, mac, osx |
+| Windows | windows, win            |
+| FreeBSD | freebsd                 |
+| Android | android                 |
+| NetBSD  | netbsd                  |
+| OpenBSD | openbsd                 |
+
+## Architectures
+
+| Architecture  | Inferred from                                   |
+| ------------- | ----------------------------------------------- |
+| AMD64         | amd64, x86_64, x64, win64                       |
+| ARM64         | arm64, aarch64                                  |
+| AMD32         | amd32, x86, i386, i686, win32, 386, 686         |
+| ARM32 (v7)    | arm32, armv7, armv7l, armhf, armv6, armv6l, arm |
+| ARM32 (v6) \* | arm32, armv6, armv6l, armhf, arm                |
+| ARM32 (v5)    | arm32, armv5, armv5l, armel, arm                |
+| MIPS          | mips, mipsel, mips64, mips64le                  |
+| PPC64         | powerpc64, ppc64, ppc64le                       |
+| RISCV         | riscv64                                         |
+
+\*Note: For ARM32 (v6), compatibility varies:
+
+- On Rasbian: arm32, armv6, armv6l, armhf, arm
+- On Debian: arm32, armv6, armv6l, arm
+- On other distributions: arm32, armhf, armv6, armv6l, arm
+
+## Libraries
+
+| Library    | Inferred from |
+| ---------- | ------------- |
+| GNU        | gnu           |
+| Musl       | musl          |
+| MSVC       | msvc          |
+| LibAndroid | android       |
 
 <!-- Badges -->
 

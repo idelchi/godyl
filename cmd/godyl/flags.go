@@ -49,6 +49,8 @@ func flags() {
 	pflag.String("source", string(sources.GITHUB), "Source from which to install the tools")
 	pflag.String("strategy", "none", "Strategy to use for updating tools")
 	pflag.String("github-token", "", "GitHub token for authentication")
+	pflag.String("os", "", "Operating system to install the tools for")
+	pflag.String("arch", "", "Architecture to install the tools for")
 
 	pflag.CommandLine.SortFlags = false
 	pflag.Usage = func() {

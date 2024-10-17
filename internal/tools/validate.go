@@ -29,6 +29,10 @@ var (
 // Resolve attempts to resolve the tool's source and strategy based on the provided tags.
 // It handles fallbacks and applies templating to the tool's fields as needed.
 func (t *Tool) Resolve(withTags, withoutTags []string) error {
+	if len(t.Name) == 0 {
+		return fmt.Errorf("%w: tool name is empty", ErrFailed)
+	}
+
 	// Normalize values to ensure consistency in the .Values map.
 	t.Values = utils.NormalizeMap(t.Values)
 

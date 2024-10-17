@@ -66,6 +66,14 @@ func (d *Defaults) Merge(cfg Config) {
 	if IsSet("github-token") {
 		d.Source.Github.Token = cfg.Tokens.GitHub
 	}
+
+	if IsSet("os") {
+		d.Platform.OS = cfg.OS
+	}
+
+	if IsSet("arch") {
+		d.Platform.Architecture.From(cfg.Arch, "")
+	}
 }
 
 // Load loads configuration defaults from a file or uses embedded defaults if not specified.

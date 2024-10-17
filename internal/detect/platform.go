@@ -1,7 +1,6 @@
 package detect
 
 import (
-	"github.com/fatih/structs"
 	"github.com/idelchi/godyl/internal/detect/platform"
 	"github.com/idelchi/godyl/pkg/utils"
 )
@@ -45,7 +44,7 @@ func (p *Platform) Merge(other Platform) {
 
 // ToMap converts the Platform struct to a map for use in templates.
 func (p Platform) ToMap() map[string]any {
-	platformMap := structs.Map(p)
+	platformMap := make(map[string]any)
 	platformMap["OS"] = p.OS.String()
 	platformMap["ARCH"] = p.Architecture.Type
 	platformMap["ARCH_VERSION"] = p.Architecture.Version

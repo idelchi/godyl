@@ -1,17 +1,13 @@
 - ajeetdsouza/zoxide
 - junegunn/fzf
-- sharkdp/hyperfine
 - starship/starship
 - go-task/task
 - sharkdp/fd
 - knqyf263/pet
-- eza-community/eza
-- sharkdp/bat
 - traefik/traefik
 - casey/just
 - charmbracelet/glow
 - lsd-rs/lsd
-- sharkdp/diskus
 - muesli/duf
 - AlDanial/cloc
 - FiloSottile/age
@@ -20,6 +16,21 @@
 
 - name: mikefarah/yq
   extensions: "{{ .EXTENSION }}"
+
+- name: sharkdp/hyperfine
+  skip:
+    reason: "hyperfine is for the Darwin platform only supporting amd64"
+    condition: '{{ and (eq .OS "darwin") (ne .ARCH "amd64") }}'
+
+- name: sharkdp/diskus
+  skip:
+    reason: "diskus is for the Darwin platform only supporting amd64"
+    condition: '{{ and (eq .OS "darwin") (ne .ARCH "amd64") }}'
+
+- name: eza-community/eza
+  skip:
+    reason: "eza is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
 
 - name: sorenisanerd/gotty
   skip:
@@ -100,6 +111,8 @@
   skip:
     - reason: "tere is not available for ARM architecture"
       condition: '{{ eq .ARCH "arm" }}'
+    - reason: "tere is not available for Darwin"
+      condition: '{{ eq .OS "darwin" }}'
   extensions: .zip
   fallbacks:
     - rust
@@ -198,6 +211,11 @@
     reason: "dua-cli is for the Darwin platform only supporting amd64"
     condition: '{{ and (eq .OS "darwin") (ne .ARCH "amd64") }}'
 
+- name: sharkdp/bat
+  skip:
+    reason: "dua-cli is for the Darwin platform only supporting amd64"
+    condition: '{{ and (eq .OS "darwin") (ne .ARCH "amd64") }}'
+
 - name: jarun/nnn
   exe:
     patterns: ^nnn.*
@@ -208,7 +226,7 @@
       condition: '{{ ne .ARCH "amd64" }}'
   hints:
     - pattern: icons
-      weight: 2
+      weight: 3
 
 - name: helm
   version: 3.16.1

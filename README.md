@@ -8,7 +8,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/idelchi/godyl.svg)](https://pkg.go.dev/github.com/idelchi/godyl)
 [![Go Report Card](https://goreportcard.com/badge/github.com/idelchi/godyl)](https://goreportcard.com/report/github.com/idelchi/godyl)
-[![Build Status](https://github.com/idelchi/godyl/actions/workflows/go.yml/badge.svg)](https://github.com/idelchi/godyl/actions/workflows/go.yml)
+[![Build Status](https://github.com/idelchi/godyl/actions/workflows/github-actions.yml/badge.svg)](https://github.com/idelchi/godyl/actions/workflows/github-actions.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 `godyl` helps with batch-downloading and installing statically compiled binaries from:
@@ -111,7 +111,7 @@ godyl idelchi/godyl --os linux --arch amd64 --output ./bin
 
 > [!NOTE]
 > Set up a GitHub API token to avoid rate limiting when using `github` as a source type.
-> See [configuration](#configuration) for more information, or simply `export GODYL_GITHUB=<token>`
+> See [configuration](#configuration) for more information, or simply `export GODYL_GITHUB_TOKEN=<token>`
 
 ## Configuration
 

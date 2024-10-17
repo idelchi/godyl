@@ -75,7 +75,7 @@ func (o OS) String() string {
 // IsCompatibleWith checks if the provided OS string matches any compatible OS aliases.
 func (o OS) IsCompatibleWith(os string) bool {
 	for _, compatible := range o.CompatibleWith() {
-		if os == compatible {
+		if utils.EqualLower(os, compatible) {
 			return true
 		}
 	}

@@ -11,7 +11,6 @@ on:
 
 jobs:
   test:
-    if: github.ref == 'refs/heads/dev'
     permissions:
       contents: write
     strategy:
@@ -47,7 +46,6 @@ jobs:
       contents: write
       actions: write
     runs-on: ubuntu-24.04
-    if: github.ref == 'refs/heads/dev'
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

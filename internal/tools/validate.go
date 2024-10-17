@@ -71,6 +71,11 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	var lastErr error
 	// Try resolving with each fallback in order.
 	for _, fallback := range fallbacks {
+		if fallback == sources.RUST {
+			// Skip Rust fallback for now.
+			continue
+		}
+
 		if err := t.tryResolveFallback(fallback, path, withTags, withoutTags); err != nil {
 			lastErr = err
 			continue // Move on to the next fallback.

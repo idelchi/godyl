@@ -28,8 +28,9 @@
     condition: '{{ and (eq .OS "darwin") (ne .ARCH "amd64") }}'
 
 - name: eza-community/eza
-  skip: "eza is not available on darwin"
-  condition: '{{ eq .OS "darwin" }}'
+  skip:
+    reason: "eza is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
 
 - name: sorenisanerd/gotty
   skip:

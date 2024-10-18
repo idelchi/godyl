@@ -2,7 +2,6 @@ package github
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"sort"
 	"sync"
@@ -41,7 +40,7 @@ func NewRepository(owner, repo string, client *github.Client) *Repository {
 func (g *Repository) LatestRelease() (*Release, error) {
 	ctx := context.TODO()
 
-	release, _, err := g.client.Repositories.GetLatestRelease(ctx, g.Owner, g.Repo)
+	repositoryRelease, _, err := g.client.Repositories.GetLatestRelease(ctx, g.Owner, g.Repo)
 
 	GlobalMutex.Lock()
 	TotalAPICalls++
@@ -51,7 +50,34 @@ func (g *Repository) LatestRelease() (*Release, error) {
 		return nil, fmt.Errorf("failed to get latest release: %w", err)
 	}
 
-	return g.release(release)
+	release := &Release{}
+
+	if err := release.FromRepositoryRelease(repositoryRelease); err != nil {
+		return nil, fmt.Errorf("failed to parse release: %w", err)
+	}
+
+	return release, nil
+}
+
+// GetRelease retrieves a specific release for the repository based on the provided tag.
+func (g *Repository) GetRelease(tag string) (*Release, error) {
+	ctx := context.TODO()
+
+	repositoryRelease, _, err := g.client.Repositories.GetReleaseByTag(ctx, g.Owner, g.Repo, tag)
+	GlobalMutex.Lock()
+	TotalAPICalls++
+	GlobalMutex.Unlock()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get assets for release tag %q: %w", tag, err)
+	}
+
+	release := &Release{}
+
+	if err := release.FromRepositoryRelease(repositoryRelease); err != nil {
+		return nil, fmt.Errorf("failed to parse release: %w", err)
+	}
+
+	return release, nil
 }
 
 // Languages retrieves the programming languages used in the repository, sorted by usage in descending order.
@@ -79,60 +105,4 @@ func (g *Repository) Languages() ([]string, error) {
 	})
 
 	return keys, nil
-}
-
-// GetRelease retrieves a specific release for the repository based on the provided tag.
-func (g *Repository) GetRelease(tag string) (*Release, error) {
-	ctx := context.TODO()
-
-	release, _, err := g.client.Repositories.GetReleaseByTag(ctx, g.Owner, g.Repo, tag)
-	GlobalMutex.Lock()
-	TotalAPICalls++
-	GlobalMutex.Unlock()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get assets for release tag %q: %w", tag, err)
-	}
-
-	return g.release(release)
-}
-
-// release processes the provided GitHub release and retrieves its associated assets.
-// It returns a Release object containing the release name, tag, and assets.
-func (g *Repository) release(release *github.RepositoryRelease) (*Release, error) {
-	// ctx := context.TODO()
-
-	// opts := &github.ListOptions{
-	// 	PerPage: 100,
-	// }
-
-	// assets, _, err := g.client.Repositories.ListReleaseAssets(ctx, g.Owner, g.Repo, *release.ID, opts)
-	// GlobalMutex.Lock()
-	// TotalAPICalls++
-	// GlobalMutex.Unlock()
-	// if err != nil {
-	// 	return nil, fmt.Errorf("failed to get assets for release: %w", err)
-	// }
-
-	assets := release.Assets
-
-	var releaseAssets Assets
-	assetJSON, err := json.Marshal(assets)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal assets: %w", err)
-	}
-
-	if err := json.Unmarshal(assetJSON, &releaseAssets); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal assets: %w", err)
-	}
-
-	var name string
-	if release.Name != nil {
-		name = *release.Name
-	}
-
-	return &Release{
-		Name:   name,
-		Tag:    *release.TagName,
-		Assets: releaseAssets,
-	}, nil
 }

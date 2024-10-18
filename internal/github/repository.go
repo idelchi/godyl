@@ -5,8 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"sync"
 
 	"github.com/google/go-github/v64/github"
+)
+
+var (
+	TotalAPICalls int
+	GlobalMutex   sync.Mutex
 )
 
 // Repository represents a GitHub repository with its owner and name.
@@ -36,6 +42,11 @@ func (g *Repository) LatestRelease() (*Release, error) {
 	ctx := context.TODO()
 
 	release, _, err := g.client.Repositories.GetLatestRelease(ctx, g.Owner, g.Repo)
+
+	GlobalMutex.Lock()
+	TotalAPICalls++
+	GlobalMutex.Unlock()
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to get latest release: %w", err)
 	}
@@ -48,6 +59,10 @@ func (g *Repository) Languages() ([]string, error) {
 	ctx := context.TODO()
 
 	languages, _, err := g.client.Repositories.ListLanguages(ctx, g.Owner, g.Repo)
+	GlobalMutex.Lock()
+	TotalAPICalls++
+	GlobalMutex.Unlock()
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to get languages: %w", err)
 	}
@@ -71,6 +86,9 @@ func (g *Repository) GetRelease(tag string) (*Release, error) {
 	ctx := context.TODO()
 
 	release, _, err := g.client.Repositories.GetReleaseByTag(ctx, g.Owner, g.Repo, tag)
+	GlobalMutex.Lock()
+	TotalAPICalls++
+	GlobalMutex.Unlock()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get assets for release tag %q: %w", tag, err)
 	}
@@ -81,16 +99,21 @@ func (g *Repository) GetRelease(tag string) (*Release, error) {
 // release processes the provided GitHub release and retrieves its associated assets.
 // It returns a Release object containing the release name, tag, and assets.
 func (g *Repository) release(release *github.RepositoryRelease) (*Release, error) {
-	ctx := context.TODO()
+	// ctx := context.TODO()
 
-	opts := &github.ListOptions{
-		PerPage: 100,
-	}
+	// opts := &github.ListOptions{
+	// 	PerPage: 100,
+	// }
 
-	assets, _, err := g.client.Repositories.ListReleaseAssets(ctx, g.Owner, g.Repo, *release.ID, opts)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get assets for release: %w", err)
-	}
+	// assets, _, err := g.client.Repositories.ListReleaseAssets(ctx, g.Owner, g.Repo, *release.ID, opts)
+	// GlobalMutex.Lock()
+	// TotalAPICalls++
+	// GlobalMutex.Unlock()
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to get assets for release: %w", err)
+	// }
+
+	assets := release.Assets
 
 	var releaseAssets Assets
 	assetJSON, err := json.Marshal(assets)

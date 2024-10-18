@@ -1,5 +1,8 @@
 version: 2
 
+extra_files:
+  - glob: ./release_assets/*
+
 before:
   hooks:
     - go mod tidy
@@ -13,6 +16,7 @@ builds:
     goos:
       - linux
       - windows
+      - darwin
 
     goarch:
       - "386"

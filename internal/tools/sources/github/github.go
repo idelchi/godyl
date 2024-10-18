@@ -17,6 +17,8 @@ type GitHub struct {
 
 	// Data holds additional metadata related to the repository.
 	Data common.Metadata `yaml:"-"`
+
+	latestStoredRelease *github.Release
 }
 
 // Get retrieves a specific attribute from the GitHub repository's metadata.
@@ -34,6 +36,9 @@ func (g *GitHub) LatestVersion() (string, error) {
 		return "", err
 	}
 
+	// Store the latest release for future use
+	g.latestStoredRelease = release
+
 	return release.Tag, nil
 }
 
@@ -47,9 +52,16 @@ func (g *GitHub) MatchAssetsToRequirements(
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
-	release, err := repository.GetRelease(version)
-	if err != nil {
-		return "", err
+	var release *github.Release
+	if g.latestStoredRelease == nil {
+		var err error
+
+		release, err = repository.GetRelease(version)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		release = g.latestStoredRelease
 	}
 
 	assets := release.Assets

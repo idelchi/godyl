@@ -11,6 +11,7 @@ on:
 
 jobs:
   test:
+    if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
     permissions:
       contents: write
     strategy:
@@ -37,15 +38,13 @@ jobs:
       - name: Run tests
         run: go run ./cmd/godyl --show-platform
 
-      - name: Run godyl
-        run: go run ./cmd/godyl --log=error
-
   tag:
     needs: test
     permissions:
       contents: write
       actions: write
     runs-on: ubuntu-24.04
+    if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

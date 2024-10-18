@@ -37,6 +37,7 @@ func (a Asset) MatchHint(hint Hint) bool {
 // It calculates a score based on the degree of compatibility and returns whether the asset is qualified.
 func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 	var score int
+
 	qualified := true
 
 	// Match operating system

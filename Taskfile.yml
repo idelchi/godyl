@@ -101,3 +101,7 @@ tasks:
       git push origin --delete v0.0 || true
       git tag v0.0
       git push origin v0.0
+
+  gorelease:
+    - go install github.com/goreleaser/goreleaser/v2@latest
+    - goreleaser --snapshot --clean

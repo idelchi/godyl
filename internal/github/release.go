@@ -14,6 +14,7 @@ type Release struct {
 	Assets Assets `json:"assets"`   // Assets is a collection of assets attached to the release.
 }
 
+// FromRepositoryRelease converts a GitHub repository release to a Release object.
 func (r *Release) FromRepositoryRelease(release *github.RepositoryRelease) error {
 	assets := release.Assets
 

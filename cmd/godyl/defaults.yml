@@ -1,4 +1,5 @@
-output: ~/.local/bin
+# output: ~/.local/bin
+output: .bin-{{ .OS }}-{{ .ARCH }}
 exe:
   patterns:
     - "^{{ .Exe }}{{ .EXTENSION }}$"

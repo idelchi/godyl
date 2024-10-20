@@ -18,10 +18,13 @@ const (
 	INFO   Level = "info"   // INFO represents informational messages, typically used for normal operation.
 	WARN   Level = "warn"   // WARN represents warning messages, which indicate potential issues but not failures.
 	ERROR  Level = "error"  // ERROR represents error messages, indicating failure in operation.
+	ALWAYS Level = "always" // ALWAYS represents messages that should always be logged, regardless of the current log level.
 )
 
 func (l Level) AsInt() int {
 	switch l {
+	case SILENT:
+		return -1
 	case DEBUG:
 		return 0
 	case INFO:
@@ -30,7 +33,7 @@ func (l Level) AsInt() int {
 		return 2
 	case ERROR:
 		return 3
-	case SILENT:
+	case ALWAYS:
 		return 4
 	default:
 		return 1
@@ -40,7 +43,7 @@ func (l Level) AsInt() int {
 // IsAllowed checks if the log Level is a valid value (DEBUG, INFO, WARN, ERROR).
 func (l Level) IsAllowed() bool {
 	switch l {
-	case SILENT, DEBUG, INFO, WARN, ERROR:
+	case SILENT, DEBUG, INFO, WARN, ERROR, ALWAYS:
 		return true
 	default:
 		return false
@@ -67,10 +70,11 @@ func NewCustom(level Level, output io.Writer) *Logger {
 		level:  level,
 		output: output,
 		colors: map[Level]*color.Color{
-			DEBUG: color.New(color.FgBlue),
-			INFO:  color.New(color.FgGreen),
-			WARN:  color.New(color.FgYellow),
-			ERROR: color.New(color.FgRed),
+			DEBUG:  color.New(color.FgBlue),
+			INFO:   color.New(color.FgGreen),
+			WARN:   color.New(color.FgYellow),
+			ERROR:  color.New(color.FgRed),
+			ALWAYS: color.New(color.FgGreen),
 		},
 	}
 }
@@ -87,10 +91,11 @@ func New(level Level) *Logger {
 		level:  level,
 		output: os.Stdout,
 		colors: map[Level]*color.Color{
-			DEBUG: color.New(color.FgBlue),
-			INFO:  color.New(color.FgGreen),
-			WARN:  color.New(color.FgYellow),
-			ERROR: color.New(color.FgRed),
+			DEBUG:  color.New(color.FgBlue),
+			INFO:   color.New(color.FgGreen),
+			WARN:   color.New(color.FgYellow),
+			ERROR:  color.New(color.FgRed),
+			ALWAYS: color.New(color.FgGreen),
 		},
 	}
 }
@@ -98,7 +103,7 @@ func New(level Level) *Logger {
 // log prints a log message with the specified log level, applying colors based on the level if available.
 // The message will only be logged if the level's severity is equal to or higher than the Logger's current level.
 func (l *Logger) log(level Level, format string, args ...any) {
-	if level == SILENT {
+	if l.level == SILENT {
 		return
 	}
 
@@ -114,7 +119,7 @@ func (l *Logger) log(level Level, format string, args ...any) {
 
 // Always logs a message at the INFO level, regardless of the current log level.
 func (l *Logger) Always(format string, args ...any) {
-	l.log(INFO, format, args...)
+	l.log(ALWAYS, format, args...)
 }
 
 // Debug logs a debug-level message if the current log level allows it.

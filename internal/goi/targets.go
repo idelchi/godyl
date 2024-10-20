@@ -51,14 +51,17 @@ func (t Targets) Match() (match.Results, error) {
 	for _, tt := range t.Files {
 		asset := match.Asset{Name: tt.FileName}
 
-		asset.Platform.OS.From(tt.OS)
-		asset.Platform.Architecture.From(tt.Arch, "")
+		asset.Platform.OS.Parse(tt.OS)
+		asset.Platform.Architecture.Parse(tt.Arch)
 
 		assets = append(assets, asset)
 	}
 
 	hints := []match.Hint{
-		match.NewDefaultHint(platform.OS.Name()),
+		{
+			Pattern: platform.OS.String(),
+			Must:    true,
+		},
 	}
 
 	var err error

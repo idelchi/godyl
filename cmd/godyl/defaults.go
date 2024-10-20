@@ -50,7 +50,7 @@ func (d *Defaults) Validate() error {
 }
 
 // Merge applies values from a Config object into the Defaults struct, only if corresponding values are set.
-func (d *Defaults) Merge(cfg Config) {
+func (d *Defaults) Merge(cfg Config) (err error) {
 	if IsSet("output") {
 		d.Output = cfg.Output
 	}
@@ -68,12 +68,16 @@ func (d *Defaults) Merge(cfg Config) {
 	}
 
 	if IsSet("os") {
-		d.Platform.OS = cfg.OS
+		err = d.Platform.OS.Parse(cfg.OS)
+		d.Platform.Extension = d.Platform.Extension.Default(d.Platform.OS)
+		d.Platform.Library = d.Platform.Library.Default(d.Platform.OS, d.Platform.Distribution)
 	}
 
 	if IsSet("arch") {
-		d.Platform.Architecture.From(cfg.Arch, "")
+		err = d.Platform.Architecture.Parse(cfg.Arch)
 	}
+
+	return err
 }
 
 // Load loads configuration defaults from a file or uses embedded defaults if not specified.

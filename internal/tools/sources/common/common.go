@@ -37,7 +37,7 @@ func Download(d InstallData) (string, file.File, error) {
 		}
 		defer func() {
 			if err == nil {
-				// folder.Remove()
+				folder.Remove()
 			}
 		}()
 	}

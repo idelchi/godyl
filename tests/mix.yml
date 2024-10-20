@@ -34,6 +34,9 @@
 - name: muesli/duf
   description: Disk Usage/Free Utility - a better 'df' alternative
 
+- name: AlDanial/cloc
+  description: Count Lines of Code
+
 - name: FiloSottile/age
   description: A simple, modern and secure encryption tool
 
@@ -127,20 +130,10 @@
   source:
     type: github
 
-- name: AlDanial/cloc
-  description: Count Lines of Code
-  extensions:
-    - |
-      {{- if eq .OS "linux" -}}
-      .pl
-      {{- else -}}
-      .exe
-      {{- end -}}
-
 - name: pemistahl/grex
   description: A command-line tool for generating regular expressions
   skip:
-    - reason: "grex is not available for ARM32 architecture"
+    - reason: "grex is not available for ARM architecture"
       condition: '{{ eq .ARCH "arm" }}'
   fallbacks:
     - rust
@@ -153,11 +146,11 @@
   skip:
     - reason: "rip is only available for Linux"
       condition: '{{ne .OS "linux"}}'
-    - reason: "rip is only available for amd64 and armv7 architectures"
+    - reason: "rip is only available for arm32 and amd64 architectures"
       condition: |-
         {{- and
+            (ne .ARCH "arm32")
             (ne .ARCH "amd64")
-            (not (and (eq .ARCH "arm") (eq .ARCH_VERSION 7)))
         -}}
 
 - name: mgunyho/tere
@@ -203,9 +196,6 @@
 
 - name: derailed/k9s
   description: Kubernetes CLI To Manage Your Clusters In Style!
-  skip:
-    - reason: "k9s is not available for armv6"
-      condition: '{{ and (eq .ARCH "arm") (eq .ARCH_VERSION 6) }}'
   tags:
     - docker
 
@@ -239,9 +229,6 @@
   description: A simple and fast dashboard for Kubernetes
   tags:
     - docker
-  hints:
-    - pattern: "{{ .OS }}"
-      weight: -1
 
 - name: zyedidia/micro
   description: A modern and intuitive terminal-based text editor
@@ -280,8 +267,6 @@
   skip:
     - reason: "ripgrep is only available for Linux"
       condition: '{{ ne .OS "linux" }}'
-    - reason: "ripgrep is not available for armv6"
-      condition: '{{ and (eq .ARCH "arm") (eq .ARCH_VERSION 6) }}'
 
 - name: jesseduffield/lazygit
   description: simple terminal UI for git commands
@@ -434,9 +419,6 @@
 
 - name: bcicen/ctop
   description: Top-like interface for container metrics
-  skip:
-    - reason: "ctop is not available for darwin arm64"
-      condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
   extensions: []
 
 - name: 89luca89/distrobox

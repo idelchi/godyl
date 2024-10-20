@@ -16,7 +16,7 @@ builds:
       - darwin
 
     goarch:
-      - "386"
+      - 386
       - amd64
       - arm
       - arm64
@@ -34,7 +34,7 @@ builds:
       - goos: windows
         goarch: arm64
       - goos: windows
-        goarch: "386"
+        goarch: 386
 
 archives:
   - format: tar.gz

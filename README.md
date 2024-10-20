@@ -36,11 +36,11 @@ However, most properties can be overridden, with `hints` and `skip` used to help
 > [!NOTE]
 > Tested on:
 >
-> **Linux**: `amd64`, `arm64`, `armv7l`, `armv6l`
+> **Linux**: `amd64`, `arm64`, `armv7`, `armv6`
 >
 > **Windows**: `amd64`
 >
-> **MacOS**: `arm64`
+> **MacOS**: `amd64`, `arm64`
 >
 > for tools listed in [tools.yml](./tools.yml)
 
@@ -78,7 +78,7 @@ go install github.com/idelchi/godyl/cmd/godyl@latest
 ## From installation script
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts/install.sh | sh -s -- -v v0.0 -o ~/.local/bin
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/scripts/install.sh | sh -s -- -v v0.0 -o ~/.local/bin
 ```
 
 ## Update
@@ -192,10 +192,10 @@ Examples are provided in [tools.yml](./tools.yml).
 ### Simple form
 
 ```yaml
-- ajeetdsouza/zoxide
+- idelchi/godyl
 ```
 
-Above is the `simple` form to attempt to download the latest release of `zoxide` from `ajeetdsouza/zoxide`.
+Above is the `simple` form to attempt to download the latest release of `godyl` from `idelchi/godyl`.
 
 If it is a URL, it will be considered as a `source.url` type.
 Otherwise, it will be assumed to be a `source.github` type on the form `owner/repo`.
@@ -391,14 +391,14 @@ skip:
 #### Alternative form
 
 ```yaml
-exe: zoxide
+exe: godyl
 ```
 
 is equivalent to:
 
 ```yaml
 exe:
-  name: zoxide
+  name: godyl
 ```
 
 ### Platform
@@ -650,7 +650,7 @@ Accepted values are:
 - `find` will download, extract and find the executable
 - `extract` will download the tool and extract it directly to the output directory
 - Set according to [flags and environment variables](#configuration) or [defaults](#defaults) if not given
-- Automatically set to `extract` if the tool is used without `tools.yml` (e.g. `godyl ajeetdsouza/zoxide`)
+- Automatically set to `extract` if the tool is used without `tools.yml` (e.g. `godyl idelchi/godyl`)
 
 ## Defaults
 
@@ -687,7 +687,7 @@ The example above defines:
 - Extensions to use when filtering assets
 
   - `.exe` for Windows, empty for Linux and MacOS
-  - `.zip` for Windows
+  - `.zip` for Windows and Darwin
   - `.tar.gz` for all platforms
 
 - `find` mode for downloading, extracting and finding the executable

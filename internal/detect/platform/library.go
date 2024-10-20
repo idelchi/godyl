@@ -2,118 +2,121 @@ package platform
 
 import (
 	"fmt"
-
-	"github.com/idelchi/godyl/pkg/utils"
+	"strings"
 )
 
-// Library represents a system library or ABI (Application Binary Interface) used by an operating system or platform.
-type Library string
+// Library represents a system library or ABI (Application Binary Interface).
+type Library struct {
+	Type string
+	Raw  string // Original parsed library value
+}
 
-// Predefined Library values.
-const (
-	GNU        Library = "gnu"     // GNU library, typically used in Linux distributions.
-	Musl       Library = "musl"    // Musl library, often used in lightweight Linux distributions like Alpine.
-	MSVC       Library = "msvc"    // Microsoft Visual C++ (MSVC) library, used in Windows.
-	LibAndroid Library = "android" // Android library, used in Android OS.
-)
+// LibraryInfo holds information about a library type, including aliases.
+type LibraryInfo struct {
+	Type    string
+	Aliases []string
+}
 
-// Default returns the default Library for a given OS and Distribution.
-func (l *Library) Default(os OS, distro Distribution) Library {
-	switch os {
-	case Windows:
-		return MSVC
-	case Android:
-		return LibAndroid
-	case Linux:
-		switch distro {
-		case Alpine:
-			return Musl
-		default:
-			return GNU
-		}
-	default:
-		return ""
+// Supported returns a slice of supported library information.
+func (LibraryInfo) Supported() []LibraryInfo {
+	return []LibraryInfo{
+		{
+			Type:    "gnu",
+			Aliases: []string{"gnu", "glibc"},
+		},
+		{
+			Type:    "musl",
+			Aliases: []string{"musl"},
+		},
+		{
+			Type:    "msvc",
+			Aliases: []string{"msvc", "visualcpp"},
+		},
+		{
+			Type:    "android",
+			Aliases: []string{"android"},
+		},
 	}
 }
 
-// Available returns a slice of all supported libraries.
-func (l Library) Available() []Library {
-	return []Library{Musl, GNU, MSVC, LibAndroid}
-}
-
-// From sets the Library based on the provided string, if it matches any available library.
-func (l *Library) From(library string) error {
-	for _, lib := range l.Available() {
-		if utils.EqualLower(library, lib.Name()) {
-			*l = lib
-			return nil
-		}
-	}
-
-	for _, lib := range l.Available() {
-		if lib.IsCompatibleWith(library) {
-			*l = lib
-			return nil
-		}
-	}
-
-	*l = "" // Reset to empty if no match is found
-	return nil
-}
-
-// CompatibleWith returns a list of compatible library names for the given Library.
-func (l Library) CompatibleWith() []string {
-	switch l {
-	case GNU:
-		return []string{"gnu", "musl"}
-	case Musl:
-		return []string{"musl", "gnu"}
-	case MSVC:
-		return []string{"msvc", "gnu"}
-	case LibAndroid:
-		return []string{"android"}
-	}
-	return nil
-}
-
-// IsCompatibleWith checks if the provided library name is compatible with the current Library.
-func (l Library) IsCompatibleWith(lib string) bool {
-	for _, compatible := range l.CompatibleWith() {
-		if lib == compatible {
-			return true
-		}
-	}
-	return false
-}
-
-// Name returns the name of the Library as a string.
-func (l Library) Name() string {
-	return string(l)
-}
-
-// String returns the Library as a string.
-func (l Library) String() string {
-	return l.Name()
-}
-
-// Parse attempts to parse a string and set the Library accordingly, based on its name or aliases.
+// Parse attempts to parse the library from the given name string.
 func (l *Library) Parse(name string) error {
-	for _, library := range l.Available() {
-		if utils.ContainsLower(name, library.Name()) {
-			*l = library
-			return nil
-		}
-	}
+	name = strings.ToLower(name)
 
-	for _, library := range l.Available() {
-		for _, alias := range library.CompatibleWith() {
-			if utils.ContainsLower(name, alias) {
-				*l = library
+	info := LibraryInfo{}
+
+	for _, info := range info.Supported() {
+		for _, alias := range info.Aliases {
+			if strings.Contains(name, alias) {
+				l.Type = info.Type
+				l.Raw = alias
+
 				return nil
 			}
 		}
 	}
 
-	// Return an error if no match is found
 	return fmt.Errorf("unable to parse library from name: %s", name)
+}
+
+// IsUnset returns true if the library type is not set.
+func (l Library) IsUnset() bool {
+	return l.Type == ""
+}
+
+// Is checks if this library is exactly the same as another.
+func (l Library) Is(other Library) bool {
+	return other.Raw == l.Raw && !l.IsUnset() && !other.IsUnset()
+}
+
+// IsCompatibleWith checks if this library is compatible with another.
+func (l Library) IsCompatibleWith(other Library) bool {
+	if l.IsUnset() || other.IsUnset() {
+		return false
+	}
+
+	if l.Is(other) {
+		return true
+	}
+
+	if l.Type == other.Type {
+		return true
+	}
+
+	// Specific compatibility rules
+	if l.Type == "gnu" && other.Type == "musl" {
+		return true
+	}
+	if l.Type == "musl" && other.Type == "gnu" {
+		return true
+	}
+	if l.Type == "msvc" && other.Type == "gnu" {
+		return true
+	}
+
+	return false
+}
+
+// String returns a string representation of the library.
+func (l Library) String() string {
+	return l.Type
+}
+
+// Default returns the default Library for a given OS and Distribution.
+func (l *Library) Default(os OS, distro Distribution) Library {
+	switch os.Type {
+	case "windows":
+		return Library{Type: "msvc", Raw: "msvc"}
+	case "android":
+		return Library{Type: "android", Raw: "android"}
+	case "linux":
+		switch distro.Type {
+		case "alpine":
+			return Library{Type: "musl", Raw: "musl"}
+		default:
+			return Library{Type: "gnu", Raw: "gnu"}
+		}
+	default:
+		return Library{}
+	}
 }

@@ -2,47 +2,99 @@ package platform
 
 import (
 	"fmt"
-
-	"github.com/idelchi/godyl/pkg/utils"
+	"strings"
 )
 
-// Distribution represents a Linux distribution, with several predefined values.
-type Distribution string
-
-// Predefined Distribution values.
-const (
-	Debian  Distribution = "debian"  // Debian distribution
-	Ubuntu  Distribution = "ubuntu"  // Ubuntu distribution
-	CentOS  Distribution = "centos"  // CentOS distribution
-	RedHat  Distribution = "redhat"  // RedHat distribution
-	Arch    Distribution = "arch"    // Arch Linux distribution
-	Alpine  Distribution = "alpine"  // Alpine Linux distribution
-	Rasbian Distribution = "rasbian" // Rasbian distribution (used on Raspberry Pi)
-)
-
-// Available returns a slice of all available distributions.
-func (d Distribution) Available() []Distribution {
-	return []Distribution{Debian, Ubuntu, CentOS, RedHat, Arch, Alpine, Rasbian}
+// Distribution represents a Linux distribution.
+type Distribution struct {
+	Type string
+	Raw  string // Original parsed distribution value
 }
 
-// From sets the Distribution based on the provided string, if it matches any available distribution.
-func (d *Distribution) From(distribution string) error {
-	for _, distro := range d.Available() {
-		if utils.EqualLower(distro.String(), distribution) {
-			*d = distro
-			return nil
+// DistroInfo holds information about a distribution type, including aliases.
+type DistroInfo struct {
+	Type    string
+	Aliases []string
+}
+
+// Supported returns a slice of supported distribution information.
+func (DistroInfo) Supported() []DistroInfo {
+	return []DistroInfo{
+		{
+			Type:    "debian",
+			Aliases: []string{"debian"},
+		},
+		{
+			Type:    "ubuntu",
+			Aliases: []string{"ubuntu"},
+		},
+		{
+			Type:    "centos",
+			Aliases: []string{"centos"},
+		},
+		{
+			Type:    "redhat",
+			Aliases: []string{"redhat", "rhel"},
+		},
+		{
+			Type:    "arch",
+			Aliases: []string{"arch"},
+		},
+		{
+			Type:    "alpine",
+			Aliases: []string{"alpine"},
+		},
+		{
+			Type:    "raspbian",
+			Aliases: []string{"raspbian", "raspberry"},
+		},
+	}
+}
+
+// Parse attempts to parse the distribution from the given name string.
+func (d *Distribution) Parse(name string) error {
+	name = strings.ToLower(name)
+
+	info := DistroInfo{}
+
+	for _, info := range info.Supported() {
+		for _, alias := range info.Aliases {
+			if strings.Contains(name, alias) {
+				d.Type = info.Type
+				d.Raw = alias
+				return nil
+			}
 		}
 	}
 
-	return fmt.Errorf("%w: distribution %q", ErrNotFound, distribution)
+	return fmt.Errorf("unable to parse distribution from name: %s", name)
 }
 
-// String returns the Distribution as a string.
+// IsUnset returns true if the distribution type is not set.
+func (d Distribution) IsUnset() bool {
+	return d.Type == ""
+}
+
+// Is checks if this distribution is exactly the same as another.
+func (d Distribution) Is(other Distribution) bool {
+	return other.Raw == d.Raw && !d.IsUnset() && !other.IsUnset()
+}
+
+// IsCompatibleWith checks if this distribution is compatible with another.
+func (d Distribution) IsCompatibleWith(other Distribution) bool {
+	if d.IsUnset() || other.IsUnset() {
+		return false
+	}
+
+	return d.Type == other.Type
+}
+
+// String returns a string representation of the distribution.
 func (d Distribution) String() string {
-	return string(d)
+	return d.Type
 }
 
-// Default returns the default Distribution, which is an empty string.
-func (d Distribution) Default() Distribution {
-	return Distribution("")
+// Default returns the default Distribution, which is an empty Distribution.
+func Default() Distribution {
+	return Distribution{}
 }

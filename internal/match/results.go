@@ -1,25 +1,26 @@
 package match
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 )
 
 var (
 	// ErrNoMatch is returned when no matches are found.
-	ErrNoMatch = fmt.Errorf("no matches found")
+	ErrNoMatch = errors.New("no matches found")
 	// ErrAmbiguous is returned when multiple equally good matches are found.
-	ErrAmbiguous = fmt.Errorf("ambiguous matches found")
+	ErrAmbiguous = errors.New("ambiguous matches found")
 	// ErrNoQualified is returned when no qualified matches are found.
-	ErrNoQualified = fmt.Errorf("no qualified matches found")
+	ErrNoQualified = errors.New("no qualified matches found")
 )
 
 // Result represents the outcome of matching an asset.
-// It contains the asset's name, its score, and whether it is qualified.
+// It contains the asset, its score, and whether it is qualified.
 type Result struct {
-	Name      string // Name of the asset.
-	Score     int    // Score representing how well the asset matches the requirements.
-	Qualified bool   // Qualified indicates whether the asset meets the necessary criteria.
+	Asset     Asset // Asset being evaluated.
+	Score     int   // Score representing how well the asset matches the requirements.
+	Qualified bool  // Qualified indicates whether the asset meets the necessary criteria.
 }
 
 // Results is a collection of Result objects.
@@ -29,7 +30,15 @@ type Results []Result
 func (m Results) ToString() string {
 	var result string
 	for _, r := range m {
-		result += fmt.Sprintf("	- %s: %d\n", r.Name, r.Score)
+		result += fmt.Sprintf("	- %s\n", r.Asset.Name)
+		result += fmt.Sprintf("		score: %d\n", r.Score)
+		result += fmt.Sprintf("		qualified: %t\n", r.Qualified)
+		result += "		detected as:\n"
+		result += fmt.Sprintf("		  os: %s\n", r.Asset.Platform.OS)
+		result += fmt.Sprintf("		  arch: %s\n", r.Asset.Platform.Architecture)
+		result += fmt.Sprintf("		  library: %s\n", r.Asset.Platform.Library)
+		result += fmt.Sprintf("		  extension: %s\n", r.Asset.Platform.Extension)
+
 	}
 	return result
 }
@@ -85,6 +94,16 @@ func (m Results) HasQualified() bool {
 		}
 	}
 	return false
+}
+
+func (m Results) WithoutZero() Results {
+	var qualified Results
+	for _, result := range m {
+		if result.Score > 0 {
+			qualified = append(qualified, result)
+		}
+	}
+	return qualified
 }
 
 // Sorted returns a new sorted instance of Results.

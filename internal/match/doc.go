@@ -7,5 +7,4 @@
 // file or package, and Requirements, which defines the criteria for matching
 // assets. These criteria can include platform specifications and pattern hints.
 // The Results type facilitates sorting and evaluating the best-matching assets.
-
 package match

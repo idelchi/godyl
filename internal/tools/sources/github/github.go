@@ -17,11 +17,29 @@ type GitHub struct {
 
 	// Data holds additional metadata related to the repository.
 	Data common.Metadata `yaml:"-"`
+
+	latestStoredRelease *github.Release
 }
 
 // Get retrieves a specific attribute from the GitHub repository's metadata.
 func (g *GitHub) Get(attribute string) string {
 	return g.Data.Get(attribute)
+}
+
+// LatestVersion fetches the latest release version of the GitHub repository.
+func (g *GitHub) LatestVersion2() (string, error) {
+	client := github.NewClient(g.Token)
+	repository := github.NewRepository(g.Owner, g.Repo, client)
+
+	release, err := repository.LatestRelease()
+	if err != nil {
+		return "", err
+	}
+
+	// Store the latest release for future use
+	g.latestStoredRelease = release
+
+	return release.Tag, nil
 }
 
 // LatestVersion fetches the latest release version of the GitHub repository.
@@ -33,6 +51,9 @@ func (g *GitHub) LatestVersion() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	// Store the latest release for future use
+	g.latestStoredRelease = release
 
 	return release.Tag, nil
 }
@@ -47,22 +68,31 @@ func (g *GitHub) MatchAssetsToRequirements(
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
-	release, err := repository.GetRelease(version)
-	if err != nil {
-		return "", err
+	var release *github.Release
+	if g.latestStoredRelease == nil {
+		var err error
+
+		release, err = repository.GetRelease(version)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		release = g.latestStoredRelease
 	}
 
 	assets := release.Assets
 
-	assets = assets.FilterByExtension(filters)
-
-	match, err := assets.Match(requirements)
-	if err != nil {
-		return "", err
+	matches := assets.Match(requirements)
+	if matches.Status() != nil {
+		return "", matches.WithoutZero().Status()
+		return "", matches.WithoutZero().Status()
 	}
 
-	// TODO: Will this fail if match is empty?
-	return assets.FilterByName(match[0].Name)[0].URL, match.Status()
+	if len(matches) == 0 {
+		return "", fmt.Errorf("no assets found for requirements: %v", requirements)
+	}
+
+	return assets.FilterByName(matches[0].Asset.Name)[0].URL, matches.Status()
 }
 
 // PopulateOwnerAndRepo sets the Owner and Repo fields based on the given name.
@@ -122,6 +152,7 @@ func (g *GitHub) Path(_ string, extensions []string, version string, requirement
 	}
 
 	g.Data.Set("path", url)
+
 	return nil
 }
 

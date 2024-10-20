@@ -14,7 +14,7 @@ import (
 func (p *Platform) Detect() error {
 	var os platform.OS
 	var arch platform.Architecture
-	var library platform.Library = platform.GNU
+	var library platform.Library
 	var distro platform.Distribution
 	var extension platform.Extension
 
@@ -24,12 +24,12 @@ func (p *Platform) Detect() error {
 	si.GetSysInfo()
 
 	// Determine the OS from runtime information
-	if err := os.From(runtime.GOOS); err != nil {
+	if err := os.Parse(runtime.GOOS); err != nil {
 		return err
 	}
 
 	// Determine the Linux distribution from system information
-	if err := distro.From(si.OS.Vendor); err != nil {
+	if err := distro.Parse(si.OS.Vendor); err != nil {
 		return err
 	}
 
@@ -37,7 +37,7 @@ func (p *Platform) Detect() error {
 	library = library.Default(os, distro)
 
 	// Determine the architecture from the system's kernel architecture
-	if err := arch.From(si.Kernel.Architecture, distro); err != nil {
+	if err := arch.Parse(si.Kernel.Architecture); err != nil {
 		return err
 	}
 

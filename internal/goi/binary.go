@@ -65,7 +65,7 @@ func New() (binary Binary, err error) {
 		return binary, err
 	}
 
-	err = binary.Download(path[0].Name)
+	err = binary.Download(path[0].Asset.Name)
 	if err != nil {
 		return binary, err
 	}

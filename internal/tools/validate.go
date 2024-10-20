@@ -56,10 +56,6 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 
 	t.Extensions = slices.Compact(t.Extensions)
 	t.Aliases = slices.Compact(t.Aliases)
-	t.Fallbacks = slices.Compact(t.Fallbacks)
-
-	// Build the fallback sources from the primary source type and additional fallbacks.
-	fallbacks := append([]sources.Type{t.Source.Type}, t.Fallbacks...)
 
 	// Expand environment variables.
 	t.Env.Expand()
@@ -68,9 +64,14 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 		return err
 	}
 
+	t.Fallbacks = slices.Compact(t.Fallbacks)
+
+	// Build the fallback sources from the primary source type and additional fallbacks.
+	fallbacks := append([]sources.Type{t.Source.Type}, t.Fallbacks...)
+
 	var lastErr error
 	// Try resolving with each fallback in order.
-	for _, fallback := range fallbacks {
+	for _, fallback := range slices.Compact(fallbacks) {
 		if fallback == sources.RUST {
 			// Skip Rust fallback for now.
 			continue

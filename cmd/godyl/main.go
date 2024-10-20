@@ -86,7 +86,9 @@ func (app *App) initialize() error {
 	if err := app.defaults.Load(app.cfg.Defaults.Name()); err != nil {
 		return fmt.Errorf("error loading defaults: %v", err)
 	}
-	app.defaults.Merge(app.cfg)
+	if err := app.defaults.Merge(app.cfg); err != nil {
+		return fmt.Errorf("error merging defaults: %v", err)
+	}
 
 	return nil
 }
@@ -131,6 +133,8 @@ func (app *App) loadTools(path string) (tools.Tools, error) {
 	if err := toolsList.Load(path); err != nil {
 		return toolsList, fmt.Errorf("loading tools from %q: %w", path, err)
 	}
+
+	app.log.Info("loaded %d tools from %q", len(toolsList), path)
 
 	return toolsList, nil
 }
@@ -205,6 +209,7 @@ func (tp *ToolProcessor) processTool(tool *tools.Tool, tags, withoutTags []strin
 
 	if err := tool.Resolve(tags, withoutTags); err != nil {
 		tp.resultCh <- result{tool: tool, err: err}
+
 		return nil
 	}
 
@@ -234,6 +239,7 @@ func (app *App) processResult(res result) {
 	err := res.err
 	msg := res.msg
 	found := res.found
+	app.log.Info("")
 	app.log.Always(tool.Name)
 	app.log.Debug("configuration:")
 	app.log.Debug("-------")
@@ -255,10 +261,10 @@ func (app *App) handleToolError(tool *tools.Tool, err error, msg string) {
 		app.log.Warn("  %v", err)
 	} else {
 		app.log.Error("  failed to install")
-		app.log.Error("configuration:")
-		app.log.Error("-------")
-		app.log.Error(pretty.JSONMasked(tool))
-		app.log.Error("-------")
+		app.log.Debug("configuration:")
+		app.log.Debug("-------")
+		app.log.Debug(pretty.JSONMasked(tool))
+		app.log.Debug("-------")
 		app.log.Error("  %v", err)
 		app.log.Error("  %s", msg)
 	}

@@ -33,7 +33,7 @@ func (as Assets) Match(req Requirements) Results {
 	var results Results
 	for _, a := range as {
 		score, qualified := a.Match(req)
-		results = append(results, Result{Name: a.Name, Score: score, Qualified: qualified})
+		results = append(results, Result{Asset: a, Score: score, Qualified: qualified})
 	}
 
 	return results

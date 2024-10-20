@@ -23,20 +23,12 @@ func (p *Platform) Parse(name string) {
 	p.Extension.Default(p.OS)
 }
 
-// Default sets the platform fields to their default values based on the current OS and distribution.
-func (p *Platform) Default() {
-	p.OS = p.OS.Default()
-	p.Architecture = p.Architecture.Default()
-	p.Library = p.Library.Default(p.OS, p.Distribution)
-	p.Extension = p.Extension.Default(p.OS)
-	p.Distribution = p.Distribution.Default()
-}
-
 // Merge combines another Platform's fields into the current Platform, setting fields that are empty.
 func (p *Platform) Merge(other Platform) {
 	utils.SetIfEmpty(&p.OS, other.OS)
 	utils.SetIfEmpty(&p.Architecture.Type, other.Architecture.Type)
 	utils.SetIfEmpty(&p.Architecture.Version, other.Architecture.Version)
+	utils.SetIfEmpty(&p.Architecture.Raw, other.Architecture.Raw)
 	utils.SetIfEmpty(&p.Library, other.Library)
 	utils.SetIfEmpty(&p.Extension, other.Extension)
 	utils.SetIfEmpty(&p.Distribution, other.Distribution)

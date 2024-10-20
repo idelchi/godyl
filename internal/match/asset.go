@@ -37,42 +37,41 @@ func (a Asset) MatchHint(hint Hint) bool {
 // It calculates a score based on the degree of compatibility and returns whether the asset is qualified.
 func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 	var score int
+
 	qualified := true
 
 	// Match operating system
-	if a.Platform.OS != "" {
-		if a.Platform.OS == req.Platform.OS {
-			score++
-		}
-		if req.Platform.OS.IsCompatibleWith(a.Platform.OS.Name()) {
-			score++
-		} else {
-			qualified = false
-		}
+	if req.Platform.OS.Is(a.Platform.OS) {
+		score++
 	}
 
-	// Match architecture
-	if a.Platform.Architecture.Name() != "" {
-		if a.Platform.Architecture.Name() == req.Platform.Architecture.Name() {
-			score++
-		}
-		if req.Platform.Architecture.IsCompatibleWith(a.Platform.Architecture.Name(), req.Platform.Distribution) {
-			score++
-		} else {
-			qualified = false
-		}
+	if req.Platform.OS.IsCompatibleWith(a.Platform.OS) {
+		score++
+	} else if !a.Platform.OS.IsUnset() && !req.Platform.OS.IsUnset() {
+		qualified = false
+	} else {
 	}
 
-	// Match library (e.g., runtime or linking library)
-	if a.Platform.Library != "" {
-		if a.Platform.Library == req.Platform.Library {
-			score++
-		}
-		if req.Platform.Library.IsCompatibleWith(a.Platform.Library.Name()) {
-			score++
-		} else {
-			score-- // Negative score for incompatible library
-		}
+	if req.Platform.Architecture.Is(a.Platform.Architecture) {
+		score++
+	}
+
+	if req.Platform.Architecture.IsCompatibleWith(a.Platform.Architecture) {
+		score++
+	} else if !a.Platform.Architecture.IsUnset() && !req.Platform.Architecture.IsUnset() {
+		qualified = false
+	} else {
+		score--
+	}
+
+	if req.Platform.Library.Is(a.Platform.Library) {
+		score++
+	}
+
+	if req.Platform.Library.IsCompatibleWith(a.Platform.Library) {
+		score++
+	} else if !a.Platform.Library.IsUnset() && !req.Platform.Library.IsUnset() {
+		qualified = false
 	}
 
 	return score, qualified
@@ -81,9 +80,6 @@ func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 // Match evaluates if the asset satisfies the given requirements.
 // It aggregates scores from both platform compatibility and matching hints.
 func (a Asset) Match(req Requirements) (int, bool) {
-	var score int
-	qualified := true
-
 	// Check mandatory hints
 	for _, hint := range req.Hints {
 		if hint.Must && !a.MatchHint(hint) {
@@ -92,12 +88,12 @@ func (a Asset) Match(req Requirements) (int, bool) {
 	}
 
 	// Match platform requirements
-	score, qualified = a.PlatformMatch(req)
+	score, qualified := a.PlatformMatch(req)
 
 	// Check non-mandatory hints and adjust the score
 	for _, hint := range req.Hints {
 		if !hint.Must && a.MatchHint(hint) {
-			score += hint.WeightInt
+			score += hint.GetWeight()
 		}
 	}
 

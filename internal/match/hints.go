@@ -5,9 +5,7 @@ type Hints []Hint
 
 // Append appends a set of hints to the current collection.
 func (h *Hints) Append(hints Hints) {
-	for _, hint := range hints {
-		*h = append(*h, hint)
-	}
+	*h = append(*h, hints...)
 }
 
 // Add appends a set of hints to the current collection.

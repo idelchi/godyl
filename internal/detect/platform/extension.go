@@ -11,8 +11,8 @@ type Extension string
 // Default returns the default file extension based on the operating system.
 // For Windows, it returns ".exe", and for other operating systems, it returns an empty string.
 func (e Extension) Default(os OS) Extension {
-	switch os {
-	case Windows:
+	switch os.Type {
+	case "windows":
 		return Extension(".exe")
 	default:
 		return Extension("")

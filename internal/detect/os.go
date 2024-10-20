@@ -1,4 +1,4 @@
-//go:build windows || darwin || freebsd || openbsd || netbsd
+//go:build !linux
 
 package detect
 
@@ -18,7 +18,7 @@ func (p *Platform) Detect() error {
 	var extension platform.Extension
 
 	// Determine the OS from runtime information
-	if err := os.From(runtime.GOOS); err != nil {
+	if err := os.Parse(runtime.GOOS); err != nil {
 		return err
 	}
 
@@ -26,7 +26,7 @@ func (p *Platform) Detect() error {
 	library = library.Default(os, distro)
 
 	// Determine the architecture from runtime information
-	if err := arch.From(runtime.GOARCH, distro); err != nil {
+	if err := arch.Parse(runtime.GOARCH); err != nil {
 		return err
 	}
 

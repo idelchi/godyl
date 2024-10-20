@@ -41,7 +41,7 @@ func flags() {
 	pflag.Bool("update", false, "Update the tools")
 	pflag.Bool("dry", false, "Run without making any changes (dry run)")
 	pflag.String("log", string(logger.INFO), "Log level (DEBUG, INFO, WARN, ERROR)")
-	pflag.IntP("parallel", "j", 0, "Number of parallel downloads")
+	pflag.IntP("parallel", "j", 10, "Number of parallel downloads. 0 means unlimited.")
 
 	// Tool flags
 	pflag.String("output", "", "Output path for the downloaded tools")

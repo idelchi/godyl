@@ -26,8 +26,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -38,43 +36,8 @@ jobs:
       - name: Run tests
         run: go run ./cmd/godyl --show-platform
 
-  tag:
-    needs: test
-    permissions:
-      contents: write
-      actions: write
-    runs-on: ubuntu-24.04
-    if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      TAG: "v0.0"
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: delete ${{ env.TAG }} release & tag
-        run: |
-          gh release delete ${{ env.TAG }} --yes --cleanup-tag || true
-        continue-on-error: true
-
-      - name: delete ${{ env.TAG }} tag
-        run: |
-          git tag --delete ${{ env.TAG }}
-          git push origin --delete ${{ env.TAG }}
-        continue-on-error: true
-
-      - name: create ${{ env.TAG }} tag
-        run: |
-          git tag ${{ env.TAG }}
-          git push origin ${{ env.TAG }}
-
-      - name: run workflow for ${{ env.TAG }} tag
-        run: |
-          gh workflow run ${{ github.workflow }} --ref ${{ env.TAG }}
+      - name: Run godyl
+        run: go run ./cmd/godyl --log=error
 
   release:
     permissions:

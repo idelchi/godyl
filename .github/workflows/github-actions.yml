@@ -37,7 +37,7 @@ jobs:
         run: go run ./cmd/godyl --show-platform
 
       - name: Run godyl
-        run: go run ./cmd/godyl --log=error
+        run: go run ./cmd/godyl --log=info
 
   release:
     permissions:

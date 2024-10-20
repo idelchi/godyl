@@ -4,6 +4,7 @@
 
 ARG GO_VERSION=1.23.2
 ARG DISTRO=bookworm
+
 #### ---- Build ---- ####
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-${DISTRO} AS build
 

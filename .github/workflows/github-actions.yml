@@ -54,7 +54,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      #
+
       - name: delete ${{ env.TAG }} release & tag
         run: |
           gh release delete ${{ env.TAG }} --yes --cleanup-tag || true
@@ -74,15 +74,6 @@ jobs:
       - name: run workflow for ${{ env.TAG }} tag
         run: |
           gh workflow run ${{ github.workflow }} --ref ${{ env.TAG }}
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
-        with:
-          distribution: goreleaser
-          version: "~> v2"
-          args: release --clean --skip validate
-        env:
-          GORELEASER_CURRENT_TAG: ${{ env.TAG }}
 
   release:
     permissions:

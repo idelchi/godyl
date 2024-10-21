@@ -384,6 +384,12 @@
       condition: '{{ eq .ARCH "arm64" }}'
     - reason: "jnv not available for arm"
       condition: '{{ eq .ARCH "arm" }}'
+  extensions: |
+    {{- if eq .OS "windows" -}}
+        .zip
+    {{- else -}}
+        .xz
+    {{- end -}}
   tags:
     - processing
 

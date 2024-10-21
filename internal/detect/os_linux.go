@@ -39,7 +39,7 @@ func (p *Platform) Detect() error {
 		return err
 	}
 
-	if arch.Type == "arm" && arch.Version == 0 {
+	if arch.Raw == "arm" {
 		arch.Version = platform.InferGoArmVersion()
 	}
 

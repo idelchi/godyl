@@ -55,6 +55,17 @@ jobs:
           fetch-depth: 1
           fetch-tags: true
 
+      - name: delete ${{ env.TAG }} release & tag
+        run: |
+          gh release delete ${{ env.TAG }} --yes --cleanup-tag || true
+        continue-on-error: true
+
+      - name: delete ${{ env.TAG }} tag
+        run: |
+          git tag --delete ${{ env.TAG }}
+          git push origin --delete ${{ env.TAG }}
+        continue-on-error: true
+
       - name: create ${{ env.TAG }} tag
         run: |
           git tag ${{ env.TAG }}

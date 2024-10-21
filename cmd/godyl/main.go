@@ -39,14 +39,6 @@ type result struct {
 }
 
 func main() {
-	distro := platform.Distribution{}
-
-	if err := distro.Parse("raspbian"); err != nil {
-		fmt.Fprintf(os.Stderr, "error parsing distribution: %v\n", err)
-
-		os.Exit(1)
-	}
-
 	app := NewApp()
 	if err := app.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)

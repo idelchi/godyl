@@ -24,7 +24,7 @@ done
 
 # Detect OS and Architecture
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-ARCH=$(uname -m)
+ARCH=$(dpkg --print-architecture)
 
 case "$OS" in
   cygwin_nt*) OS="windows" ;;

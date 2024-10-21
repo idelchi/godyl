@@ -71,6 +71,11 @@
   tags:
     - kubernetes
 
+- name: idelchi/gocry
+  description: Encrypt files or lines
+  tags:
+    - security
+
 - name: syncthing/syncthing
   description: Open Source Continuous File Synchronization
   tags:
@@ -358,33 +363,27 @@
 
 - name: tidwall/jj
   description: JSON Stream Editor
+  skip:
+    - reason: "jj not available for arm64"
+      condition: '{{ eq .ARCH "arm64" }}'
+    - reason: "jj not available for arm"
+      condition: '{{ eq .ARCH "arm" }}'
   tags:
     - processing
-
-- name: jpmens/jo
-  exe: jo
-  description: JSON output from a shell
-  tags:
-    - processing
-  source:
-    type: |-
-      {{- if eq .OS "windows" -}}
-          github
-      {{- else -}}
-          command
-      {{- end -}}
-    commands:
-      - apt-get update
-      - apt-get install -y {{ .Exe }}
-  extensions: .exe
 
 - name: simeji/jid
   description: json incremental digger
+  extensions: .zip
   tags:
     - processing
 
 - name: ynqa/jnv
   description: JSON navigator
+  skip:
+    - reason: "jnv not available for arm64"
+      condition: '{{ eq .ARCH "arm64" }}'
+    - reason: "jnv not available for arm"
+      condition: '{{ eq .ARCH "arm" }}'
   tags:
     - processing
 
@@ -608,3 +607,22 @@
     - linux
     - native
     - terminal
+
+- name: jpmens/jo
+  exe: jo
+  description: JSON output from a shell
+  source:
+    type: |-
+      {{- if eq .OS "windows" -}}
+          github
+      {{- else -}}
+          command
+      {{- end -}}
+    commands:
+      - apt-get update
+      - apt-get install -y {{ .Exe }}
+  extensions: .exe
+  tags:
+    - elevated
+    - native
+    - processing

@@ -43,7 +43,7 @@ func (ArchInfo) Supported() []ArchInfo {
 			Aliases: []string{"armv7", "armv6", "armv5", "armel", "armhf", "arm"},
 			Parse: func(s string) (int, error) {
 				switch s {
-				case "armel":
+				case "armel", "arm":
 					return 5, nil
 				case "armhf":
 					return 7, nil // (or 6)
@@ -55,7 +55,7 @@ func (ArchInfo) Supported() []ArchInfo {
 					return strconv.Atoi(match[1])
 				}
 
-				return getGOARM(), nil
+				return 0, nil
 			},
 		},
 	}
@@ -129,7 +129,7 @@ func (a Architecture) String() string {
 	return a.Type
 }
 
-func getGOARM() int {
+func InferGoArmVersion() int {
 	// Default to GOARM=5 if no special features are detected
 	version := 5
 

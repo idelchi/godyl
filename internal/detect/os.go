@@ -3,6 +3,7 @@
 package detect
 
 import (
+	"fmt"
 	"runtime"
 
 	"github.com/idelchi/godyl/internal/detect/platform"
@@ -28,6 +29,11 @@ func (p *Platform) Detect() error {
 	// Determine the architecture from runtime information
 	if err := arch.Parse(runtime.GOARCH); err != nil {
 		return err
+	}
+
+	if arch.Raw == "arm" {
+		arch.Version = platform.InferGoArmVersion()
+		arch.Raw = fmt.Sprintf("%sv%d", arch.Type, arch.Version)
 	}
 
 	// Populate the Platform struct with the detected values

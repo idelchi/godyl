@@ -30,6 +30,10 @@ func (p *Platform) Detect() error {
 		return err
 	}
 
+	if arch.Type == "arm" && arch.Version == 0 {
+		arch.Version = platform.InferGoArmVersion()
+	}
+
 	// Populate the Platform struct with the detected values
 	*p = Platform{
 		OS:           os,

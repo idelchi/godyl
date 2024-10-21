@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"golang.org/x/sys/cpu"
 )
 
 // Architecture represents a CPU architecture with its type, version, and raw string.
@@ -44,7 +46,7 @@ func (ArchInfo) Supported() []ArchInfo {
 				case "armel":
 					return 5, nil
 				case "armhf":
-					return 6, nil
+					return 7, nil // (or 6)
 				}
 
 				re := regexp.MustCompile(`armv(\d+)`)
@@ -52,7 +54,8 @@ func (ArchInfo) Supported() []ArchInfo {
 				if len(match) > 1 {
 					return strconv.Atoi(match[1])
 				}
-				return 7, nil // No version found, but not an error. Default to 7.
+
+				return getGOARM(), nil
 			},
 		},
 	}
@@ -124,4 +127,18 @@ func (a Architecture) String() string {
 		return fmt.Sprintf("%sv%d", a.Type, a.Version)
 	}
 	return a.Type
+}
+
+func getGOARM() int {
+	// Default to GOARM=5 if no special features are detected
+	version := 5
+
+	// Check for ARM CPU features using x/sys/cpu package
+	if cpu.ARM.HasVFPv3 {
+		version = 7 // ARMv7 with VFPv3 support
+	} else if cpu.ARM.HasVFP {
+		version = 6 // ARMv6 with VFP support
+	}
+
+	return version
 }

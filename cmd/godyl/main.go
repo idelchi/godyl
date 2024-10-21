@@ -9,7 +9,6 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/idelchi/godyl/internal/detect/platform"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/file"

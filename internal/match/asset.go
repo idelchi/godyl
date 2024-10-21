@@ -1,6 +1,7 @@
 package match
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -40,21 +41,21 @@ func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 
 	qualified := true
 
-	// fmt.Printf("Checking asset %s\n", a.Name)
+	fmt.Printf("Checking asset %q\n", a.Name)
 
 	// Match operating system
 	if req.Platform.OS.Is(a.Platform.OS) {
-		// fmt.Printf("OS %s matches OS %s\n", req.Platform.OS, a.Platform.OS)
+		fmt.Printf("OS %q matches OS %q\n", req.Platform.OS, a.Platform.OS)
 
 		score++
 	}
 
 	if req.Platform.OS.IsCompatibleWith(a.Platform.OS) {
-		// fmt.Printf("OS %s is compatible with OS %s\n", req.Platform.OS, a.Platform.OS)
+		fmt.Printf("OS %q is compatible with OS %q\n", req.Platform.OS, a.Platform.OS)
 
 		score++
 	} else if !a.Platform.OS.IsUnset() && !req.Platform.OS.IsUnset() {
-		// fmt.Printf("OS %s is not compatible with OS %s\n", req.Platform.OS, a.Platform.OS)
+		fmt.Printf("OS %q is not compatible with OS %q\n", req.Platform.OS, a.Platform.OS)
 
 		qualified = false
 	} else {
@@ -62,56 +63,44 @@ func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 	}
 
 	if req.Platform.Architecture.Is(a.Platform.Architecture) {
-		// fmt.Printf("Architecture %s matches Architecture %s\n", req.Platform.Architecture, a.Platform.Architecture)
+		fmt.Printf("Architecture %q matches Architecture %q\n", req.Platform.Architecture, a.Platform.Architecture)
 
 		score++
 	}
 
 	if req.Platform.Architecture.IsCompatibleWith(a.Platform.Architecture) {
-		// fmt.Printf("Architecture %s is compatible with Architecture %s\n", req.Platform.Architecture, a.Platform.Architecture)
+		fmt.Printf("Architecture %q is compatible with Architecture %q\n", req.Platform.Architecture, a.Platform.Architecture)
 
 		score++
 	} else if !a.Platform.Architecture.IsUnset() && !req.Platform.Architecture.IsUnset() {
-		// fmt.Printf("Architecture %s is not compatible with Architecture %s\n", req.Platform.Architecture, a.Platform.Architecture)
+		fmt.Printf("Architecture %q is not compatible with Architecture %q\n", req.Platform.Architecture, a.Platform.Architecture)
 
 		qualified = false
 	} else {
-		// fmt.Printf("Architecture %s is not compatible with Architecture %s\n", req.Platform.Architecture, a.Platform.Architecture)
+		fmt.Printf("Architecture %q is not compatible with Architecture %q\n", req.Platform.Architecture, a.Platform.Architecture)
 
 		score--
 	}
 
 	if req.Platform.Library.Is(a.Platform.Library) {
-		// fmt.Printf("Library %s matches Library %s\n", req.Platform.Library, a.Platform.Library)
+		fmt.Printf("Library %q matches Library %q\n", req.Platform.Library, a.Platform.Library)
 
 		score++
 	}
 
 	if req.Platform.Library.IsCompatibleWith(a.Platform.Library) {
-		// fmt.Printf("Library %s is compatible with Library %s\n", req.Platform.Library, a.Platform.Library)
+		fmt.Printf("Library %q is compatible with Library %q\n", req.Platform.Library, a.Platform.Library)
 
 		score++
 	} else if !a.Platform.Library.IsUnset() && !req.Platform.Library.IsUnset() {
-		// fmt.Printf("Library %s is not compatible with Library %s\n", req.Platform.Library, a.Platform.Library)
+		fmt.Printf("Library %q is not compatible with Library %q\n", req.Platform.Library, a.Platform.Library)
 
 		qualified = false
 	} else {
-		// fmt.Printf("Library %s is not compatible with Library %s\n", req.Platform.Library, a.Platform.Library)
+		fmt.Printf("Library %q is not compatible with Library %q\n", req.Platform.Library, a.Platform.Library)
 
 		// score--
 	}
-
-	// // Match library (e.g., runtime or linking library)
-	// if a.Platform.Library != "" {
-	// 	if a.Platform.Library == req.Platform.Library {
-	// 		score++
-	// 	}
-	// 	if req.Platform.Library.IsCompatibleWith(a.Platform.Library.Name()) {
-	// 		score++
-	// 	} else {
-	// 		score-- // Negative score for incompatible library
-	// 	}
-	// }
 
 	return score, qualified
 }

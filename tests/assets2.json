@@ -568,6 +568,38 @@
       "content_type": "application/octet-stream"
     }
   ],
+  "antonmedv/fx": [
+    {
+      "name": "fx_darwin_amd64",
+      "browser_download_url": "https://github.com/antonmedv/fx/releases/download/35.0.0/fx_darwin_amd64",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "fx_darwin_arm64",
+      "browser_download_url": "https://github.com/antonmedv/fx/releases/download/35.0.0/fx_darwin_arm64",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "fx_linux_amd64",
+      "browser_download_url": "https://github.com/antonmedv/fx/releases/download/35.0.0/fx_linux_amd64",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "fx_linux_arm64",
+      "browser_download_url": "https://github.com/antonmedv/fx/releases/download/35.0.0/fx_linux_arm64",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "fx_windows_amd64.exe",
+      "browser_download_url": "https://github.com/antonmedv/fx/releases/download/35.0.0/fx_windows_amd64.exe",
+      "content_type": "application/x-msdownload"
+    },
+    {
+      "name": "fx_windows_arm64.exe",
+      "browser_download_url": "https://github.com/antonmedv/fx/releases/download/35.0.0/fx_windows_arm64.exe",
+      "content_type": "application/x-msdownload"
+    }
+  ],
   "antonmedv/walk": [
     {
       "name": "walk_darwin_amd64",
@@ -1720,6 +1752,436 @@
       "content_type": "application/zip"
     }
   ],
+  "golangci/golangci-lint": [
+    {
+      "name": "golangci-lint-1.61.0-checksums.txt",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-checksums.txt",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "name": "golangci-lint-1.61.0-darwin-amd64.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-darwin-amd64.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-darwin-arm64.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-darwin-arm64.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-freebsd-386.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-freebsd-386.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-freebsd-amd64.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-freebsd-amd64.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-freebsd-armv6.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-freebsd-armv6.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-freebsd-armv7.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-freebsd-armv7.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-illumos-amd64.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-illumos-amd64.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-386.deb",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-386.deb",
+      "content_type": "application/vnd.debian.binary-package"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-386.rpm",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-386.rpm",
+      "content_type": "application/x-rpm"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-386.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-386.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-amd64.deb",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-amd64.deb",
+      "content_type": "application/vnd.debian.binary-package"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-amd64.rpm",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-amd64.rpm",
+      "content_type": "application/x-rpm"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-amd64.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-amd64.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-arm64.deb",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-arm64.deb",
+      "content_type": "application/vnd.debian.binary-package"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-arm64.rpm",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-arm64.rpm",
+      "content_type": "application/x-rpm"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-arm64.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-arm64.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-armv6.deb",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-armv6.deb",
+      "content_type": "application/vnd.debian.binary-package"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-armv6.rpm",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-armv6.rpm",
+      "content_type": "application/x-rpm"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-armv6.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-armv6.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-armv7.deb",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-armv7.deb",
+      "content_type": "application/vnd.debian.binary-package"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-armv7.rpm",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-armv7.rpm",
+      "content_type": "application/x-rpm"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-armv7.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-armv7.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-loong64.deb",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-loong64.deb",
+      "content_type": "application/vnd.debian.binary-package"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-loong64.rpm",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-loong64.rpm",
+      "content_type": "application/x-rpm"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-loong64.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-loong64.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-mips64.deb",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-mips64.deb",
+      "content_type": "application/vnd.debian.binary-package"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-mips64.rpm",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-mips64.rpm",
+      "content_type": "application/x-rpm"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-mips64.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-mips64.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-mips64le.deb",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-mips64le.deb",
+      "content_type": "application/vnd.debian.binary-package"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-mips64le.rpm",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-mips64le.rpm",
+      "content_type": "application/x-rpm"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-mips64le.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-mips64le.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-ppc64le.deb",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-ppc64le.deb",
+      "content_type": "application/vnd.debian.binary-package"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-ppc64le.rpm",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-ppc64le.rpm",
+      "content_type": "application/x-rpm"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-ppc64le.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-ppc64le.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-riscv64.deb",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-riscv64.deb",
+      "content_type": "application/vnd.debian.binary-package"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-riscv64.rpm",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-riscv64.rpm",
+      "content_type": "application/x-rpm"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-riscv64.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-riscv64.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-s390x.deb",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-s390x.deb",
+      "content_type": "application/vnd.debian.binary-package"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-s390x.rpm",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-s390x.rpm",
+      "content_type": "application/x-rpm"
+    },
+    {
+      "name": "golangci-lint-1.61.0-linux-s390x.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-linux-s390x.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-netbsd-386.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-netbsd-386.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-netbsd-amd64.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-netbsd-amd64.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-netbsd-arm64.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-netbsd-arm64.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-netbsd-armv6.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-netbsd-armv6.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-netbsd-armv7.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-netbsd-armv7.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-source.tar.gz",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-source.tar.gz",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-windows-386.zip",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-windows-386.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-windows-amd64.zip",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-windows-amd64.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-windows-arm64.zip",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-windows-arm64.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-windows-armv6.zip",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-windows-armv6.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "golangci-lint-1.61.0-windows-armv7.zip",
+      "browser_download_url": "https://github.com/golangci/golangci-lint/releases/download/v1.61.0/golangci-lint-1.61.0-windows-armv7.zip",
+      "content_type": "application/zip"
+    }
+  ],
+  "hashicorp/terraform": [],
+  "helm/helm": [
+    {
+      "name": "helm-v3.16.2-darwin-amd64.tar.gz.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-darwin-amd64.tar.gz.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-darwin-amd64.tar.gz.sha256.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-darwin-amd64.tar.gz.sha256.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-darwin-amd64.tar.gz.sha256sum.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-darwin-amd64.tar.gz.sha256sum.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-darwin-arm64.tar.gz.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-darwin-arm64.tar.gz.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-darwin-arm64.tar.gz.sha256.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-darwin-arm64.tar.gz.sha256.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-darwin-arm64.tar.gz.sha256sum.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-darwin-arm64.tar.gz.sha256sum.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-386.tar.gz.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-386.tar.gz.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-386.tar.gz.sha256.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-386.tar.gz.sha256.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-386.tar.gz.sha256sum.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-386.tar.gz.sha256sum.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-amd64.tar.gz.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-amd64.tar.gz.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-amd64.tar.gz.sha256.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-amd64.tar.gz.sha256.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-amd64.tar.gz.sha256sum.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-amd64.tar.gz.sha256sum.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-arm.tar.gz.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-arm.tar.gz.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-arm.tar.gz.sha256.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-arm.tar.gz.sha256.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-arm.tar.gz.sha256sum.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-arm.tar.gz.sha256sum.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-arm64.tar.gz.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-arm64.tar.gz.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-arm64.tar.gz.sha256.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-arm64.tar.gz.sha256.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-arm64.tar.gz.sha256sum.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-arm64.tar.gz.sha256sum.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-ppc64le.tar.gz.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-ppc64le.tar.gz.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-ppc64le.tar.gz.sha256.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-ppc64le.tar.gz.sha256.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-ppc64le.tar.gz.sha256sum.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-ppc64le.tar.gz.sha256sum.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-riscv64.tar.gz.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-riscv64.tar.gz.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-riscv64.tar.gz.sha256.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-riscv64.tar.gz.sha256.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-riscv64.tar.gz.sha256sum.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-riscv64.tar.gz.sha256sum.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-s390x.tar.gz.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-s390x.tar.gz.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-s390x.tar.gz.sha256.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-s390x.tar.gz.sha256.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-linux-s390x.tar.gz.sha256sum.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-linux-s390x.tar.gz.sha256sum.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-windows-amd64.zip.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-windows-amd64.zip.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-windows-amd64.zip.sha256.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-windows-amd64.zip.sha256.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-windows-amd64.zip.sha256sum.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-windows-amd64.zip.sha256sum.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-windows-arm64.zip.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-windows-arm64.zip.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-windows-arm64.zip.sha256.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-windows-arm64.zip.sha256.asc",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "helm-v3.16.2-windows-arm64.zip.sha256sum.asc",
+      "browser_download_url": "https://github.com/helm/helm/releases/download/v3.16.2/helm-v3.16.2-windows-arm64.zip.sha256sum.asc",
+      "content_type": "application/octet-stream"
+    }
+  ],
   "homeport/dyff": [
     {
       "name": "checksums.txt",
@@ -1936,6 +2398,18 @@
       "name": "lazygit_0.44.1_Windows_x86_64.zip",
       "browser_download_url": "https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Windows_x86_64.zip",
       "content_type": "application/zip"
+    }
+  ],
+  "jpmens/jo": [
+    {
+      "name": "jo-1.9.exe",
+      "browser_download_url": "https://github.com/jpmens/jo/releases/download/1.9/jo-1.9.exe",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "jo-1.9.tar.gz",
+      "browser_download_url": "https://github.com/jpmens/jo/releases/download/1.9/jo-1.9.tar.gz",
+      "content_type": "application/x-gzip"
     }
   ],
   "jqlang/jq": [
@@ -2400,6 +2874,264 @@
     {
       "name": "windows-dooit.exe",
       "browser_download_url": "https://github.com/kraanzu/dooit/releases/download/v2.2.0/windows-dooit.exe",
+      "content_type": "application/octet-stream"
+    }
+  ],
+  "kubernetes/kubernetes": [],
+  "kubernetes/minikube": [
+    {
+      "name": "docker-machine-driver-hyperkit",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-hyperkit",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "docker-machine-driver-hyperkit.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-hyperkit.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "docker-machine-driver-kvm2",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-kvm2",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "docker-machine-driver-kvm2-1.34.0-0.x86_64.rpm",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-kvm2-1.34.0-0.x86_64.rpm",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "docker-machine-driver-kvm2-amd64",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-kvm2-amd64",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "docker-machine-driver-kvm2-amd64.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-kvm2-amd64.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "docker-machine-driver-kvm2-arm64",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-kvm2-arm64",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "docker-machine-driver-kvm2-arm64.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-kvm2-arm64.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "docker-machine-driver-kvm2-x86_64",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-kvm2-x86_64",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "docker-machine-driver-kvm2.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-kvm2.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "docker-machine-driver-kvm2_1.34.0-0_amd64.deb",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-kvm2_1.34.0-0_amd64.deb",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "docker-machine-driver-kvm2_1.34.0-0_arm64.deb",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/docker-machine-driver-kvm2_1.34.0-0_arm64.deb",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-1.34.0-0.aarch64.rpm",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-1.34.0-0.aarch64.rpm",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-1.34.0-0.armv7hl.rpm",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-1.34.0-0.armv7hl.rpm",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-1.34.0-0.ppc64le.rpm",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-1.34.0-0.ppc64le.rpm",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-1.34.0-0.s390x.rpm",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-1.34.0-0.s390x.rpm",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-1.34.0-0.x86_64.rpm",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-1.34.0-0.x86_64.rpm",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-darwin-amd64",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-darwin-amd64",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-darwin-amd64.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-darwin-amd64.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-darwin-amd64.tar.gz",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-darwin-amd64.tar.gz",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-darwin-arm64",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-darwin-arm64",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-darwin-arm64.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-darwin-arm64.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-darwin-arm64.tar.gz",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-darwin-arm64.tar.gz",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-installer.exe",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-installer.exe",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-386",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-386",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-amd64",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-amd64",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-amd64.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-amd64.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-amd64.tar.gz",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-amd64.tar.gz",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-arm",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-arm",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-arm.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-arm.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-arm64",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-arm64",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-arm64.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-arm64.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-arm64.tar.gz",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-arm64.tar.gz",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-armv6",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-armv6",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-ppc64le",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-ppc64le",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-ppc64le.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-ppc64le.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-s390x",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-s390x",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-linux-s390x.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-linux-s390x.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-v1.34.0-amd64.iso",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-v1.34.0-amd64.iso",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-v1.34.0-amd64.iso.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-v1.34.0-amd64.iso.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-v1.34.0-arm64.iso",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-v1.34.0-arm64.iso",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-v1.34.0-arm64.iso.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-v1.34.0-arm64.iso.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-windows-amd64.exe",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-windows-amd64.exe",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-windows-amd64.exe.sha256",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-windows-amd64.exe.sha256",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube-windows-amd64.tar.gz",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube-windows-amd64.tar.gz",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube_1.34.0-0_amd64.deb",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube_1.34.0-0_amd64.deb",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube_1.34.0-0_arm64.deb",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube_1.34.0-0_arm64.deb",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube_1.34.0-0_armhf.deb",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube_1.34.0-0_armhf.deb",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube_1.34.0-0_ppc64el.deb",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube_1.34.0-0_ppc64el.deb",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube_1.34.0-0_s390x.deb",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube_1.34.0-0_s390x.deb",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "minikube_v1.34.0_sbom.spdx",
+      "browser_download_url": "https://github.com/kubernetes/minikube/releases/download/v1.34.0/minikube_v1.34.0_sbom.spdx",
       "content_type": "application/octet-stream"
     }
   ],
@@ -3587,6 +4319,78 @@
       "content_type": "application/octet-stream"
     }
   ],
+  "simeji/jid": [
+    {
+      "name": "checksums.txt",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/checksums.txt",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "name": "jid_darwin_386.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_darwin_386.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_darwin_amd64.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_darwin_amd64.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_freebsd_386.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_freebsd_386.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_freebsd_amd64.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_freebsd_amd64.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_linux_386.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_linux_386.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_linux_amd64.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_linux_amd64.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_linux_arm64.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_linux_arm64.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_netbsd_386.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_netbsd_386.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_netbsd_amd64.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_netbsd_amd64.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_openbsd_386.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_openbsd_386.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_openbsd_amd64.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_openbsd_amd64.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_windows_386.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_windows_386.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jid_windows_amd64.zip",
+      "browser_download_url": "https://github.com/simeji/jid/releases/download/v0.7.6/jid_windows_amd64.zip",
+      "content_type": "application/zip"
+    }
+  ],
   "so-fancy/diff-so-fancy": [
     {
       "name": "diff-so-fancy",
@@ -4040,6 +4844,33 @@
       "content_type": "application/octet-stream"
     }
   ],
+  "tidwall/jj": [
+    {
+      "name": "jj-1.9.2-darwin-amd64.zip",
+      "browser_download_url": "https://github.com/tidwall/jj/releases/download/v1.9.2/jj-1.9.2-darwin-amd64.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jj-1.9.2-freebsd-amd64.zip",
+      "browser_download_url": "https://github.com/tidwall/jj/releases/download/v1.9.2/jj-1.9.2-freebsd-amd64.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jj-1.9.2-linux-amd64.tar.gz",
+      "browser_download_url": "https://github.com/tidwall/jj/releases/download/v1.9.2/jj-1.9.2-linux-amd64.tar.gz",
+      "content_type": "application/x-gzip"
+    },
+    {
+      "name": "jj-1.9.2-openbsd-amd64.zip",
+      "browser_download_url": "https://github.com/tidwall/jj/releases/download/v1.9.2/jj-1.9.2-openbsd-amd64.zip",
+      "content_type": "application/zip"
+    },
+    {
+      "name": "jj-1.9.2-windows-amd64.zip",
+      "browser_download_url": "https://github.com/tidwall/jj/releases/download/v1.9.2/jj-1.9.2-windows-amd64.zip",
+      "content_type": "application/zip"
+    }
+  ],
   "traefik/traefik": [
     {
       "name": "traefik-v3.1.6.src.tar.gz",
@@ -4222,6 +5053,78 @@
       "name": "sshed_1.2.0_windows_amd64.zip",
       "browser_download_url": "https://github.com/trntv/sshed/releases/download/1.2.0/sshed_1.2.0_windows_amd64.zip",
       "content_type": "application/zip"
+    }
+  ],
+  "ynqa/jnv": [
+    {
+      "name": "dist-manifest.json",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/dist-manifest.json",
+      "content_type": "raw"
+    },
+    {
+      "name": "jnv-aarch64-apple-darwin.tar.xz",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/jnv-aarch64-apple-darwin.tar.xz",
+      "content_type": "raw"
+    },
+    {
+      "name": "jnv-aarch64-apple-darwin.tar.xz.sha256",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/jnv-aarch64-apple-darwin.tar.xz.sha256",
+      "content_type": "raw"
+    },
+    {
+      "name": "jnv-x86_64-apple-darwin.tar.xz",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/jnv-x86_64-apple-darwin.tar.xz",
+      "content_type": "raw"
+    },
+    {
+      "name": "jnv-x86_64-apple-darwin.tar.xz.sha256",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/jnv-x86_64-apple-darwin.tar.xz.sha256",
+      "content_type": "raw"
+    },
+    {
+      "name": "jnv-x86_64-pc-windows-msvc.zip",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/jnv-x86_64-pc-windows-msvc.zip",
+      "content_type": "raw"
+    },
+    {
+      "name": "jnv-x86_64-pc-windows-msvc.zip.sha256",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/jnv-x86_64-pc-windows-msvc.zip.sha256",
+      "content_type": "raw"
+    },
+    {
+      "name": "jnv-x86_64-unknown-linux-gnu.tar.xz",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/jnv-x86_64-unknown-linux-gnu.tar.xz",
+      "content_type": "raw"
+    },
+    {
+      "name": "jnv-x86_64-unknown-linux-gnu.tar.xz.sha256",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/jnv-x86_64-unknown-linux-gnu.tar.xz.sha256",
+      "content_type": "raw"
+    },
+    {
+      "name": "jnv-x86_64-unknown-linux-musl.tar.xz",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/jnv-x86_64-unknown-linux-musl.tar.xz",
+      "content_type": "raw"
+    },
+    {
+      "name": "jnv-x86_64-unknown-linux-musl.tar.xz.sha256",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/jnv-x86_64-unknown-linux-musl.tar.xz.sha256",
+      "content_type": "raw"
+    },
+    {
+      "name": "jnv.rb",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/jnv.rb",
+      "content_type": "raw"
+    },
+    {
+      "name": "source.tar.gz",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/source.tar.gz",
+      "content_type": "raw"
+    },
+    {
+      "name": "source.tar.gz.sha256",
+      "browser_download_url": "https://github.com/ynqa/jnv/releases/download/v0.4.1/source.tar.gz.sha256",
+      "content_type": "raw"
     }
   ],
   "zyedidia/micro": [

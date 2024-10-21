@@ -46,7 +46,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      TAG: v0.0-dev
+      TAG: v0.1-beta
 
     steps:
       - name: Checkout

@@ -33,6 +33,14 @@
 - name: kubernetes/minikube
   description: Run Kubernetes locally
   extensions: "{{ .EXTENSION }}"
+  hints:
+    - pattern: armv6
+      weight: |-
+        {{- if and (eq .ARCH "arm") (ge .ARCH_VERSION 6) -}}
+        1
+        {{- else -}}
+        0
+        {{- end -}}
   tags:
     - kubernetes
 
@@ -358,6 +366,9 @@
 
 - name: antonmedv/fx
   description: Command-line JSON processing tool
+  skip:
+    - reason: "fx is not available for ARM32 architecture"
+      condition: '{{ eq .ARCH "arm" }}'
   tags:
     - processing
 
@@ -373,6 +384,9 @@
 
 - name: simeji/jid
   description: json incremental digger
+  skip:
+    - reason: "jid is not available for ARM32 architecture"
+      condition: '{{ eq .ARCH "arm" }}'
   extensions: .zip
   tags:
     - processing
@@ -384,6 +398,12 @@
       condition: '{{ eq .ARCH "arm64" }}'
     - reason: "jnv not available for arm"
       condition: '{{ eq .ARCH "arm" }}'
+  extensions: |
+    {{- if eq .OS "windows" -}}
+        .zip
+    {{- else -}}
+        .xz
+    {{- end -}}
   tags:
     - processing
 

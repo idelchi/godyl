@@ -35,7 +35,7 @@ func (p *Platform) Detect() error {
 	library = library.Default(os, distro)
 
 	// Determine the architecture from the system's kernel architecture
-	if err := arch.Parse(si.Kernel.Architecture); err != nil {
+	if err := arch.Parse(runtime.GOARCH); err != nil {
 		return err
 	}
 

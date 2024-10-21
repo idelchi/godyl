@@ -94,7 +94,7 @@ func (a Architecture) IsUnset() bool {
 
 // Is checks if this architecture is exactly the same as another.
 func (a Architecture) Is(other Architecture) bool {
-	return other.Raw == a.Raw && !a.IsUnset() && !other.IsUnset()
+	return ((other.Raw == a.Raw) || (other.String() == a.String())) && !a.IsUnset() && !other.IsUnset()
 }
 
 // IsCompatibleWith checks if this architecture is compatible with another.

@@ -36,7 +36,7 @@ However, most properties can be overridden, with `hints` and `skip` used to help
 > [!NOTE]
 > Tested on:
 >
-> **Linux**: `amd64`, `arm64`, `armv7`, `armv6`
+> **Linux**: `amd64`, `arm64`, `armv7`
 >
 > **Windows**: `amd64`
 >

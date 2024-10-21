@@ -78,7 +78,7 @@ go install github.com/idelchi/godyl/cmd/godyl@latest
 ## From installation script
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/scripts/install.sh | sh -s -- -v v0.0 -o ~/.local/bin
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/scripts/install.sh | sh -s -- -v v0.1 -o ~/.local/bin
 ```
 
 ## Update

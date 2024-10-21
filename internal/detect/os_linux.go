@@ -29,9 +29,7 @@ func (p *Platform) Detect() error {
 	}
 
 	// Determine the Linux distribution from system information
-	if err := distro.Parse(si.OS.Vendor); err != nil {
-		return err
-	}
+	distro.Parse(si.OS.Vendor)
 
 	// Set the default library based on the OS and distribution
 	library = library.Default(os, distro)

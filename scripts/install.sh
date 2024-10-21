@@ -40,9 +40,10 @@ case $ARCH in
     x86) ARCH="386" ;;
     i686) ARCH="386" ;;
     i386) ARCH="386" ;;
+    armel) ARCH="armv6" ;;
     armv6*) ARCH="armv6" ;;
-    armv7*) ARCH="armv7" ;;
     armhf) ARCH="armv7" ;;
+    armv7*) ARCH="armv7" ;;
     *) echo "Unsupported architecture: $ARCH" && exit 1 ;;
 esac
 

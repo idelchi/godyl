@@ -52,7 +52,7 @@ func (ArchInfo) Supported() []ArchInfo {
 				if len(match) > 1 {
 					return strconv.Atoi(match[1])
 				}
-				return 0, nil // No version found, but not an error
+				return 7, nil // No version found, but not an error. Default to 7.
 			},
 		},
 	}

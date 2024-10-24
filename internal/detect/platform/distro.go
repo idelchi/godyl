@@ -21,32 +21,27 @@ type DistroInfo struct {
 func (DistroInfo) Supported() []DistroInfo {
 	return []DistroInfo{
 		{
-			Type:    "debian",
-			Aliases: []string{"debian"},
+			Type: "debian",
 		},
 		{
-			Type:    "ubuntu",
-			Aliases: []string{"ubuntu"},
+			Type: "ubuntu",
 		},
 		{
-			Type:    "centos",
-			Aliases: []string{"centos"},
+			Type: "centos",
 		},
 		{
 			Type:    "redhat",
-			Aliases: []string{"redhat", "rhel"},
+			Aliases: []string{"rhel"},
 		},
 		{
-			Type:    "arch",
-			Aliases: []string{"arch"},
+			Type: "arch",
 		},
 		{
-			Type:    "alpine",
-			Aliases: []string{"alpine"},
+			Type: "alpine",
 		},
 		{
 			Type:    "raspbian",
-			Aliases: []string{"raspbian", "raspberry"},
+			Aliases: []string{"raspberry"},
 		},
 	}
 }
@@ -58,7 +53,7 @@ func (d *Distribution) Parse(name string) error {
 	info := DistroInfo{}
 
 	for _, info := range info.Supported() {
-		for _, alias := range info.Aliases {
+		for _, alias := range append([]string{info.Type}, info.Aliases...) {
 			if strings.Contains(name, alias) {
 				d.Type = info.Type
 				d.Raw = alias

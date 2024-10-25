@@ -7,9 +7,8 @@ VERSION=${GODYL_VERSION:-"v0.1"}
 OUTPUT_DIR=${GODYL_OUTPUT_DIR:-"./bin"}
 DEBUG=${GODYL_DEBUG:-0}
 DRY_RUN=${GODYL_DRY_RUN:-0}
-ARCH=${GODYL_ARCH:-""}
-OS=${GODYL_OS:-""}
-DISABLE_SSL=${GODYL_DISABLE_SSL:-0}
+ARCH=${GODYL_ARCH}
+OS=${GODYL_OS}
 
 # Output formatting
 format_message() {
@@ -73,7 +72,6 @@ Flags and environment variables:
     -a    GODYL_ARCH           <detected>      Override architecture
     -x    GODYL_DEBUG                          Enable debug output
     -n    GODYL_DRY_RUN                        Dry run mode
-    -k    GODYL_DISABLE_SSL                    Disable SSL certificate verification
     -h                                         Show this help message
 
 Flags take precedence over environment variables when both are set.
@@ -197,12 +195,8 @@ parse_args() {
 
 # Main installation function
 install() {
-    local FORMAT tmp code
-    # Set the format based on OS
-    FORMAT="tar.gz"
-    if [ "${OS}" = "windows" ]; then
-        FORMAT="zip"
-    fi
+    local FORMAT="$1"
+    local tmp code
 
     # Construct the download URL
     local BASE_URL BINARY_NAME URL
@@ -234,7 +228,7 @@ install() {
         SSL_FLAG=""
     fi
 
-    code=$(curl ${SSL_FLAG} -s -w '%{http_code}' -L -o "${tmp}" "${URL}")
+    code=$(curl -s -w '%{http_code}' -L -o "${tmp}" "${URL}")
 
     if [ "${code}" != "200" ]; then
         warning "Failed to download ${URL}: ${code}"
@@ -250,22 +244,48 @@ install() {
     success "'${BINARY}' installed to '${OUTPUT_DIR}'"
 }
 
+check_requirements() {
+    REQUIRED_COMMANDS="
+        curl
+        uname
+        mktemp
+        mkdir
+        grep
+        tr
+        sed
+        basename
+        dirname"
+
+    for cmd in $REQUIRED_COMMANDS; do
+        need_cmd "$cmd"
+    done
+}
+
 main() {
+    # Parse arguments
     parse_args "$@"
 
     # Check for required commands
-    need_cmd curl
-    need_cmd uname
-    need_cmd mktemp
-    [ "${FORMAT}" = "tar.gz" ] && need_cmd tar
-    [ "${FORMAT}" = "zip" ] && need_cmd unzip
+    check_requirements
 
     # Only detect OS if not manually specified
     [ -z "${OS}" ] && detect_os
     # Only detect arch if not manually specified
     [ -z "${ARCH}" ] && detect_arch
     verify_platform
-    install
+
+    # Set the format based on the OS
+    FORMAT="tar.gz"
+    if [ "${OS}" = "windows" ]; then
+        FORMAT="zip"
+    fi
+
+    # Check for required commands
+    [ "${FORMAT}" = "tar.gz" ] && need_cmd tar
+    [ "${FORMAT}" = "zip" ] && need_cmd unzip
+
+    # Install the binary
+    install "${FORMAT}"
 }
 
 main "$@"

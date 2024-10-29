@@ -75,10 +75,10 @@ Tool is inspired by [task](https://github.com/go-task/task), [dra](https://githu
 go install github.com/idelchi/godyl/cmd/godyl@latest
 ```
 
-## From installation script
+### From installation script
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install.sh | sh -s -- -v v0.2 -d ~/.local/bin
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin
 ```
 
 ## Update

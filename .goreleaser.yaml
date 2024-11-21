@@ -1,13 +1,14 @@
 version: 2
 
+release:
+  prerelease: auto
+
 before:
   hooks:
     - go mod tidy
 
 builds:
-  - main: ./cmd/godyl
-
-    env:
+  - env:
       - CGO_ENABLED=0
 
     goos:

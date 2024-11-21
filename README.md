@@ -72,7 +72,7 @@ Tool is inspired by [task](https://github.com/go-task/task), [dra](https://githu
 ### From source
 
 ```sh
-go install github.com/idelchi/godyl/cmd/godyl@latest
+go install github.com/idelchi/godyl@latest
 ```
 
 ### From installation script
@@ -80,6 +80,14 @@ go install github.com/idelchi/godyl/cmd/godyl@latest
 ```sh
 curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin
 ```
+
+Run
+
+```sh
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/install.sh | sh -s -- -h
+```
+
+for all available options.
 
 ## Update
 
@@ -92,7 +100,7 @@ godyl --update
 Use together with `yaml` file:
 
 ```sh
-godyl tools.yml  --output ./bin
+godyl [tools.yml]  --output ./bin
 ```
 
 Or use to download a single tool:
@@ -181,7 +189,7 @@ In general, settings can be set in the following ways (order of priority):
   output: ~/.local/bin
   ```
 
-If none of the above are fulfilled, the default configuration embedded from [defaults.yml](./cmd/godyl/defaults.yml) will be used.
+If none of the above are fulfilled, the default configuration embedded from [defaults.yml](./defaults.yml) will be used.
 
 ## Tools
 
@@ -648,7 +656,7 @@ A default configuration may be used to specify default settings for all tools. T
 
 The following is embedded and used by default if no default configuration is provided:
 
-[defaults.yml](./cmd/godyl/defaults.yml)
+[defaults.yml](./defaults.yml)
 
 The example above defines:
 
@@ -891,7 +899,3 @@ However, to be certain that the right binary is downloaded, it's recommended to 
 [na]: https://img.shields.io/badge/N%2FA-lightgrey
 
 <!-- Badges -->
-
-```
-
-```

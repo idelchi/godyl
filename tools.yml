@@ -302,9 +302,8 @@
     patterns:
       - bin/gh{{ .EXTENSION }}$
   post:
-    - "{{ .Output }}/{{ .Exe }} extension install github/gh-copilot"
-    - "{{ .Output }}/{{ .Exe }} extension upgrade gh-copilot"
-    - echo 'eval "$(gh copilot alias -- bash)"' >> ~/.bashrc
+    - "{{ .Output }}/{{ .Exe }} extension install github/gh-copilot || true"
+    - "{{ .Output }}/{{ .Exe }} extension upgrade gh-copilot || true"
   tags:
     - terminal
 
@@ -475,6 +474,13 @@
 - name: hashicorp/terraform
   description: Infrastructure as Code tool
   path: https://releases.hashicorp.com/terraform/{{ .Version | trimPrefix "v" }}/terraform_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
+  aliases: tf
+  tags:
+    - automation
+
+- name: hashicorp/vault
+  description: Infrastructure as Code tool
+  path: https://releases.hashicorp.com/vault/{{ .Version | trimPrefix "v" }}/vault_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   aliases: tf
   tags:
     - automation

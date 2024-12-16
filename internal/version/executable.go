@@ -56,7 +56,7 @@ func (e *Executable) ParseVersion() error {
 		// Get the output of the command
 		output, err := e.Command(ctx, cmdArgs)
 		if err != nil {
-			continue
+			// Many tools will have an exit 1 status when the version flag is used
 		}
 
 		if version, err := version.ParseString(output); err == nil {

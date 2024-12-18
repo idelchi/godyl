@@ -213,7 +213,10 @@ Otherwise, it will be assumed to be a `source.github` type on the form `owner/re
 ```yaml
 name: string
 description: string
-version: string
+version:
+  version: string
+  commands: []
+  patterns: []
 path: string
 output: string
 exe:
@@ -338,6 +341,27 @@ skip:
 - As template for other fields
 - To compare tool versions if `strategy` is set to `upgrade`
 - Will be inferred and populated by the `source` method if not given
+
+- `version.version` is the version of the tool to download
+- `version.commands` is a list of commands to run to get the version of the tool (for upgrades)
+- `version.patterns` is a list of patterns to use for finding the version of the tool (for upgrades)
+- `version.commands` & `version.patterns` set according to [defaults](#defaults) if not given
+
+Set `version.commands` to `[]` if version parsing is not available. This will result in always downloading the tool
+when `strategy` is set to `upgrade`.
+
+#### Alternative form
+
+```yaml
+version: v0.1.0
+```
+
+is equivalent to:
+
+```yaml
+version:
+  version: v0.1.0
+```
 
 ### Path
 

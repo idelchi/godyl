@@ -1,4 +1,3 @@
-# output: ~/.local/bin
 output: .bin-{{ .OS }}-{{ .DISTRIBUTION }}-{{ .ARCH }}-{{ .ARCH_VERSION }}
 exe:
   patterns:
@@ -35,3 +34,12 @@ source:
 strategy: none
 env:
   GH_TOKEN: $GODYL_GITHUB_TOKEN
+version:
+  commands:
+    - --version
+    - -v
+    - -version
+    - version
+  patterns:
+    - '.*?(\d+\.\d+\.\d+).*'
+    - '.*?(\d+\.\d+).*'

@@ -32,6 +32,8 @@
 
 - name: kubernetes/minikube
   description: Run Kubernetes locally
+  version:
+    commands: version
   extensions: "{{ .EXTENSION }}"
   tags:
     - kubernetes
@@ -51,6 +53,8 @@
 
 - name: derailed/k9s
   description: Kubernetes CLI To Manage Your Clusters In Style!
+  version:
+    commands: version
   skip:
     - reason: "k9s is not available for armv6"
       condition: '{{ and (eq .ARCH "arm") (eq .ARCH_VERSION 6) }}'
@@ -108,7 +112,8 @@
 
 - name: traefik/traefik
   description: The Cloud Native Application Proxy
-  parse: version
+  version:
+    commands: version
   tags:
     - automation
 
@@ -144,7 +149,8 @@
 
 - name: rs/curlie
   description: The power of curl, the ease of use of httpie
-  parse: version
+  version:
+    commands: version
   tags:
     - terminal
 
@@ -222,17 +228,20 @@
 
 - name: cespare/reflex
   description: Run a command when files change
+  version:
+    commands: []
   skip:
     - reason: "reflex does not work on Windows"
       condition: '{{ eq .OS "windows" }}'
   fallbacks:
     - go
-  parse: "-"
   tags:
     - automation
 
 - name: trntv/sshed
   description: SSH client with easy bookmarking and config management
+  version:
+    commands: []
   exe:
     name: sshed
     patterns:
@@ -243,7 +252,6 @@
   hints:
     - pattern: "{{ .OS }}"
       must: true
-  parse: "-"
   tags:
     - terminal
 
@@ -651,4 +659,6 @@
 - idelchi/go-match
 - idelchi/gonc
 - idelchi/go-next-tag
-- idelchi/wslint
+- name: idelchi/wslint
+  version:
+    commands: -v

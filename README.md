@@ -350,6 +350,8 @@ skip:
 Set `version.commands` to `[]` if version parsing is not available. This will result in always downloading the tool
 when `strategy` is set to `upgrade`.
 
+Pinning to a specific version will prevent upgrades.
+
 #### Alternative form
 
 ```yaml

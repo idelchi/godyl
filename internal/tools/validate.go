@@ -1,8 +1,10 @@
 package tools
 
 import (
+	"errors"
 	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 
@@ -80,10 +82,14 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 			continue
 		}
 
-		if err := t.tryResolveFallback(fallback, path, withTags, withoutTags); err != nil {
+		if err := t.tryResolveFallback(fallback, path, withTags, withoutTags); errors.Is(err, ErrFailed) {
 			lastErr = err
+
 			continue // Move on to the next fallback.
+		} else if err != nil {
+			return err // Return on any other error.
 		}
+
 		return nil // Success, no need to try further fallbacks.
 	}
 
@@ -179,7 +185,9 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 	utils.SetIfEmpty(&t.Path, path)
 
 	// Append platform-specific file extension to the executable name.
-	t.Exe.Name += t.Platform.Extension.String()
+	if !strings.HasSuffix(t.Exe.Name, t.Platform.Extension.String()) {
+		t.Exe.Name += t.Platform.Extension.String()
+	}
 
 	// Set patterns for finding the executable.
 	utils.SetSliceIfNil(&t.Exe.Patterns, fmt.Sprintf("^%s$", t.Exe.Name))

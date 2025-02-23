@@ -50,6 +50,7 @@ type result struct {
 }
 
 // NewApp initializes a new App instance.
+// Takes a version string, along with the embedded default and tools configuration.
 func NewApp(version string, defaults, tools []byte) *App {
 	return &App{
 		version: version,
@@ -78,7 +79,7 @@ func (app *App) Run() error {
 
 	lvl, err := logger.LevelString(app.cfg.Log)
 	if err != nil {
-		return fmt.Errorf("error parsing log level: %v", err)
+		return fmt.Errorf("parsing log level: %w", err)
 	}
 
 	app.log = logger.New(lvl)
@@ -106,20 +107,20 @@ func (app *App) Run() error {
 func (app *App) initialize() error {
 	cfg, err := parseFlags(app.version, app.embedded.defaults)
 	if err != nil {
-		return fmt.Errorf("error parsing flags: %v", err)
+		return fmt.Errorf("parsing flags: %w", err)
 	}
 	app.cfg = cfg
 
 	if err := app.cfg.Validate(); err != nil {
-		return fmt.Errorf("error validating configuration: %v", err)
+		return fmt.Errorf("validating configuration: %w", err)
 	}
 
 	app.defaults = Defaults{}
 	if err := app.defaults.Load(app.cfg.Defaults.Name(), app.embedded.defaults); err != nil {
-		return fmt.Errorf("error loading defaults: %v", err)
+		return fmt.Errorf("loading defaults: %w", err)
 	}
 	if err := app.defaults.Merge(app.cfg); err != nil {
-		return fmt.Errorf("error merging defaults: %v", err)
+		return fmt.Errorf("merging defaults: %w", err)
 	}
 
 	return nil
@@ -134,7 +135,7 @@ func (app *App) processUpdate() error {
 	}
 
 	if err := updater.Update(app.version); err != nil {
-		return fmt.Errorf("error updating: %v", err)
+		return fmt.Errorf("updating: %w", err)
 	}
 
 	return nil
@@ -144,7 +145,7 @@ func (app *App) processUpdate() error {
 func (app *App) loadToolsList() error {
 	toolsList, err := app.loadTools(app.cfg.Tools)
 	if err != nil {
-		return fmt.Errorf("error loading tools: %v", err)
+		return fmt.Errorf("loading tools: %w", err)
 	}
 	app.toolsList = toolsList
 	return nil
@@ -214,7 +215,7 @@ func (tp *ToolProcessor) Process(tags, withoutTags []string) error {
 	}
 
 	if err := tp.errGroup.Wait(); err != nil {
-		return fmt.Errorf("error processing tools: %v", err)
+		return fmt.Errorf("processing tools: %w", err)
 	}
 
 	close(tp.resultCh)

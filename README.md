@@ -31,12 +31,12 @@ However, most properties can be overridden, with `hints` and `skip` used to help
 
 > [!CAUTION]
 > This project serves as a learning exercise for Go and its surrounding ecosystem and tooling.
-> As such, it might be of limited use for others, but feel free to use it if you find it useful.
+> As such, it might be of limited use for others.
 
 > [!NOTE]
 > Tested on:
 >
-> **Linux**: `amd64`, `arm64`, `armv7`
+> **Linux**: `amd64`, `arm64`
 >
 > **Windows**: `amd64`
 >
@@ -153,7 +153,7 @@ The following flags and their corresponding environment variables are available:
 | `--dry`            | `GODYL_DRY`           | `false`        | Run without making any changes (dry run)       |
 | `--log`            | `GODYL_LOG`           | `info`         | Log level (debug, info, warn, error)           |
 | `--parallel`, `-j` | `GODYL_PARALLEL`      | `0`            | Number of parallel downloads (0 is unlimited)  |
-| `--output`         | `GODYL_OUTPUT`        | `""`           | Output path for the downloaded tools           |
+| `--output`         | `GODYL_OUTPUT`        | `.`            | Output path for the downloaded tools           |
 | `--tags`, `-t`     | `GODYL_TAGS`          | `["!native"]`  | Tags to filter tools by. Use `!` to exclude    |
 | `--source`         | `GODYL_SOURCE`        | `github`       | Source from which to install the tools         |
 | `--strategy`       | `GODYL_STRATEGY`      | `none`         | Strategy to use for updating tools             |

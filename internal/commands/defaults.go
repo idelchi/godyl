@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 
+	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/tools"
 
 	"gopkg.in/yaml.v3"
@@ -49,30 +50,30 @@ func (d *Defaults) Validate() error {
 }
 
 // Merge applies values from a Config object into the Defaults struct, only if corresponding values are set.
-func (d *Defaults) Merge(cfg Config) (err error) {
-	if IsSet("output") {
+func (d *Defaults) Merge(cfg config.Config) (err error) {
+	if config.IsSet("output") {
 		d.Output = cfg.Output
 	}
 
-	if IsSet("source") {
+	if config.IsSet("source") {
 		d.Source.Type = cfg.Source
 	}
 
-	if IsSet("strategy") {
+	if config.IsSet("strategy") {
 		d.Strategy = cfg.Update.Strategy
 	}
 
-	if IsSet("github-token") {
+	if config.IsSet("github-token") {
 		d.Source.Github.Token = cfg.Tokens.GitHub
 	}
 
-	if IsSet("os") {
+	if config.IsSet("os") {
 		err = d.Platform.OS.Parse(cfg.OS)
 		d.Platform.Extension = d.Platform.Extension.Default(d.Platform.OS)
 		d.Platform.Library = d.Platform.Library.Default(d.Platform.OS, d.Platform.Distribution)
 	}
 
-	if IsSet("arch") {
+	if config.IsSet("arch") {
 		err = d.Platform.Architecture.Parse(cfg.Arch)
 	}
 
@@ -85,7 +86,7 @@ func (d *Defaults) Merge(cfg Config) (err error) {
 
 // Load loads configuration defaults from a file or uses embedded defaults if not specified.
 func (d *Defaults) Load(path string, defaults []byte) error {
-	if IsSet("defaults") {
+	if config.IsSet("defaults") {
 		if err := d.FromFile(path); err != nil {
 			return fmt.Errorf("loading defaults from %q: %w", path, err)
 		}

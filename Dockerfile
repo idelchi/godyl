@@ -2,7 +2,7 @@
 # Description : Docker image containing the godyl binary
 #]=======================================================================]
 
-ARG GO_VERSION=1.23.4
+ARG GO_VERSION=1.24.1
 ARG DISTRO=bookworm
 
 #### ---- Build ---- ####
@@ -10,17 +10,13 @@ FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-${DISTRO} AS build
 
 LABEL maintainer=arash.idelchi
 
+ARG TARGETARCH
+ARG TARGETOS
+
 USER root
 
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    && rm -rf /var/lib/apt/lists/*
-
-ARG TASK_VERSION=v3.40.1
-ARG TARGETARCH
-ARG TASK_ARCH=${TARGETARCH}
-RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C /usr/local/bin
+ARG TASK_VERSION=v3.41.0
+RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TARGETARCH}.tar.gz | tar -xz -C /usr/local/bin
 
 WORKDIR /work
 
@@ -59,13 +55,12 @@ ENV PATH=$PATH:/root/.local/bin
 RUN mkdir -p /home/${USER}/.local/bin
 RUN cp bin/godyl /home/${USER}/.local/bin
 
-
 WORKDIR /home/${USER}
 
 # Timezone
 ENV TZ=Europe/Zurich
 
-FROM debian:12 AS final
+FROM debian:bookworm-slim AS final
 
 RUN apt-get update && apt-get install -y \
     curl \

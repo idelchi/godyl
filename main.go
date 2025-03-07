@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/idelchi/godyl/internal/commands"
+	"github.com/idelchi/godyl/internal/parse"
 )
 
 // Global variable for CI stamping.
@@ -23,8 +23,7 @@ var toolsFile []byte
 var embeds embed.FS
 
 func main() {
-	app := commands.NewApp(version, defaultsFile, toolsFile)
-	if err := app.Run(); err != nil {
+	if err := parse.Execute(version, defaultsFile, toolsFile, embeds); err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}

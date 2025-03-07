@@ -2,7 +2,7 @@
 # Description : Docker image containing the godyl binary (Alpine version)
 #]=======================================================================]
 
-ARG GO_VERSION=1.23.4
+ARG GO_VERSION=1.24.1
 ARG DISTRO=alpine
 #### ---- Build ---- ####
 FROM golang:${GO_VERSION}-${DISTRO} AS build
@@ -13,8 +13,6 @@ USER root
 
 # Install necessary packages for Alpine
 RUN apk add --no-cache \
-    python3 \
-    py3-pip \
     tzdata \
     bash
 
@@ -53,7 +51,7 @@ WORKDIR /home/${USER}
 # Timezone
 ENV TZ=Europe/Zurich
 
-FROM alpine:3.20 AS final
+FROM alpine:3.21 AS final
 
 RUN apk add --no-cache \
     curl \

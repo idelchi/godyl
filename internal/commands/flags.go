@@ -4,24 +4,12 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"strings"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 
-	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/pkg/env"
-	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/flagexp"
 	"github.com/idelchi/godyl/pkg/logger"
-	"github.com/idelchi/godyl/pkg/pretty"
 )
-
-func IsSet(flag string) bool {
-	return viper.IsSet(flag)
-}
 
 func flags() {
 	// General flags
@@ -64,134 +52,6 @@ func flags() {
 	}
 }
 
-// parseFlags parses the application configuration (in order of precedence) from:
-//   - command-line flags
-//   - environment variables
-func parseFlags(version string, defaults []byte) (cfg Config, err error) {
-	flags()
+// This file is deprecated. Use helpers.go instead.
 
-	// Parse the command-line flags with suggestions enabled
-	if err := flagexp.ParseWithSuggestions(os.Args[1:]); err != nil {
-		return cfg, fmt.Errorf("parsing flags: %w", err)
-	}
-
-	// Bind pflag flags to viper
-	if err := viper.BindPFlags(pflag.CommandLine); err != nil {
-		return cfg, fmt.Errorf("binding flags: %w", err)
-	}
-
-	// Set viper to automatically read from environment variables
-	viper.SetEnvPrefix("godyl")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
-	viper.AutomaticEnv()
-
-	if err := loadDotEnv(file.File(viper.GetString("dot-env"))); err != nil {
-		if IsSet("dot-env") {
-			return cfg, fmt.Errorf("loading .env file: %w", err)
-		}
-	}
-
-	decoderConfig := func(dc *mapstructure.DecoderConfig) {
-		dc.ErrorUnused = true // Throw error on unknown fields
-	}
-
-	// Unmarshal the configuration into the Config struct
-	if err := viper.Unmarshal(&cfg, decoderConfig); err != nil {
-		return cfg, fmt.Errorf("unmarshalling config: %w", err)
-	}
-
-	// Validate the input
-	if err := validateInput(&cfg); err != nil {
-		return cfg, fmt.Errorf("validating input: %w", err)
-	}
-
-	// Handle the commandline flags that exit the application
-	handleExitFlags(version, cfg, defaults)
-
-	return cfg, nil
-}
-
-func validateInput(cfg *Config) error {
-	switch pflag.NArg() {
-	case 0:
-		cfg.Tools = "tools.yml"
-	case 1:
-		cfg.Tools = pflag.Arg(0)
-	default:
-		return fmt.Errorf("too many arguments: %d", pflag.NArg())
-	}
-
-	return nil
-}
-
-//nolint:forbidigo // Function will print & exit for various help messages.
-func handleExitFlags(version string, cfg Config, defaultEmbedded []byte) {
-	// Check if the version flag was provided
-	if cfg.Version {
-		fmt.Println(version)
-
-		os.Exit(0)
-	}
-
-	// Check if the help flag was provided
-	if cfg.Help {
-		pflag.Usage()
-
-		os.Exit(0)
-	}
-
-	if cfg.Show.Config {
-		pretty.PrintYAMLMasked(cfg)
-
-		os.Exit(0)
-	}
-
-	if cfg.Show.Env {
-		pretty.PrintYAMLMasked(env.FromEnv())
-
-		os.Exit(0)
-	}
-
-	if cfg.Show.Defaults {
-		defaults := Defaults{}
-		if err := defaults.Load(cfg.Defaults.Name(), defaultEmbedded); err != nil {
-			fmt.Fprintf(os.Stderr, "Error loading defaults: %v\n", err)
-
-			os.Exit(1)
-		}
-
-		defaults.Merge(cfg)
-
-		pretty.PrintYAMLMasked(defaults)
-
-		os.Exit(0)
-	}
-
-	if cfg.Show.Platform {
-		p := detect.Platform{}
-		if err := p.Detect(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error detecting platform: %v\n", err)
-
-			os.Exit(1)
-		}
-
-		pretty.PrintYAML(p)
-
-		os.Exit(0)
-	}
-}
-
-func loadDotEnv(path file.File) error {
-	dotEnv, err := env.FromDotEnv(path.Name())
-	if err != nil {
-		return fmt.Errorf("loading environment variables from %q: %w", path.Name(), err)
-	}
-
-	env := env.FromEnv().Normalized().Merged(dotEnv.Normalized())
-
-	if err := env.ToEnv(); err != nil {
-		return fmt.Errorf("setting environment variables: %w", err)
-	}
-
-	return nil
-}
+// Deprecated functions - use helpers.go instead

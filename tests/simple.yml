@@ -1,2 +1,0 @@
-- syncthing/syncthing
-- https://get.helm.sh/helm-v3.16.1-{{ .OS }}-{{ .ARCH }}.tar.gz

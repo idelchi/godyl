@@ -1,15 +1,24 @@
-package commands
+package config
 
 import (
 	"fmt"
 	"slices"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/spf13/viper"
 
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/file"
 )
+
+// ErrUsage is returned when there is an error in the configuration.
+var ErrUsage = fmt.Errorf("usage error")
+
+// IsSet checks if a flag is set in viper.
+func IsSet(flag string) bool {
+	return viper.IsSet(flag)
+}
 
 // Update holds the configuration options for updating the built binary itself.
 type Update struct {
@@ -31,8 +40,8 @@ type Tokens struct {
 	URL string `mapstructure:"url-token" mask:"fixed"`
 }
 
-// Show holds the configuration options for showing various configurations.
-type Show struct {
+// Dump holds the configuration options for showing various configurations.
+type Dump struct {
 	// Show the parsed configuration and exit
 	Config bool `mapstructure:"show-config"`
 
@@ -44,10 +53,16 @@ type Show struct {
 
 	// Detect the platform and exit
 	Platform bool `mapstructure:"show-platform"`
+
+	// Show available tools
+	Tools bool `mapstructure:"show-tools"`
 }
 
 // Config holds all the configuration options for godyl.
 type Config struct {
+	// Show enables output display
+	Show bool
+
 	// Show help message and exit
 	Help bool
 	// Show version information and exit
@@ -59,8 +74,8 @@ type Config struct {
 	// Path to defaults file
 	Defaults file.File
 
-	// Show various configurations
-	Show Show `mapstructure:",squash"`
+	// Dump various configurations
+	Dump Dump `mapstructure:",squash"`
 
 	// DumpTools dump out default tools.yml as stdout
 	DumpTools bool `mapstructure:"dump-tools"`
@@ -105,6 +120,11 @@ type Config struct {
 	Tokens Tokens `mapstructure:",squash"`
 }
 
+// Display returns the value of the Show field.
+func (c Config) Display() bool {
+	return c.Show
+}
+
 // Validate checks the configuration for errors.
 func (c *Config) Validate() error {
 	allowedUpdateStrategies := []tools.Strategy{tools.None, tools.Upgrade, tools.Force}
@@ -132,6 +152,3 @@ func (c *Config) Validate() error {
 
 	return nil
 }
-
-// ErrUsage is returned when there is an error in the configuration.
-var ErrUsage = fmt.Errorf("usage error")

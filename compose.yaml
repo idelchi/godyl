@@ -5,22 +5,24 @@ services:
         - GODYL_VERSION=local
       target: build
     pull_policy: if_not_present
-    # image: idelchi/godyl:dev
+    image: idelchi/godyl:dev
     container_name: godyl
     hostname: godyl
+    env_file:
+      - .env
     volumes:
       - .:/home/user/ws
     extra_hosts:
       - host:host-gateway
     working_dir: /home/user/ws
     networks:
-      - godyl-network
+      - godyl
 
   bookworm-amd64:
     extends: build
     build:
       target: final
-      # platform: linux/amd64
+    platform: linux/amd64
 
   bookworm-amd32:
     extends: bookworm-amd64
@@ -34,9 +36,6 @@ services:
     extends: bookworm-amd64
     platform: linux/arm/v7
 
-  bookworm-armv5:
-    extends: bookworm-amd64
-    platform: linux/arm/v5
 
   alpine-amd64:
     extends: build
@@ -56,15 +55,7 @@ services:
     extends: alpine-amd64
     platform: linux/arm/v7
 
-  alpine-armv6:
-    extends: alpine-amd64
-    platform: linux/arm/v6
-
-  alpine-armv5:
-    extends: alpine-amd64
-    platform: linux/arm/v5
-
 networks:
-  godyl-network:
-    name: godyl-network
+  godyl:
+    name: godyl
     driver: bridge

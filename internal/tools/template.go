@@ -2,6 +2,7 @@ package tools
 
 import (
 	"github.com/idelchi/godyl/internal/templates"
+	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
@@ -34,7 +35,7 @@ func (t *Tool) TemplateFirst() error {
 	if err != nil {
 		return err
 	}
-	t.Source.Type.From(output)
+	t.Source.Type = sources.Type(output)
 
 	// Apply templating to the Skip conditions
 	for i := range t.Skip {

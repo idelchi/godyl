@@ -81,7 +81,13 @@ func (gu GodylUpdater) Update(version string) error {
 		return fmt.Errorf("replacing godyl: %w", err)
 	}
 
-	fmt.Println("godyl updated successfully")
+	if runtime.GOOS == "windows" {
+		if err := winCleanup(); err != nil {
+			return fmt.Errorf("issuing delete command: %w", err)
+		}
+	}
+
+	fmt.Println("Godyl updated successfully")
 
 	return nil
 }
@@ -94,7 +100,12 @@ func (gu GodylUpdater) Replace(path string) error {
 	}
 	defer body.Close()
 
-	if err := update.Apply(body, update.Options{}); err != nil {
+	options := update.Options{}
+	if runtime.GOOS == "windows" {
+		// options.OldSavePath = filepath.Join(filepath.Dir(path), ".godyl.exe.old")
+	}
+
+	if err := update.Apply(body, options); err != nil {
 		return err
 	}
 
@@ -113,7 +124,9 @@ func (gu GodylUpdater) Get(tool tools.Tool) (string, error) {
 		}
 
 		folder := filepath.Dir(current)
-		dir.CreateRandomInDir(folder)
+		if err := dir.CreateRandomInDir(folder); err != nil {
+			return "", fmt.Errorf("creating temporary directory: %w", err)
+		}
 	} else {
 		if err := dir.CreateRandomInTempDir(); err != nil {
 			return "", fmt.Errorf("creating temporary directory: %w", err)
@@ -133,5 +146,6 @@ func (gu GodylUpdater) Get(tool tools.Tool) (string, error) {
 	}
 
 	fmt.Printf("Downloading %q from %q\n", tool.Name, tool.Path)
+
 	return tool.Output, nil
 }

@@ -1,10 +1,9 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"os"
-
-	_ "embed"
 
 	"github.com/idelchi/godyl/internal/commands"
 )
@@ -17,6 +16,11 @@ var defaultsFile []byte
 
 //go:embed tools.yml
 var toolsFile []byte
+
+// content holds static template scripts.
+//
+//go:embed defaults.yml tools.yml internal/commands/scripts/*
+var embeds embed.FS
 
 func main() {
 	app := commands.NewApp(version, defaultsFile, toolsFile)

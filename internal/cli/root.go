@@ -14,55 +14,63 @@ import (
 	"github.com/idelchi/gogen/pkg/cobraext"
 )
 
-// rootEmbedded struct to hold the embedded default and tools configuration.
-type rootEmbedded struct {
-	// defaults holds the embedded default configuration.
-	defaults []byte
+// EmbeddedFiles struct to hold the embedded default and tools configuration.
+type EmbeddedFiles struct {
+	// Defaults holds the embedded default configuration.
+	Defaults []byte
 
-	// tools holds the embedded tools configuration.
-	tools []byte
+	// Tools holds the embedded tools configuration.
+	Tools []byte
 
-	// embeds holds static template scripts.
-	embeds interface{}
+	// Embeds holds static template scripts.
+	Embeds interface{}
+}
+
+// CommandFactory creates and configures commands.
+type CommandFactory struct {
+	cfg     *config.Config
+	version string
+	files   EmbeddedFiles
+}
+
+// NewCommandFactory creates a new CommandFactory.
+func NewCommandFactory(cfg *config.Config, version string, defaultsFile, toolsFile []byte, embeds interface{}) *CommandFactory {
+	return &CommandFactory{
+		cfg:     cfg,
+		version: version,
+		files: EmbeddedFiles{
+			Defaults: defaultsFile,
+			Tools:    toolsFile,
+			Embeds:   embeds,
+		},
+	}
 }
 
 // NewRootCmd creates the root command with common configuration.
 // It sets up environment variable binding and flag handling.
 func NewRootCmd(cfg *config.Config, version string, defaultsFile, toolsFile []byte, embeds interface{}) *cobra.Command {
-	emb := rootEmbedded{
-		defaults: defaultsFile,
-		tools:    toolsFile,
-		embeds:   embeds,
-	}
+	factory := NewCommandFactory(cfg, version, defaultsFile, toolsFile, embeds)
+	return factory.CreateRootCommand()
+}
 
+// CreateRootCommand creates and configures the root command.
+func (f *CommandFactory) CreateRootCommand() *cobra.Command {
 	// Custom functions for the NewDefaultRootCommand
 	funcs := []func(*cobra.Command, []string) error{
-		func(cmd *cobra.Command, args []string) error {
-			if err := utils.LoadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
-				if config.IsSet("env-file") {
-					return fmt.Errorf("loading .env file: %w", err)
-				}
-			}
-			return nil
-		},
+		f.loadDotEnvFunc(),
 	}
 
-	root := cobraext.NewDefaultRootCommand(version, funcs...)
+	root := cobraext.NewDefaultRootCommand(f.version, funcs...)
 
 	root.Use = "godyl [command]"
 	root.Short = "Asset downloader for tools"
 	root.Long = "godyl helps with batch-downloading and installing statically compiled binaries from GitHub releases, URLs, and Go projects."
 
 	// Add subcommands
-	root.AddCommand(
-		NewDumpCommand(cfg, emb),
-		NewUpdateCommand(cfg, emb),
-		NewInstallCommand(cfg, emb),
-		NewDownloadCommand(cfg, emb),
-	)
+	f.addSubcommands(root)
 
 	// Add root-level flags
-	addRootFlags(root)
+	f.addRootFlags(root)
 
 	// Make certain flags persistent so they can be used with subcommands
 	root.PersistentFlags().BoolP("show", "s", false, "Show the configuration and exit")
@@ -70,8 +78,30 @@ func NewRootCmd(cfg *config.Config, version string, defaultsFile, toolsFile []by
 	return root
 }
 
+// loadDotEnvFunc returns a function that loads environment variables from a .env file.
+func (f *CommandFactory) loadDotEnvFunc() func(*cobra.Command, []string) error {
+	return func(cmd *cobra.Command, args []string) error {
+		if err := utils.LoadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
+			if config.IsSet("env-file") {
+				return fmt.Errorf("loading .env file: %w", err)
+			}
+		}
+		return nil
+	}
+}
+
+// addSubcommands adds all subcommands to the root command.
+func (f *CommandFactory) addSubcommands(root *cobra.Command) {
+	root.AddCommand(
+		NewDumpCommand(f.cfg, f.files),
+		NewUpdateCommand(f.cfg, f.files),
+		NewInstallCommand(f.cfg, f.files),
+		NewDownloadCommand(f.cfg, f.files),
+	)
+}
+
 // addRootFlags adds root-level flags to the command.
-func addRootFlags(cmd *cobra.Command) {
+func (f *CommandFactory) addRootFlags(cmd *cobra.Command) {
 	// Root command flags
 	cmd.Flags().Bool("dry", false, "Run without making any changes (dry run)")
 	cmd.Flags().String("log", logger.INFO.String(), "Log level (debug, info, warn, error, silent)")
@@ -83,8 +113,6 @@ func addRootFlags(cmd *cobra.Command) {
 
 // addToolFlags adds tool-related flags to the command.
 func addToolFlags(cmd *cobra.Command) {
-	// Configuration file flags
-
 	// Tool flags
 	cmd.Flags().StringP("output", "o", "./bin", "Output path for the downloaded tools")
 	cmd.Flags().StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")

@@ -13,10 +13,27 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// DefaultsLoader is responsible for loading defaults from various sources.
+type DefaultsLoader interface {
+	LoadFromFile(path string) error
+	LoadFromBytes(data []byte) error
+	Initialize() error
+}
+
+// ConfigMerger is responsible for merging configuration into defaults.
+type ConfigMerger interface {
+	MergeConfig(cfg config.Config) error
+}
+
 // Defaults holds all the configuration options for godyl, including tool-specific defaults.
 type Defaults struct {
 	// Inline tool-specific defaults.
 	tools.Defaults `yaml:",inline"`
+}
+
+// NewDefaults creates a new Defaults instance.
+func NewDefaults() *Defaults {
+	return &Defaults{}
 }
 
 // Unmarshal parses the provided YAML data into the Defaults struct.
@@ -50,7 +67,7 @@ func (d *Defaults) Validate() error {
 }
 
 // Merge applies values from a Config object into the Defaults struct, only if corresponding values are set.
-func (d *Defaults) Merge(cfg config.Config) (err error) {
+func (d *Defaults) Merge(cfg config.Config) error {
 	if config.IsSet("output") {
 		d.Output = cfg.Output
 	}
@@ -68,13 +85,17 @@ func (d *Defaults) Merge(cfg config.Config) (err error) {
 	}
 
 	if config.IsSet("os") {
-		err = d.Platform.OS.Parse(cfg.OS)
+		if err := d.Platform.OS.Parse(cfg.OS); err != nil {
+			return fmt.Errorf("parsing OS: %w", err)
+		}
 		d.Platform.Extension = d.Platform.Extension.Default(d.Platform.OS)
 		d.Platform.Library = d.Platform.Library.Default(d.Platform.OS, d.Platform.Distribution)
 	}
 
 	if config.IsSet("arch") {
-		err = d.Platform.Architecture.Parse(cfg.Arch)
+		if err := d.Platform.Architecture.Parse(cfg.Arch); err != nil {
+			return fmt.Errorf("parsing architecture: %w", err)
+		}
 	}
 
 	if err := d.Validate(); err != nil {
@@ -104,53 +125,92 @@ func (d *Defaults) Load(path string, defaults []byte) error {
 }
 
 // LoadDefaults loads the default configuration.
+// This function is kept for backward compatibility.
 func LoadDefaults(defaults *tools.Defaults, path string, defaultEmbedded []byte, cfg config.Config) error {
+	// Create a new DefaultsManager
+	manager := NewDefaultsManager()
+
+	// Load defaults from file or embedded data
+	if err := manager.LoadDefaults(path, defaultEmbedded); err != nil {
+		return err
+	}
+
+	// Apply configuration overrides
+	if err := manager.ApplyConfig(cfg); err != nil {
+		return err
+	}
+
+	// Copy the loaded defaults to the provided defaults struct
+	*defaults = manager.defaults.Defaults
+
+	return nil
+}
+
+// DefaultsManager manages the loading and merging of defaults.
+type DefaultsManager struct {
+	defaults *Defaults
+}
+
+// NewDefaultsManager creates a new DefaultsManager.
+func NewDefaultsManager() *DefaultsManager {
+	return &DefaultsManager{
+		defaults: NewDefaults(),
+	}
+}
+
+// LoadDefaults loads defaults from a file or embedded data.
+func (m *DefaultsManager) LoadDefaults(path string, defaultEmbedded []byte) error {
 	if config.IsSet("defaults") {
 		data, err := os.ReadFile(path)
 		if err != nil {
 			return fmt.Errorf("reading defaults file %q: %w", path, err)
 		}
 
-		if err := yaml.Unmarshal(data, defaults); err != nil {
+		if err := m.defaults.Unmarshal(data); err != nil {
 			return fmt.Errorf("unmarshalling defaults: %w", err)
 		}
 	} else {
-		if err := yaml.Unmarshal(defaultEmbedded, defaults); err != nil {
+		if err := m.defaults.Unmarshal(defaultEmbedded); err != nil {
 			return fmt.Errorf("unmarshalling embedded defaults: %w", err)
 		}
 	}
 
-	if err := defaults.Initialize(); err != nil {
+	if err := m.defaults.Initialize(); err != nil {
 		return fmt.Errorf("initializing defaults: %w", err)
 	}
 
+	return nil
+}
+
+// ApplyConfig applies configuration overrides to the defaults.
+func (m *DefaultsManager) ApplyConfig(cfg config.Config) error {
 	// Apply configuration overrides
 	if config.IsSet("output") {
-		defaults.Output = cfg.Output
+		m.defaults.Output = cfg.Output
 	}
 
 	if config.IsSet("source") {
-		defaults.Source.Type = cfg.Source
+		m.defaults.Source.Type = cfg.Source
 	}
 
 	if config.IsSet("strategy") {
-		defaults.Strategy = cfg.Strategy
+		m.defaults.Strategy = cfg.Strategy
 	}
 
 	if config.IsSet("github-token") {
-		defaults.Source.Github.Token = cfg.Tokens.GitHub
+		m.defaults.Source.Github.Token = cfg.Tokens.GitHub
 	}
 
 	if config.IsSet("os") {
-		if err := defaults.Platform.OS.Parse(cfg.OS); err != nil {
+		if err := m.defaults.Platform.OS.Parse(cfg.OS); err != nil {
 			return fmt.Errorf("parsing OS: %w", err)
 		}
-		defaults.Platform.Extension = defaults.Platform.Extension.Default(defaults.Platform.OS)
-		defaults.Platform.Library = defaults.Platform.Library.Default(defaults.Platform.OS, defaults.Platform.Distribution)
+		m.defaults.Platform.Extension = m.defaults.Platform.Extension.Default(m.defaults.Platform.OS)
+		m.defaults.Platform.Library = m.defaults.Platform.Library.Default(m.defaults.Platform.OS, m.defaults.Platform.Distribution)
 	}
 
 	if config.IsSet("arch") {
-		if err := defaults.Platform.Architecture.Parse(cfg.Arch); err != nil {
+		if err := m.defaults.Platform.Architecture.Parse(cfg.Arch); err != nil {
 			return fmt.Errorf("parsing architecture: %w", err)
 		}
 	}

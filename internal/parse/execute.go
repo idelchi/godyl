@@ -5,18 +5,20 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/cli"
+	"github.com/idelchi/godyl/internal/app"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/gogen/pkg/cobraext"
 )
 
 // Execute creates and configures the command-line interface.
 // It runs the root command with all subcommands and flags configured.
+// This function is kept for backward compatibility and delegates to the app package.
 func Execute(version string, defaultsFile, toolsFile []byte, embeds interface{}) error {
-	cfg := &config.Config{}
-	root := cli.NewRootCmd(cfg, version, defaultsFile, toolsFile, embeds)
+	// Create a new application instance
+	application := app.New(version, defaultsFile, toolsFile, embeds)
 
-	switch err := root.Execute(); {
+	// Execute the application
+	switch err := application.Execute(); {
 	case errors.Is(err, cobraext.ErrExitGracefully):
 		return nil
 	case err != nil:
@@ -24,4 +26,10 @@ func Execute(version string, defaultsFile, toolsFile []byte, embeds interface{})
 	default:
 		return nil
 	}
+}
+
+// For backward compatibility, we keep this function signature
+// but implement it using the new app package
+func createRootCommand(cfg *config.Config, version string, defaultsFile, toolsFile []byte, embeds interface{}) interface{ Execute() error } {
+	return app.New(version, defaultsFile, toolsFile, embeds)
 }

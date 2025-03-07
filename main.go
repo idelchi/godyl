@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/idelchi/godyl/internal/parse"
+	"github.com/idelchi/godyl/internal/app"
 )
 
 // Global variable for CI stamping.
@@ -17,13 +17,17 @@ var defaultsFile []byte
 //go:embed tools.yml
 var toolsFile []byte
 
-// content holds static template scripts.
+// embeds holds static template scripts.
 //
 //go:embed defaults.yml tools.yml internal/core/updater/scripts/*
 var embeds embed.FS
 
 func main() {
-	if err := parse.Execute(version, defaultsFile, toolsFile, embeds); err != nil {
+	// Initialize the application with embedded files and version
+	application := app.New(version, defaultsFile, toolsFile, embeds)
+
+	// Execute the application
+	if err := application.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}

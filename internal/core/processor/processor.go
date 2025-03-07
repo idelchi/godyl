@@ -15,105 +15,147 @@ import (
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
-// ToolProcessor handles concurrent processing of tools.
+// ToolResult holds the result of processing a tool.
+type ToolResult struct {
+	Tool  *tools.Tool
+	Found file.File
+	Err   error
+	Msg   string
+}
+
+// ToolProcessor processes tools with concurrency support.
 type ToolProcessor struct {
-	toolsList       tools.Tools
-	defaults        tools.Defaults
-	cfg             config.Config
+	toolsList tools.Tools
+	defaults  tools.Defaults
+	cfg       config.Config
+	log       *logger.Logger
+
+	// Components
+	concurrencyManager *ConcurrencyManager
+	resultHandler      ResultHandler
+}
+
+// ResultHandler handles the results of tool processing.
+type ResultHandler interface {
+	HandleResult(result ToolResult)
+	HasErrors() bool
+}
+
+// DefaultResultHandler is the default implementation of ResultHandler.
+type DefaultResultHandler struct {
 	log             *logger.Logger
-	resultCh        chan toolResult
-	errGroup        *errgroup.Group
-	waitGroup       *sync.WaitGroup
 	hasInstallError bool
 }
 
-// toolResult struct to hold the tool and any associated error.
-type toolResult struct {
-	tool  *tools.Tool
-	found file.File
-	err   error
-	msg   string
+// ConcurrencyManager manages concurrent execution of tool processing.
+type ConcurrencyManager struct {
+	errGroup  *errgroup.Group
+	waitGroup *sync.WaitGroup
+	resultCh  chan ToolResult
+	parallel  int
 }
 
 // New creates a new ToolProcessor.
 func New(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log *logger.Logger) *ToolProcessor {
+	resultHandler := &DefaultResultHandler{
+		log: log,
+	}
+
+	concurrencyManager := &ConcurrencyManager{
+		errGroup: &errgroup.Group{},
+		resultCh: make(chan ToolResult),
+		parallel: cfg.Parallel,
+	}
+
 	return &ToolProcessor{
-		toolsList: toolsList,
-		defaults:  defaults,
-		cfg:       cfg,
-		log:       log,
-		resultCh:  make(chan toolResult),
-		errGroup:  &errgroup.Group{},
+		toolsList:          toolsList,
+		defaults:           defaults,
+		cfg:                cfg,
+		log:                log,
+		concurrencyManager: concurrencyManager,
+		resultHandler:      resultHandler,
 	}
 }
 
 // Process starts processing tools with the given tags.
 func (tp *ToolProcessor) Process(tags, withoutTags []string) error {
-	tp.setupConcurrencyLimit()
+	// Setup concurrency
+	tp.setupConcurrency()
 
-	tp.waitGroup = &sync.WaitGroup{}
-	tp.waitGroup.Add(1)
-
+	// Start collecting results
 	go tp.collectResults()
 
+	// Process each tool concurrently
 	for i := range tp.toolsList {
 		tool := &tp.toolsList[i]
-		tp.errGroup.Go(func() error {
+		tp.concurrencyManager.errGroup.Go(func() error {
 			return tp.processTool(tool, tags, withoutTags)
 		})
 	}
 
-	if err := tp.errGroup.Wait(); err != nil {
+	// Wait for all tool processing to complete
+	if err := tp.concurrencyManager.errGroup.Wait(); err != nil {
 		return fmt.Errorf("processing tools: %w", err)
 	}
 
-	close(tp.resultCh)
-	tp.waitGroup.Wait()
+	// Close the result channel and wait for result collection to complete
+	close(tp.concurrencyManager.resultCh)
+	tp.concurrencyManager.waitGroup.Wait()
 
-	if tp.hasInstallError {
+	// Check if any tools failed to install
+	if tp.resultHandler.HasErrors() {
 		return errors.New("one or more tools failed to install")
 	}
 
 	return nil
 }
 
-// setupConcurrencyLimit sets the concurrency limit if specified in the config.
-func (tp *ToolProcessor) setupConcurrencyLimit() {
+// setupConcurrency sets up the concurrency management.
+func (tp *ToolProcessor) setupConcurrency() {
+	// Set concurrency limit if specified
 	if tp.cfg.Parallel > 0 {
-		tp.errGroup.SetLimit(tp.cfg.Parallel)
+		tp.concurrencyManager.errGroup.SetLimit(tp.cfg.Parallel)
 		tp.log.Info("running with %d parallel downloads", tp.cfg.Parallel)
 	}
+
+	// Initialize wait group for result collection
+	tp.concurrencyManager.waitGroup = &sync.WaitGroup{}
+	tp.concurrencyManager.waitGroup.Add(1)
 }
 
-// collectResults reads results from the result channel and processes them.
+// collectResults collects and processes results from the result channel.
 func (tp *ToolProcessor) collectResults() {
-	defer tp.waitGroup.Done()
+	defer tp.concurrencyManager.waitGroup.Done()
 
-	for res := range tp.resultCh {
-		tp.processResult(res)
+	for result := range tp.concurrencyManager.resultCh {
+		tp.resultHandler.HandleResult(result)
 	}
 }
 
 // processTool processes an individual tool.
 func (tp *ToolProcessor) processTool(tool *tools.Tool, tags, withoutTags []string) error {
+	// Apply defaults and resolve tool configuration
 	tool.ApplyDefaults(tp.defaults)
 
 	if err := tool.Resolve(tags, withoutTags); err != nil {
-		tp.resultCh <- toolResult{tool: tool, err: err}
+		tp.concurrencyManager.resultCh <- ToolResult{Tool: tool, Err: err}
 		return nil
 	}
 
+	// Handle dry run
 	if tp.cfg.Dry {
-		tp.resultCh <- toolResult{tool: tool, err: nil}
+		tp.concurrencyManager.resultCh <- ToolResult{Tool: tool}
 		return nil
 	}
 
+	// Apply SSL verification setting
 	if tp.cfg.NoVerifySSL {
 		tool.NoVerifySSL = true
 	}
 
+	// Download the tool
 	msg, found, err := tool.Download()
-	tp.resultCh <- toolResult{tool: tool, found: found, err: err, msg: msg}
+	tp.concurrencyManager.resultCh <- ToolResult{Tool: tool, Found: found, Err: err, Msg: msg}
 
 	if err != nil {
 		return nil
@@ -122,77 +164,84 @@ func (tp *ToolProcessor) processTool(tool *tools.Tool, tags, withoutTags []strin
 	// Execute post-installation commands if any exist
 	if len(tool.Post) > 0 {
 		if err := tool.Post.Exe(); err != nil {
-			tp.resultCh <- toolResult{tool: tool, err: fmt.Errorf("executing post-installation commands: %w", err), msg: ""}
-			return nil
+			tp.concurrencyManager.resultCh <- ToolResult{
+				Tool: tool,
+				Err:  fmt.Errorf("executing post-installation commands: %w", err),
+			}
 		}
 	}
 
 	return nil
 }
 
-// processResult processes the result from a tool operation.
-func (tp *ToolProcessor) processResult(res toolResult) {
-	tool := res.tool
-	err := res.err
-	msg := res.msg
-	found := res.found
+// HandleResult processes the result of a tool operation.
+func (h *DefaultResultHandler) HandleResult(result ToolResult) {
+	tool := result.Tool
+	err := result.Err
+	msg := result.Msg
+	found := result.Found
 
-	tp.log.Info("")
-	tp.log.Info(tool.Name)
-	tp.log.Debug("configuration:")
-	tp.log.Debug("-------")
-	tp.log.Debug(pretty.YAMLMasked(tool))
-	tp.log.Debug("-------")
+	h.log.Info("")
+	h.log.Info(tool.Name)
+	h.log.Debug("configuration:")
+	h.log.Debug("-------")
+	h.log.Debug(pretty.YAMLMasked(tool))
+	h.log.Debug("-------")
 
 	if err != nil {
-		tp.handleToolError(tool, err, msg)
+		h.handleToolError(tool, err, msg)
 	} else {
-		tp.logToolSuccess(tool, found)
+		h.logToolSuccess(tool, found)
 	}
 }
 
+// HasErrors returns true if any tools failed to install.
+func (h *DefaultResultHandler) HasErrors() bool {
+	return h.hasInstallError
+}
+
 // handleToolError logs errors encountered during tool processing.
-func (tp *ToolProcessor) handleToolError(tool *tools.Tool, err error, msg string) {
+func (h *DefaultResultHandler) handleToolError(tool *tools.Tool, err error, msg string) {
 	if errors.Is(err, tools.ErrAlreadyExists) ||
 		errors.Is(err, tools.ErrUpToDate) ||
 		errors.Is(err, tools.ErrDoesNotHaveTags) ||
 		errors.Is(err, tools.ErrDoesHaveTags) ||
 		errors.Is(err, tools.ErrSkipped) {
-		tp.log.Warn("  %v", err)
+		h.log.Warn("  %v", err)
 	} else {
-		tp.hasInstallError = true // Set the flag if a tool fails to install
-		tp.log.Error("  failed to install")
-		tp.log.Debug("configuration:")
-		tp.log.Debug("-------")
-		tp.log.Debug(pretty.JSONMasked(tool))
-		tp.log.Debug("-------")
-		tp.log.Error("  %v", err)
-		tp.log.Error("  %s", msg)
+		h.hasInstallError = true // Set the flag if a tool fails to install
+		h.log.Error("  failed to install")
+		h.log.Debug("configuration:")
+		h.log.Debug("-------")
+		h.log.Debug(pretty.JSONMasked(tool))
+		h.log.Debug("-------")
+		h.log.Error("  %v", err)
+		h.log.Error("  %s", msg)
 	}
 }
 
 // logToolSuccess logs information about successfully processed tools.
-func (tp *ToolProcessor) logToolSuccess(tool *tools.Tool, found file.File) {
+func (h *DefaultResultHandler) logToolSuccess(tool *tools.Tool, found file.File) {
 	if tool.Version.Version != "" {
-		tp.log.Info("  version: %s", tool.Version.Version)
+		h.log.Info("  version: %s", tool.Version.Version)
 	}
-	tp.log.Info("  picked download %q", filepath.Base(tool.Path))
+	h.log.Info("  picked download %q", filepath.Base(tool.Path))
 
 	if tool.Mode == "find" {
-		tp.log.Info("  picked file %q", found)
-		tp.log.Info("  installed successfully at %q", filepath.Join(tool.Output, tool.Exe.Name))
-		tp.logToolAliases(tool)
+		h.log.Info("  picked file %q", found)
+		h.log.Info("  installed successfully at %q", filepath.Join(tool.Output, tool.Exe.Name))
+		h.logToolAliases(tool)
 	} else {
-		tp.log.Info("  extracted to %q", tool.Output)
+		h.log.Info("  extracted to %q", tool.Output)
 	}
 }
 
 // logToolAliases logs any aliases for the tool.
-func (tp *ToolProcessor) logToolAliases(tool *tools.Tool) {
+func (h *DefaultResultHandler) logToolAliases(tool *tools.Tool) {
 	if tool.Aliases != nil {
-		tp.log.Info("  symlinks:")
+		h.log.Info("  symlinks:")
 		for _, alias := range tool.Aliases {
-			tp.log.Info("    - %q", filepath.Join(tool.Output, alias))
+			h.log.Info("    - %q", filepath.Join(tool.Output, alias))
 		}
 	}
 }

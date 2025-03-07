@@ -18,7 +18,7 @@ import (
 )
 
 // NewDownloadCommand creates the download command for downloading and unpacking tools.
-func NewDownloadCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
+func NewDownloadCommand(cfg *config.Config, emb EmbeddedFiles) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "download [tool]",
 		Aliases: []string{"dl", "unpack"},
@@ -41,7 +41,7 @@ func NewDownloadCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 
 			// Load defaults
 			toolDefaults := tools.Defaults{}
-			if err := defaults.LoadDefaults(&toolDefaults, cfg.Defaults.Name(), emb.defaults, *cfg); err != nil {
+			if err := defaults.LoadDefaults(&toolDefaults, cfg.Defaults.Name(), emb.Defaults, *cfg); err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 

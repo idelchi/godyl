@@ -139,3 +139,16 @@ func (c *Config) Validate(_ any) error {
 func IsSet(flag string) bool {
 	return viper.IsSet(flag)
 }
+
+// NewConfig creates a new Config with default values.
+func NewConfig() *Config {
+	return &Config{
+		DotEnv:   file.File(".env"),
+		Log:      "info",
+		Tools:    "tools.yml",
+		Output:   "./bin",
+		Tags:     []string{"!native"},
+		Source:   sources.GITHUB,
+		Strategy: tools.None,
+	}
+}

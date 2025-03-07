@@ -26,11 +26,11 @@ func (g *GitHub) Get(attribute string) string {
 	return g.Data.Get(attribute)
 }
 
-// Get retrieves a specific attribute from the GitHub repository's metadata.
+// Export exports the latest stored release to a file.
 func (g *GitHub) Export() error {
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
-	if err := repository.Export(g.latestStoredRelease); err != nil {
+	if err := repository.ExportWithDefaults(g.latestStoredRelease); err != nil {
 		return fmt.Errorf("failed to export release: %w", err)
 	}
 
@@ -57,12 +57,12 @@ func (g *GitHub) LatestVersion() (string, error) {
 	return release.Tag, nil
 }
 
-// LatestVersion fetches the latest release version of the GitHub repository.
+// LatestVersionFromExport fetches the latest release version from the exported file.
 func (g *GitHub) LatestVersionFromExport() (string, error) {
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
-	release, err := repository.LatestReleaseFromExport()
+	release, err := repository.LatestReleaseFromExportWithDefaults()
 	if err != nil {
 		return "", err
 	}

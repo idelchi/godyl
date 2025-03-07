@@ -1,7 +1,6 @@
 package github
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/google/go-github/v64/github"
@@ -16,18 +15,29 @@ type Release struct {
 
 // FromRepositoryRelease converts a GitHub repository release to a Release object.
 func (r *Release) FromRepositoryRelease(release *github.RepositoryRelease) error {
-	assets := release.Assets
-
-	var releaseAssets Assets
-	assetJSON, err := json.Marshal(assets)
-	if err != nil {
-		return fmt.Errorf("failed to marshal assets: %w", err)
+	if release == nil {
+		return fmt.Errorf("repository release is nil")
 	}
 
-	if err := json.Unmarshal(assetJSON, &releaseAssets); err != nil {
-		return fmt.Errorf("failed to unmarshal assets: %w", err)
+	if release.TagName == nil {
+		return fmt.Errorf("release tag name is nil")
 	}
 
+	// Convert GitHub assets to our Asset type
+	assets := make(Assets, 0, len(release.Assets))
+	for _, a := range release.Assets {
+		if a.Name == nil || a.BrowserDownloadURL == nil || a.ContentType == nil {
+			continue // Skip assets with missing required fields
+		}
+
+		assets = append(assets, Asset{
+			Name: *a.Name,
+			URL:  *a.BrowserDownloadURL,
+			Type: *a.ContentType,
+		})
+	}
+
+	// Get release name, defaulting to empty string if nil
 	var name string
 	if release.Name != nil {
 		name = *release.Name
@@ -36,7 +46,7 @@ func (r *Release) FromRepositoryRelease(release *github.RepositoryRelease) error
 	*r = Release{
 		Name:   name,
 		Tag:    *release.TagName,
-		Assets: releaseAssets,
+		Assets: assets,
 	}
 
 	return nil

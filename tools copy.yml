@@ -16,14 +16,17 @@
 - name: bcicen/ctop
   description: Top-like interface for container metrics
   skip:
-    - reason: "ctop is not available for darwin arm64"
-      condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
+    reason: "ctop is not available for darwin arm64"
+    condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
   extensions: []
   tags:
     - docker
 
 - name: kdash-rs/kdash
-  description: A simple and fast dashboard for Kubernetes
+  description: |
+    A simple and fast dashboard for Kubernetes
+    TODO: Remove pinned release once the GitHub build is fixed - they messed up and only built a couple of Mac binaries
+  version: v0.6.1
   hints:
     - pattern: "{{ .OS }}"
       weight: -1
@@ -56,8 +59,8 @@
   version:
     commands: version
   skip:
-    - reason: "k9s is not available for armv6"
-      condition: '{{ and (eq .ARCH "arm") (eq .ARCH_VERSION 6) }}'
+    reason: "k9s is not available for armv6"
+    condition: '{{ and (eq .ARCH "arm") (eq .ARCH_VERSION 6) }}'
   tags:
     - kubernetes
 
@@ -114,6 +117,11 @@
   description: The Cloud Native Application Proxy
   version:
     commands: version
+  tags:
+    - automation
+
+- name: ldez/traefik-certs-dumper
+  description: A tool to dump ACME certs from Traefik
   tags:
     - automation
 
@@ -181,6 +189,9 @@
   skip:
     reason: "eza is not available on darwin"
     condition: '{{ eq .OS "darwin" }}'
+  hints:
+    - pattern: no_libgit
+      weight: -1
   tags:
     - terminal
 
@@ -241,8 +252,8 @@
   version:
     commands: []
   skip:
-    - reason: "reflex does not work on Windows"
-      condition: '{{ eq .OS "windows" }}'
+    reason: "reflex does not work on Windows"
+    condition: '{{ eq .OS "windows" }}'
   fallbacks:
     - go
   tags:
@@ -280,8 +291,8 @@
 - name: pemistahl/grex
   description: A command-line tool for generating regular expressions
   skip:
-    - reason: "grex is not available for ARM32 architecture"
-      condition: '{{ eq .ARCH "arm" }}'
+    reason: "grex is not available for ARM32 architecture"
+    condition: '{{ eq .ARCH "arm" }}'
   fallbacks:
     - rust
   tags:
@@ -385,8 +396,8 @@
 - name: antonmedv/fx
   description: Command-line JSON processing tool
   skip:
-    - reason: "fx is not available for ARM32 architecture"
-      condition: '{{ eq .ARCH "arm" }}'
+    reason: "fx is not available for ARM32 architecture"
+    condition: '{{ eq .ARCH "arm" }}'
   tags:
     - processing
 
@@ -689,14 +700,6 @@
     - native
     - processing
 
-- name: yngveh/sprig-cli
-  description: A command-line tool for parsing and executing Go templates
-  version: master
-  source:
-    type: go
-  tags:
-    - processing
-
 - name: hairyhenderson/gomplate
   description: A versatile Go template processor
   exe:
@@ -739,6 +742,10 @@
     type: url
   tags:
     - automation
+
+- name: gotify/cli
+  exe: gotify
+  description: A command-line client for Gotify
 
 - name: getsops/sops
   description: Simple and flexible tool for managing secrets

@@ -1,4 +1,4 @@
-package commands
+package cli
 
 import (
 	"fmt"
@@ -7,6 +7,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/core/defaults"
+	"github.com/idelchi/godyl/internal/core/processor"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/logger"
@@ -18,10 +20,11 @@ import (
 // NewDownloadCommand creates the download command for downloading and unpacking tools.
 func NewDownloadCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "download [tool]",
-		Short: "Download and unpack tools",
-		Long:  "Download and unpack tools from GitHub, URLs, or Go projects",
-		Args:  cobra.MinimumNArgs(1),
+		Use:     "download [tool]",
+		Aliases: []string{"dl", "unpack"},
+		Short:   "Download and unpack tools",
+		Long:    "Download and unpack tools from GitHub, URLs, or Go projects",
+		Args:    cobra.MinimumNArgs(1),
 		PreRunE: func(_ *cobra.Command, args []string) error {
 			return cobraext.Validate(cfg, &cfg)
 		},
@@ -37,13 +40,13 @@ func NewDownloadCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 			log.Info("*** ***")
 
 			// Load defaults
-			defaults := tools.Defaults{}
-			if err := loadDefaults(&defaults, cfg.Defaults.Name(), emb.defaults, *cfg); err != nil {
+			toolDefaults := tools.Defaults{}
+			if err := defaults.LoadDefaults(&toolDefaults, cfg.Defaults.Name(), emb.defaults, *cfg); err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
 			log.Info("platform:")
-			log.Info(pretty.YAML(defaults.Platform))
+			log.Info(pretty.YAML(toolDefaults.Platform))
 			log.Info("*** ***")
 
 			toolsList := []tools.Tool{}
@@ -62,8 +65,8 @@ func NewDownloadCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 			}
 
 			// Process tools
-			processor := NewToolProcessor(toolsList, defaults, *cfg, log)
-			if err := processor.Process(nil, nil); err != nil {
+			proc := processor.New(toolsList, toolDefaults, *cfg, log)
+			if err := proc.Process(nil, nil); err != nil {
 				return fmt.Errorf("processing tools: %w", err)
 			}
 

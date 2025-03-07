@@ -1,4 +1,4 @@
-package commands
+package updater
 
 import (
 	"fmt"
@@ -15,18 +15,18 @@ import (
 	"github.com/idelchi/godyl/pkg/file"
 )
 
-// GodylUpdater is responsible for updating the godyl tool using the specified update strategy and defaults.
-type GodylUpdater struct {
+// Updater is responsible for updating the godyl tool using the specified update strategy and defaults.
+type Updater struct {
 	Strategy    tools.Strategy // Strategy defines how updates are applied (e.g., Upgrade, Downgrade, None).
 	Defaults    tools.Defaults // Defaults holds tool-specific default values for the update process.
 	NoVerifySSL bool           // NoVerifySSL disables SSL verification for the update process.
 }
 
 // Update performs the update process for the godyl tool, applying the specified strategy.
-func (gu GodylUpdater) Update(version string) error {
+func (u Updater) Update(version string) error {
 	// Set default strategy if none is provided.
-	if gu.Strategy == tools.None {
-		gu.Strategy = tools.Upgrade
+	if u.Strategy == tools.None {
+		u.Strategy = tools.Upgrade
 	}
 
 	// Determine the tool path from build info, defaulting to "idelchi/godyl" if not available.
@@ -42,12 +42,12 @@ func (gu GodylUpdater) Update(version string) error {
 		Source: sources.Source{
 			Type: sources.GITHUB,
 		},
-		Strategy:    gu.Strategy,
-		NoVerifySSL: gu.NoVerifySSL,
+		Strategy:    u.Strategy,
+		NoVerifySSL: u.NoVerifySSL,
 	}
 
 	// Apply any default values to the tool.
-	tool.ApplyDefaults(gu.Defaults)
+	tool.ApplyDefaults(u.Defaults)
 	if err := tool.Resolve(nil, nil); err != nil {
 		return fmt.Errorf("resolving tool: %w", err)
 	}
@@ -55,7 +55,7 @@ func (gu GodylUpdater) Update(version string) error {
 	if tool.Version.Version == version {
 		fmt.Printf("godyl (%v) is already up-to-date\n", version)
 
-		if gu.Strategy == tools.Force {
+		if u.Strategy == tools.Force {
 			fmt.Println("Forcing updating...")
 		} else {
 			return nil
@@ -65,7 +65,7 @@ func (gu GodylUpdater) Update(version string) error {
 	fmt.Printf("Update requested from %q -> %q\n", version, tool.Version.Version)
 
 	// Download the tool.
-	output, err := gu.Get(tool)
+	output, err := u.Get(tool)
 
 	defer func() {
 		folder := file.Folder(output)
@@ -77,7 +77,7 @@ func (gu GodylUpdater) Update(version string) error {
 	}
 
 	// Replace the existing godyl binary with the newly downloaded version.
-	if err := gu.Replace(filepath.Join(output, tool.Exe.Name)); err != nil {
+	if err := u.Replace(filepath.Join(output, tool.Exe.Name)); err != nil {
 		return fmt.Errorf("replacing godyl: %w", err)
 	}
 
@@ -93,7 +93,7 @@ func (gu GodylUpdater) Update(version string) error {
 }
 
 // Replace applies the new godyl binary by replacing the current executable with the downloaded one.
-func (gu GodylUpdater) Replace(path string) error {
+func (u Updater) Replace(path string) error {
 	body, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("opening file %q: %w", path, err)
@@ -113,7 +113,7 @@ func (gu GodylUpdater) Replace(path string) error {
 }
 
 // Get downloads the tool based on its source, placing it in a temporary directory, and returns the output path.
-func (gu GodylUpdater) Get(tool tools.Tool) (string, error) {
+func (u Updater) Get(tool tools.Tool) (string, error) {
 	// Create a temporary directory to store the downloaded tool.
 	var dir file.Folder
 	// For Windows, get the directory of the current executable.

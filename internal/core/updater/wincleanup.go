@@ -1,4 +1,4 @@
-package commands
+package updater
 
 import (
 	"embed"
@@ -20,6 +20,7 @@ type cleanupData struct {
 	LogFile   string
 }
 
+// winCleanup handles Windows-specific cleanup after an update.
 func winCleanup() error {
 	fmt.Println("Issuing a delete command for the old godyl binary")
 

@@ -1,4 +1,4 @@
-package commands
+package cli
 
 import (
 	"fmt"
@@ -6,14 +6,16 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/core/updater"
 )
 
 // NewUpdateCommand creates the update command for updating the application.
 func NewUpdateCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update",
-		Short: "Update the application",
-		Long:  "Update the godyl application to the latest version",
+		Use:     "update",
+		Aliases: []string{"upgrade", "up"},
+		Short:   "Update the application",
+		Long:    "Update the godyl application to the latest version",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return processUpdate(*cfg)
 		},
@@ -24,12 +26,12 @@ func NewUpdateCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 
 // processUpdate handles the update process based on the configuration.
 func processUpdate(cfg config.Config) error {
-	updater := GodylUpdater{
+	appUpdater := updater.Updater{
 		Strategy:    cfg.Update.Strategy,
 		NoVerifySSL: cfg.NoVerifySSL,
 	}
 
-	if err := updater.Update(""); err != nil {
+	if err := appUpdater.Update(""); err != nil {
 		return fmt.Errorf("updating: %w", err)
 	}
 

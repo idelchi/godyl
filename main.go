@@ -19,7 +19,7 @@ var toolsFile []byte
 
 // content holds static template scripts.
 //
-//go:embed defaults.yml tools.yml internal/commands/scripts/*
+//go:embed defaults.yml tools.yml internal/core/updater/scripts/*
 var embeds embed.FS
 
 func main() {

@@ -1,4 +1,4 @@
-package commands
+package cli
 
 import (
 	"fmt"
@@ -6,7 +6,10 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/core/defaults"
+	"github.com/idelchi/godyl/internal/core/processor"
 	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/pretty"
 	"github.com/idelchi/gogen/pkg/cobraext"
@@ -15,10 +18,11 @@ import (
 // NewInstallCommand creates the install command for installing tools from a YAML file.
 func NewInstallCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "install [tools.yml]",
-		Short: "Install tools from a YAML file",
-		Long:  "Install tools as specified in a YAML configuration file",
-		Args:  cobra.MaximumNArgs(1),
+		Use:     "install [tools.yml]",
+		Aliases: []string{"i", "get"},
+		Short:   "Install tools from a YAML file",
+		Long:    "Install tools as specified in a YAML configuration file",
+		Args:    cobra.MaximumNArgs(1),
 		PreRunE: func(_ *cobra.Command, args []string) error {
 			return cobraext.Validate(cfg, &cfg)
 		},
@@ -41,25 +45,25 @@ func NewInstallCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 			log.Info("*** ***")
 
 			// Load defaults
-			defaults := tools.Defaults{}
-			if err := loadDefaults(&defaults, cfg.Defaults.Name(), emb.defaults, *cfg); err != nil {
+			toolDefaults := tools.Defaults{}
+			if err := defaults.LoadDefaults(&toolDefaults, cfg.Defaults.Name(), emb.defaults, *cfg); err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
 			log.Info("platform:")
-			log.Info(pretty.YAML(defaults.Platform))
+			log.Info(pretty.YAML(toolDefaults.Platform))
 			log.Info("*** ***")
 
 			// Load tools
-			toolsList, err := loadTools(cfg.Tools, log)
+			toolsList, err := utils.LoadTools(cfg.Tools, log)
 			if err != nil {
 				return fmt.Errorf("loading tools: %w", err)
 			}
 
-			tags, withoutTags := splitTags(cfg.Tags)
+			tags, withoutTags := utils.SplitTags(cfg.Tags)
 
-			processor := NewToolProcessor(toolsList, defaults, *cfg, log)
-			if err := processor.Process(tags, withoutTags); err != nil {
+			proc := processor.New(toolsList, toolDefaults, *cfg, log)
+			if err := proc.Process(tags, withoutTags); err != nil {
 				return fmt.Errorf("processing tools: %w", err)
 			}
 

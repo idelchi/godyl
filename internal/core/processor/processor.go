@@ -1,4 +1,4 @@
-package commands
+package processor
 
 import (
 	"errors"
@@ -35,8 +35,8 @@ type toolResult struct {
 	msg   string
 }
 
-// NewToolProcessor creates a new ToolProcessor.
-func NewToolProcessor(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log *logger.Logger) *ToolProcessor {
+// New creates a new ToolProcessor.
+func New(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log *logger.Logger) *ToolProcessor {
 	return &ToolProcessor{
 		toolsList: toolsList,
 		defaults:  defaults,

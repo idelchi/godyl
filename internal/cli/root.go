@@ -1,5 +1,5 @@
-// Package commands provides the command-line interface for the application.
-package commands
+// Package cli provides the command-line interface for the application.
+package cli
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/gogen/pkg/cobraext"
@@ -37,7 +38,7 @@ func NewRootCmd(cfg *config.Config, version string, defaultsFile, toolsFile []by
 	// Custom functions for the NewDefaultRootCommand
 	funcs := []func(*cobra.Command, []string) error{
 		func(cmd *cobra.Command, args []string) error {
-			if err := loadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
+			if err := utils.LoadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
 				if config.IsSet("env-file") {
 					return fmt.Errorf("loading .env file: %w", err)
 				}

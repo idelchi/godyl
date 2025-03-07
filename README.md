@@ -103,26 +103,85 @@ to install all [tools](./tools.yml) listed in the `tools.yml` file.
 godyl --update
 ```
 
+## Update
+
+```sh
+godyl update
+```
+
 ## Usage
 
-Use together with `yaml` file:
-
 ```sh
-godyl [tools.yml]  --output ./bin
+godyl [command] [flags]
 ```
 
-Or use to download a single tool:
+Available commands:
+
+- `install` - Install tools from a YAML file
+- `download` - Download and unpack individual tools
+- `dump` - Display configuration information
+- `update` - Update the godyl application
+
+### Install Command
+
+Install tools defined in a YAML configuration file:
 
 ```sh
-godyl idelchi/godyl --output ./bin
+godyl install [tools.yml] --output ./bin
 ```
 
-When used to download a single tool, the `mode` will be set to `extract` by default.
+If no file is specified, `godyl` defaults to using `tools.yml` in the current directory.
+
+You can dump out a default `tools.yml` file by running:
+
+```sh
+godyl dump tools > tools.yml
+```
+
+### Download Command
+
+Download a single tool:
+
+```sh
+godyl download idelchi/godyl --output ./bin
+```
+
+When using the `download` command, the `mode` will be set to `extract` by default.
 
 Override `os` and `arch` to download a specific binary:
 
 ```sh
-godyl idelchi/godyl --os linux --arch amd64 --output ./bin
+godyl download idelchi/godyl --os linux --arch amd64 --output ./bin
+```
+
+You can also download tools from direct URLs:
+
+```sh
+godyl download https://example.com/path/to/tool.tar.gz --output ./bin
+```
+
+### Dump Command
+
+Display various configuration settings and information:
+
+```sh
+godyl dump [config|defaults|env|platform|tools]
+```
+
+Subcommands:
+
+- `config` - Display the current configuration settings
+- `defaults` - Display the default configuration settings
+- `env` - Display environment variables that affect the application
+- `platform` - Display information about the current platform
+- `tools` - Display information about available tools
+
+### Update Command
+
+Update the godyl application to the latest version:
+
+```sh
+godyl update
 ```
 
 > [!NOTE]
@@ -131,37 +190,43 @@ godyl idelchi/godyl --os linux --arch amd64 --output ./bin
 
 ## Configuration
 
-The tools can be configured (in order of priority) by
+The tools can be configured (in order of priority) by:
 
 - flags
 - environment variables
 - `.env` file
 
-The following flags and their corresponding environment variables are available:
+### Global Flags
 
-| Flag               | Environment Variable  | Default        | Description                                    |
-| ------------------ | --------------------- | -------------- | ---------------------------------------------- |
-| `--help`, `-h`     | `GODYL_HELP`          | `false`        | Show help message and exit                     |
-| `--version`        | `GODYL_VERSION`       | `false`        | Show version information and exit              |
-| `--env-file`       | `GODYL_DOT_ENV`       | `.env`         | Path to .env file                              |
-| `--defaults`, `-d` | `GODYL_DEFAULTS`      | `defaults.yml` | Path to defaults file                          |
-| `--show-config`    | `GODYL_SHOW_CONFIG`   | `false`        | Show the parsed configuration and exit         |
-| `--show-defaults`  | `GODYL_SHOW_DEFAULTS` | `false`        | Show the parsed default configuration and exit |
-| `--show-env`       | `GODYL_SHOW_ENV`      | `false`        | Show the parsed environment variables and exit |
-| `--show-platform`  | `GODYL_SHOW_PLATFORM` | `false`        | Detect the platform and exit                   |
-| `--update`         | `GODYL_UPDATE`        | `false`        | Update `godyl` itself                          |
-| `--dry`            | `GODYL_DRY`           | `false`        | Run without making any changes (dry run)       |
-| `--log`            | `GODYL_LOG`           | `info`         | Log level (debug, info, warn, error)           |
-| `--parallel`, `-j` | `GODYL_PARALLEL`      | `0`            | Number of parallel downloads (0 is unlimited)  |
-| `--output`         | `GODYL_OUTPUT`        | `.`            | Output path for the downloaded tools           |
-| `--tags`, `-t`     | `GODYL_TAGS`          | `["!native"]`  | Tags to filter tools by. Use `!` to exclude    |
-| `--source`         | `GODYL_SOURCE`        | `github`       | Source from which to install the tools         |
-| `--strategy`       | `GODYL_STRATEGY`      | `none`         | Strategy to use for updating tools             |
-| `--os`             | `GODYL_OS`            | `""`           | Operating system to use for downloading        |
-| `--arch`           | `GODYL_ARCH`          | `""`           | Architecture to use for downloading            |
-| `--github-token`   | `GODYL_GITHUB_TOKEN`  | `""`           | GitHub token for authentication                |
+The following global flags are available for all commands:
 
-The path to the file containing the tool installation instructions is provided as a positional argument, defaulting to `tools.yml`.
+| Flag                    | Environment Variable  | Default        | Description                                   |
+| ----------------------- | --------------------- | -------------- | --------------------------------------------- |
+| `--help`, `-h`          | `GODYL_HELP`          | `false`        | Show help message and exit                    |
+| `--version`             | `GODYL_VERSION`       | `false`        | Show version information and exit             |
+| `--dry`                 | `GODYL_DRY`           | `false`        | Run without making any changes (dry run)      |
+| `--log`                 | `GODYL_LOG`           | `info`         | Log level (debug, info, warn, error, silent)  |
+| `--parallel`, `-j`      | `GODYL_PARALLEL`      | `0`            | Number of parallel downloads (0 is unlimited) |
+| `--no-verify-ssl`, `-k` | `GODYL_NO_VERIFY_SSL` | `false`        | Skip SSL verification                         |
+| `--env-file`            | `GODYL_DOT_ENV`       | `.env`         | Path to .env file                             |
+| `--defaults`, `-d`      | `GODYL_DEFAULTS`      | `defaults.yml` | Path to defaults file                         |
+| `--show`, `-s`          | `GODYL_SHOW`          | `false`        | Show the configuration and exit               |
+
+### Tool-specific Flags
+
+The following flags are available for tool-related commands (`install` and `download`):
+
+| Flag             | Environment Variable | Default       | Description                                 |
+| ---------------- | -------------------- | ------------- | ------------------------------------------- |
+| `--output`, `-o` | `GODYL_OUTPUT`       | `./bin`       | Output path for the downloaded tools        |
+| `--tags`, `-t`   | `GODYL_TAGS`         | `["!native"]` | Tags to filter tools by. Use `!` to exclude |
+| `--source`       | `GODYL_SOURCE`       | `github`      | Source from which to install the tools      |
+| `--strategy`     | `GODYL_STRATEGY`     | `none`        | Strategy to use for updating tools          |
+| `--os`           | `GODYL_OS`           | `""`          | Operating system to use for downloading     |
+| `--arch`         | `GODYL_ARCH`         | `""`          | Architecture to use for downloading         |
+| `--github-token` | `GODYL_GITHUB_TOKEN` | `""`          | GitHub token for authentication             |
+
+For the `install` command, the path to the file containing the tool installation instructions is provided as a positional argument, defaulting to `tools.yml`.
 
 An example [tools.yml](./tools.yml) is provided.
 

@@ -1,4 +1,4 @@
-package commands
+package defaults
 
 import (
 	"fmt"
@@ -98,6 +98,61 @@ func (d *Defaults) Load(path string, defaults []byte) error {
 
 	if err := d.Initialize(); err != nil {
 		return fmt.Errorf("setting tool defaults: %w", err)
+	}
+
+	return nil
+}
+
+// LoadDefaults loads the default configuration.
+func LoadDefaults(defaults *tools.Defaults, path string, defaultEmbedded []byte, cfg config.Config) error {
+	if config.IsSet("defaults") {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return fmt.Errorf("reading defaults file %q: %w", path, err)
+		}
+
+		if err := yaml.Unmarshal(data, defaults); err != nil {
+			return fmt.Errorf("unmarshalling defaults: %w", err)
+		}
+	} else {
+		if err := yaml.Unmarshal(defaultEmbedded, defaults); err != nil {
+			return fmt.Errorf("unmarshalling embedded defaults: %w", err)
+		}
+	}
+
+	if err := defaults.Initialize(); err != nil {
+		return fmt.Errorf("initializing defaults: %w", err)
+	}
+
+	// Apply configuration overrides
+	if config.IsSet("output") {
+		defaults.Output = cfg.Output
+	}
+
+	if config.IsSet("source") {
+		defaults.Source.Type = cfg.Source
+	}
+
+	if config.IsSet("strategy") {
+		defaults.Strategy = cfg.Strategy
+	}
+
+	if config.IsSet("github-token") {
+		defaults.Source.Github.Token = cfg.Tokens.GitHub
+	}
+
+	if config.IsSet("os") {
+		if err := defaults.Platform.OS.Parse(cfg.OS); err != nil {
+			return fmt.Errorf("parsing OS: %w", err)
+		}
+		defaults.Platform.Extension = defaults.Platform.Extension.Default(defaults.Platform.OS)
+		defaults.Platform.Library = defaults.Platform.Library.Default(defaults.Platform.OS, defaults.Platform.Distribution)
+	}
+
+	if config.IsSet("arch") {
+		if err := defaults.Platform.Architecture.Parse(cfg.Arch); err != nil {
+			return fmt.Errorf("parsing architecture: %w", err)
+		}
 	}
 
 	return nil

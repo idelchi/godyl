@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/commands"
+	"github.com/idelchi/godyl/internal/cli"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/gogen/pkg/cobraext"
 )
@@ -14,7 +14,7 @@ import (
 // It runs the root command with all subcommands and flags configured.
 func Execute(version string, defaultsFile, toolsFile []byte, embeds interface{}) error {
 	cfg := &config.Config{}
-	root := commands.NewRootCmd(cfg, version, defaultsFile, toolsFile, embeds)
+	root := cli.NewRootCmd(cfg, version, defaultsFile, toolsFile, embeds)
 
 	switch err := root.Execute(); {
 	case errors.Is(err, cobraext.ErrExitGracefully):

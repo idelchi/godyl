@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"slices"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
@@ -15,15 +14,10 @@ import (
 // ErrUsage is returned when there is an error in the configuration.
 var ErrUsage = fmt.Errorf("usage error")
 
-// IsSet checks if a flag is set in viper.
-func IsSet(flag string) bool {
-	return viper.IsSet(flag)
-}
-
 // Update holds the configuration options for updating the built binary itself.
 type Update struct {
 	// Strategy to use for updating tools
-	Strategy tools.Strategy `mapstructure:"strategy"`
+	Strategy tools.Strategy `mapstructure:"strategy" validate:"oneof=none upgrade force"`
 	// Update the tools
 	Update bool `mapstructure:"update"`
 }
@@ -43,19 +37,19 @@ type Tokens struct {
 // Dump holds the configuration options for showing various configurations.
 type Dump struct {
 	// Show the parsed configuration and exit
-	Config bool `mapstructure:"show-config"`
+	Config bool
 
 	// Show the parsed environment variables and exit
-	Env bool `mapstructure:"show-env"`
+	Env bool
 
 	// Show the parsed default configuration and exit
-	Defaults bool `mapstructure:"show-defaults"`
+	Defaults bool
 
 	// Detect the platform and exit
-	Platform bool `mapstructure:"show-platform"`
+	Platform bool
 
 	// Show available tools
-	Tools bool `mapstructure:"show-tools"`
+	Tools bool
 }
 
 // Config holds all the configuration options for godyl.
@@ -65,23 +59,12 @@ type Config struct {
 
 	// Show help message and exit
 	Help bool
+
 	// Show version information and exit
 	Version bool
 
 	// Path to .env file
-	DotEnv file.File `mapstructure:"dot-env"`
-
-	// Path to defaults file
-	Defaults file.File
-
-	// Dump various configurations
-	Dump Dump `mapstructure:",squash"`
-
-	// DumpTools dump out default tools.yml as stdout
-	DumpTools bool `mapstructure:"dump-tools"`
-
-	// Update the tool itself
-	Update Update `mapstructure:",squash"`
+	DotEnv file.File `mapstructure:"env-file"`
 
 	// Run without making any changes (dry run)
 	Dry bool
@@ -95,6 +78,9 @@ type Config struct {
 	// Skip SSL verification
 	NoVerifySSL bool `mapstructure:"no-verify-ssl"`
 
+	// Path to defaults file
+	Defaults file.File
+
 	// Path to tools configuration file
 	Tools string
 
@@ -105,7 +91,7 @@ type Config struct {
 	Tags []string
 
 	// Source from which to install the tools
-	Source sources.Type
+	Source sources.Type `validate:"oneof=github url go command"`
 
 	// Strategy to use for updating tools
 	Strategy tools.Strategy `mapstructure:"strategy"`
@@ -118,6 +104,12 @@ type Config struct {
 
 	// Tokens for authentication
 	Tokens Tokens `mapstructure:",squash"`
+
+	// Dump various configurations
+	Dump Dump
+
+	// Update the tool itself
+	Update Update `mapstructure:",squash"`
 }
 
 // Display returns the value of the Show field.
@@ -126,23 +118,13 @@ func (c Config) Display() bool {
 }
 
 // Validate checks the configuration for errors.
-func (c *Config) Validate() error {
-	allowedUpdateStrategies := []tools.Strategy{tools.None, tools.Upgrade, tools.Force}
-	if !slices.Contains(allowedUpdateStrategies, c.Update.Strategy) {
-		return fmt.Errorf(
-			"%w: unknown update strategy: %q: allowed are %v",
-			ErrUsage,
-			c.Update.Strategy,
-			allowedUpdateStrategies,
-		)
-	}
-
-	if IsSet("config") && !c.Defaults.Exists() {
+func (c *Config) Validate(_ any) error {
+	if IsSet("defaults") && !c.Defaults.Exists() {
 		return fmt.Errorf("%w: defaults file %q does not exist", ErrUsage, c.Defaults)
 	}
 
-	if IsSet("dot-env") && !c.DotEnv.Exists() {
-		return fmt.Errorf("%w: dot-env file %q does not exist", ErrUsage, c.DotEnv)
+	if IsSet("env-file") && !c.DotEnv.Exists() {
+		return fmt.Errorf("%w: env-file file %q does not exist", ErrUsage, c.DotEnv)
 	}
 
 	validate := validator.New()
@@ -151,4 +133,9 @@ func (c *Config) Validate() error {
 	}
 
 	return nil
+}
+
+// IsSet checks if a flag is set in viper.
+func IsSet(flag string) bool {
+	return viper.IsSet(flag)
 }

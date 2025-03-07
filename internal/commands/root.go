@@ -3,9 +3,7 @@ package commands
 
 import (
 	"fmt"
-	"strings"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -36,101 +34,62 @@ func NewRootCmd(cfg *config.Config, version string, defaultsFile, toolsFile []by
 		embeds:   embeds,
 	}
 
-	root := cobraext.NewDefaultRootCommand(version)
+	// Custom functions for the NewDefaultRootCommand
+	funcs := []func(*cobra.Command, []string) error{
+		func(cmd *cobra.Command, args []string) error {
+			if err := loadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
+				if config.IsSet("env-file") {
+					return fmt.Errorf("loading .env file: %w", err)
+				}
+			}
+			return nil
+		},
+	}
+
+	root := cobraext.NewDefaultRootCommand(version, funcs...)
 
 	root.Use = "godyl [command]"
 	root.Short = "Asset downloader for tools"
 	root.Long = "godyl helps with batch-downloading and installing statically compiled binaries from GitHub releases, URLs, and Go projects."
 
-	// Disable direct execution with tools.yml
-	root.Args = cobra.NoArgs
-
-	root.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		// Skip validation for help command
-		if cmd.Name() == "help" {
-			return nil
-		}
-
-		// Check for version flag
-		versionFlag, _ := cmd.Flags().GetBool("version")
-		if versionFlag && cmd.Name() == root.Name() {
-			cmd.Print(version + "\n")
-			return cobraext.ErrExitGracefully
-		}
-
-		// Set viper to automatically read from environment variables
-		viper.SetEnvPrefix("godyl")
-		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
-		viper.AutomaticEnv()
-
-		// Bind flags to viper
-		if err := viper.BindPFlags(cmd.Flags()); err != nil {
-			return fmt.Errorf("binding flags: %w", err)
-		}
-
-		if err := loadDotEnv(file.File(viper.GetString("dot-env"))); err != nil {
-			if config.IsSet("dot-env") {
-				return fmt.Errorf("loading .env file: %w", err)
-			}
-		}
-
-		decoderConfig := func(dc *mapstructure.DecoderConfig) {
-			dc.ErrorUnused = true // Throw error on unknown fields
-		}
-
-		// Unmarshal the configuration into the Config struct
-		if err := viper.Unmarshal(cfg, decoderConfig); err != nil {
-			return fmt.Errorf("unmarshalling config: %w", err)
-		}
-
-		// Handle exit flags
-		if err := handleExitFlags(cmd, version, cfg, emb.defaults); err != nil {
-			return err
-		}
-
-		// Validate the configuration
-		if err := cfg.Validate(); err != nil {
-			return fmt.Errorf("validating configuration: %w", err)
-		}
-
-		return nil
-	}
-
 	// Add subcommands
 	root.AddCommand(
 		NewDumpCommand(cfg, emb),
-		NewUpdateCommand(cfg),
-		NewInstallCommand(cfg),
-		NewDownloadCommand(cfg),
+		NewUpdateCommand(cfg, emb),
+		NewInstallCommand(cfg, emb),
+		NewDownloadCommand(cfg, emb),
 	)
 
-	// Set up flags
-	setupRootFlags(root)
+	// Add root-level flags
+	addRootFlags(root)
+
+	// Make certain flags persistent so they can be used with subcommands
+	root.PersistentFlags().BoolP("show", "s", false, "Show the configuration and exit")
 
 	return root
 }
 
-// setupRootFlags configures all command-line flags for the application.
-func setupRootFlags(root *cobra.Command) {
-	// Configuration file flags
-	root.PersistentFlags().String("dot-env", ".env", "Path to .env file")
-	root.PersistentFlags().StringP("defaults", "d", "defaults.yml", "Path to defaults file")
+// addRootFlags adds root-level flags to the command.
+func addRootFlags(cmd *cobra.Command) {
+	// Root command flags
+	cmd.Flags().Bool("dry", false, "Run without making any changes (dry run)")
+	cmd.Flags().String("log", logger.INFO.String(), "Log level (debug, info, warn, error, silent)")
+	cmd.Flags().IntP("parallel", "j", 0, "Number of parallel downloads. 0 means unlimited.")
+	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
+	cmd.Flags().String("env-file", ".env", "Path to .env file")
+	cmd.Flags().StringP("defaults", "d", "defaults.yml", "Path to defaults file")
+}
 
-	// Application flags
-	root.PersistentFlags().BoolP("show", "s", false, "Show the configuration and exit")
-	root.PersistentFlags().Bool("dry", false, "Run without making any changes (dry run)")
-	root.PersistentFlags().String("log", logger.INFO.String(), "Log level (debug, info, warn, error, silent)")
-	root.PersistentFlags().IntP("parallel", "j", 0, "Number of parallel downloads. 0 means unlimited.")
-	root.PersistentFlags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
+// addToolFlags adds tool-related flags to the command.
+func addToolFlags(cmd *cobra.Command) {
+	// Configuration file flags
 
 	// Tool flags
-	root.PersistentFlags().StringP("output", "o", "", "Output path for the downloaded tools")
-	root.PersistentFlags().StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
-	root.PersistentFlags().String("source", "github", "Source from which to install the tools")
-	root.PersistentFlags().String("strategy", "none", "Strategy to use for updating tools")
-	root.PersistentFlags().String("github-token", "", "GitHub token for authentication")
-	root.PersistentFlags().String("os", "", "Operating system to install the tools for")
-	root.PersistentFlags().String("arch", "", "Architecture to install the tools for")
-
-	root.PersistentFlags().SortFlags = false
+	cmd.Flags().StringP("output", "o", "./bin", "Output path for the downloaded tools")
+	cmd.Flags().StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
+	cmd.Flags().String("source", "github", "Source from which to install the tools")
+	cmd.Flags().String("strategy", "none", "Strategy to use for updating tools")
+	cmd.Flags().String("github-token", "", "GitHub token for authentication")
+	cmd.Flags().String("os", "", "Operating system to install the tools for")
+	cmd.Flags().String("arch", "", "Architecture to install the tools for")
 }

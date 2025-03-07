@@ -9,7 +9,7 @@ import (
 )
 
 // NewUpdateCommand creates the update command for updating the application.
-func NewUpdateCommand(cfg *config.Config) *cobra.Command {
+func NewUpdateCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update the application",

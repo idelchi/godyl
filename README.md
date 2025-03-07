@@ -143,7 +143,7 @@ The following flags and their corresponding environment variables are available:
 | ------------------ | --------------------- | -------------- | ---------------------------------------------- |
 | `--help`, `-h`     | `GODYL_HELP`          | `false`        | Show help message and exit                     |
 | `--version`        | `GODYL_VERSION`       | `false`        | Show version information and exit              |
-| `--dot-env`        | `GODYL_DOT_ENV`       | `.env`         | Path to .env file                              |
+| `--env-file`       | `GODYL_DOT_ENV`       | `.env`         | Path to .env file                              |
 | `--defaults`, `-d` | `GODYL_DEFAULTS`      | `defaults.yml` | Path to defaults file                          |
 | `--show-config`    | `GODYL_SHOW_CONFIG`   | `false`        | Show the parsed configuration and exit         |
 | `--show-defaults`  | `GODYL_SHOW_DEFAULTS` | `false`        | Show the parsed default configuration and exit |

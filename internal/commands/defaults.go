@@ -60,7 +60,7 @@ func (d *Defaults) Merge(cfg config.Config) (err error) {
 	}
 
 	if config.IsSet("strategy") {
-		d.Strategy = cfg.Update.Strategy
+		d.Strategy = cfg.Strategy
 	}
 
 	if config.IsSet("github-token") {

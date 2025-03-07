@@ -11,19 +11,20 @@ import (
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/pretty"
+	"github.com/idelchi/gogen/pkg/cobraext"
 )
 
 // NewDumpCommand creates the show command for displaying various configurations.
 func NewDumpCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show [config|defaults|env|platform|tools]",
+		Use:   "dump [config|defaults|env|platform|tools]",
 		Short: "Dump configuration information",
 		Long:  "Display various configuration settings and information about the environment",
 	}
 
 	// Add subcommands
 	cmd.AddCommand(
-		newDumpConfigCommand(cfg),
+		newDumpConfigCommand(cfg, emb.defaults),
 		newDumpDefaultsCommand(cfg, emb.defaults),
 		newDumpEnvCommand(),
 		newDumpPlatformCommand(),
@@ -34,13 +35,24 @@ func NewDumpCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 }
 
 // newDumpConfigCommand creates a command to show the current configuration.
-func newDumpConfigCommand(cfg *config.Config) *cobra.Command {
+func newDumpConfigCommand(cfg *config.Config, defaultsData []byte) *cobra.Command {
 	return &cobra.Command{
 		Use:   "config",
 		Short: "Dump the current configuration",
 		Long:  "Display the current configuration settings",
+		PreRunE: func(_ *cobra.Command, args []string) error {
+			return cobraext.Validate(cfg)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pretty.PrintYAMLMasked(*cfg)
+			defaults := Defaults{}
+			if err := defaults.Load(cfg.Defaults.Name(), defaultsData); err != nil {
+				return fmt.Errorf("error loading defaults: %v", err)
+			}
+			if err := defaults.Merge(*cfg); err != nil {
+				return fmt.Errorf("error merging defaults: %v", err)
+			}
+
+			pretty.PrintYAMLMasked(defaults)
 			return nil
 		},
 	}

@@ -9,15 +9,19 @@ import (
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/pretty"
+	"github.com/idelchi/gogen/pkg/cobraext"
 )
 
 // NewInstallCommand creates the install command for installing tools from a YAML file.
-func NewInstallCommand(cfg *config.Config) *cobra.Command {
+func NewInstallCommand(cfg *config.Config, emb rootEmbedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "install [tools.yml]",
 		Short: "Install tools from a YAML file",
 		Long:  "Install tools as specified in a YAML configuration file",
 		Args:  cobra.MaximumNArgs(1),
+		PreRunE: func(_ *cobra.Command, args []string) error {
+			return cobraext.Validate(cfg, &cfg)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Set the tools file if provided as an argument
 			if len(args) > 0 {
@@ -38,7 +42,7 @@ func NewInstallCommand(cfg *config.Config) *cobra.Command {
 
 			// Load defaults
 			defaults := tools.Defaults{}
-			if err := loadDefaults(&defaults, cfg.Defaults.Name(), nil, *cfg); err != nil {
+			if err := loadDefaults(&defaults, cfg.Defaults.Name(), emb.defaults, *cfg); err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
@@ -54,7 +58,6 @@ func NewInstallCommand(cfg *config.Config) *cobra.Command {
 
 			tags, withoutTags := splitTags(cfg.Tags)
 
-			// Process tools
 			processor := NewToolProcessor(toolsList, defaults, *cfg, log)
 			if err := processor.Process(tags, withoutTags); err != nil {
 				return fmt.Errorf("processing tools: %w", err)
@@ -63,6 +66,9 @@ func NewInstallCommand(cfg *config.Config) *cobra.Command {
 			return nil
 		},
 	}
+
+	// Add tool-specific flags
+	addToolFlags(cmd)
 
 	return cmd
 }

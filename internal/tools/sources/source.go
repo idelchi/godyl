@@ -50,12 +50,12 @@ type Source struct {
 // Populater defines the interface that all source types must implement to handle initialization, execution,
 // versioning, path setup, and installation.
 type Populater interface {
-	Initialize(string) error
+	Initialize(repo string) error
 	Exe() error
-	Version(string) error
-	Path(string, []string, string, match.Requirements) error
-	Install(common.InstallData) (string, file.File, error)
-	Get(string) string
+	Version(version string) error
+	Path(name string, extensions []string, version string, requirements match.Requirements) error
+	Install(data common.InstallData) (string, file.File, error)
+	Get(key string) string
 }
 
 // Installer returns the appropriate Populater implementation based on the source Type.

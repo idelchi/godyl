@@ -54,7 +54,7 @@ func (l *Library) Parse(name string) error {
 		}
 	}
 
-	return fmt.Errorf("unable to parse library from name: %s", name)
+	return fmt.Errorf("unable to parse library from name: %q", name)
 }
 
 // IsUnset returns true if the library type is not set.

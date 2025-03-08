@@ -35,24 +35,6 @@ type Tokens struct {
 	URL string `mapstructure:"url-token" mask:"fixed"`
 }
 
-// Dump holds the configuration options for showing various configurations.
-type Dump struct {
-	// Show the parsed configuration and exit
-	Config bool
-
-	// Show the parsed environment variables and exit
-	Env bool
-
-	// Show the parsed default configuration and exit
-	Defaults bool
-
-	// Detect the platform and exit
-	Platform bool
-
-	// Show available tools
-	Tools bool
-}
-
 // Config holds all the configuration options for godyl.
 type Config struct {
 	// Show enables output display
@@ -106,8 +88,8 @@ type Config struct {
 	// Tokens for authentication
 	Tokens Tokens `mapstructure:",squash"`
 
-	// Dump various configurations
-	Dump Dump
+	// Output format for the dump command
+	Format string `mapstructure:"format" validate:"oneof=json yaml"`
 
 	// Update the tool itself
 	Update Update `mapstructure:",squash"`
@@ -139,17 +121,4 @@ func (c *Config) Validate(_ any) error {
 // IsSet checks if a flag is set in viper.
 func IsSet(flag string) bool {
 	return viper.IsSet(flag)
-}
-
-// NewConfig creates a new Config with default values.
-func NewConfig() *Config {
-	return &Config{
-		DotEnv:   file.File(".env"),
-		Log:      "info",
-		Tools:    "tools.yml",
-		Output:   "./bin",
-		Tags:     []string{"!native"},
-		Source:   sources.GITHUB,
-		Strategy: tools.None,
-	}
 }

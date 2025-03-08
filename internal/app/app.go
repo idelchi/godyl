@@ -3,10 +3,12 @@ package app
 
 import (
 	"embed"
+	"errors"
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/cli"
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/gogen/pkg/cobraext"
 )
 
 // Application represents the main application,
@@ -33,7 +35,11 @@ func (a *Application) Execute() error {
 		return fmt.Errorf("creating root command: %w", err)
 	}
 
-	if err := root.Execute(); err != nil {
+	// Execute the application
+	switch err := root.Execute(); {
+	case errors.Is(err, cobraext.ErrExitGracefully):
+		return nil
+	case err != nil:
 		return fmt.Errorf("executing command: %w", err)
 	}
 

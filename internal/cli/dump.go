@@ -15,6 +15,18 @@ import (
 	"github.com/idelchi/gogen/pkg/cobraext"
 )
 
+// Print displays the configuration in the specified format.
+func Print(cfg any, format string) {
+	switch format {
+	case "json":
+		pretty.PrintJSONMasked(cfg)
+	case "yaml":
+		pretty.PrintYAMLMasked(cfg)
+	default:
+		fmt.Printf("unsupported output format: %s\n", format)
+	}
+}
+
 // NewDumpCommand creates the show command for displaying various configurations.
 func NewDumpCommand(cfg *config.Config, files Embedded) *cobra.Command {
 	cmd := &cobra.Command{
@@ -22,18 +34,45 @@ func NewDumpCommand(cfg *config.Config, files Embedded) *cobra.Command {
 		Aliases: []string{"show"},
 		Short:   "Dump configuration information",
 		Long:    "Display various configuration settings and information about the environment",
+		PreRunE: func(_ *cobra.Command, _ []string) error {
+			return cobraext.Validate(cfg)
+		},
 	}
 
 	// Add subcommands
 	cmd.AddCommand(
+		newDumpEnvCommand(cfg),
 		newDumpConfigCommand(cfg, files.Defaults),
 		newDumpDefaultsCommand(cfg, files.Defaults),
-		newDumpEnvCommand(),
-		newDumpPlatformCommand(),
-		newDumpToolsCommand(files.Tools),
+		newDumpPlatformCommand(cfg),
+		newDumpToolsCommand(cfg, files.Tools),
 	)
 
+	cmd.PersistentFlags().StringP("format", "f", "yaml", "Output format (json or yaml)")
+
 	return cmd
+}
+
+// newDumpPlatformCommand creates a command to show platform information.
+func newDumpPlatformCommand(cfg *config.Config) *cobra.Command {
+	return &cobra.Command{
+		Use:   "platform",
+		Short: "Dump platform information",
+		Long:  "Display information about the current platform (OS, architecture, etc.)",
+		PreRunE: func(_ *cobra.Command, _ []string) error {
+			return cobraext.Validate(cfg)
+		},
+		RunE: func(_ *cobra.Command, _ []string) error {
+			p := detect.Platform{}
+			if err := p.Detect(); err != nil {
+				return fmt.Errorf("detecting platform: %w", err)
+			}
+
+			Print(p, cfg.Format)
+
+			return nil
+		},
+	}
 }
 
 // newDumpConfigCommand creates a command to show the current configuration.
@@ -50,11 +89,12 @@ func newDumpConfigCommand(cfg *config.Config, defaultsData []byte) *cobra.Comman
 			if err := defs.Load(cfg.Defaults.Name(), defaultsData); err != nil {
 				return fmt.Errorf("error loading defaults: %w", err)
 			}
+
 			if err := defs.Merge(*cfg); err != nil {
 				return fmt.Errorf("error merging defaults: %w", err)
 			}
 
-			pretty.PrintYAMLMasked(defs)
+			Print(cfg, cfg.Format)
 
 			return nil
 		},
@@ -67,13 +107,16 @@ func newDumpDefaultsCommand(cfg *config.Config, defaultsData []byte) *cobra.Comm
 		Use:   "defaults",
 		Short: "Dump the default configuration",
 		Long:  "Display the default configuration settings",
+		PreRunE: func(_ *cobra.Command, _ []string) error {
+			return cobraext.Validate(cfg)
+		},
 		RunE: func(_ *cobra.Command, _ []string) error {
 			toolDefaults := tools.Defaults{}
 			if err := defaults.LoadDefaults(&toolDefaults, cfg.Defaults.Name(), defaultsData, *cfg); err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
-			pretty.PrintYAMLMasked(toolDefaults)
+			Print(toolDefaults, cfg.Format)
 
 			return nil
 		},
@@ -81,32 +124,16 @@ func newDumpDefaultsCommand(cfg *config.Config, defaultsData []byte) *cobra.Comm
 }
 
 // newDumpEnvCommand creates a command to show environment variables.
-func newDumpEnvCommand() *cobra.Command {
+func newDumpEnvCommand(cfg *config.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "env",
 		Short: "Dump environment variables",
 		Long:  "Display environment variables that affect the application",
-		RunE: func(_ *cobra.Command, _ []string) error {
-			pretty.PrintYAMLMasked(env.FromEnv())
-
-			return nil
+		PreRunE: func(_ *cobra.Command, _ []string) error {
+			return cobraext.Validate(cfg)
 		},
-	}
-}
-
-// newDumpPlatformCommand creates a command to show platform information.
-func newDumpPlatformCommand() *cobra.Command {
-	return &cobra.Command{
-		Use:   "platform",
-		Short: "Dump platform information",
-		Long:  "Display information about the current platform (OS, architecture, etc.)",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			p := detect.Platform{}
-			if err := p.Detect(); err != nil {
-				return fmt.Errorf("detecting platform: %w", err)
-			}
-
-			pretty.PrintYAML(p)
+			Print(env.FromEnv(), cfg.Format)
 
 			return nil
 		},
@@ -114,13 +141,16 @@ func newDumpPlatformCommand() *cobra.Command {
 }
 
 // newDumpToolsCommand creates a command to show available tools.
-func newDumpToolsCommand(toolsData []byte) *cobra.Command {
+func newDumpToolsCommand(cfg *config.Config, toolsData []byte) *cobra.Command {
 	return &cobra.Command{
 		Use:   "tools",
 		Short: "Dump available tools",
 		Long:  "Display information about available tools",
+		PreRunE: func(_ *cobra.Command, _ []string) error {
+			return cobraext.Validate(cfg)
+		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			pretty.PrintYAML(utils.PrintYAMLBytes(toolsData))
+			Print(utils.PrintYAMLBytes(toolsData), cfg.Format)
 
 			return nil
 		},

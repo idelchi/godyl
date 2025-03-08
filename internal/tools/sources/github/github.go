@@ -161,7 +161,7 @@ func (g *GitHub) Exe() error {
 }
 
 // Version fetches and sets the latest release version in the metadata.
-func (g *GitHub) Version(name string) error {
+func (g *GitHub) Version(_ string) error {
 	version, err := g.LatestVersion()
 	if err != nil {
 		return err

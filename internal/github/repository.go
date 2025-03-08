@@ -32,6 +32,7 @@ func NewRepository(owner, repo string, client *github.Client) *Repository {
 func (g *Repository) WithContext(ctx context.Context) *Repository {
 	repo := *g
 	repo.ctx = ctx
+
 	return &repo
 }
 

@@ -57,6 +57,7 @@ func (o *OS) Parse(name string) error {
 			if strings.Contains(name, alias) {
 				o.Type = info.Type
 				o.Raw = alias
+
 				return nil
 			}
 		}

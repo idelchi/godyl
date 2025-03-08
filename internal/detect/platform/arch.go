@@ -78,13 +78,16 @@ func (a *Architecture) Parse(name string) error {
 			if strings.Contains(name, alias) {
 				a.Type = info.Type
 				a.Raw = alias
+
 				if info.Parse != nil {
 					version, err := info.Parse(alias)
 					if err != nil {
 						return err
 					}
+
 					a.Version = version
 				}
+
 				return nil
 			}
 		}
@@ -120,6 +123,7 @@ func (a Architecture) IsCompatibleWith(other Architecture) bool {
 	if a.Version != 0 && other.Version != 0 {
 		return a.Version >= other.Version
 	}
+
 	return true
 }
 
@@ -132,6 +136,7 @@ func (a Architecture) String() string {
 
 		return fmt.Sprintf("%sv%d", a.Type, a.Version)
 	}
+
 	return a.Type
 }
 
@@ -154,13 +159,16 @@ func (a Architecture) Is64Bit() bool {
 
 func Is32Bit() (bool, error) {
 	cmd := exec.Command("getconf", "LONG_BIT")
+
 	var out bytes.Buffer
+
 	cmd.Stdout = &out
 	if err := cmd.Run(); err != nil {
 		return false, err
 	}
 
 	result := strings.TrimSpace(out.String())
+
 	value, err := strconv.Atoi(result)
 	if err != nil {
 		return false, err

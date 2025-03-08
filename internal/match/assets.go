@@ -31,6 +31,7 @@ func (as Assets) Select(req Requirements) Results {
 // Each result contains the asset's name, its matching score, and whether it qualifies.
 func (as Assets) Match(req Requirements) Results {
 	var results Results
+
 	for _, a := range as {
 		score, qualified := a.Match(req)
 		results = append(results, Result{Asset: a, Score: score, Qualified: qualified})

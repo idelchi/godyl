@@ -1,3 +1,4 @@
+// Package processor handles the processing of tool installations and management.
 package processor
 
 import (
@@ -139,12 +140,14 @@ func (tp *ToolProcessor) processTool(tool *tools.Tool, tags, withoutTags []strin
 
 	if err := tool.Resolve(tags, withoutTags); err != nil {
 		tp.concurrencyManager.resultCh <- ToolResult{Tool: tool, Err: err}
+
 		return nil
 	}
 
 	// Handle dry run
 	if tp.cfg.Dry {
 		tp.concurrencyManager.resultCh <- ToolResult{Tool: tool}
+
 		return nil
 	}
 
@@ -182,10 +185,10 @@ func (h *DefaultResultHandler) HandleResult(result ToolResult) {
 	found := result.Found
 
 	h.log.Info("")
-	h.log.Info(tool.Name)
+	h.log.Info("%s", tool.Name)
 	h.log.Debug("configuration:")
 	h.log.Debug("-------")
-	h.log.Debug(pretty.YAMLMasked(tool))
+	h.log.Debug("%s", pretty.YAMLMasked(tool))
 	h.log.Debug("-------")
 
 	if err != nil {
@@ -213,7 +216,7 @@ func (h *DefaultResultHandler) handleToolError(tool *tools.Tool, err error, msg 
 		h.log.Error("  failed to install")
 		h.log.Debug("configuration:")
 		h.log.Debug("-------")
-		h.log.Debug(pretty.JSONMasked(tool))
+		h.log.Debug("%s", pretty.JSONMasked(tool))
 		h.log.Debug("-------")
 		h.log.Error("  %v", err)
 		h.log.Error("  %s", msg)
@@ -225,6 +228,7 @@ func (h *DefaultResultHandler) logToolSuccess(tool *tools.Tool, found file.File)
 	if tool.Version.Version != "" {
 		h.log.Info("  version: %s", tool.Version.Version)
 	}
+
 	h.log.Info("  picked download %q", filepath.Base(tool.Path))
 
 	if tool.Mode == "find" {
@@ -240,6 +244,7 @@ func (h *DefaultResultHandler) logToolSuccess(tool *tools.Tool, found file.File)
 func (h *DefaultResultHandler) logToolAliases(tool *tools.Tool) {
 	if tool.Aliases != nil {
 		h.log.Info("  symlinks:")
+
 		for _, alias := range tool.Aliases {
 			h.log.Info("    - %q", filepath.Join(tool.Output, alias))
 		}

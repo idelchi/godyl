@@ -30,6 +30,7 @@ func (c Command) Shell(env ...string) (string, error) {
 
 	// Parse the command string into a shell script
 	parser := syntax.NewParser()
+
 	file, err := parser.Parse(bytes.NewReader([]byte(c)), "")
 	if err != nil {
 		return "", fmt.Errorf("parsing shell command: %w", err)

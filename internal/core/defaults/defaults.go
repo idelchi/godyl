@@ -1,3 +1,4 @@
+// Package defaults provides functionality for managing default values and configurations.
 package defaults
 
 import (
@@ -88,6 +89,7 @@ func (d *Defaults) Merge(cfg config.Config) error {
 		if err := d.Platform.OS.Parse(cfg.OS); err != nil {
 			return fmt.Errorf("parsing OS: %w", err)
 		}
+
 		d.Platform.Extension = d.Platform.Extension.Default(d.Platform.OS)
 		d.Platform.Library = d.Platform.Library.Default(d.Platform.OS, d.Platform.Distribution)
 	}
@@ -205,8 +207,12 @@ func (m *DefaultsManager) ApplyConfig(cfg config.Config) error {
 		if err := m.defaults.Platform.OS.Parse(cfg.OS); err != nil {
 			return fmt.Errorf("parsing OS: %w", err)
 		}
+
 		m.defaults.Platform.Extension = m.defaults.Platform.Extension.Default(m.defaults.Platform.OS)
-		m.defaults.Platform.Library = m.defaults.Platform.Library.Default(m.defaults.Platform.OS, m.defaults.Platform.Distribution)
+		m.defaults.Platform.Library = m.defaults.Platform.Library.Default(
+			m.defaults.Platform.OS,
+			m.defaults.Platform.Distribution,
+		)
 	}
 
 	if config.IsSet("arch") {

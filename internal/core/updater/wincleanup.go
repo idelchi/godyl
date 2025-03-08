@@ -24,6 +24,7 @@ func winCleanup(cleanupTemplate []byte) error {
 	if err != nil {
 		return fmt.Errorf("getting executable path: %w", err)
 	}
+
 	exeDir := file.NewFile(exePath).Dir()
 
 	var folder file.Folder

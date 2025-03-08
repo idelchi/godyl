@@ -1,7 +1,7 @@
 package github
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/google/go-github/v64/github"
 )
@@ -16,15 +16,16 @@ type Release struct {
 // FromRepositoryRelease converts a GitHub repository release to a Release object.
 func (r *Release) FromRepositoryRelease(release *github.RepositoryRelease) error {
 	if release == nil {
-		return fmt.Errorf("repository release is nil")
+		return errors.New("repository release is nil")
 	}
 
 	if release.TagName == nil {
-		return fmt.Errorf("release tag name is nil")
+		return errors.New("release tag name is nil")
 	}
 
 	// Convert GitHub assets to our Asset type
 	assets := make(Assets, 0, len(release.Assets))
+
 	for _, a := range release.Assets {
 		if a.Name == nil || a.BrowserDownloadURL == nil || a.ContentType == nil {
 			continue // Skip assets with missing required fields

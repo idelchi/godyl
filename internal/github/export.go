@@ -85,6 +85,7 @@ func (g *Repository) LatestReleaseFromExport(config ExportConfig) (*Release, err
 
 	key := fmt.Sprintf("%s/%s", g.Owner, g.Repo)
 	assets, ok := data[key]
+
 	if !ok {
 		return nil, fmt.Errorf("no data found for repository %s", key)
 	}

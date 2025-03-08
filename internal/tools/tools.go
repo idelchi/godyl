@@ -22,6 +22,7 @@ func (t *Tools) Load(path string) (err error) {
 		if !stdin.IsPiped() {
 			return errors.New("no data piped to stdin")
 		}
+
 		input, err := stdin.Read()
 		if err != nil {
 			return err

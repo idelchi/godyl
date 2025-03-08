@@ -97,18 +97,6 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts
 
 to install all [tools](./tools.yml) listed in the `tools.yml` file.
 
-## Update
-
-```sh
-godyl --update
-```
-
-## Update
-
-```sh
-godyl update
-```
-
 ## Usage
 
 ```sh
@@ -388,7 +376,7 @@ skip:
 
 | Template      | Templated | As Template |
 | ------------- | --------- | ----------- |
-| `{{ .Name }}` | ![no]     | ![yes]      |
+| `{{ .Name }}` | ![yes]    | ![yes]      |
 
 `name` is the name of the tool to download.
 

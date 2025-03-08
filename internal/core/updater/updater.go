@@ -1,3 +1,4 @@
+// Package updater provides functionality for updating tools and managing update strategies.
 package updater
 
 import (
@@ -77,6 +78,7 @@ func (u *Updater) Update(version string) error {
 	// Determine the tool path from build info, defaulting to "idelchi/godyl" if not available.
 	path := "idelchi/godyl"
 	info, ok := debug.ReadBuildInfo()
+
 	if ok {
 		path = strings.TrimPrefix(info.Main.Path, "github.com/")
 	}
@@ -93,6 +95,7 @@ func (u *Updater) Update(version string) error {
 
 	// Apply any default values to the tool.
 	tool.ApplyDefaults(u.Defaults)
+
 	if err := tool.Resolve(nil, nil); err != nil {
 		return fmt.Errorf("resolving tool: %w", err)
 	}
@@ -109,15 +112,18 @@ func (u *Updater) Update(version string) error {
 func (u *Updater) shouldUpdate(tool tools.Tool, currentVersion string) bool {
 	if u.Strategy == tools.Force {
 		fmt.Println("Forcing update...")
+
 		return true
 	}
 
 	if tool.Version.Version == currentVersion {
 		fmt.Printf("godyl (%v) is already up-to-date\n", currentVersion)
+
 		return false
 	}
 
 	fmt.Printf("Update requested from %q -> %q\n", currentVersion, tool.Version.Version)
+
 	return true
 }
 
@@ -148,6 +154,7 @@ func (u *Updater) performUpdate(tool tools.Tool) error {
 	}
 
 	fmt.Println("Godyl updated successfully")
+
 	return nil
 }
 
@@ -165,6 +172,7 @@ func (r *DefaultReplacer) Replace(path string) error {
 	defer body.Close()
 
 	options := update.Options{}
+
 	if runtime.GOOS == "windows" {
 		// options.OldSavePath = filepath.Join(filepath.Dir(path), ".godyl.exe.old")
 	}

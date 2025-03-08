@@ -1,6 +1,7 @@
 package goi
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/detect"
@@ -16,11 +17,13 @@ type Targets struct {
 // only the files that match the provided condition.
 func (gt Targets) FilterBy(predicate func(Target) bool) Targets {
 	var filtered Targets
+
 	for _, file := range gt.Files {
 		if predicate(file) {
 			filtered.Files = append(filtered.Files, file)
 		}
 	}
+
 	return filtered
 }
 
@@ -67,13 +70,14 @@ func (t Targets) Match() (match.Results, error) {
 	var err error
 
 	matches := assets.Select(match.Requirements{Platform: platform, Hints: hints})
+
 	switch {
 	case !matches.HasQualified():
-		err = fmt.Errorf("no qualified file found")
+		err = errors.New("no qualified file found")
 	case matches.IsAmbigious():
-		err = fmt.Errorf("ambiguous file selection")
+		err = errors.New("ambiguous file selection")
 	case !matches.Success():
-		err = fmt.Errorf("no matching file found")
+		err = errors.New("no matching file found")
 	}
 
 	return matches, err

@@ -5,12 +5,12 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/yaml.v3"
-
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
+
+	"gopkg.in/yaml.v3"
 )
 
 // EnvironmentLoader loads environment variables from various sources.
@@ -32,6 +32,7 @@ type DefaultToolsLoader struct{}
 // LoadDotEnv loads environment variables from a .env file.
 func LoadDotEnv(path file.File) error {
 	loader := &DefaultEnvironmentLoader{}
+
 	return loader.LoadFromDotEnv(path.Name())
 }
 
@@ -54,6 +55,7 @@ func (l *DefaultEnvironmentLoader) LoadFromDotEnv(path string) error {
 // LoadTools loads the tools configuration.
 func LoadTools(path string, log *logger.Logger) (tools.Tools, error) {
 	loader := &DefaultToolsLoader{}
+
 	return loader.LoadTools(path, log)
 }
 
@@ -81,6 +83,7 @@ type DefaultTagSplitter struct{}
 // SplitTags splits tags into include and exclude lists.
 func SplitTags(tags []string) ([]string, []string) {
 	splitter := &DefaultTagSplitter{}
+
 	return splitter.Split(tags)
 }
 
@@ -110,6 +113,7 @@ type DefaultYAMLParser struct{}
 // PrintYAMLBytes parses YAML bytes into a generic data structure.
 func PrintYAMLBytes(yamlBytes []byte) any {
 	parser := &DefaultYAMLParser{}
+
 	return parser.ParseBytes(yamlBytes)
 }
 
@@ -134,6 +138,7 @@ type DefaultInputValidator struct{}
 // ValidateInput validates the command-line arguments.
 func ValidateInput(toolsPath *string, args []string) error {
 	validator := &DefaultInputValidator{}
+
 	return validator.ValidateInput(toolsPath, args)
 }
 
@@ -160,11 +165,13 @@ type DefaultFileChecker struct{}
 // FileExists checks if a file exists at the given path.
 func FileExists(path string) bool {
 	checker := &DefaultFileChecker{}
+
 	return checker.Exists(path)
 }
 
 // Exists checks if a file exists at the given path.
 func (c *DefaultFileChecker) Exists(path string) bool {
 	_, err := os.Stat(path)
+
 	return err == nil
 }

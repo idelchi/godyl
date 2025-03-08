@@ -42,6 +42,7 @@ func New() (binary Binary, err error) {
 			binary.Env = Env{}
 			binary.Dir = file.Dir()
 		}
+
 		return binary, nil
 	} else {
 		binary.Dir = dir
@@ -85,7 +86,7 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 }
 
 func (b *Binary) Download(target string) error {
-	url := fmt.Sprintf("https://static.rust-lang.org/dist/%s", target)
+	url := "https://static.rust-lang.org/dist/" + target
 
 	downloader := download.New()
 
@@ -123,6 +124,7 @@ func (b *Binary) CleanUp() error {
 
 func (b Binary) Latest() (string, error) {
 	client := resty.New()
+
 	resp, err := client.R().Get("https://static.rust-lang.org/dist/channel-rust-stable.toml")
 	if err != nil {
 		return "", err
@@ -136,7 +138,7 @@ func (b Binary) Latest() (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf("no version found")
+	return "", errors.New("no version found")
 }
 
 func (b Binary) MatchTarget(version string) (string, error) {

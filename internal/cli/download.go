@@ -25,10 +25,10 @@ func NewDownloadCommand(cfg *config.Config, files Embedded) *cobra.Command {
 		Short:   "Download and unpack tools",
 		Long:    "Download and unpack tools from GitHub, URLs, or Go projects",
 		Args:    cobra.MinimumNArgs(1),
-		PreRunE: func(_ *cobra.Command, args []string) error {
+		PreRunE: func(_ *cobra.Command, _ []string) error {
 			return cobraext.Validate(cfg, &cfg)
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, args []string) error {
 			lvl, err := logger.LevelString(cfg.Log)
 			if err != nil {
 				return fmt.Errorf("parsing log level: %w", err)
@@ -41,12 +41,12 @@ func NewDownloadCommand(cfg *config.Config, files Embedded) *cobra.Command {
 
 			// Load defaults
 			toolDefaults := tools.Defaults{}
-			if err := defaults.LoadDefaults(&toolDefaults, cfg.Defaults.Name(), emb.Defaults, *cfg); err != nil {
+			if err := defaults.LoadDefaults(&toolDefaults, cfg.Defaults.Name(), files.Defaults, *cfg); err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
 			log.Info("platform:")
-			log.Info(pretty.YAML(toolDefaults.Platform))
+			log.Info("%s", pretty.YAML(toolDefaults.Platform))
 			log.Info("*** ***")
 
 			toolsList := []tools.Tool{}

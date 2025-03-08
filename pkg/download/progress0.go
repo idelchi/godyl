@@ -48,6 +48,7 @@ func (t *ProgressTracker) TrackProgress0(src string, currentSize, totalSize int6
 		closer: func() error {
 			bar.Finish()
 			delete(t.bars, src)
+
 			return stream.Close()
 		},
 	}

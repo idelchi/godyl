@@ -48,13 +48,14 @@ func newDumpConfigCommand(cfg *config.Config, defaultsData []byte) *cobra.Comman
 		RunE: func(cmd *cobra.Command, args []string) error {
 			defs := defaults.Defaults{}
 			if err := defs.Load(cfg.Defaults.Name(), defaultsData); err != nil {
-				return fmt.Errorf("error loading defaults: %v", err)
+				return fmt.Errorf("error loading defaults: %w", err)
 			}
 			if err := defs.Merge(*cfg); err != nil {
-				return fmt.Errorf("error merging defaults: %v", err)
+				return fmt.Errorf("error merging defaults: %w", err)
 			}
 
 			pretty.PrintYAMLMasked(defs)
+
 			return nil
 		},
 	}
@@ -73,6 +74,7 @@ func newDumpDefaultsCommand(cfg *config.Config, defaultsData []byte) *cobra.Comm
 			}
 
 			pretty.PrintYAMLMasked(toolDefaults)
+
 			return nil
 		},
 	}
@@ -86,6 +88,7 @@ func newDumpEnvCommand() *cobra.Command {
 		Long:  "Display environment variables that affect the application",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pretty.PrintYAMLMasked(env.FromEnv())
+
 			return nil
 		},
 	}
@@ -104,6 +107,7 @@ func newDumpPlatformCommand() *cobra.Command {
 			}
 
 			pretty.PrintYAML(p)
+
 			return nil
 		},
 	}
@@ -117,6 +121,7 @@ func newDumpToolsCommand(toolsData []byte) *cobra.Command {
 		Long:  "Display information about available tools",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pretty.PrintYAML(utils.PrintYAMLBytes(toolsData))
+
 			return nil
 		},
 	}

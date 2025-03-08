@@ -36,7 +36,6 @@ services:
     extends: bookworm-amd64
     platform: linux/arm/v7
 
-
   alpine-amd64:
     extends: build
     build:

@@ -19,6 +19,7 @@ type ProgressTracker struct {
 // NewProgressTracker creates a new progress tracker instance.
 func NewProgressTracker() *ProgressTracker {
 	pool, _ := pb.StartPool()
+
 	return &ProgressTracker{
 		pool: pool,
 		bars: make(map[string]*pb.ProgressBar),

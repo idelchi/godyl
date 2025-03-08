@@ -1,0 +1,8 @@
+Go thru:
+
+internal/app
+internal/cli
+internal/config
+internal/core/updater
+
+and try to make the updater setup a bit more idiomatic w.r.t how it handles Windows specific cleanups, and how it gets and uses the template file from the embedded files. The updater.go file is a bit of an unidiomatic mess at the moment

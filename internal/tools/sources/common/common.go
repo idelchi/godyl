@@ -28,6 +28,7 @@ type InstallData struct {
 // It creates a temporary folder if needed and manages the download process.
 func Download(d InstallData) (string, file.File, error) {
 	var err error
+
 	var found file.File
 
 	folder := file.Folder(d.Output)
@@ -36,6 +37,7 @@ func Download(d InstallData) (string, file.File, error) {
 		if err := folder.CreateRandomInTempDir(); err != nil {
 			return "", "", fmt.Errorf("creating temp dir: %w", err)
 		}
+
 		defer func() {
 			if err == nil {
 				folder.Remove()
@@ -86,6 +88,7 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 				if err != nil {
 					return false, fmt.Errorf("compiling pattern %q: %w", pattern, err)
 				}
+
 				matched := re.MatchString(file.Normalized().Name())
 
 				if matched {
@@ -102,6 +105,7 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 				if !errors.Is(err, file.ErrNotFound) {
 					return destination, err
 				}
+
 				continue
 			} else {
 				found = true
@@ -134,5 +138,6 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 
 	// Create symlinks for the aliases
 	aliases := file.NewFiles(d.Output, d.Aliases...)
+
 	return destination, aliases.SymlinksFor(target)
 }

@@ -9,10 +9,12 @@ import (
 
 func Apply(field string, values any) (string, error) {
 	var buf bytes.Buffer
+
 	tmpl, err := template.New("tmpl").Funcs(sprig.FuncMap()).Parse(field)
 	if err != nil {
 		return "", err
 	}
+
 	if err := tmpl.Execute(&buf, values); err != nil {
 		return "", err
 	}

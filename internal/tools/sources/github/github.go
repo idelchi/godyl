@@ -1,6 +1,7 @@
 package github
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/github"
@@ -29,6 +30,7 @@ func (g *GitHub) Get(attribute string) string {
 // Export exports the latest stored release to a file.
 func (g *GitHub) Export() error {
 	client := github.NewClient(g.Token)
+
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 	if err := repository.ExportWithDefaults(g.latestStoredRelease); err != nil {
 		return fmt.Errorf("failed to export release: %w", err)
@@ -88,6 +90,7 @@ func (g *GitHub) MatchAssetsToRequirements(
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
 	var release *github.Release
+
 	if g.latestStoredRelease == nil {
 		var err error
 
@@ -121,7 +124,7 @@ func (g *GitHub) PopulateOwnerAndRepo(name string) error {
 		return nil
 	case g.Owner == "" && g.Repo == "":
 	default:
-		return fmt.Errorf("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
+		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
 	}
 
 	parts, err := SplitName(name)
@@ -148,6 +151,7 @@ func (g *GitHub) Initialize(name string) error {
 // Exe sets the executable name in the metadata to the repository name.
 func (g *GitHub) Exe() error {
 	g.Data.Set("exe", g.Repo)
+
 	return nil
 }
 
@@ -159,6 +163,7 @@ func (g *GitHub) Version(name string) error {
 	}
 
 	g.Data.Set("version", version)
+
 	return nil
 }
 

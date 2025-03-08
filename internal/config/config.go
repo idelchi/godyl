@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
@@ -12,7 +13,7 @@ import (
 )
 
 // ErrUsage is returned when there is an error in the configuration.
-var ErrUsage = fmt.Errorf("usage error")
+var ErrUsage = errors.New("usage error")
 
 // Update holds the configuration options for updating the built binary itself.
 type Update struct {

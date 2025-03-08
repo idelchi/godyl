@@ -47,6 +47,7 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 			binary.Env = Env{}
 			binary.Dir = file.Dir()
 		}
+
 		return binary, nil
 	} else {
 		binary.Dir = dir
@@ -58,6 +59,7 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 	}
 
 	targets := Targets{}
+
 	for _, file := range release.Files {
 		if file.IsArchive() {
 			targets.Files = append(targets.Files, file)
@@ -100,7 +102,7 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 // Download downloads the Go binary from the provided path and saves it to the directory.
 // It returns an error if the download or file validation fails.
 func (b *Binary) Download(path string) error {
-	url := fmt.Sprintf("https://go.dev/dl/%s", path)
+	url := "https://go.dev/dl/" + path
 
 	downloader := download.New()
 	downloader.InsecureSkipVerify = b.noVerifySSL
@@ -135,6 +137,7 @@ func (b *Binary) CleanUp() error {
 // It returns the most recent release or an error if the process fails.
 func (b Binary) Latest() (Release, error) {
 	client := resty.New()
+
 	resp, err := client.R().Get("https://go.dev/dl/?mode=json")
 	if err != nil {
 		return Release{}, err
@@ -150,5 +153,5 @@ func (b Binary) Latest() (Release, error) {
 		return releases[0], nil
 	}
 
-	return Release{}, fmt.Errorf("no versions found")
+	return Release{}, errors.New("no versions found")
 }

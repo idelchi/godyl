@@ -27,7 +27,9 @@ func (c *Commands) Initialize(command string) error {
 	if command == "" {
 		return nil
 	}
+
 	*c = append(*c, Command(command))
+
 	return nil
 }
 
@@ -47,6 +49,7 @@ func (c *Commands) Exe() error {
 			return fmt.Errorf("executing command: %w", err)
 		}
 	}
+
 	return nil
 }
 
@@ -57,6 +60,7 @@ func (c *Commands) Version(version string) error {
 	}
 	// Store version as a command
 	*c = append(*c, Command(version))
+
 	return nil
 }
 
@@ -68,6 +72,7 @@ func (c *Commands) Path(path string, patterns []string, version string, requirem
 	// Create a command that includes path information
 	cmd := Command(fmt.Sprintf("cd %s && %s", path, strings.Join(patterns, " ")))
 	*c = append(*c, cmd)
+
 	return nil
 }
 
@@ -78,6 +83,7 @@ func (c Commands) Combined() Command {
 	for i, cmd := range c {
 		stringCommands[i] = string(cmd)
 	}
+
 	return Command(strings.Join(stringCommands, "; "))
 }
 

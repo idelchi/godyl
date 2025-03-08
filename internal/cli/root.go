@@ -33,6 +33,7 @@ type Embedded struct {
 // It sets up environment variable binding and flag handling.
 func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Command, error) {
 	e := Embedded{}
+
 	var err error
 
 	e.Defaults, err = embeds.ReadFile("defaults.yml")
@@ -45,7 +46,7 @@ func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Com
 		return nil, fmt.Errorf("reading tools file: %w", err)
 	}
 
-	e.Template, err = embeds.ReadFile("cleanup.bat.template")
+	e.Template, err = embeds.ReadFile("internal/core/updater/scripts/cleanup.bat.template")
 	if err != nil {
 		return nil, fmt.Errorf("reading cleanup template: %w", err)
 	}
@@ -55,6 +56,7 @@ func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Com
 		version: version,
 		files:   e,
 	}
+
 	return factory.CreateRootCommand(), nil
 }
 
@@ -91,6 +93,7 @@ func (f *CommandFactory) loadDotEnvFunc() func(*cobra.Command, []string) error {
 				return fmt.Errorf("loading .env file: %w", err)
 			}
 		}
+
 		return nil
 	}
 }

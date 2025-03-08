@@ -1,0 +1,873 @@
+[go:lint] internal/cli/dump.go:45:35: unused-parameter: parameter 'args' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 		PreRunE: func(_ *cobra.Command, args []string) error {
+[go:lint] 		                                ^
+[go:lint] internal/cli/dump.go:48:14: unused-parameter: parameter 'cmd' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 		RunE: func(cmd *cobra.Command, args []string) error {
+[go:lint] 		           ^
+[go:lint] internal/cli/dump.go:70:14: unused-parameter: parameter 'cmd' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 		RunE: func(cmd *cobra.Command, args []string) error {
+[go:lint] 		           ^
+[go:lint] internal/cli/dump.go:89:14: unused-parameter: parameter 'cmd' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 		RunE: func(cmd *cobra.Command, args []string) error {
+[go:lint] 		           ^
+[go:lint] internal/cli/dump.go:103:14: unused-parameter: parameter 'cmd' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 		RunE: func(cmd *cobra.Command, args []string) error {
+[go:lint] 		           ^
+[go:lint] internal/cli/dump.go:122:14: unused-parameter: parameter 'cmd' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 		RunE: func(cmd *cobra.Command, args []string) error {
+[go:lint] 		           ^
+[go:lint] internal/cli/install.go:26:35: unused-parameter: parameter 'args' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 		PreRunE: func(_ *cobra.Command, args []string) error {
+[go:lint] 		                                ^
+[go:lint] internal/cli/install.go:29:14: unused-parameter: parameter 'cmd' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 		RunE: func(cmd *cobra.Command, args []string) error {
+[go:lint] 		           ^
+[go:lint] internal/cli/root.go:35:2: variable name 'e' is too short for the scope of its usage (varnamelen)
+[go:lint] 	e := Embedded{}
+[go:lint] 	^
+[go:lint] internal/cli/root.go:74:1: The line is 138 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] 	root.Long = "godyl helps with batch-downloading and installing statically compiled binaries from GitHub releases, URLs, and Go projects."
+[go:lint] ^
+[go:lint] internal/cli/root.go:90:14: unused-parameter: parameter 'cmd' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 	return func(cmd *cobra.Command, args []string) error {
+[go:lint] 	            ^
+[go:lint] internal/cli/update.go:19:14: unused-parameter: parameter 'cmd' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 		RunE: func(cmd *cobra.Command, args []string) error {
+[go:lint] 		           ^
+[go:lint] internal/config/config.go:57:6: the methods of "Config" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Config struct {
+[go:lint]      ^
+[go:lint] internal/core/defaults/defaults.go:18:6: exported: type name will be used as defaults.DefaultsLoader by other packages, and that stutters; consider calling this Loader (revive)
+[go:lint] type DefaultsLoader interface {
+[go:lint]      ^
+[go:lint] internal/core/defaults/defaults.go:42:30: the given struct should be annotated with the `yaml` tag (musttag)
+[go:lint] 	return yaml.Unmarshal(data, d)
+[go:lint] 	                            ^
+[go:lint] internal/core/defaults/defaults.go:152:6: exported: type name will be used as defaults.DefaultsManager by other packages, and that stutters; consider calling this Manager (revive)
+[go:lint] type DefaultsManager struct {
+[go:lint]      ^
+[go:lint] internal/core/defaults/defaults.go:166:16: G304: Potential file inclusion via variable (gosec)
+[go:lint] 		data, err := os.ReadFile(path)
+[go:lint] 		             ^
+[go:lint] internal/core/processor/processor.go:108:10: do not define dynamic errors, use wrapped static errors instead: "errors.New(\"one or more tools failed to install\")" (err113)
+[go:lint] 		return errors.New("one or more tools failed to install")
+[go:lint] 		       ^
+[go:lint] internal/core/processor/processor.go:144:3: error is not nil (line 141) but it returns nil (nilerr)
+[go:lint] 		return nil
+[go:lint] 		^
+[go:lint] internal/core/processor/processor.go:164:3: error is not nil (line 160) but it returns nil (nilerr)
+[go:lint] 		return nil
+[go:lint] 		^
+[go:lint] internal/core/updater/updater.go:114:3: use of `fmt.Println` forbidden by pattern `fmt\.Print.*` (forbidigo)
+[go:lint] 		fmt.Println("Forcing update...")
+[go:lint] 		^
+[go:lint] internal/core/updater/updater.go:120:3: use of `fmt.Printf` forbidden by pattern `fmt\.Print.*` (forbidigo)
+[go:lint] 		fmt.Printf("godyl (%v) is already up-to-date\n", currentVersion)
+[go:lint] 		^
+[go:lint] internal/core/updater/updater.go:125:2: use of `fmt.Printf` forbidden by pattern `fmt\.Print.*` (forbidigo)
+[go:lint] 	fmt.Printf("Update requested from %q -> %q\n", currentVersion, tool.Version.Version)
+[go:lint] 	^
+[go:lint] internal/core/updater/updater.go:141:16: Error return value of `folder.Remove` is not checked (errcheck)
+[go:lint] 		folder.Remove()
+[go:lint] 		             ^
+[go:lint] internal/core/updater/updater.go:150:21: string `windows` has 3 occurrences, make it a constant (goconst)
+[go:lint] 	if runtime.GOOS == "windows" {
+[go:lint] 	                   ^
+[go:lint] internal/core/updater/updater.go:156:2: use of `fmt.Println` forbidden by pattern `fmt\.Print.*` (forbidigo)
+[go:lint] 	fmt.Println("Godyl updated successfully")
+[go:lint] 	^
+[go:lint] internal/core/updater/updater.go:163:9: error returned from interface method should be wrapped: sig: func (github.com/idelchi/godyl/internal/core/updater.BinaryReplacer).Replace(path string) error (wrapcheck)
+[go:lint] 	return u.replacer.Replace(path)
+[go:lint] 	       ^
+[go:lint] internal/core/updater/updater.go:168:15: G304: Potential file inclusion via variable (gosec)
+[go:lint] 	body, err := os.Open(path)
+[go:lint] 	             ^
+[go:lint] internal/core/updater/updater.go:176:31: empty-block: this block is empty, you can remove it (revive)
+[go:lint] 	if runtime.GOOS == "windows" {
+[go:lint] 		// options.OldSavePath = filepath.Join(filepath.Dir(path), ".godyl.exe.old")
+[go:lint] 	}
+[go:lint] internal/core/updater/updater.go:181:10: error returned from external package is unwrapped: sig: func github.com/inconshreveable/go-update.Apply(update io.Reader, opts github.com/inconshreveable/go-update.Options) error (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/core/updater/updater.go:189:9: error returned from interface method should be wrapped: sig: func (github.com/idelchi/godyl/internal/core/updater.ToolDownloader).Download(tool github.com/idelchi/godyl/internal/tools.Tool) (string, error) (wrapcheck)
+[go:lint] 	return u.downloader.Download(tool)
+[go:lint] 	       ^
+[go:lint] internal/core/updater/updater.go:226:2: use of `fmt.Printf` forbidden by pattern `fmt\.Print.*` (forbidigo)
+[go:lint] 	fmt.Printf("Downloading %q from %q\n", tool.Name, tool.Path)
+[go:lint] 	^
+[go:lint] internal/core/updater/wincleanup.go:21:2: use of `fmt.Println` forbidden by pattern `fmt\.Print.*` (forbidigo)
+[go:lint] 	fmt.Println("Issuing a delete command for the old godyl binary")
+[go:lint] 	^
+[go:lint] internal/core/updater/wincleanup.go:39:2: use of `fmt.Printf` forbidden by pattern `fmt\.Print.*` (forbidigo)
+[go:lint] 	fmt.Printf("Batch file stored in: %s\n", batchFile.Path())
+[go:lint] 	^
+[go:lint] internal/core/updater/wincleanup.go:48:2: variable name 'f' is too short for the scope of its usage (varnamelen)
+[go:lint] 	f, err := os.Create(batchFile.Path())
+[go:lint] 	^
+[go:lint] internal/core/updater/wincleanup.go:67:9: G204: Subprocess launched with a potential tainted input or cmd arguments (gosec)
+[go:lint] 	cmd := exec.Command("cmd", "/C", "start", "/MIN", batchFile.Path())
+[go:lint] 	       ^
+[go:lint] internal/detect/os.go:14:6: variable name 'os' is too short for the scope of its usage (varnamelen)
+[go:lint] 	var os platform.OS
+[go:lint] 	    ^
+[go:lint] internal/detect/os.go:31:10: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/detect/platform.OS).Parse(name string) error (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/detect/os.go:35:14: Error return value of `distro.Parse` is not checked (errcheck)
+[go:lint] 	distro.Parse(info.Platform)
+[go:lint] 	            ^
+[go:lint] internal/detect/os.go:42:10: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/detect/platform.Architecture).Parse(name string) error (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/detect/platform.go:10:6: the methods of "Platform" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Platform struct {
+[go:lint]      ^
+[go:lint] internal/detect/platform.go:20:12: Error return value of `p.OS.Parse` is not checked (errcheck)
+[go:lint] 	p.OS.Parse(name)
+[go:lint] 	          ^
+[go:lint] internal/detect/platform.go:21:22: Error return value of `p.Architecture.Parse` is not checked (errcheck)
+[go:lint] 	p.Architecture.Parse(name)
+[go:lint] 	                    ^
+[go:lint] internal/detect/platform.go:22:17: Error return value of `p.Library.Parse` is not checked (errcheck)
+[go:lint] 	p.Library.Parse(name)
+[go:lint] 	               ^
+[go:lint] internal/detect/platform.go:23:2: SA4017: Default doesn't have side effects and its return value is ignored (staticcheck)
+[go:lint] 	p.Extension.Default(p.OS)
+[go:lint] 	^
+[go:lint] internal/detect/platform/arch.go:13:6: the methods of "Architecture" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Architecture struct {
+[go:lint]      ^
+[go:lint] internal/detect/platform/arch.go:45:16: parameter name 's' is too short for the scope of its usage (varnamelen)
+[go:lint] 			Parse: func(s string) (int, error) {
+[go:lint] 			            ^
+[go:lint] internal/detect/platform/arch.go:47:19: string `arm` has 4 occurrences, make it a constant (goconst)
+[go:lint] 				case "armel", "arm":
+[go:lint] 				              ^
+[go:lint] internal/detect/platform/arch.go:48:13: Magic number: 5, in <return> detected (mnd)
+[go:lint] 					return 5, nil
+[go:lint] 					       ^
+[go:lint] internal/detect/platform/arch.go:50:13: Magic number: 7, in <return> detected (mnd)
+[go:lint] 					return 7, nil // (or 6)
+[go:lint] 					       ^
+[go:lint] internal/detect/platform/arch.go:59:12: Magic number: 5, in <return> detected (mnd)
+[go:lint] 				return 5, nil
+[go:lint] 				       ^
+[go:lint] internal/detect/platform/arch.go:96:9: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\"unable to parse architecture from name: %s\", name)" (err113)
+[go:lint] 	return fmt.Errorf("unable to parse architecture from name: %s", name)
+[go:lint] 	       ^
+[go:lint] internal/detect/platform/arch.go:143:1: exported: exported method Architecture.To32BitUserLand should have comment or be unexported (revive)
+[go:lint] func (a *Architecture) To32BitUserLand() {
+[go:lint] ^
+[go:lint] internal/detect/platform/arch.go:156:1: exported: exported method Architecture.Is64Bit should have comment or be unexported (revive)
+[go:lint] func (a Architecture) Is64Bit() bool {
+[go:lint] ^
+[go:lint] internal/detect/platform/arch.go:160:1: exported: exported function Is32Bit should have comment or be unexported (revive)
+[go:lint] func Is32Bit() (bool, error) {
+[go:lint] ^
+[go:lint] internal/detect/platform/arch.go:167:17: error returned from external package is unwrapped: sig: func (*os/exec.Cmd).Run() error (wrapcheck)
+[go:lint] 		return false, err
+[go:lint] 		              ^
+[go:lint] internal/detect/platform/arch.go:174:17: error returned from external package is unwrapped: sig: func strconv.Atoi(s string) (int, error) (wrapcheck)
+[go:lint] 		return false, err
+[go:lint] 		              ^
+[go:lint] internal/detect/platform/arch.go:177:18: Magic number: 32, in <return> detected (mnd)
+[go:lint] 	return value == 32, nil
+[go:lint] 	                ^
+[go:lint] internal/detect/platform/distro.go:9:6: the methods of "Distribution" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Distribution struct {
+[go:lint]      ^
+[go:lint] internal/detect/platform/distro.go:66:9: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\"unable to parse distribution from name: %s\", name)" (err113)
+[go:lint] 	return fmt.Errorf("unable to parse distribution from name: %s", name)
+[go:lint] 	       ^
+[go:lint] internal/detect/platform/extension.go:9:6: the methods of "Extension" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Extension string
+[go:lint]      ^
+[go:lint] internal/detect/platform/extension.go:27:1: exported: exported method Extension.Parse should have comment or be unexported (revive)
+[go:lint] func (e *Extension) Parse(name string) error {
+[go:lint] ^
+[go:lint] internal/detect/platform/library.go:9:6: the methods of "Library" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Library struct {
+[go:lint]      ^
+[go:lint] internal/detect/platform/library.go:57:9: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\"unable to parse library from name: %s\", name)" (err113)
+[go:lint] 	return fmt.Errorf("unable to parse library from name: %s", name)
+[go:lint] 	       ^
+[go:lint] internal/detect/platform/library.go:70:5: compatibilityMatrix is a global variable (gochecknoglobals)
+[go:lint] var compatibilityMatrix = map[string]map[string]bool{
+[go:lint]     ^
+[go:lint] internal/detect/platform/os.go:9:6: the methods of "OS" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type OS struct {
+[go:lint]      ^
+[go:lint] internal/detect/platform/os.go:66:9: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\"unable to parse OS from name: %s\", name)" (err113)
+[go:lint] 	return fmt.Errorf("unable to parse OS from name: %s", name)
+[go:lint] 	       ^
+[go:lint] internal/github/asset.go:11:14: json(camel): got 'browser_download_url' want 'browserDownloadUrl' (tagliatelle)
+[go:lint] 	URL  string `json:"browser_download_url"` // URL is the browser download URL for the asset.
+[go:lint] 	            ^
+[go:lint] internal/github/asset.go:12:14: json(camel): got 'content_type' want 'contentType' (tagliatelle)
+[go:lint] 	Type string `json:"content_type"`         // Type is the content type of the asset.
+[go:lint] 	            ^
+[go:lint] internal/github/asset.go:17:9: error returned from external package is unwrapped: sig: func path/filepath.Match(pattern string, name string) (matched bool, err error) (wrapcheck)
+[go:lint] 	return filepath.Match(pattern, a.Name)
+[go:lint] 	       ^
+[go:lint] internal/github/export.go:25:5: exportMutex is a global variable (gochecknoglobals)
+[go:lint] var exportMutex sync.Mutex
+[go:lint]     ^
+[go:lint] internal/github/export.go:33:12: G301: Expect directory permissions to be 0750 or less (gosec)
+[go:lint] 	if err := os.MkdirAll(filepath.Dir(config.ExportPath), 0o755); err != nil {
+[go:lint] 	          ^
+[go:lint] internal/github/export.go:61:12: G306: Expect WriteFile permissions to be 0600 or less (gosec)
+[go:lint] 	if err := os.WriteFile(config.ExportPath, jsonData, 0o644); err != nil {
+[go:lint] 	          ^
+[go:lint] internal/github/export.go:90:15: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\"no data found for repository %s\", key)" (err113)
+[go:lint] 		return nil, fmt.Errorf("no data found for repository %s", key)
+[go:lint] 		            ^
+[go:lint] internal/github/release.go:12:16: json(camel): got 'tag_name' want 'tagName' (tagliatelle)
+[go:lint] 	Tag    string `json:"tag_name"` // Tag is the tag associated with the release (e.g., version number).
+[go:lint] 	              ^
+[go:lint] internal/github/release.go:19:10: do not define dynamic errors, use wrapped static errors instead: "errors.New(\"repository release is nil\")" (err113)
+[go:lint] 		return errors.New("repository release is nil")
+[go:lint] 		       ^
+[go:lint] internal/github/release.go:23:10: do not define dynamic errors, use wrapped static errors instead: "errors.New(\"release tag name is nil\")" (err113)
+[go:lint] 		return errors.New("release tag name is nil")
+[go:lint] 		       ^
+[go:lint] internal/github/release.go:29:6: variable name 'a' is too short for the scope of its usage (varnamelen)
+[go:lint] 	for _, a := range release.Assets {
+[go:lint] 	    ^
+[go:lint] internal/github/repository.go:17:2: found a struct that contains a context.Context field (containedctx)
+[go:lint] 	ctx    context.Context // ctx is the context used for API requests.
+[go:lint] 	^
+[go:lint] internal/goi/binary.go:18:6: the methods of "Binary" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Binary struct {
+[go:lint]      ^
+[go:lint] internal/goi/binary.go:26:5: mu is a global variable (gochecknoglobals)
+[go:lint] var mu sync.Mutex
+[go:lint]     ^
+[go:lint] internal/goi/binary.go:52:9: indent-error-flow: if block ends with a return statement, so drop this else and outdent its block (move short variable declaration to its own line if necessary) (revive)
+[go:lint] 	} else {
+[go:lint] 		binary.Dir = dir
+[go:lint] 	}
+[go:lint] internal/goi/binary.go:143:21: error returned from external package is unwrapped: sig: func (*github.com/go-resty/resty/v2.Request).Get(url string) (*github.com/go-resty/resty/v2.Response, error) (wrapcheck)
+[go:lint] 		return Release{}, err
+[go:lint] 		                  ^
+[go:lint] internal/goi/binary.go:149:21: error returned from external package is unwrapped: sig: func encoding/json.Unmarshal(data []byte, v any) error (wrapcheck)
+[go:lint] 		return Release{}, err
+[go:lint] 		                  ^
+[go:lint] internal/goi/binary.go:156:20: do not define dynamic errors, use wrapped static errors instead: "errors.New(\"no versions found\")" (err113)
+[go:lint] 	return Release{}, errors.New("no versions found")
+[go:lint] 	                  ^
+[go:lint] internal/goi/env.go:10:6: the methods of "Env" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Env map[string]string
+[go:lint]      ^
+[go:lint] internal/goi/env.go:15:2: Consider pre-allocating `env` (prealloc)
+[go:lint] 	var env []string
+[go:lint] 	^
+[go:lint] internal/goi/installer.go:21:9: G204: Subprocess launched with a potential tainted input or cmd arguments (gosec)
+[go:lint] 	cmd := exec.Command(i.Binary.File.Name(), "install", path)
+[go:lint] 	       ^
+[go:lint] internal/goi/targets.go:18:19: ST1016: methods on the same type should have the same receiver name (seen 1x "t", 3x "gt") (stylecheck)
+[go:lint] func (gt Targets) FilterBy(predicate func(Target) bool) Targets {
+[go:lint]                   ^
+[go:lint] internal/goi/targets.go:46:1: receiver-naming: receiver name t should be consistent with previous receiver name gt for Targets (revive)
+[go:lint] func (t Targets) Match() (match.Results, error) {
+[go:lint] 	platform := detect.Platform{}
+[go:lint] 	if err := platform.Detect(); err != nil {
+[go:lint] 		return nil, fmt.Errorf("detecting platform: %w", err)
+[go:lint] 	}
+[go:lint] 
+[go:lint] 	var assets match.Assets
+[go:lint] 
+[go:lint] 	for _, tt := range t.Files {
+[go:lint] 		asset := match.Asset{Name: tt.FileName}
+[go:lint] 
+[go:lint] 		asset.Platform.OS.Parse(tt.OS)
+[go:lint] 		asset.Platform.Architecture.Parse(tt.Arch)
+[go:lint] 
+[go:lint] 		assets = append(assets, asset)
+[go:lint] 	}
+[go:lint] 
+[go:lint] 	hints := []match.Hint{
+[go:lint] 		{
+[go:lint] 			Pattern: platform.OS.String(),
+[go:lint] 			Must:    true,
+[go:lint] 		},
+[go:lint] 	}
+[go:lint] 
+[go:lint] 	var err error
+[go:lint] 
+[go:lint] 	matches := assets.Select(match.Requirements{Platform: platform, Hints: hints})
+[go:lint] 
+[go:lint] 	switch {
+[go:lint] 	case !matches.HasQualified():
+[go:lint] 		err = errors.New("no qualified file found")
+[go:lint] 	case matches.IsAmbigious():
+[go:lint] 		err = errors.New("ambiguous file selection")
+[go:lint] 	case !matches.Success():
+[go:lint] 		err = errors.New("no matching file found")
+[go:lint] 	}
+[go:lint] 
+[go:lint] 	return matches, err
+[go:lint] }
+[go:lint] internal/goi/targets.go:57:26: Error return value of `asset.Platform.OS.Parse` is not checked (errcheck)
+[go:lint] 		asset.Platform.OS.Parse(tt.OS)
+[go:lint] 		                       ^
+[go:lint] internal/goi/targets.go:58:36: Error return value of `asset.Platform.Architecture.Parse` is not checked (errcheck)
+[go:lint] 		asset.Platform.Architecture.Parse(tt.Arch)
+[go:lint] 		                                 ^
+[go:lint] internal/goi/targets.go:76:9: do not define dynamic errors, use wrapped static errors instead: "errors.New(\"no qualified file found\")" (err113)
+[go:lint] 		err = errors.New("no qualified file found")
+[go:lint] 		      ^
+[go:lint] internal/goi/targets.go:78:9: do not define dynamic errors, use wrapped static errors instead: "errors.New(\"ambiguous file selection\")" (err113)
+[go:lint] 		err = errors.New("ambiguous file selection")
+[go:lint] 		      ^
+[go:lint] internal/goi/targets.go:80:9: do not define dynamic errors, use wrapped static errors instead: "errors.New(\"no matching file found\")" (err113)
+[go:lint] 		err = errors.New("no matching file found")
+[go:lint] 		      ^
+[go:lint] internal/match/asset.go:12:6: the methods of "Asset" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Asset struct {
+[go:lint]      ^
+[go:lint] internal/match/asset.go:39:1: calculated cyclomatic complexity for function PlatformMatch is 13, max is 10 (cyclop)
+[go:lint] func (a Asset) PlatformMatch(req Requirements) (int, bool) {
+[go:lint] ^
+[go:lint] internal/match/asset.go:52:2: ifElseChain: rewrite if-else to switch statement (gocritic)
+[go:lint] 	if req.Platform.OS.IsCompatibleWith(a.Platform.OS) {
+[go:lint] 	^
+[go:lint] internal/match/asset.go:58:9: empty-block: this block is empty, you can remove it (revive)
+[go:lint] 	} else {
+[go:lint] 		// score--
+[go:lint] 	}
+[go:lint] internal/match/asset.go:67:2: ifElseChain: rewrite if-else to switch statement (gocritic)
+[go:lint] 	if req.Platform.Architecture.IsCompatibleWith(a.Platform.Architecture) {
+[go:lint] 	^
+[go:lint] internal/match/asset.go:86:2: ifElseChain: rewrite if-else to switch statement (gocritic)
+[go:lint] 	if req.Platform.Library.IsCompatibleWith(a.Platform.Library) {
+[go:lint] 	^
+[go:lint] internal/match/asset.go:92:9: empty-block: this block is empty, you can remove it (revive)
+[go:lint] 	} else {
+[go:lint] 		// fmt.Printf("Library %q is not compatible with Library %q\n", req.Platform.Library, a.Platform.Library)
+[go:lint] 
+[go:lint] 		// score--
+[go:lint] 	}
+[go:lint] internal/match/extension.go:16:2: constant name 'GZ' is too short for the scope of its usage (varnamelen)
+[go:lint] 	GZ
+[go:lint] 	^
+[go:lint] internal/match/hint.go:7:6: the methods of "Hint" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Hint struct {
+[go:lint]      ^
+[go:lint] internal/match/hint.go:19:10: error returned from external package is unwrapped: sig: func strconv.Atoi(s string) (int, error) (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/match/results.go:32:6: variable name 'r' is too short for the scope of its usage (varnamelen)
+[go:lint] 	for _, r := range m {
+[go:lint] 	    ^
+[go:lint] internal/match/results.go:69:2: ifElseChain: rewrite if-else to switch statement (gocritic)
+[go:lint] 	if !m.HasQualified() {
+[go:lint] 	^
+[go:lint] internal/match/results.go:107:1: exported: exported method Results.WithoutZero should have comment or be unexported (revive)
+[go:lint] func (m Results) WithoutZero() Results {
+[go:lint] ^
+[go:lint] internal/rusti/binary.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] package rusti
+[go:lint] ^
+[go:lint] internal/rusti/binary.go:19:6: exported: exported type Binary should have comment or be unexported (revive)
+[go:lint] type Binary struct {
+[go:lint]      ^
+[go:lint] internal/rusti/binary.go:25:5: mu is a global variable (gochecknoglobals)
+[go:lint] var mu sync.Mutex
+[go:lint]     ^
+[go:lint] internal/rusti/binary.go:27:1: exported: exported function New should have comment or be unexported (revive)
+[go:lint] func New() (binary Binary, err error) {
+[go:lint] ^
+[go:lint] internal/rusti/binary.go:47:9: indent-error-flow: if block ends with a return statement, so drop this else and outdent its block (move short variable declaration to its own line if necessary) (revive)
+[go:lint] 	} else {
+[go:lint] 		binary.Dir = dir
+[go:lint] 	}
+[go:lint] internal/rusti/binary.go:71:1: exported: exported method Binary.Find should have comment or be unexported (revive)
+[go:lint] func (b *Binary) Find(paths ...string) (file.File, error) {
+[go:lint] ^
+[go:lint] internal/rusti/binary.go:88:1: exported: exported method Binary.Download should have comment or be unexported (revive)
+[go:lint] func (b *Binary) Download(target string) error {
+[go:lint] ^
+[go:lint] internal/rusti/binary.go:99:9: G204: Subprocess launched with a potential tainted input or cmd arguments (gosec)
+[go:lint] 	cmd := exec.Command("tar", "xzf", destination.String(), "-C", b.Dir.Path())
+[go:lint] 	       ^
+[go:lint] internal/rusti/binary.go:111:1: exported: exported method Binary.CleanUp should have comment or be unexported (revive)
+[go:lint] func (b *Binary) CleanUp() error {
+[go:lint] ^
+[go:lint] internal/rusti/binary.go:125:1: exported: exported method Binary.Latest should have comment or be unexported (revive)
+[go:lint] func (b Binary) Latest() (string, error) {
+[go:lint] ^
+[go:lint] internal/rusti/binary.go:130:14: error returned from external package is unwrapped: sig: func (*github.com/go-resty/resty/v2.Request).Get(url string) (*github.com/go-resty/resty/v2.Response, error) (wrapcheck)
+[go:lint] 		return "", err
+[go:lint] 		           ^
+[go:lint] internal/rusti/binary.go:141:13: do not define dynamic errors, use wrapped static errors instead: "errors.New(\"no version found\")" (err113)
+[go:lint] 	return "", errors.New("no version found")
+[go:lint] 	           ^
+[go:lint] internal/rusti/binary.go:144:1: exported: exported method Binary.MatchTarget should have comment or be unexported (revive)
+[go:lint] func (b Binary) MatchTarget(version string) (string, error) {
+[go:lint] ^
+[go:lint] internal/rusti/binary.go:145:2: variable name 'os' is too short for the scope of its usage (varnamelen)
+[go:lint] 	os := runtime.GOOS
+[go:lint] 	^
+[go:lint] internal/rusti/binary.go:156:14: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\"unsupported OS: %s\", os)" (err113)
+[go:lint] 		return "", fmt.Errorf("unsupported OS: %s", os)
+[go:lint] 		           ^
+[go:lint] internal/rusti/env.go:1:1: ST1000: at least one file in a package should have a package comment (stylecheck)
+[go:lint] package rusti
+[go:lint] ^
+[go:lint] internal/rusti/env.go:8:6: exported: exported type Env should have comment or be unexported (revive)
+[go:lint] type Env map[string]string
+[go:lint]      ^
+[go:lint] internal/rusti/env.go:10:1: exported: exported method Env.ToSlice should have comment or be unexported (revive)
+[go:lint] func (e Env) ToSlice() []string {
+[go:lint] ^
+[go:lint] internal/rusti/env.go:11:2: Consider pre-allocating `env` (prealloc)
+[go:lint] 	var env []string
+[go:lint] 	^
+[go:lint] internal/rusti/env.go:19:1: exported: exported method Env.Append should have comment or be unexported (revive)
+[go:lint] func (e *Env) Append(env Env) {
+[go:lint] ^
+[go:lint] internal/rusti/env.go:25:1: exported: exported method Env.Default should have comment or be unexported (revive)
+[go:lint] func (e *Env) Default(dir string) {
+[go:lint] ^
+[go:lint] internal/rusti/installer.go:1:1: ST1000: at least one file in a package should have a package comment (stylecheck)
+[go:lint] package rusti
+[go:lint] ^
+[go:lint] internal/rusti/installer.go:11:6: exported: exported type Installer should have comment or be unexported (revive)
+[go:lint] type Installer struct {
+[go:lint]      ^
+[go:lint] internal/rusti/installer.go:15:1: exported: exported method Installer.Install should have comment or be unexported (revive)
+[go:lint] func (i *Installer) Install(path string) (output string, err error) {
+[go:lint] ^
+[go:lint] internal/rusti/installer.go:19:9: G204: Subprocess launched with variable (gosec)
+[go:lint] 	cmd := exec.Command(cargoPath, "install", path)
+[go:lint] 	       ^
+[go:lint] internal/templates/templates.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] package templates
+[go:lint] ^
+[go:lint] internal/templates/templates.go:10:1: exported: exported function Apply should have comment or be unexported (revive)
+[go:lint] func Apply(field string, values any) (string, error) {
+[go:lint] ^
+[go:lint] internal/templates/templates.go:15:14: error returned from external package is unwrapped: sig: func (*html/template.Template).Parse(text string) (*html/template.Template, error) (wrapcheck)
+[go:lint] 		return "", err
+[go:lint] 		           ^
+[go:lint] internal/templates/templates.go:19:14: error returned from external package is unwrapped: sig: func (*html/template.Template).Execute(wr io.Writer, data any) error (wrapcheck)
+[go:lint] 		return "", err
+[go:lint] 		           ^
+[go:lint] internal/templates/templates.go:25:1: exported: exported function ApplyAndSet should have comment or be unexported (revive)
+[go:lint] func ApplyAndSet(field *string, values any) (err error) {
+[go:lint] ^
+[go:lint] internal/tools/defaults.go:48:10: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/detect.Platform).Detect() error (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/exe.go:35:9: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/pkg/unmarshal.DecodeWithOptionalKnownFields(value *gopkg.in/yaml.v3.Node, out any, useKnownFields bool, input string) error (wrapcheck)
+[go:lint] 	return unmarshal.DecodeWithOptionalKnownFields(value, (*raw)(e), true, structs.New(e).Name())
+[go:lint] 	       ^
+[go:lint] internal/tools/extensions.go:32:2: ifElseChain: rewrite if-else to switch statement (gocritic)
+[go:lint] 	if noExtensionPart != "" && len(extensionParts) > 0 {
+[go:lint] 	^
+[go:lint] internal/tools/settings.go:3:6: exported: exported type Settings should have comment or be unexported (revive)
+[go:lint] type Settings struct {
+[go:lint]      ^
+[go:lint] internal/tools/skip.go:12:6: the methods of "Skip" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Skip []Condition
+[go:lint]      ^
+[go:lint] internal/tools/skip.go:30:36: error returned from external package is unwrapped: sig: func strconv.ParseBool(str string) (bool, error) (wrapcheck)
+[go:lint] 			return false, condition.Reason, err
+[go:lint] 			                                ^
+[go:lint] internal/tools/skip.go:31:10: indent-error-flow: if block ends with a return statement, so drop this else and outdent its block (move short variable declaration to its own line if necessary) (revive)
+[go:lint] 		} else {
+[go:lint] 			if val {
+[go:lint] 				return true, condition.Reason, nil
+[go:lint] 			}
+[go:lint] 		}
+[go:lint] internal/tools/sources/command/command.go:14:6: the methods of "Command" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Command string
+[go:lint]      ^
+[go:lint] internal/tools/sources/command/commands.go:14:6: the methods of "Commands" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Commands []Command
+[go:lint]      ^
+[go:lint] internal/tools/sources/command/commands.go:17:24: unused-parameter: parameter 'attribute' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] func (c *Commands) Get(attribute string) string {
+[go:lint]                        ^
+[go:lint] internal/tools/sources/command/commands.go:68:57: unused-parameter: parameter 'version' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] func (c *Commands) Path(path string, patterns []string, version string, requirements match.Requirements) error {
+[go:lint]                                                         ^
+[go:lint] internal/tools/sources/common/common.go:29:15: parameter name 'd' is too short for the scope of its usage (varnamelen)
+[go:lint] func Download(d InstallData) (string, file.File, error) {
+[go:lint]               ^
+[go:lint] internal/tools/sources/common/common.go:43:18: Error return value of `folder.Remove` is not checked (errcheck)
+[go:lint] 				folder.Remove()
+[go:lint] 				             ^
+[go:lint] internal/tools/sources/common/common.go:65:1: cognitive complexity 32 of func `FindAndSymlink` is high (> 30) (gocognit)
+[go:lint] func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
+[go:lint] ^
+[go:lint] internal/tools/sources/common/common.go:66:1: `if destination.IsDir()` has complex nested blocks (complexity: 10) (nestif)
+[go:lint] 	if destination.IsDir() {
+[go:lint] ^
+[go:lint] internal/tools/sources/common/common.go:106:26: error returned from external package is unwrapped: sig: func (github.com/idelchi/godyl/pkg/file.Folder).FindFile(criteria ...github.com/idelchi/godyl/pkg/file.CriteriaFunc) (github.com/idelchi/godyl/pkg/file.File, error) (wrapcheck)
+[go:lint] 					return destination, err
+[go:lint] 					                    ^
+[go:lint] internal/tools/sources/common/common.go:110:11: superfluous-else: if block ends with a continue statement, so drop this else and outdent its block (revive)
+[go:lint] 			} else {
+[go:lint] 				found = true
+[go:lint] 
+[go:lint] 				break
+[go:lint] 			}
+[go:lint] internal/tools/sources/common/common.go:118:24: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\n\t\"finding executable: no executable matching patterns %v found in %q\",\n\td.Patterns,\n\tsearchDir,\n)" (err113)
+[go:lint] 			return destination, fmt.Errorf(
+[go:lint] 			                    ^
+[go:lint] internal/tools/sources/common/common.go:142:22: error returned from external package is unwrapped: sig: func (github.com/idelchi/godyl/pkg/file.Files).SymlinksFor(file github.com/idelchi/godyl/pkg/file.File) error (wrapcheck)
+[go:lint] 	return destination, aliases.SymlinksFor(target)
+[go:lint] 	                    ^
+[go:lint] internal/tools/sources/github/github.go:49:14: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/github.Repository).LatestRelease() (*github.com/idelchi/godyl/internal/github.Release, error) (wrapcheck)
+[go:lint] 		return "", err
+[go:lint] 		           ^
+[go:lint] internal/tools/sources/github/github.go:69:14: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/github.Repository).LatestReleaseFromExportWithDefaults() (*github.com/idelchi/godyl/internal/github.Release, error) (wrapcheck)
+[go:lint] 		return "", err
+[go:lint] 		           ^
+[go:lint] internal/tools/sources/github/github.go:85:2: unused-parameter: parameter 'filters' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 	filters []string,
+[go:lint] 	^
+[go:lint] internal/tools/sources/github/github.go:99:15: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/github.Repository).GetRelease(tag string) (*github.com/idelchi/godyl/internal/github.Release, error) (wrapcheck)
+[go:lint] 			return "", err
+[go:lint] 			           ^
+[go:lint] internal/tools/sources/github/github.go:109:14: error returned from external package is unwrapped: sig: func (github.com/idelchi/godyl/internal/match.Results).Status() (err error) (wrapcheck)
+[go:lint] 		return "", matches.WithoutZero().Status()
+[go:lint] 		           ^
+[go:lint] internal/tools/sources/github/github.go:113:14: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\"no assets found for requirements: %v\", requirements)" (err113)
+[go:lint] 		return "", fmt.Errorf("no assets found for requirements: %v", requirements)
+[go:lint] 		           ^
+[go:lint] internal/tools/sources/github/github.go:116:60: error returned from external package is unwrapped: sig: func (github.com/idelchi/godyl/internal/match.Results).Status() (err error) (wrapcheck)
+[go:lint] 	return assets.FilterByName(matches[0].Asset.Name)[0].URL, matches.Status()
+[go:lint] 	                                                          ^
+[go:lint] internal/tools/sources/github/github.go:127:10: do not define dynamic errors, use wrapped static errors instead: "errors.New(\"Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`\")" (err113)
+[go:lint] 		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
+[go:lint] 		       ^
+[go:lint] internal/tools/sources/github/github.go:159:26: unused-parameter: parameter 'name' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] func (g *GitHub) Version(name string) error {
+[go:lint]                          ^
+[go:lint] internal/tools/sources/github/github.go:184:9: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/tools/sources/common.Download(d github.com/idelchi/godyl/internal/tools/sources/common.InstallData) (string, github.com/idelchi/godyl/pkg/file.File, error) (wrapcheck)
+[go:lint] 	return common.Download(d)
+[go:lint] 	       ^
+[go:lint] internal/tools/sources/github/name.go:15:19: Magic number: 2, in <condition> detected (mnd)
+[go:lint] 	if len(split) != 2 {
+[go:lint] 	                 ^
+[go:lint] internal/tools/sources/github/name.go:16:17: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\"invalid source name: %s\", name)" (err113)
+[go:lint] 		return parts, fmt.Errorf("invalid source name: %s", name)
+[go:lint] 		              ^
+[go:lint] internal/tools/sources/go/go.go:39:9: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/tools/sources/github.GitHub).Initialize(name string) error (wrapcheck)
+[go:lint] 	return g.github.Initialize(name)
+[go:lint] 	       ^
+[go:lint] internal/tools/sources/go/go.go:44:9: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/tools/sources/github.GitHub).Exe() error (wrapcheck)
+[go:lint] 	return g.github.Exe()
+[go:lint] 	       ^
+[go:lint] internal/tools/sources/go/go.go:49:9: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/tools/sources/github.GitHub).Version(name string) error (wrapcheck)
+[go:lint] 	return g.github.Version(name)
+[go:lint] 	       ^
+[go:lint] internal/tools/sources/go/go.go:59:5: mu is a global variable (gochecknoglobals)
+[go:lint] var mu sync.Mutex
+[go:lint]     ^
+[go:lint] internal/tools/sources/go/go.go:63:22: parameter name 'd' is too short for the scope of its usage (varnamelen)
+[go:lint] func (g *Go) Install(d common.InstallData) (output string, found file.File, err error) {
+[go:lint]                      ^
+[go:lint] internal/tools/sources/go/go.go:68:18: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/goi.New(noVerifySSL bool) (binary github.com/idelchi/godyl/internal/goi.Binary, err error) (wrapcheck)
+[go:lint] 		return "", "", err
+[go:lint] 		               ^
+[go:lint] internal/tools/sources/go/go.go:78:30: Error return value of `folder.CreateRandomInTempDir` is not checked (errcheck)
+[go:lint] 	folder.CreateRandomInTempDir()
+[go:lint] 	                            ^
+[go:lint] internal/tools/sources/go/go.go:111:26: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/tools/sources/common.FindAndSymlink(destination github.com/idelchi/godyl/pkg/file.File, d github.com/idelchi/godyl/internal/tools/sources/common.InstallData) (github.com/idelchi/godyl/pkg/file.File, error) (wrapcheck)
+[go:lint] 			return output, found, err
+[go:lint] 			                      ^
+[go:lint] internal/tools/sources/go/go.go:115:21: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/goi.Installer).Install(path string) (output string, err error) (wrapcheck)
+[go:lint] 	return output, "", err
+[go:lint] 	                   ^
+[go:lint] internal/tools/sources/source.go:20:6: the methods of "Type" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Type string
+[go:lint]      ^
+[go:lint] internal/tools/sources/source.go:33:2: exported: exported const GITHUB should have comment (or a comment on this block) or be unexported (revive)
+[go:lint] 	GITHUB  Type = "github"  // GitHub source type
+[go:lint] 	^
+[go:lint] internal/tools/sources/source.go:37:2: constant name 'GO' is too short for the scope of its usage (varnamelen)
+[go:lint] 	GO      Type = "go"      // Go source type
+[go:lint] 	^
+[go:lint] internal/tools/sources/source.go:53:13: interface method Initialize must have named param for type string (inamedparam)
+[go:lint] 	Initialize(string) error
+[go:lint] 	           ^
+[go:lint] internal/tools/sources/source.go:55:10: interface method Version must have named param for type string (inamedparam)
+[go:lint] 	Version(string) error
+[go:lint] 	        ^
+[go:lint] internal/tools/sources/source.go:56:7: interface method Path must have named param for type string (inamedparam)
+[go:lint] 	Path(string, []string, string, match.Requirements) error
+[go:lint] 	     ^
+[go:lint] internal/tools/sources/source.go:57:10: interface method Install must have named param for type common.InstallData (inamedparam)
+[go:lint] 	Install(common.InstallData) (string, file.File, error)
+[go:lint] 	        ^
+[go:lint] internal/tools/sources/source.go:58:6: interface method Get must have named param for type string (inamedparam)
+[go:lint] 	Get(string) string
+[go:lint] 	    ^
+[go:lint] internal/tools/sources/source.go:63:1: Installer returns interface (github.com/idelchi/godyl/internal/tools/sources.Populater) (ireturn)
+[go:lint] func (s *Source) Installer() (Populater, error) {
+[go:lint] ^
+[go:lint] internal/tools/sources/source.go:64:2: missing cases in switch of type sources.Type: sources.GITLAB, sources.RUST (exhaustive)
+[go:lint] 	switch s.Type {
+[go:lint] 	^
+[go:lint] internal/tools/sources/source.go:76:15: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\"unknown source type: %s\", s.Type)" (err113)
+[go:lint] 		return nil, fmt.Errorf("unknown source type: %s", s.Type)
+[go:lint] 		            ^
+[go:lint] internal/tools/sources/url/url.go:28:26: unused-parameter: parameter 'name' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] func (u *URL) Initialize(name string) error {
+[go:lint]                          ^
+[go:lint] internal/tools/sources/url/url.go:38:23: unused-parameter: parameter 'name' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] func (u *URL) Version(name string) error {
+[go:lint]                       ^
+[go:lint] internal/tools/sources/url/url.go:52:9: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/tools/sources/common.Download(d github.com/idelchi/godyl/internal/tools/sources/common.InstallData) (string, github.com/idelchi/godyl/pkg/file.File, error) (wrapcheck)
+[go:lint] 	return common.Download(d)
+[go:lint] 	       ^
+[go:lint] internal/tools/strategy.go:37:1: calculated cyclomatic complexity for function Upgrade is 12, max is 10 (cyclop)
+[go:lint] func (s Strategy) Upgrade(t *Tool) error {
+[go:lint] ^
+[go:lint] internal/tools/strategy.go:63:4: error is not nil (line 61) but it returns nil (nilerr)
+[go:lint] 			return nil
+[go:lint] 			^
+[go:lint] internal/tools/strategy.go:68:11: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\"parsing version %q: failed: %q -> %q\", exe.Version, exe.Version, t.Version.Version)" (err113)
+[go:lint] 			return fmt.Errorf("parsing version %q: failed: %q -> %q", exe.Version, exe.Version, t.Version.Version)
+[go:lint] 			       ^
+[go:lint] internal/tools/strategy.go:73:11: do not define dynamic errors, use wrapped static errors instead: "fmt.Errorf(\"parsing version %q: failed: %q -> %q\", t.Version.Version, exe.Version, t.Version.Version)" (err113)
+[go:lint] 			return fmt.Errorf("parsing version %q: failed: %q -> %q", t.Version.Version, exe.Version, t.Version.Version)
+[go:lint] 			       ^
+[go:lint] internal/tools/tags.go:13:6: the methods of "Tags" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Tags []string
+[go:lint]      ^
+[go:lint] internal/tools/template.go:9:1: exported: exported method Tool.ToTemplateMap should have comment or be unexported (revive)
+[go:lint] func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
+[go:lint] ^
+[go:lint] internal/tools/template.go:28:1: exported: comment on exported method Tool.TemplateFirst should be of the form "TemplateFirst ..." (revive)
+[go:lint] // Template applies templating to various fields of the Tool struct, such as version, path, and checksum.
+[go:lint] ^
+[go:lint] internal/tools/template.go:36:10: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.Apply(field string, values any) (string, error) (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/template.go:45:11: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.ApplyAndSet(field *string, values any) (err error) (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/template.go:55:10: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.ApplyAndSet(field *string, values any) (err error) (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/template.go:59:10: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.ApplyAndSet(field *string, values any) (err error) (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/template.go:65:1: exported: exported method Tool.TemplateLast should have comment or be unexported (revive)
+[go:lint] func (t *Tool) TemplateLast() error {
+[go:lint] ^
+[go:lint] internal/tools/template.go:69:10: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.ApplyAndSet(field *string, values any) (err error) (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/template.go:75:11: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.ApplyAndSet(field *string, values any) (err error) (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/template.go:82:11: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.ApplyAndSet(field *string, values any) (err error) (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/template.go:87:6: variable name 'i' is too short for the scope of its usage (varnamelen)
+[go:lint] 	for i, cmd := range t.Source.Commands {
+[go:lint] 	    ^
+[go:lint] internal/tools/template.go:90:11: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.Apply(field string, values any) (string, error) (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/template.go:97:6: variable name 'i' is too short for the scope of its usage (varnamelen)
+[go:lint] 	for i, cmd := range t.Post {
+[go:lint] 	    ^
+[go:lint] internal/tools/template.go:100:11: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.Apply(field string, values any) (string, error) (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/template.go:107:6: variable name 'i' is too short for the scope of its usage (varnamelen)
+[go:lint] 	for i := range t.Hints {
+[go:lint] 	    ^
+[go:lint] internal/tools/template.go:109:11: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.ApplyAndSet(field *string, values any) (err error) (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/template.go:113:11: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.ApplyAndSet(field *string, values any) (err error) (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/template.go:119:11: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/match.Hint).SetWeight() error (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/template.go:124:10: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.ApplyAndSet(field *string, values any) (err error) (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/template.go:129:10: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/internal/templates.ApplyAndSet(field *string, values any) (err error) (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/tool.go:88:9: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/pkg/unmarshal.DecodeWithOptionalKnownFields(value *gopkg.in/yaml.v3.Node, out any, useKnownFields bool, input string) error (wrapcheck)
+[go:lint] 	return unmarshal.DecodeWithOptionalKnownFields(value, (*rawTool)(t), true, structs.New(t).Name())
+[go:lint] 	       ^
+[go:lint] internal/tools/tool.go:94:30: parameter name 'd' is too short for the scope of its usage (varnamelen)
+[go:lint] func (t *Tool) ApplyDefaults(d Defaults) {
+[go:lint]                              ^
+[go:lint] internal/tools/tools.go:23:11: do not define dynamic errors, use wrapped static errors instead: "errors.New(\"no data piped to stdin\")" (err113)
+[go:lint] 			return errors.New("no data piped to stdin")
+[go:lint] 			       ^
+[go:lint] internal/tools/tools.go:28:11: error returned from external package is unwrapped: sig: func github.com/idelchi/go-next-tag/pkg/stdin.Read() (string, error) (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/tools.go:34:17: G304: Potential file inclusion via variable (gosec)
+[go:lint] 		input, err := os.ReadFile(path)
+[go:lint] 		              ^
+[go:lint] internal/tools/tools.go:36:11: error returned from external package is unwrapped: sig: func os.ReadFile(name string) ([]byte, error) (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/tools.go:45:10: error returned from external package is unwrapped: sig: func gopkg.in/yaml.v3.Unmarshal(in []byte, out interface{}) (err error) (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/validate.go:19:1: exported: exported function ErrCausesEarlyReturn should have comment or be unexported (revive)
+[go:lint] func ErrCausesEarlyReturn(err error) bool {
+[go:lint] ^
+[go:lint] internal/tools/validate.go:59:10: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/pkg/file.Folder).Expand() error (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/validate.go:132:1: calculated cyclomatic complexity for function tryResolveFallback is 14, max is 10 (cyclop)
+[go:lint] func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, withoutTags []string) error {
+[go:lint] ^
+[go:lint] internal/tools/validate.go:147:10: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/tools/sources.Source).Installer() (github.com/idelchi/godyl/internal/tools/sources.Populater, error) (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/validate.go:152:10: error returned from interface method should be wrapped: sig: func (github.com/idelchi/godyl/internal/tools/sources.Populater).Initialize(string) error (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/validate.go:157:10: error returned from interface method should be wrapped: sig: func (github.com/idelchi/godyl/internal/tools/sources.Populater).Exe() error (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] internal/tools/validate.go:172:11: error returned from interface method should be wrapped: sig: func (github.com/idelchi/godyl/internal/tools/sources.Populater).Version(string) error (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/validate.go:191:11: error returned from interface method should be wrapped: sig: func (github.com/idelchi/godyl/internal/tools/sources.Populater).Path(string, []string, string, github.com/idelchi/godyl/internal/match.Requirements) error (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] internal/tools/validate.go:241:18: error returned from external package is unwrapped: sig: func (*github.com/idelchi/godyl/internal/tools/sources.Source).Installer() (github.com/idelchi/godyl/internal/tools/sources.Populater, error) (wrapcheck)
+[go:lint] 		return "", "", err
+[go:lint] 		               ^
+[go:lint] internal/tools/validate.go:256:9: error returned from interface method should be wrapped: sig: func (github.com/idelchi/godyl/internal/tools/sources.Populater).Install(github.com/idelchi/godyl/internal/tools/sources/common.InstallData) (string, github.com/idelchi/godyl/pkg/file.File, error) (wrapcheck)
+[go:lint] 	return installer.Install(data)
+[go:lint] 	       ^
+[go:lint] internal/tools/version.go:34:9: error returned from external package is unwrapped: sig: func github.com/idelchi/godyl/pkg/unmarshal.DecodeWithOptionalKnownFields(value *gopkg.in/yaml.v3.Node, out any, useKnownFields bool, input string) error (wrapcheck)
+[go:lint] 	return unmarshal.DecodeWithOptionalKnownFields(value, (*raw)(v), true, structs.New(v).Name())
+[go:lint] 	       ^
+[go:lint] internal/utils/helpers.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] package utils
+[go:lint] ^
+[go:lint] internal/version/doc.go:11:1: package-comments: package comment is detached; there should be no blank lines between it and the package statement (revive)
+[go:lint] 
+[go:lint] ^
+[go:lint] internal/version/doc.go:12:1: package-comments: should have a package comment (revive)
+[go:lint] package version
+[go:lint] ^
+[go:lint] internal/version/executable.go:1:1: ST1000: at least one file in a package should have a package comment (stylecheck)
+[go:lint] package version
+[go:lint] ^
+[go:lint] internal/version/executable.go:18:6: the methods of "Executable" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Executable struct {
+[go:lint]      ^
+[go:lint] internal/version/executable.go:35:9: G204: Subprocess launched with a potential tainted input or cmd arguments (gosec)
+[go:lint] 	cmd := exec.CommandContext(ctx, e.File.Name(), cmdArgs...)
+[go:lint] 	       ^
+[go:lint] internal/version/executable.go:49:13: Magic number: 60, in <operation> detected (mnd)
+[go:lint] 	timeout := 60 * time.Second
+[go:lint] 	           ^
+[go:lint] internal/version/executable.go:55:2: Consider pre-allocating `errs` (prealloc)
+[go:lint] 	var errs []error
+[go:lint] 	^
+[go:lint] internal/version/version.go:1:1: ST1000: at least one file in a package should have a package comment (stylecheck)
+[go:lint] package version
+[go:lint] ^
+[go:lint] internal/version/version.go:37:13: do not define dynamic errors, use wrapped static errors instead: "errors.New(\"unable to parse version from output\")" (err113)
+[go:lint] 	return "", errors.New("unable to parse version from output")
+[go:lint] 	           ^
+[go:lint] main.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] package main
+[go:lint] ^
+[go:lint] pkg/download/download.go:58:23: Magic number: 5, in <assign> detected (mnd)
+[go:lint] 		ContextTimeout:     5 * time.Minute,
+[go:lint] 		                    ^
+[go:lint] pkg/download/download.go:59:23: Magic number: 5, in <assign> detected (mnd)
+[go:lint] 		ReadTimeout:        5 * time.Minute,
+[go:lint] 		                    ^
+[go:lint] pkg/download/download.go:60:23: Magic number: 5, in <assign> detected (mnd)
+[go:lint] 		HeadTimeout:        5 * time.Minute,
+[go:lint] 		                    ^
+[go:lint] pkg/download/download.go:86:25: G402: TLS InsecureSkipVerify set true. (gosec)
+[go:lint] 				InsecureSkipVerify: true,
+[go:lint] 				                    ^
+[go:lint] pkg/download/progress.go:62:16: Error return value of `t.pool.Stop` is not checked (errcheck)
+[go:lint] 				t.pool.Stop()
+[go:lint] 				           ^
+[go:lint] pkg/download/progress0.go:12:1: exported: comment on exported type ProgressTracker0 should be of the form "ProgressTracker0 ..." (with optional leading article) (revive)
+[go:lint] // ProgressTracker implements getter.ProgressTracker interface
+[go:lint] ^
+[go:lint] pkg/download/progress0.go:18:1: exported: comment on exported function NewProgressTracker0 should be of the form "NewProgressTracker0 ..." (revive)
+[go:lint] // NewProgressTracker creates a new progress tracker instance.
+[go:lint] ^
+[go:lint] pkg/download/progress0.go:25:1: exported: comment on exported method ProgressTracker.TrackProgress0 should be of the form "TrackProgress0 ..." (revive)
+[go:lint] // TrackProgress implements getter.ProgressTracker interface.
+[go:lint] ^
+[go:lint] pkg/env/env.go:17:6: the methods of "Env" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Env map[string]string
+[go:lint]      ^
+[go:lint] pkg/env/from.go:21:2: variable name 'e' is too short for the scope of its usage (varnamelen)
+[go:lint] 	e := make(Env, len(slice))
+[go:lint] 	^
+[go:lint] pkg/env/get.go:22:9: indent-error-flow: if block ends with a return statement, so drop this else and outdent its block (move short variable declaration to its own line if necessary) (revive)
+[go:lint] 	} else {
+[go:lint] 		return value
+[go:lint] 	}
+[go:lint] pkg/env/get.go:57:2: variable name 're' is too short for the scope of its usage (varnamelen)
+[go:lint] 	re, err := regexp.Compile(pattern)
+[go:lint] 	^
+[go:lint] pkg/env/to.go:22:11: error returned from external package is unwrapped: sig: func os.Setenv(key string, value string) error (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] pkg/file/file.go:13:6: the methods of "File" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type File string
+[go:lint]      ^
+[go:lint] pkg/file/file.go:114:9: error returned from external package is unwrapped: sig: func os.Chmod(name string, mode os.FileMode) error (wrapcheck)
+[go:lint] 	return os.Chmod(f.String(), mode)
+[go:lint] 	       ^
+[go:lint] pkg/file/folder.go:14:6: the methods of "Folder" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] type Folder string
+[go:lint]      ^
+[go:lint] pkg/file/folder.go:147:51: unused-parameter: parameter 'info' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] 	err := filepath.Walk(f.Path(), func(path string, info os.FileInfo, err error) error {
+[go:lint] 	                                                 ^
+[go:lint] pkg/file/folder.go:158:11: error returned from external package is unwrapped: sig: func path/filepath.Rel(basepath string, targpath string) (string, error) (wrapcheck)
+[go:lint] 			return err
+[go:lint] 			       ^
+[go:lint] pkg/logger/logger.go:1:1: package-comments: package comment should be of the form "Package logger ..." (revive)
+[go:lint] //go:generate go run github.com/dmarkham/enumer -type=Level -output level_enumer___generated.go
+[go:lint] ^
+[go:lint] pkg/pretty/pretty.go:16:16: Magic number: 2, in <argument> detected (mnd)
+[go:lint] 	enc.SetIndent(2)
+[go:lint] 	              ^
+[go:lint] pkg/pretty/print.go:1:1: package-comments: package comment should be of the form "Package pretty ..." (revive)
+[go:lint] //nolint:forbidigo // Functions in file will print & exit for various help messages.
+[go:lint] ^
+[go:lint] pkg/unmarshal/unmarshal.go:71:10: error returned from external package is unwrapped: sig: func (*gopkg.in/yaml.v3.Encoder).Encode(v interface{}) (err error) (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] pkg/unmarshal/unmarshal.go:75:10: error returned from external package is unwrapped: sig: func (*gopkg.in/yaml.v3.Encoder).Close() (err error) (wrapcheck)
+[go:lint] 		return err
+[go:lint] 		       ^
+[go:lint] pkg/unmarshal/unmarshal.go:98:14: type assertion on error will fail on wrapped errors. Use errors.As to check for specific errors (errorlint)
+[go:lint] 	if _, ok := err.(*yaml.TypeError); !ok {
+[go:lint] 	            ^
+[go:lint] pkg/unmarshal/unmarshal.go:106:13: type assertion on error will fail on wrapped errors. Use errors.As to check for specific errors (errorlint)
+[go:lint] 	typeErr := err.(*yaml.TypeError)
+[go:lint] 	           ^
+[go:lint] pkg/unmarshal/unmarshal.go:108:6: variable name 'i' is too short for the scope of its usage (varnamelen)
+[go:lint] 	for i, err := range typeErr.Errors {
+[go:lint] 	    ^
+[go:lint] pkg/unmarshal/unmarshal.go:109:54: Magic number: 2, in <argument> detected (mnd)
+[go:lint] 		parts := strings.SplitN(err, " not found in type", 2)
+[go:lint] 		                                                   ^
+[go:lint] pkg/unmarshal/unmarshal.go:110:20: Magic number: 2, in <condition> detected (mnd)
+[go:lint] 		if len(parts) != 2 {
+[go:lint] 		                 ^

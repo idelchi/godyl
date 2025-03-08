@@ -42,6 +42,7 @@ func (u *URL) Version(name string) error {
 // Path sets the path for the URL, storing the provided name in the metadata.
 func (u *URL) Path(name string, _ []string, _ string, _ match.Requirements) error {
 	u.Data.Set("path", name)
+
 	return nil
 }
 

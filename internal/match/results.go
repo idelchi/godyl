@@ -39,6 +39,7 @@ func (m Results) ToString() string {
 		result += fmt.Sprintf("		  library: %s\n", r.Asset.Platform.Library)
 		result += fmt.Sprintf("		  extension: %s\n", r.Asset.Platform.Extension)
 	}
+
 	return result
 }
 
@@ -46,7 +47,9 @@ func (m Results) ToString() string {
 // If multiple results have the same best score, they are all returned.
 func (m Results) Best() Results {
 	var best Results
+
 	var bestScore int
+
 	for _, result := range m {
 		if result.Qualified {
 			if result.Score > bestScore {
@@ -57,6 +60,7 @@ func (m Results) Best() Results {
 			}
 		}
 	}
+
 	return best
 }
 
@@ -64,14 +68,18 @@ func (m Results) Best() Results {
 func (m Results) Status() (err error) {
 	if !m.HasQualified() {
 		err = ErrNoQualified
+
 		return fmt.Errorf("%w: \n%s%s", err, m.ToString(), "  ** check settings **")
 	} else if m.IsAmbigious() {
 		err = ErrAmbiguous
+
 		return fmt.Errorf("%w: \n%s%s", err, m.ToString(), "  ** try to tune weights **")
 	} else if !m.Success() {
 		err = ErrNoMatch
+
 		return fmt.Errorf("%w: \n%s%s", err, m.ToString(), "  ** check settings **")
 	}
+
 	return nil
 }
 
@@ -92,16 +100,19 @@ func (m Results) HasQualified() bool {
 			return true
 		}
 	}
+
 	return false
 }
 
 func (m Results) WithoutZero() Results {
 	var qualified Results
+
 	for _, result := range m {
 		if result.Score > 0 {
 			qualified = append(qualified, result)
 		}
 	}
+
 	return qualified
 }
 
@@ -113,7 +124,9 @@ func (m Results) Sorted() Results {
 		if sortedResults[i].Qualified != sortedResults[j].Qualified {
 			return sortedResults[i].Qualified
 		}
+
 		return sortedResults[i].Score > sortedResults[j].Score
 	})
+
 	return sortedResults
 }

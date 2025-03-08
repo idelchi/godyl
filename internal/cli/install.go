@@ -51,7 +51,7 @@ func NewInstallCommand(cfg *config.Config, files Embedded) *cobra.Command {
 			}
 
 			log.Info("platform:")
-			log.Info(pretty.YAML(toolDefaults.Platform))
+			log.Info("%s", pretty.YAML(toolDefaults.Platform))
 			log.Info("*** ***")
 
 			// Load tools

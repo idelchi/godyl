@@ -141,6 +141,7 @@ var ErrNotFound = errors.New("file not found")
 // It returns the first file found or an error if none are found.
 func (f Folder) FindFile(criteria ...CriteriaFunc) (File, error) {
 	var file File
+
 	var found bool
 
 	err := filepath.Walk(f.Path(), func(path string, info os.FileInfo, err error) error {

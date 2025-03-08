@@ -34,6 +34,7 @@ func (s Skip) True() (bool, string, error) {
 			}
 		}
 	}
+
 	return false, "", nil
 }
 
@@ -43,6 +44,7 @@ func (s *Skip) UnmarshalYAML(value *yaml.Node) error {
 	// If the YAML value is a scalar (e.g., just a single condition), handle it directly.
 	if value.Kind == yaml.ScalarNode {
 		*s = []Condition{{Condition: value.Value}}
+
 		return nil
 	}
 
@@ -51,6 +53,8 @@ func (s *Skip) UnmarshalYAML(value *yaml.Node) error {
 	if err != nil {
 		return err
 	}
+
 	*s = result
+
 	return nil
 }

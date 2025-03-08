@@ -70,6 +70,7 @@ func (s *Source) Installer() (Populater, error) {
 		return &s.Commands, nil
 	case GO:
 		s.Go.SetGitHub(&s.Github)
+
 		return &s.Go, nil
 	default:
 		return nil, fmt.Errorf("unknown source type: %s", s.Type)

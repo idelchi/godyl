@@ -29,6 +29,7 @@ func Print(cfg any, format string) {
 
 // NewDumpCommand creates the show command for displaying various configurations.
 func NewDumpCommand(cfg *config.Config, files Embedded) *cobra.Command {
+	// TODO(Idelchi): Maybe we need to use NewDefaultRootCommand here too, to propagate the flags properly.
 	cmd := &cobra.Command{
 		Use:     "dump [config|defaults|env|platform|tools]",
 		Aliases: []string{"show"},

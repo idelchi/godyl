@@ -46,7 +46,7 @@ func (g *GitHub) LatestVersion() (string, error) {
 
 	release, err := repository.LatestRelease()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to get latest release: %w", err)
 	}
 
 	// Store the latest release for future use
@@ -66,7 +66,7 @@ func (g *GitHub) LatestVersionFromExport() (string, error) {
 
 	release, err := repository.LatestReleaseFromExportWithDefaults()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to get latest release from export: %w", err)
 	}
 
 	// Store the latest release for future use
@@ -82,7 +82,7 @@ func (g *GitHub) LatestVersionFromExport() (string, error) {
 // MatchAssetsToRequirements matches release assets to specific file extensions and requirements,
 // returning the URL of the matched asset.
 func (g *GitHub) MatchAssetsToRequirements(
-	filters []string,
+	_ []string,
 	version string,
 	requirements match.Requirements,
 ) (string, error) {
@@ -96,7 +96,7 @@ func (g *GitHub) MatchAssetsToRequirements(
 
 		release, err = repository.GetRelease(version)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("failed to get release: %w", err)
 		}
 	} else {
 		release = g.latestStoredRelease
@@ -113,7 +113,12 @@ func (g *GitHub) MatchAssetsToRequirements(
 		return "", fmt.Errorf("no assets found for requirements: %v", requirements)
 	}
 
-	return assets.FilterByName(matches[0].Asset.Name)[0].URL, matches.Status()
+	err := matches.Status()
+	if err != nil {
+		err = fmt.Errorf("status: %w", err)
+	}
+
+	return assets.FilterByName(matches[0].Asset.Name)[0].URL, err
 }
 
 // PopulateOwnerAndRepo sets the Owner and Repo fields based on the given name.

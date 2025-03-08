@@ -14,7 +14,10 @@ import (
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/logger"
 )
+
+const osWindows = "windows"
 
 // UpdateStrategy defines how updates are applied.
 type UpdateStrategy string
@@ -49,6 +52,7 @@ type Updater struct {
 
 	downloader ToolDownloader
 	replacer   BinaryReplacer
+	log        *logger.Logger
 }
 
 // NewUpdater creates a new Updater with the specified strategy and defaults.
@@ -59,6 +63,7 @@ func NewUpdater(strategy tools.Strategy, defaults tools.Defaults, noVerifySSL bo
 		NoVerifySSL: noVerifySSL,
 		downloader:  &DefaultDownloader{},
 		replacer:    &DefaultReplacer{},
+		log:         logger.New(logger.INFO),
 	}
 }
 
@@ -111,18 +116,18 @@ func (u *Updater) Update(version string) error {
 // shouldUpdate determines if an update should be performed based on the strategy and versions.
 func (u *Updater) shouldUpdate(tool tools.Tool, currentVersion string) bool {
 	if u.Strategy == tools.Force {
-		fmt.Println("Forcing update...")
+		u.log.Info("Forcing update...")
 
 		return true
 	}
 
 	if tool.Version.Version == currentVersion {
-		fmt.Printf("godyl (%v) is already up-to-date\n", currentVersion)
+		u.log.Info("godyl (%v) is already up-to-date", currentVersion)
 
 		return false
 	}
 
-	fmt.Printf("Update requested from %q -> %q\n", currentVersion, tool.Version.Version)
+	u.log.Info("Update requested from %q -> %q", currentVersion, tool.Version.Version)
 
 	return true
 }
@@ -138,7 +143,9 @@ func (u *Updater) performUpdate(tool tools.Tool) error {
 	// Clean up the temporary directory when done
 	defer func() {
 		folder := file.Folder(output)
-		folder.Remove()
+		if err := folder.Remove(); err != nil {
+			u.log.Warn("Failed to remove temporary folder: %v", err)
+		}
 	}()
 
 	// Replace the existing godyl binary with the newly downloaded version
@@ -147,25 +154,29 @@ func (u *Updater) performUpdate(tool tools.Tool) error {
 	}
 
 	// Perform platform-specific cleanup
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == osWindows {
 		if err := winCleanup(u.Template); err != nil {
 			return fmt.Errorf("issuing delete command: %w", err)
 		}
 	}
 
-	fmt.Println("Godyl updated successfully")
+	u.log.Info("Godyl updated successfully")
 
 	return nil
 }
 
 // Replace applies the new godyl binary by replacing the current executable with the downloaded one.
 func (u *Updater) Replace(path string) error {
-	return u.replacer.Replace(path)
+	if err := u.replacer.Replace(path); err != nil {
+		return fmt.Errorf("replacing binary: %w", err)
+	}
+
+	return nil
 }
 
 // Replace implements the BinaryReplacer interface.
 func (r *DefaultReplacer) Replace(path string) error {
-	body, err := os.Open(path)
+	body, err := os.Open(filepath.Clean(path))
 	if err != nil {
 		return fmt.Errorf("opening file %q: %w", path, err)
 	}
@@ -173,12 +184,13 @@ func (r *DefaultReplacer) Replace(path string) error {
 
 	options := update.Options{}
 
-	if runtime.GOOS == "windows" {
-		// options.OldSavePath = filepath.Join(filepath.Dir(path), ".godyl.exe.old")
-	}
+	// Removed empty block - uncomment if needed in the future
+	// if runtime.GOOS == osWindows {
+	//	options.OldSavePath = filepath.Join(filepath.Dir(path), ".godyl.exe.old")
+	// }
 
 	if err := update.Apply(body, options); err != nil {
-		return err
+		return fmt.Errorf("applying update: %w", err)
 	}
 
 	return nil
@@ -186,7 +198,12 @@ func (r *DefaultReplacer) Replace(path string) error {
 
 // Get downloads the tool based on its source, placing it in a temporary directory, and returns the output path.
 func (u *Updater) Get(tool tools.Tool) (string, error) {
-	return u.downloader.Download(tool)
+	path, err := u.downloader.Download(tool)
+	if err != nil {
+		return "", fmt.Errorf("downloading tool: %w", err)
+	}
+
+	return path, nil
 }
 
 // Download implements the ToolDownloader interface.
@@ -195,7 +212,7 @@ func (d *DefaultDownloader) Download(tool tools.Tool) (string, error) {
 	var dir file.Folder
 
 	// For Windows, get the directory of the current executable
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == osWindows {
 		current, err := os.Executable()
 		if err != nil {
 			return "", fmt.Errorf("getting current executable: %w", err)
@@ -223,7 +240,8 @@ func (d *DefaultDownloader) Download(tool tools.Tool) (string, error) {
 		return "", fmt.Errorf("downloading tool: %w: %s: %s", err, output, msg)
 	}
 
-	fmt.Printf("Downloading %q from %q\n", tool.Name, tool.Path)
+	// Using logger would be ideal, but DefaultDownloader doesn't have access to it
+	// For now, we'll just return the output path and let the caller log anything needed
 
 	return tool.Output, nil
 }

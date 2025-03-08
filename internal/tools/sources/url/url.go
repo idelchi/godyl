@@ -25,7 +25,7 @@ func (u *URL) Get(attribute string) string {
 }
 
 // Initialize prepares the URL based on the given name. (Ineffective).
-func (u *URL) Initialize(name string) error {
+func (u *URL) Initialize(_ string) error {
 	return nil
 }
 
@@ -35,7 +35,7 @@ func (u *URL) Exe() error {
 }
 
 // Version sets the version for the URL. (Ineffective).
-func (u *URL) Version(name string) error {
+func (u *URL) Version(_ string) error {
 	return nil
 }
 

@@ -16,6 +16,9 @@ import (
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
+// ErrToolsFailedToInstall is returned when one or more tools failed to install.
+var ErrToolsFailedToInstall = errors.New("tools failed to install")
+
 // ToolResult holds the result of processing a tool.
 type ToolResult struct {
 	Tool  *tools.Tool
@@ -95,9 +98,10 @@ func (tp *ToolProcessor) Process(tags, withoutTags []string) error {
 	}
 
 	// Wait for all tool processing to complete
-	if err := tp.concurrencyManager.errGroup.Wait(); err != nil {
-		return fmt.Errorf("processing tools: %w", err)
-	}
+	// if err := tp.concurrencyManager.errGroup.Wait(); err != nil {
+	// 	return fmt.Errorf("processing tools: %w", err)
+	// }
+	tp.concurrencyManager.errGroup.Wait()
 
 	// Close the result channel and wait for result collection to complete
 	close(tp.concurrencyManager.resultCh)
@@ -105,7 +109,7 @@ func (tp *ToolProcessor) Process(tags, withoutTags []string) error {
 
 	// Check if any tools failed to install
 	if tp.resultHandler.HasErrors() {
-		return errors.New("one or more tools failed to install")
+		return fmt.Errorf("one or more %w", ErrToolsFailedToInstall)
 	}
 
 	return nil
@@ -141,7 +145,7 @@ func (tp *ToolProcessor) processTool(tool *tools.Tool, tags, withoutTags []strin
 	if err := tool.Resolve(tags, withoutTags); err != nil {
 		tp.concurrencyManager.resultCh <- ToolResult{Tool: tool, Err: err}
 
-		return nil
+		return fmt.Errorf("resolving tool %q: %w", tool.Name, err)
 	}
 
 	// Handle dry run
@@ -161,7 +165,7 @@ func (tp *ToolProcessor) processTool(tool *tools.Tool, tags, withoutTags []strin
 	tp.concurrencyManager.resultCh <- ToolResult{Tool: tool, Found: found, Err: err, Msg: msg}
 
 	if err != nil {
-		return nil
+		return fmt.Errorf("downloading tool %q: %w", tool.Name, err)
 	}
 
 	// Execute post-installation commands if any exist

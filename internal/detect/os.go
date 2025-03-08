@@ -28,7 +28,7 @@ func (p *Platform) Detect() error {
 
 	// Determine the OS from runtime information
 	if err := os.Parse(info.OS); err != nil {
-		return err
+		return fmt.Errorf("parsing OS: %w", err)
 	}
 
 	// Determine the Linux distribution from system information
@@ -39,7 +39,7 @@ func (p *Platform) Detect() error {
 
 	// Determine the architecture from the system's kernel architecture
 	if err := arch.Parse(info.KernelArch); err != nil {
-		return err
+		return fmt.Errorf("parsing architecture: %w", err)
 	}
 
 	if arch.Is64Bit() && os.Type == "linux" {

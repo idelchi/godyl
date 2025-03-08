@@ -5,8 +5,10 @@ import (
 	"path/filepath"
 )
 
+// Env represents the environment variables for a Rust binary.
 type Env map[string]string
 
+// ToSlice converts the environment variables to a slice.
 func (e Env) ToSlice() []string {
 	var env []string
 	for k, v := range e {
@@ -16,12 +18,14 @@ func (e Env) ToSlice() []string {
 	return env
 }
 
+// Append appends the given environment variables to the current environment.
 func (e *Env) Append(env Env) {
 	for k, v := range env {
 		(*e)[k] = v
 	}
 }
 
+// Default sets the default environment variables for a Rust binary.
 func (e *Env) Default(dir string) {
 	*e = Env{
 		"CARGO_HOME":  filepath.Join(dir, ".cargo"),

@@ -42,10 +42,10 @@ func newDumpConfigCommand(cfg *config.Config, defaultsData []byte) *cobra.Comman
 		Use:   "config",
 		Short: "Dump the current configuration",
 		Long:  "Display the current configuration settings",
-		PreRunE: func(_ *cobra.Command, args []string) error {
+		PreRunE: func(_ *cobra.Command, _ []string) error {
 			return cobraext.Validate(cfg)
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			defs := defaults.Defaults{}
 			if err := defs.Load(cfg.Defaults.Name(), defaultsData); err != nil {
 				return fmt.Errorf("error loading defaults: %w", err)
@@ -67,7 +67,7 @@ func newDumpDefaultsCommand(cfg *config.Config, defaultsData []byte) *cobra.Comm
 		Use:   "defaults",
 		Short: "Dump the default configuration",
 		Long:  "Display the default configuration settings",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			toolDefaults := tools.Defaults{}
 			if err := defaults.LoadDefaults(&toolDefaults, cfg.Defaults.Name(), defaultsData, *cfg); err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
@@ -86,7 +86,7 @@ func newDumpEnvCommand() *cobra.Command {
 		Use:   "env",
 		Short: "Dump environment variables",
 		Long:  "Display environment variables that affect the application",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			pretty.PrintYAMLMasked(env.FromEnv())
 
 			return nil
@@ -100,7 +100,7 @@ func newDumpPlatformCommand() *cobra.Command {
 		Use:   "platform",
 		Short: "Dump platform information",
 		Long:  "Display information about the current platform (OS, architecture, etc.)",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			p := detect.Platform{}
 			if err := p.Detect(); err != nil {
 				return fmt.Errorf("detecting platform: %w", err)
@@ -119,7 +119,7 @@ func newDumpToolsCommand(toolsData []byte) *cobra.Command {
 		Use:   "tools",
 		Short: "Dump available tools",
 		Long:  "Display information about available tools",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			pretty.PrintYAML(utils.PrintYAMLBytes(toolsData))
 
 			return nil

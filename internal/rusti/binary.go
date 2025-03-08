@@ -16,14 +16,17 @@ import (
 	"github.com/idelchi/godyl/pkg/file"
 )
 
+// Binary represents a Rust binary.
 type Binary struct {
 	File file.File
 	Dir  file.Folder
 	Env  Env
 }
 
+// mu is used to lock the creation of the Rust binary.
 var mu sync.Mutex
 
+// New creates a new Rust binary.
 func New() (binary Binary, err error) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -44,9 +47,9 @@ func New() (binary Binary, err error) {
 		}
 
 		return binary, nil
-	} else {
-		binary.Dir = dir
 	}
+
+	binary.Dir = dir
 
 	version, err := binary.Latest()
 	if err != nil {
@@ -68,6 +71,7 @@ func New() (binary Binary, err error) {
 	return binary, nil
 }
 
+// Find searches for the Rust binary in the system PATH and the specified paths.
 func (b *Binary) Find(paths ...string) (file.File, error) {
 	binary, err := exec.LookPath("rustc")
 	if err != nil {
@@ -85,6 +89,7 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 	return file.NewFile(binary), nil
 }
 
+// Download downloads the Rust binary from the official website.
 func (b *Binary) Download(target string) error {
 	url := "https://static.rust-lang.org/dist/" + target
 
@@ -108,6 +113,7 @@ func (b *Binary) Download(target string) error {
 	return nil
 }
 
+// CleanUp removes the temporary directory associated with the binary.
 func (b *Binary) CleanUp() error {
 	if !b.Dir.IsSet() {
 		return nil
@@ -122,6 +128,7 @@ func (b *Binary) CleanUp() error {
 	return nil
 }
 
+// Latest returns the latest stable version of Rust.
 func (b Binary) Latest() (string, error) {
 	client := resty.New()
 
@@ -141,20 +148,21 @@ func (b Binary) Latest() (string, error) {
 	return "", errors.New("no version found")
 }
 
+// MatchTarget returns the target file name for the Rust binary.
 func (b Binary) MatchTarget(version string) (string, error) {
-	os := runtime.GOOS
-	arch := runtime.GOARCH
+	operatingSystem := runtime.GOOS
+	architecture := runtime.GOARCH
 
-	switch os {
+	switch operatingSystem {
 	case "windows":
-		arch = "pc-windows-msvc"
+		architecture = "pc-windows-msvc"
 	case "darwin":
-		os = "apple-darwin"
+		operatingSystem = "apple-darwin"
 	case "linux":
-		os = "unknown-linux-gnu"
+		operatingSystem = "unknown-linux-gnu"
 	default:
-		return "", fmt.Errorf("unsupported OS: %s", os)
+		return "", fmt.Errorf("unsupported OS: %s", operatingSystem)
 	}
 
-	return fmt.Sprintf("rust-%s-%s-%s.tar.gz", version, arch, os), nil
+	return fmt.Sprintf("rust-%s-%s-%s.tar.gz", version, architecture, operatingSystem), nil
 }

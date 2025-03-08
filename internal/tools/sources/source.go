@@ -72,6 +72,8 @@ func (s *Source) Installer() (Populater, error) {
 		s.Go.SetGitHub(&s.Github)
 
 		return &s.Go, nil
+	case GITLAB, RUST:
+		return nil, fmt.Errorf("source type %s is not yet supported", s.Type)
 	default:
 		return nil, fmt.Errorf("unknown source type: %s", s.Type)
 	}

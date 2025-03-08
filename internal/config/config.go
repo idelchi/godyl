@@ -114,7 +114,7 @@ type Config struct {
 }
 
 // Display returns the value of the Show field.
-func (c Config) Display() bool {
+func (c *Config) Display() bool {
 	return c.Show
 }
 

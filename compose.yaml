@@ -56,7 +56,7 @@ services:
 
   cc:
     build:
-      dockerfile: Dockerfile.cc
+      dockerfile: Dockerfile.claudecode
     pull_policy: if_not_present
     container_name: cc
     hostname: godyccl

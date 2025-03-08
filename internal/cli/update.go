@@ -16,7 +16,7 @@ func NewUpdateCommand(cfg *config.Config, files Embedded) *cobra.Command {
 		Aliases: []string{"upgrade", "up"},
 		Short:   "Update the application",
 		Long:    "Update the godyl application to the latest version",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			appUpdater := updater.Updater{
 				Strategy:    cfg.Update.Strategy,
 				NoVerifySSL: cfg.NoVerifySSL,

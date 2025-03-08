@@ -43,7 +43,7 @@ func (gt Targets) FilterByArch(arch string) Targets {
 
 // Match attempts to find the best matching file from the Targets collection based on the platform detected
 // by the system. It returns a list of matched results or an error if no suitable match is found.
-func (t Targets) Match() (match.Results, error) {
+func (gt Targets) Match() (match.Results, error) {
 	platform := detect.Platform{}
 	if err := platform.Detect(); err != nil {
 		return nil, fmt.Errorf("detecting platform: %w", err)
@@ -51,11 +51,11 @@ func (t Targets) Match() (match.Results, error) {
 
 	var assets match.Assets
 
-	for _, tt := range t.Files {
+	for _, tt := range gt.Files {
 		asset := match.Asset{Name: tt.FileName}
 
-		asset.Platform.OS.Parse(tt.OS)
-		asset.Platform.Architecture.Parse(tt.Arch)
+		asset.Platform.OS.Parse(tt.OS)             //nolint:errcheck
+		asset.Platform.Architecture.Parse(tt.Arch) //nolint:errcheck
 
 		assets = append(assets, asset)
 	}
@@ -73,12 +73,15 @@ func (t Targets) Match() (match.Results, error) {
 
 	switch {
 	case !matches.HasQualified():
-		err = errors.New("no qualified file found")
+		err = fmt.Errorf("%w: no qualified file found", ErrMatch)
 	case matches.IsAmbigious():
-		err = errors.New("ambiguous file selection")
+		err = fmt.Errorf("%w: ambiguous file selection", ErrMatch)
 	case !matches.Success():
-		err = errors.New("no matching file found")
+		err = fmt.Errorf("%w: no matching file found", ErrMatch)
 	}
 
 	return matches, err
 }
+
+// ErrMatch is returned when no suitable match is found.
+var ErrMatch = errors.New("matching")

@@ -29,15 +29,15 @@ type Results []Result
 // ToString converts the results into a formatted string for output.
 func (m Results) ToString() string {
 	var result string
-	for _, r := range m {
-		result += fmt.Sprintf("	- %s\n", r.Asset.Name)
-		result += fmt.Sprintf("		score: %d\n", r.Score)
-		result += fmt.Sprintf("		qualified: %t\n", r.Qualified)
+	for _, res := range m {
+		result += fmt.Sprintf("	- %s\n", res.Asset.Name)
+		result += fmt.Sprintf("		score: %d\n", res.Score)
+		result += fmt.Sprintf("		qualified: %t\n", res.Qualified)
 		result += "		detected as:\n"
-		result += fmt.Sprintf("		  os: %s\n", r.Asset.Platform.OS)
-		result += fmt.Sprintf("		  arch: %s\n", r.Asset.Platform.Architecture)
-		result += fmt.Sprintf("		  library: %s\n", r.Asset.Platform.Library)
-		result += fmt.Sprintf("		  extension: %s\n", r.Asset.Platform.Extension)
+		result += fmt.Sprintf("		  os: %s\n", res.Asset.Platform.OS)
+		result += fmt.Sprintf("		  arch: %v\n", res.Asset.Platform.Architecture)
+		result += fmt.Sprintf("		  library: %s\n", res.Asset.Platform.Library)
+		result += fmt.Sprintf("		  extension: %s\n", res.Asset.Platform.Extension)
 	}
 
 	return result
@@ -104,6 +104,7 @@ func (m Results) HasQualified() bool {
 	return false
 }
 
+// WithoutZero returns a new instance of Results without zero scores.
 func (m Results) WithoutZero() Results {
 	var qualified Results
 

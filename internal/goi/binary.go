@@ -23,13 +23,14 @@ type Binary struct {
 	noVerifySSL bool
 }
 
-var mu sync.Mutex
+// mutex is a mutex to prevent concurrent binary creation.
+var mutex sync.Mutex // nolint:gochecknoglobals 		// TODO(Idelchi): Address this later.
 
 // New creates a new Binary instance, setting up the directory, downloading the latest release if necessary,
 // and initializing environment variables. It ensures thread-safe execution by using a mutex lock.
 func New(noVerifySSL bool) (binary Binary, err error) {
-	mu.Lock()
-	defer mu.Unlock()
+	mutex.Lock()
+	defer mutex.Unlock()
 
 	binary.noVerifySSL = noVerifySSL
 
@@ -49,9 +50,9 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 		}
 
 		return binary, nil
-	} else {
-		binary.Dir = dir
 	}
+
+	binary.Dir = dir
 
 	release, err := binary.Latest()
 	if err != nil {
@@ -135,18 +136,18 @@ func (b *Binary) CleanUp() error {
 
 // Latest fetches the latest Go release information from the official Go download page.
 // It returns the most recent release or an error if the process fails.
-func (b Binary) Latest() (Release, error) {
+func (b *Binary) Latest() (Release, error) {
 	client := resty.New()
 
 	resp, err := client.R().Get("https://go.dev/dl/?mode=json")
 	if err != nil {
-		return Release{}, err
+		return Release{}, fmt.Errorf("fetching latest Go release: %w", err)
 	}
 
 	var releases []Release
 
 	if err := json.Unmarshal(resp.Body(), &releases); err != nil {
-		return Release{}, err
+		return Release{}, fmt.Errorf("unmarshalling Go releases: %w", err)
 	}
 
 	if len(releases) > 0 {

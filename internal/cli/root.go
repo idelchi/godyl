@@ -32,21 +32,21 @@ type Embedded struct {
 // NewRootCmd creates the root command with common configuration.
 // It sets up environment variable binding and flag handling.
 func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Command, error) {
-	e := Embedded{}
+	embedded := Embedded{}
 
 	var err error
 
-	e.Defaults, err = embeds.ReadFile("defaults.yml")
+	embedded.Defaults, err = embeds.ReadFile("defaults.yml")
 	if err != nil {
 		return nil, fmt.Errorf("reading defaults file: %w", err)
 	}
 
-	e.Tools, err = embeds.ReadFile("tools.yml")
+	embedded.Tools, err = embeds.ReadFile("tools.yml")
 	if err != nil {
 		return nil, fmt.Errorf("reading tools file: %w", err)
 	}
 
-	e.Template, err = embeds.ReadFile("internal/core/updater/scripts/cleanup.bat.template")
+	embedded.Template, err = embeds.ReadFile("internal/core/updater/scripts/cleanup.bat.template")
 	if err != nil {
 		return nil, fmt.Errorf("reading cleanup template: %w", err)
 	}
@@ -54,7 +54,7 @@ func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Com
 	factory := &CommandFactory{
 		cfg:     cfg,
 		version: version,
-		files:   e,
+		files:   embedded,
 	}
 
 	return factory.CreateRootCommand(), nil
@@ -71,7 +71,8 @@ func (f *CommandFactory) CreateRootCommand() *cobra.Command {
 
 	root.Use = "godyl [command]"
 	root.Short = "Asset downloader for tools"
-	root.Long = "godyl helps with batch-downloading and installing statically compiled binaries from GitHub releases, URLs, and Go projects."
+	root.Long = "godyl helps with batch-downloading and installing statically compiled binaries from GitHub releases, " +
+		"URLs, and Go projects."
 
 	// Add subcommands
 	f.addSubcommands(root)
@@ -87,7 +88,7 @@ func (f *CommandFactory) CreateRootCommand() *cobra.Command {
 
 // loadDotEnvFunc returns a function that loads environment variables from a .env file.
 func (f *CommandFactory) loadDotEnvFunc() func(*cobra.Command, []string) error {
-	return func(cmd *cobra.Command, args []string) error {
+	return func(_ *cobra.Command, _ []string) error {
 		if err := utils.LoadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
 			if config.IsSet("env-file") {
 				return fmt.Errorf("loading .env file: %w", err)

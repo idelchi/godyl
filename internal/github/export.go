@@ -2,6 +2,7 @@ package github
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -22,15 +23,18 @@ func DefaultExportConfig() ExportConfig {
 	}
 }
 
-var exportMutex sync.Mutex
+// exportMutex is a mutex to prevent concurrent writes to the export file.
+var exportMutex sync.Mutex //nolint:gochecknoglobals
 
 // Export retrieves the latest release for the repository and stores its assets in a JSON file.
 func (g *Repository) Export(release *Release, config ExportConfig) error {
 	exportMutex.Lock()
 	defer exportMutex.Unlock()
 
+	const permsDir = 0o750
+
 	// Ensure the directory exists
-	if err := os.MkdirAll(filepath.Dir(config.ExportPath), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(config.ExportPath), permsDir); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 
@@ -58,7 +62,9 @@ func (g *Repository) Export(release *Release, config ExportConfig) error {
 		return fmt.Errorf("failed to marshal data: %w", err)
 	}
 
-	if err := os.WriteFile(config.ExportPath, jsonData, 0o644); err != nil {
+	const permsFile = 0o600
+
+	if err := os.WriteFile(config.ExportPath, jsonData, permsFile); err != nil {
 		return fmt.Errorf("failed to write file: %w", err)
 	}
 
@@ -87,7 +93,7 @@ func (g *Repository) LatestReleaseFromExport(config ExportConfig) (*Release, err
 	assets, ok := data[key]
 
 	if !ok {
-		return nil, fmt.Errorf("no data found for repository %s", key)
+		return nil, fmt.Errorf("%w: no data found for repository %s", ErrExporter, key)
 	}
 
 	release := &Release{
@@ -101,3 +107,6 @@ func (g *Repository) LatestReleaseFromExport(config ExportConfig) (*Release, err
 func (g *Repository) LatestReleaseFromExportWithDefaults() (*Release, error) {
 	return g.LatestReleaseFromExport(DefaultExportConfig())
 }
+
+// ErrExporter is an error returned when an exporter operation fails.
+var ErrExporter = errors.New("exporter error")

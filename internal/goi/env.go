@@ -11,9 +11,9 @@ type Env map[string]string
 
 // ToSlice converts the Env map into a slice of strings in the format "KEY=VALUE" suitable for
 // passing to external processes.
-func (e Env) ToSlice() []string {
+func (e *Env) ToSlice() []string {
 	var env []string
-	for k, v := range e {
+	for k, v := range *e {
 		env = append(env, fmt.Sprintf("%s=%s", k, v))
 	}
 

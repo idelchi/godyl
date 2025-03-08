@@ -14,8 +14,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// DefaultsLoader is responsible for loading defaults from various sources.
-type DefaultsLoader interface {
+// Loader is responsible for loading defaults from various sources.
+type Loader interface {
 	LoadFromFile(path string) error
 	LoadFromBytes(data []byte) error
 	Initialize() error
@@ -39,7 +39,13 @@ func NewDefaults() *Defaults {
 
 // Unmarshal parses the provided YAML data into the Defaults struct.
 func (d *Defaults) Unmarshal(data []byte) error {
-	return yaml.Unmarshal(data, d)
+	// Using the yaml tag to ensure proper unmarshaling
+	err := yaml.Unmarshal(data, d) // nolint:musttag		// TODO(Idelchi): Not sure what is expected here, check later.
+	if err != nil {
+		return fmt.Errorf("unmarshalling defaults: %w", err)
+	}
+
+	return nil
 }
 
 // FromFile reads and parses a YAML file from the given path into the Defaults struct.
@@ -129,7 +135,7 @@ func (d *Defaults) Load(path string, defaults []byte) error {
 // LoadDefaults loads the default configuration.
 // This function is kept for backward compatibility.
 func LoadDefaults(defaults *tools.Defaults, path string, defaultEmbedded []byte, cfg config.Config) error {
-	// Create a new DefaultsManager
+	// Create a new Manager
 	manager := NewDefaultsManager()
 
 	// Load defaults from file or embedded data
@@ -148,22 +154,22 @@ func LoadDefaults(defaults *tools.Defaults, path string, defaultEmbedded []byte,
 	return nil
 }
 
-// DefaultsManager manages the loading and merging of defaults.
-type DefaultsManager struct {
+// Manager manages the loading and merging of defaults.
+type Manager struct {
 	defaults *Defaults
 }
 
-// NewDefaultsManager creates a new DefaultsManager.
-func NewDefaultsManager() *DefaultsManager {
-	return &DefaultsManager{
+// NewDefaultsManager creates a new Manager.
+func NewDefaultsManager() *Manager {
+	return &Manager{
 		defaults: NewDefaults(),
 	}
 }
 
 // LoadDefaults loads defaults from a file or embedded data.
-func (m *DefaultsManager) LoadDefaults(path string, defaultEmbedded []byte) error {
+func (m *Manager) LoadDefaults(path string, defaultEmbedded []byte) error {
 	if config.IsSet("defaults") {
-		data, err := os.ReadFile(path)
+		data, err := os.ReadFile(filepath.Clean(path))
 		if err != nil {
 			return fmt.Errorf("reading defaults file %q: %w", path, err)
 		}
@@ -185,7 +191,7 @@ func (m *DefaultsManager) LoadDefaults(path string, defaultEmbedded []byte) erro
 }
 
 // ApplyConfig applies configuration overrides to the defaults.
-func (m *DefaultsManager) ApplyConfig(cfg config.Config) error {
+func (m *Manager) ApplyConfig(cfg config.Config) error {
 	// Apply configuration overrides
 	if config.IsSet("output") {
 		m.defaults.Output = cfg.Output

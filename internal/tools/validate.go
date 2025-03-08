@@ -16,6 +16,7 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
+// ErrCausesEarlyReturn checks if the error should cause early return.
 func ErrCausesEarlyReturn(err error) bool {
 	return errors.Is(ErrAlreadyExists, err) ||
 		errors.Is(ErrUpToDate, err) ||
@@ -56,7 +57,7 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	// Expand and set the output folder path.
 	output := file.Folder(t.Output)
 	if err := output.Expand(); err != nil {
-		return err
+		return fmt.Errorf("expanding output path: %w", err)
 	}
 
 	t.Output = output.Path()

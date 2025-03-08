@@ -14,7 +14,7 @@ import (
 type Commands []Command
 
 // Get retrieves a specific attribute of the commands.
-func (c *Commands) Get(attribute string) string {
+func (c *Commands) Get(_ string) string {
 	if len(*c) == 0 {
 		return ""
 	}
@@ -65,7 +65,7 @@ func (c *Commands) Version(version string) error {
 }
 
 // Path sets up the path for the commands, using the provided parameters.
-func (c *Commands) Path(path string, patterns []string, version string, requirements match.Requirements) error {
+func (c *Commands) Path(path string, patterns []string, _ string, _ match.Requirements) error {
 	if path == "" {
 		return nil
 	}
@@ -78,9 +78,9 @@ func (c *Commands) Path(path string, patterns []string, version string, requirem
 
 // Combined returns all commands in the Commands slice as a single Command,
 // with each command joined by semicolons.
-func (c Commands) Combined() Command {
-	stringCommands := make([]string, len(c))
-	for i, cmd := range c {
+func (c *Commands) Combined() Command {
+	stringCommands := make([]string, len(*c))
+	for i, cmd := range *c {
 		stringCommands[i] = string(cmd)
 	}
 
@@ -89,7 +89,7 @@ func (c Commands) Combined() Command {
 
 // Install runs the combined commands for installation using the provided InstallData,
 // captures the output, and returns it alongside any errors or found file information.
-func (c Commands) Install(d common.InstallData) (output string, found file.File, err error) {
+func (c *Commands) Install(d common.InstallData) (output string, found file.File, err error) {
 	cmd := c.Combined()
 
 	// Execute the combined command

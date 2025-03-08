@@ -60,7 +60,7 @@ func (s Strategy) Upgrade(t *Tool) error {
 
 		if err := exe.ParseVersion(parser); err != nil {
 			// Force an upgrade if the version cannot be parsed.
-			return nil
+			return nil //nolint:nilerr
 		}
 
 		source := ToVersion(exe.Version)

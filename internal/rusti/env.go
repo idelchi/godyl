@@ -10,7 +10,7 @@ type Env map[string]string
 
 // ToSlice converts the environment variables to a slice.
 func (e Env) ToSlice() []string {
-	var env []string
+	env := make([]string, 0, len(e))
 	for k, v := range e {
 		env = append(env, fmt.Sprintf("%s=%s", k, v))
 	}

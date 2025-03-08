@@ -71,6 +71,8 @@ jobs:
     needs: info
     permissions:
       contents: write
+    with:
+      config: .devenv/.goreleaser.yaml
 # https://github.com/skills/release-based-workflow
 # https://birtony.medium.com/setting-up-automated-release-workflow-with-github-actions-628dbca2446e
 # https://rangle.io/blog/release-process-github-actions

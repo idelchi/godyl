@@ -101,7 +101,7 @@ func (tp *ToolProcessor) Process(tags, withoutTags []string) error {
 	// if err := tp.concurrencyManager.errGroup.Wait(); err != nil {
 	// 	return fmt.Errorf("processing tools: %w", err)
 	// }
-	tp.concurrencyManager.errGroup.Wait()
+	tp.concurrencyManager.errGroup.Wait() //nolint:errcheck	// Error is checked further down instead
 
 	// Close the result channel and wait for result collection to complete
 	close(tp.concurrencyManager.resultCh)

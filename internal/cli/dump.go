@@ -16,7 +16,7 @@ import (
 )
 
 // NewDumpCommand creates the show command for displaying various configurations.
-func NewDumpCommand(cfg *config.Config, emb EmbeddedFiles) *cobra.Command {
+func NewDumpCommand(cfg *config.Config, files Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "dump [config|defaults|env|platform|tools]",
 		Aliases: []string{"show"},
@@ -26,11 +26,11 @@ func NewDumpCommand(cfg *config.Config, emb EmbeddedFiles) *cobra.Command {
 
 	// Add subcommands
 	cmd.AddCommand(
-		newDumpConfigCommand(cfg, emb.Defaults),
-		newDumpDefaultsCommand(cfg, emb.Defaults),
+		newDumpConfigCommand(cfg, files.Defaults),
+		newDumpDefaultsCommand(cfg, files.Defaults),
 		newDumpEnvCommand(),
 		newDumpPlatformCommand(),
-		newDumpToolsCommand(emb.Tools),
+		newDumpToolsCommand(files.Tools),
 	)
 
 	return cmd

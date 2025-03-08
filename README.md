@@ -146,6 +146,12 @@ Download a single tool:
 godyl download idelchi/godyl --output ./bin
 ```
 
+Download multiple tools:
+
+```sh
+godyl download idelchi/godyl idelchi/gogen idelchi/wslint
+```
+
 When using the `download` command, the `mode` will be set to `extract` by default.
 
 Override `os` and `arch` to download a specific binary:
@@ -157,7 +163,7 @@ godyl download idelchi/godyl --os linux --arch amd64 --output ./bin
 You can also download tools from direct URLs:
 
 ```sh
-godyl download https://example.com/path/to/tool.tar.gz --output ./bin
+godyl download "https://github.com/idelchi/go-next-tag/releases/download/v0.0.1/go-next-tag_{{ .OS }}_{{ .ARCH }}.tar.gz" --output ./bin
 ```
 
 ### Dump Command

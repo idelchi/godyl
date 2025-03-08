@@ -1,17 +1,13 @@
 package updater
 
 import (
-	"embed"
 	"fmt"
+	"html/template"
 	"os"
 	"os/exec"
-	"text/template"
 
 	"github.com/idelchi/godyl/pkg/file"
 )
-
-//go:embed scripts/*
-var cleanupFiles embed.FS
 
 type cleanupData struct {
 	OldBinary string
@@ -21,7 +17,7 @@ type cleanupData struct {
 }
 
 // winCleanup handles Windows-specific cleanup after an update.
-func winCleanup() error {
+func winCleanup(cleanupTemplate []byte) error {
 	fmt.Println("Issuing a delete command for the old godyl binary")
 
 	exePath, err := os.Executable()
@@ -42,7 +38,7 @@ func winCleanup() error {
 	fmt.Printf("Batch file stored in: %s\n", batchFile.Path())
 
 	// Read and parse the template
-	tmpl, err := template.ParseFS(cleanupFiles, "scripts/cleanup.bat.template")
+	tmpl, err := template.New("cleanup").Parse(string(cleanupTemplate))
 	if err != nil {
 		return fmt.Errorf("parsing cleanup template: %w", err)
 	}

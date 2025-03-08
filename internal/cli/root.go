@@ -2,6 +2,7 @@
 package cli
 
 import (
+	"embed"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -14,43 +15,47 @@ import (
 	"github.com/idelchi/gogen/pkg/cobraext"
 )
 
-// EmbeddedFiles struct to hold the embedded default and tools configuration.
-type EmbeddedFiles struct {
-	// Defaults holds the embedded default configuration.
-	Defaults []byte
-
-	// Tools holds the embedded tools configuration.
-	Tools []byte
-
-	// Embeds holds static template scripts.
-	Embeds interface{}
-}
-
 // CommandFactory creates and configures commands.
 type CommandFactory struct {
 	cfg     *config.Config
 	version string
-	files   EmbeddedFiles
+	files   Embedded
 }
 
-// NewCommandFactory creates a new CommandFactory.
-func NewCommandFactory(cfg *config.Config, version string, defaultsFile, toolsFile []byte, embeds interface{}) *CommandFactory {
-	return &CommandFactory{
-		cfg:     cfg,
-		version: version,
-		files: EmbeddedFiles{
-			Defaults: defaultsFile,
-			Tools:    toolsFile,
-			Embeds:   embeds,
-		},
-	}
+// Embedded holds the embedded files for the application.
+type Embedded struct {
+	Defaults []byte
+	Tools    []byte
+	Template []byte
 }
 
 // NewRootCmd creates the root command with common configuration.
 // It sets up environment variable binding and flag handling.
-func NewRootCmd(cfg *config.Config, version string, defaultsFile, toolsFile []byte, embeds interface{}) *cobra.Command {
-	factory := NewCommandFactory(cfg, version, defaultsFile, toolsFile, embeds)
-	return factory.CreateRootCommand()
+func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Command, error) {
+	e := Embedded{}
+	var err error
+
+	e.Defaults, err = embeds.ReadFile("defaults.yml")
+	if err != nil {
+		return nil, fmt.Errorf("reading defaults file: %w", err)
+	}
+
+	e.Tools, err = embeds.ReadFile("tools.yml")
+	if err != nil {
+		return nil, fmt.Errorf("reading tools file: %w", err)
+	}
+
+	e.Template, err = embeds.ReadFile("cleanup.bat.template")
+	if err != nil {
+		return nil, fmt.Errorf("reading cleanup template: %w", err)
+	}
+
+	factory := &CommandFactory{
+		cfg:     cfg,
+		version: version,
+		files:   e,
+	}
+	return factory.CreateRootCommand(), nil
 }
 
 // CreateRootCommand creates and configures the root command.
@@ -94,9 +99,9 @@ func (f *CommandFactory) loadDotEnvFunc() func(*cobra.Command, []string) error {
 func (f *CommandFactory) addSubcommands(root *cobra.Command) {
 	root.AddCommand(
 		NewDumpCommand(f.cfg, f.files),
-		NewUpdateCommand(f.cfg, f.files),
 		NewInstallCommand(f.cfg, f.files),
 		NewDownloadCommand(f.cfg, f.files),
+		NewUpdateCommand(f.cfg, f.files),
 	)
 }
 

@@ -44,6 +44,7 @@ type Updater struct {
 	Strategy    tools.Strategy // Strategy defines how updates are applied (e.g., Upgrade, Downgrade, None).
 	Defaults    tools.Defaults // Defaults holds tool-specific default values for the update process.
 	NoVerifySSL bool           // NoVerifySSL disables SSL verification for the update process.
+	Template    []byte
 
 	downloader ToolDownloader
 	replacer   BinaryReplacer
@@ -141,7 +142,7 @@ func (u *Updater) performUpdate(tool tools.Tool) error {
 
 	// Perform platform-specific cleanup
 	if runtime.GOOS == "windows" {
-		if err := winCleanup(); err != nil {
+		if err := winCleanup(u.Template); err != nil {
 			return fmt.Errorf("issuing delete command: %w", err)
 		}
 	}

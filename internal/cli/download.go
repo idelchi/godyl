@@ -18,10 +18,10 @@ import (
 )
 
 // NewDownloadCommand creates the download command for downloading and unpacking tools.
-func NewDownloadCommand(cfg *config.Config, emb EmbeddedFiles) *cobra.Command {
+func NewDownloadCommand(cfg *config.Config, files Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "download [tool]",
-		Aliases: []string{"dl", "unpack"},
+		Aliases: []string{"dl", "unpack", "extract", "x"},
 		Short:   "Download and unpack tools",
 		Long:    "Download and unpack tools from GitHub, URLs, or Go projects",
 		Args:    cobra.MinimumNArgs(1),

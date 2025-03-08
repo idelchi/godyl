@@ -16,7 +16,7 @@ import (
 )
 
 // NewInstallCommand creates the install command for installing tools from a YAML file.
-func NewInstallCommand(cfg *config.Config, emb EmbeddedFiles) *cobra.Command {
+func NewInstallCommand(cfg *config.Config, files Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "install [tools.yml]",
 		Aliases: []string{"i", "get"},
@@ -46,7 +46,7 @@ func NewInstallCommand(cfg *config.Config, emb EmbeddedFiles) *cobra.Command {
 
 			// Load defaults
 			toolDefaults := tools.Defaults{}
-			if err := defaults.LoadDefaults(&toolDefaults, cfg.Defaults.Name(), emb.Defaults, *cfg); err != nil {
+			if err := defaults.LoadDefaults(&toolDefaults, cfg.Defaults.Name(), files.Defaults, *cfg); err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 

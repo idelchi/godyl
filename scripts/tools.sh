@@ -93,7 +93,7 @@ install_tools() {
   [ -n "${REMAINING_ARGS}" ] && printf "Calling godyl with extra arguments: '${REMAINING_ARGS}'\n"
 
   # Install tools using godyl
-  GODYL_GITHUB_TOKEN=${GODYL_GITHUB_TOKEN} "${tmp}/godyl" "${REMAINING_ARGS}" ${DISABLE_SSL:+-k} --output="${INSTALL_DIR}" "${tmp}"/tools.yml
+  GODYL_GITHUB_TOKEN=${GODYL_GITHUB_TOKEN} "${tmp}/godyl" ${DISABLE_SSL:+-k} install "${REMAINING_ARGS}" --output="${INSTALL_DIR}" "${tmp}"/tools.yml
 
   rm -rf "${tmp}"
   printf "All tools installed successfully to ${INSTALL_DIR}\n"

@@ -54,6 +54,20 @@ services:
     extends: alpine-amd64
     platform: linux/arm/v7
 
+  cc:
+    build:
+      dockerfile: Dockerfile.cc
+    pull_policy: if_not_present
+    container_name: cc
+    hostname: godyccl
+    volumes:
+      - .:/home/user/ws
+    extra_hosts:
+      - host:host-gateway
+    working_dir: /home/user/ws
+    networks:
+      - godyl
+
 networks:
   godyl:
     name: godyl

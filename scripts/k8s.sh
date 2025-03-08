@@ -97,7 +97,7 @@ install_tools() {
   [ -n "${REMAINING_ARGS}" ] && printf "Calling godyl with extra arguments: '${REMAINING_ARGS}'\n"
 
   # Install tools using godyl
-  GODYL_GITHUB_TOKEN=${GODYL_GITHUB_TOKEN} "${tmp}/godyl" "${REMAINING_ARGS}" ${DISABLE_SSL:+-k} --output="${INSTALL_DIR}" - <<YAML
+  GODYL_GITHUB_TOKEN=${GODYL_GITHUB_TOKEN} "${tmp}/godyl" ${DISABLE_SSL:+-k} install "${REMAINING_ARGS}" --output="${INSTALL_DIR}" - <<YAML
 - name: helm/helm
   path: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
 - name: kubernetes/kubernetes

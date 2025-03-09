@@ -3,52 +3,9 @@ package cobraext
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
-
-// NewDefaultRootCommand creates a root command with default settings.
-// It sets up integration with viper, with environment variable and flag binding.
-// Additional functions can be passed to be executed before the command is run.
-func NewDefaultRootCommand(version string, funcs ...func(*cobra.Command, []string) error) *cobra.Command {
-	root := &cobra.Command{
-		Version:          version,
-		SilenceUsage:     true,
-		SilenceErrors:    true,
-		TraverseChildren: true, // TODO(Idelchi): Breaks suggestions, see below.
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			viper.SetEnvPrefix(cmd.Root().Name())
-			viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
-			viper.AutomaticEnv()
-
-			if err := viper.BindPFlags(cmd.Root().Flags()); err != nil {
-				return fmt.Errorf("binding root flags: %w", err)
-			}
-
-			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return fmt.Errorf("binding command flags: %w", err)
-			}
-
-			for _, f := range funcs {
-				if err := f(cmd, args); err != nil {
-					return err
-				}
-			}
-
-			return nil
-		},
-		RunE: UnknownSubcommandAction,
-	}
-
-	root.CompletionOptions.DisableDefaultCmd = true
-	root.Flags().SortFlags = false
-
-	root.SetVersionTemplate("{{ .Version }}\n")
-
-	return root
-}
 
 // UnknownSubcommandAction is a cobra.Command.RunE function that prints an error message for unknown subcommands.
 // Necessary when using `TraverseChildren: true`, because it seems to disable suggestions for unknown subcommands.

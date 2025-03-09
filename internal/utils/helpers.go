@@ -53,10 +53,10 @@ func (l *DefaultEnvironmentLoader) LoadFromDotEnv(path string) error {
 }
 
 // LoadTools loads the tools configuration.
-func LoadTools(path string, log *logger.Logger) (tools.Tools, error) {
+func LoadTools(path file.File, log *logger.Logger) (tools.Tools, error) {
 	loader := &DefaultToolsLoader{}
 
-	return loader.LoadTools(path, log)
+	return loader.LoadTools(string(path), log)
 }
 
 // LoadTools loads the tools configuration.

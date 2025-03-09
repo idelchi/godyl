@@ -4,7 +4,7 @@ package cli
 import (
 	"embed"
 	"fmt"
-	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -12,7 +12,6 @@ import (
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/gogen/pkg/cobraext"
 )
 
@@ -20,42 +19,32 @@ import (
 type CommandFactory struct {
 	cfg     *config.Config
 	version string
-	files   Embedded
-}
-
-// Embedded holds the embedded files for the application.
-type Embedded struct {
-	Defaults []byte
-	Tools    []byte
-	Template []byte
+	files   config.Embedded
 }
 
 // NewRootCmd creates the root command with common configuration.
 // It sets up environment variable binding and flag handling.
 func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Command, error) {
-	embedded := Embedded{}
+	factory := &CommandFactory{
+		cfg:     cfg,
+		version: version,
+	}
 
 	var err error
 
-	embedded.Defaults, err = embeds.ReadFile("defaults.yml")
+	factory.files.Defaults, err = embeds.ReadFile("defaults.yml")
 	if err != nil {
 		return nil, fmt.Errorf("reading defaults file: %w", err)
 	}
 
-	embedded.Tools, err = embeds.ReadFile("tools.yml")
+	factory.files.Tools, err = embeds.ReadFile("tools.yml")
 	if err != nil {
 		return nil, fmt.Errorf("reading tools file: %w", err)
 	}
 
-	embedded.Template, err = embeds.ReadFile("internal/core/updater/scripts/cleanup.bat.template")
+	factory.files.Template, err = embeds.ReadFile("internal/core/updater/scripts/cleanup.bat.template")
 	if err != nil {
 		return nil, fmt.Errorf("reading cleanup template: %w", err)
-	}
-
-	factory := &CommandFactory{
-		cfg:     cfg,
-		version: version,
-		files:   embedded,
 	}
 
 	return factory.CreateRootCommand(), nil
@@ -68,7 +57,7 @@ func (f *CommandFactory) CreateRootCommand() *cobra.Command {
 		f.loadDotEnvFunc(),
 	}
 
-	root := NewRootCommand(f.version, funcs...)
+	root := NewRootCommand(f.version, f.cfg, funcs...)
 
 	// Add subcommands
 	f.addSubcommands(root)
@@ -77,7 +66,6 @@ func (f *CommandFactory) CreateRootCommand() *cobra.Command {
 	f.addRootFlags(root)
 
 	// Make certain flags persistent so they can be used with subcommands
-	root.PersistentFlags().BoolP("show", "s", false, "Show the configuration and exit")
 
 	return root
 }
@@ -85,7 +73,7 @@ func (f *CommandFactory) CreateRootCommand() *cobra.Command {
 // NewDefaultRootCommand creates a root command with default settings.
 // It sets up integration with viper, with environment variable and flag binding.
 // Additional functions can be passed to be executed before the command is run.
-func NewRootCommand(version string, funcs ...func(*cobra.Command, []string) error) *cobra.Command {
+func NewRootCommand(version string, cfg *config.Config, funcs ...func(*cobra.Command, []string) error) *cobra.Command {
 	root := &cobra.Command{
 		Use:   "godyl [command]",
 		Short: "Asset downloader for tools",
@@ -96,12 +84,20 @@ func NewRootCommand(version string, funcs ...func(*cobra.Command, []string) erro
 		SilenceErrors:    true,
 		TraverseChildren: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			viper.SetEnvPrefix(cmd.Root().Name())
+			viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+			viper.AutomaticEnv()
+
 			if err := viper.BindPFlags(cmd.Root().Flags()); err != nil {
-				return fmt.Errorf("binding root flags: %w", err)
+				return fmt.Errorf("binding command flags: %w", err)
 			}
 
-			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return fmt.Errorf("binding command flags: %w", err)
+			if err := viper.Unmarshal(&cfg.Root); err != nil {
+				return fmt.Errorf("unmarshalling config: %w", err)
+			}
+
+			if err := cfg.Root.Validate(); err != nil {
+				return fmt.Errorf("validating config: %w", err)
 			}
 
 			for _, f := range funcs {
@@ -134,37 +130,4 @@ func (f *CommandFactory) loadDotEnvFunc() func(*cobra.Command, []string) error {
 
 		return nil
 	}
-}
-
-// addSubcommands adds all subcommands to the root command.
-func (f *CommandFactory) addSubcommands(root *cobra.Command) {
-	root.AddCommand(
-		NewDumpCommand(f.cfg, f.files),
-		NewInstallCommand(f.cfg, f.files),
-		NewDownloadCommand(f.cfg, f.files),
-		NewUpdateCommand(f.cfg, f.files),
-	)
-}
-
-// addRootFlags adds root-level flags to the command.
-func (f *CommandFactory) addRootFlags(cmd *cobra.Command) {
-	// Root command flags
-	cmd.Flags().Bool("dry", false, "Run without making any changes (dry run)")
-	cmd.Flags().String("log", logger.INFO.String(), "Log level (debug, info, warn, error, silent)")
-	cmd.Flags().IntP("parallel", "j", 0, "Number of parallel downloads. 0 means unlimited.")
-	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
-	cmd.Flags().String("env-file", ".env", "Path to .env file")
-	cmd.Flags().StringP("defaults", "d", "defaults.yml", "Path to defaults file")
-}
-
-// addToolFlags adds tool-related flags to the command.
-func addToolFlags(cmd *cobra.Command) {
-	// Tool flags
-	cmd.Flags().StringP("output", "o", "./bin", "Output path for the downloaded tools")
-	cmd.Flags().StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
-	cmd.Flags().String("source", "github", "Source from which to install the tools")
-	cmd.Flags().String("strategy", "none", "Strategy to use for updating tools")
-	cmd.Flags().String("github-token", os.Getenv("GODYL_GITHUB_TOKEN"), "GitHub token for authentication")
-	cmd.Flags().String("os", "", "Operating system to install the tools for")
-	cmd.Flags().String("arch", "", "Architecture to install the tools for")
 }

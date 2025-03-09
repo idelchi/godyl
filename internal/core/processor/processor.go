@@ -68,7 +68,7 @@ func New(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log 
 	concurrencyManager := &ConcurrencyManager{
 		errGroup: &errgroup.Group{},
 		resultCh: make(chan ToolResult),
-		parallel: cfg.Parallel,
+		parallel: cfg.Tool.Parallel,
 	}
 
 	return &ToolProcessor{
@@ -118,9 +118,9 @@ func (tp *ToolProcessor) Process(tags, withoutTags []string) error {
 // setupConcurrency sets up the concurrency management.
 func (tp *ToolProcessor) setupConcurrency() {
 	// Set concurrency limit if specified
-	if tp.cfg.Parallel > 0 {
-		tp.concurrencyManager.errGroup.SetLimit(tp.cfg.Parallel)
-		tp.log.Info("running with %d parallel downloads", tp.cfg.Parallel)
+	if tp.cfg.Tool.Parallel > 0 {
+		tp.concurrencyManager.errGroup.SetLimit(tp.cfg.Tool.Parallel)
+		tp.log.Info("running with %d parallel downloads", tp.cfg.Tool.Parallel)
 	}
 
 	// Initialize wait group for result collection
@@ -149,14 +149,14 @@ func (tp *ToolProcessor) processTool(tool *tools.Tool, tags, withoutTags []strin
 	}
 
 	// Handle dry run
-	if tp.cfg.Dry {
+	if tp.cfg.Root.Dry {
 		tp.concurrencyManager.resultCh <- ToolResult{Tool: tool}
 
 		return nil
 	}
 
 	// Apply SSL verification setting
-	if tp.cfg.NoVerifySSL {
+	if tp.cfg.Tool.NoVerifySSL {
 		tool.NoVerifySSL = true
 	}
 

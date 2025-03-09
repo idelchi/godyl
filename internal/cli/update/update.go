@@ -1,7 +1,8 @@
-package cli
+package update
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -9,8 +10,7 @@ import (
 	"github.com/idelchi/godyl/internal/core/updater"
 )
 
-// NewUpdateCommand creates the update command for updating the application.
-func NewUpdateCommand(cfg *config.Config, files Embedded) *cobra.Command {
+func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "update",
 		Aliases: []string{"upgrade", "up"},
@@ -19,7 +19,7 @@ func NewUpdateCommand(cfg *config.Config, files Embedded) *cobra.Command {
 		RunE: func(_ *cobra.Command, _ []string) error {
 			appUpdater := updater.Updater{
 				Strategy:    cfg.Update.Strategy,
-				NoVerifySSL: cfg.NoVerifySSL,
+				NoVerifySSL: cfg.Update.NoVerifySSL,
 				Template:    files.Template,
 			}
 
@@ -30,6 +30,10 @@ func NewUpdateCommand(cfg *config.Config, files Embedded) *cobra.Command {
 			return nil
 		},
 	}
+
+	cmd.Flags().String("strategy", "none", "Strategy to use for updating tools (none upgrade force)")
+	cmd.Flags().String("github-token", os.Getenv("GODYL_GITHUB_TOKEN"), "GitHub token for authentication")
+	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
 
 	return cmd
 }

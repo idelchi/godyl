@@ -76,23 +76,23 @@ func (d *Defaults) Validate() error {
 // Merge applies values from a Config object into the Defaults struct, only if corresponding values are set.
 func (d *Defaults) Merge(cfg config.Config) error {
 	if config.IsSet("output") {
-		d.Output = cfg.Output
+		d.Output = cfg.Tool.Output
 	}
 
 	if config.IsSet("source") {
-		d.Source.Type = cfg.Source
+		d.Source.Type = cfg.Tool.Source
 	}
 
 	if config.IsSet("strategy") {
-		d.Strategy = cfg.Strategy
+		d.Strategy = cfg.Tool.Strategy
 	}
 
 	if config.IsSet("github-token") {
-		d.Source.Github.Token = cfg.Tokens.GitHub
+		d.Source.Github.Token = cfg.Tool.Tokens.GitHub
 	}
 
 	if config.IsSet("os") {
-		if err := d.Platform.OS.Parse(cfg.OS); err != nil {
+		if err := d.Platform.OS.Parse(cfg.Tool.OS); err != nil {
 			return fmt.Errorf("parsing OS: %w", err)
 		}
 
@@ -101,7 +101,7 @@ func (d *Defaults) Merge(cfg config.Config) error {
 	}
 
 	if config.IsSet("arch") {
-		if err := d.Platform.Architecture.Parse(cfg.Arch); err != nil {
+		if err := d.Platform.Architecture.Parse(cfg.Tool.Arch); err != nil {
 			return fmt.Errorf("parsing architecture: %w", err)
 		}
 	}
@@ -194,23 +194,23 @@ func (m *Manager) LoadDefaults(path string, defaultEmbedded []byte) error {
 func (m *Manager) ApplyConfig(cfg config.Config) error {
 	// Apply configuration overrides
 	if config.IsSet("output") {
-		m.defaults.Output = cfg.Output
+		m.defaults.Output = cfg.Tool.Output
 	}
 
 	if config.IsSet("source") {
-		m.defaults.Source.Type = cfg.Source
+		m.defaults.Source.Type = cfg.Tool.Source
 	}
 
 	if config.IsSet("strategy") {
-		m.defaults.Strategy = cfg.Strategy
+		m.defaults.Strategy = cfg.Tool.Strategy
 	}
 
 	if config.IsSet("github-token") {
-		m.defaults.Source.Github.Token = cfg.Tokens.GitHub
+		m.defaults.Source.Github.Token = cfg.Tool.Tokens.GitHub
 	}
 
 	if config.IsSet("os") {
-		if err := m.defaults.Platform.OS.Parse(cfg.OS); err != nil {
+		if err := m.defaults.Platform.OS.Parse(cfg.Tool.OS); err != nil {
 			return fmt.Errorf("parsing OS: %w", err)
 		}
 
@@ -222,7 +222,7 @@ func (m *Manager) ApplyConfig(cfg config.Config) error {
 	}
 
 	if config.IsSet("arch") {
-		if err := m.defaults.Platform.Architecture.Parse(cfg.Arch); err != nil {
+		if err := m.defaults.Platform.Architecture.Parse(cfg.Tool.Arch); err != nil {
 			return fmt.Errorf("parsing architecture: %w", err)
 		}
 	}

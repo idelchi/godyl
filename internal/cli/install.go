@@ -24,7 +24,7 @@ func NewInstallCommand(cfg *config.Config, files Embedded) *cobra.Command {
 		Long:    "Install tools as specified in a YAML configuration file",
 		Args:    cobra.MaximumNArgs(1),
 		PreRunE: func(_ *cobra.Command, _ []string) error {
-			return cobraext.Validate(cfg, &cfg)
+			return cobraext.Validate(cfg, cfg)
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
 			// Set the tools file if provided as an argument

@@ -29,131 +29,105 @@ func Print(cfg any, format string) {
 
 // NewDumpCommand creates the show command for displaying various configurations.
 func NewDumpCommand(cfg *config.Config, files Embedded) *cobra.Command {
-	// TODO(Idelchi): Maybe we need to use NewDefaultRootCommand here too, to propagate the flags properly.
 	cmd := &cobra.Command{
-		Use:     "dump [config|defaults|env|platform|tools]",
+		Use:     "dump [flags] [config|defaults|env|platform|tools] [flags]",
 		Aliases: []string{"show"},
 		Short:   "Dump configuration information",
 		Long:    "Display various configuration settings and information about the environment",
-		PreRunE: func(_ *cobra.Command, _ []string) error {
-			return cobraext.Validate(cfg)
+		Args:    cobra.MaximumNArgs(1),
+
+		PreRunE: func(_ *cobra.Command, args []string) error {
+			return cobraext.Validate(cfg, &cfg.Dump)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(args) == 0 {
+				cmd.Help()
+
+				return nil
+			}
+
+			cfg.Dump.Type = args[0]
+
+			var data any
+			var err error
+
+			switch cfg.Dump.Type {
+			case "config":
+				if data, err = getConfig(cfg, files); err != nil {
+					return fmt.Errorf("getting config: %w", err)
+				}
+
+			case "defaults":
+				if data, err = getDefaults(cfg, files); err != nil {
+					return fmt.Errorf("getting defaults: %w", err)
+				}
+			case "env":
+				if data, err = getEnv(); err != nil {
+					return fmt.Errorf("getting env: %w", err)
+				}
+			case "platform":
+				if data, err = getPlatform(); err != nil {
+					return fmt.Errorf("getting platform: %w", err)
+				}
+			case "tools":
+				if data, err = getTools(cfg, files); err != nil {
+					return fmt.Errorf("getting tools: %w", err)
+				}
+			default:
+				return fmt.Errorf("unknown subcommand: %s", cfg.Dump.Type)
+			}
+
+			Print(data, cfg.Dump.Format)
+
+			return nil
 		},
 	}
 
-	// Add subcommands
-	cmd.AddCommand(
-		newDumpEnvCommand(cfg),
-		newDumpConfigCommand(cfg, files.Defaults),
-		newDumpDefaultsCommand(cfg, files.Defaults),
-		newDumpPlatformCommand(cfg),
-		newDumpToolsCommand(cfg, files.Tools),
-	)
+	cmd.SetHelpFunc(func(command *cobra.Command, strings []string) {
+		command.Flags().MarkHidden("show")
+		command.Parent().HelpFunc()(command, strings)
+	})
 
 	cmd.PersistentFlags().StringP("format", "f", "yaml", "Output format (json or yaml)")
 
 	return cmd
 }
 
-// newDumpPlatformCommand creates a command to show platform information.
-func newDumpPlatformCommand(cfg *config.Config) *cobra.Command {
-	return &cobra.Command{
-		Use:   "platform",
-		Short: "Dump platform information",
-		Long:  "Display information about the current platform (OS, architecture, etc.)",
-		PreRunE: func(_ *cobra.Command, _ []string) error {
-			return cobraext.Validate(cfg)
-		},
-		RunE: func(_ *cobra.Command, _ []string) error {
-			p := detect.Platform{}
-			if err := p.Detect(); err != nil {
-				return fmt.Errorf("detecting platform: %w", err)
-			}
-
-			Print(p, cfg.Format)
-
-			return nil
-		},
+func getConfig(cfg *config.Config, files Embedded) (*config.Config, error) {
+	defs := &defaults.Defaults{}
+	if err := defs.Load(cfg.Defaults.Name(), files.Defaults); err != nil {
+		return nil, fmt.Errorf("error loading defaults: %w", err)
 	}
+
+	if err := defs.Merge(*cfg); err != nil {
+		return nil, fmt.Errorf("error merging defaults: %w", err)
+	}
+
+	return cfg, nil
 }
 
-// newDumpConfigCommand creates a command to show the current configuration.
-func newDumpConfigCommand(cfg *config.Config, defaultsData []byte) *cobra.Command {
-	return &cobra.Command{
-		Use:   "config",
-		Short: "Dump the current configuration",
-		Long:  "Display the current configuration settings",
-		PreRunE: func(_ *cobra.Command, _ []string) error {
-			return cobraext.Validate(cfg)
-		},
-		RunE: func(_ *cobra.Command, _ []string) error {
-			defs := defaults.Defaults{}
-			if err := defs.Load(cfg.Defaults.Name(), defaultsData); err != nil {
-				return fmt.Errorf("error loading defaults: %w", err)
-			}
-
-			if err := defs.Merge(*cfg); err != nil {
-				return fmt.Errorf("error merging defaults: %w", err)
-			}
-
-			Print(cfg, cfg.Format)
-
-			return nil
-		},
+func getDefaults(cfg *config.Config, files Embedded) (*tools.Defaults, error) {
+	tools := &tools.Defaults{}
+	if err := defaults.LoadDefaults(tools, cfg.Defaults.Name(), files.Defaults, *cfg); err != nil {
+		return nil, fmt.Errorf("loading defaults: %w", err)
 	}
+
+	return tools, nil
 }
 
-// newDumpDefaultsCommand creates a command to show the default configuration.
-func newDumpDefaultsCommand(cfg *config.Config, defaultsData []byte) *cobra.Command {
-	return &cobra.Command{
-		Use:   "defaults",
-		Short: "Dump the default configuration",
-		Long:  "Display the default configuration settings",
-		PreRunE: func(_ *cobra.Command, _ []string) error {
-			return cobraext.Validate(cfg)
-		},
-		RunE: func(_ *cobra.Command, _ []string) error {
-			toolDefaults := tools.Defaults{}
-			if err := defaults.LoadDefaults(&toolDefaults, cfg.Defaults.Name(), defaultsData, *cfg); err != nil {
-				return fmt.Errorf("loading defaults: %w", err)
-			}
-
-			Print(toolDefaults, cfg.Format)
-
-			return nil
-		},
-	}
+func getEnv() (env.Env, error) {
+	return env.FromEnv(), nil
 }
 
-// newDumpEnvCommand creates a command to show environment variables.
-func newDumpEnvCommand(cfg *config.Config) *cobra.Command {
-	return &cobra.Command{
-		Use:   "env",
-		Short: "Dump environment variables",
-		Long:  "Display environment variables that affect the application",
-		PreRunE: func(_ *cobra.Command, _ []string) error {
-			return cobraext.Validate(cfg)
-		},
-		RunE: func(_ *cobra.Command, _ []string) error {
-			Print(env.FromEnv(), cfg.Format)
-
-			return nil
-		},
+func getPlatform() (*detect.Platform, error) {
+	platform := &detect.Platform{}
+	if err := platform.Detect(); err != nil {
+		return nil, fmt.Errorf("detecting platform: %w", err)
 	}
+
+	return platform, nil
 }
 
-// newDumpToolsCommand creates a command to show available tools.
-func newDumpToolsCommand(cfg *config.Config, toolsData []byte) *cobra.Command {
-	return &cobra.Command{
-		Use:   "tools",
-		Short: "Dump available tools",
-		Long:  "Display information about available tools",
-		PreRunE: func(_ *cobra.Command, _ []string) error {
-			return cobraext.Validate(cfg)
-		},
-		RunE: func(_ *cobra.Command, _ []string) error {
-			Print(utils.PrintYAMLBytes(toolsData), cfg.Format)
-
-			return nil
-		},
-	}
+func getTools(cfg *config.Config, files Embedded) (any, error) {
+	return utils.PrintYAMLBytes(files.Tools), nil
 }

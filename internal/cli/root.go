@@ -4,6 +4,7 @@ package cli
 import (
 	"embed"
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -67,12 +68,7 @@ func (f *CommandFactory) CreateRootCommand() *cobra.Command {
 		f.loadDotEnvFunc(),
 	}
 
-	root := cobraext.NewDefaultRootCommand(f.version, funcs...)
-
-	root.Use = "godyl [command]"
-	root.Short = "Asset downloader for tools"
-	root.Long = "godyl helps with batch-downloading and installing statically compiled binaries from GitHub releases, " +
-		"URLs, and Go projects."
+	root := NewRootCommand(f.version, funcs...)
 
 	// Add subcommands
 	f.addSubcommands(root)
@@ -82,6 +78,47 @@ func (f *CommandFactory) CreateRootCommand() *cobra.Command {
 
 	// Make certain flags persistent so they can be used with subcommands
 	root.PersistentFlags().BoolP("show", "s", false, "Show the configuration and exit")
+
+	return root
+}
+
+// NewDefaultRootCommand creates a root command with default settings.
+// It sets up integration with viper, with environment variable and flag binding.
+// Additional functions can be passed to be executed before the command is run.
+func NewRootCommand(version string, funcs ...func(*cobra.Command, []string) error) *cobra.Command {
+	root := &cobra.Command{
+		Use:   "godyl [command]",
+		Short: "Asset downloader for tools",
+		Long: "godyl helps with batch-downloading and installing statically compiled binaries from GitHub releases, " +
+			"URLs, and Go projects.",
+		Version:          version,
+		SilenceUsage:     true,
+		SilenceErrors:    true,
+		TraverseChildren: true,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := viper.BindPFlags(cmd.Root().Flags()); err != nil {
+				return fmt.Errorf("binding root flags: %w", err)
+			}
+
+			if err := viper.BindPFlags(cmd.Flags()); err != nil {
+				return fmt.Errorf("binding command flags: %w", err)
+			}
+
+			for _, f := range funcs {
+				if err := f(cmd, args); err != nil {
+					return err
+				}
+			}
+
+			return nil
+		},
+		RunE: cobraext.UnknownSubcommandAction,
+	}
+
+	root.CompletionOptions.DisableDefaultCmd = true
+	root.Flags().SortFlags = false
+
+	root.SetVersionTemplate("{{ .Version }}\n")
 
 	return root
 }
@@ -127,7 +164,7 @@ func addToolFlags(cmd *cobra.Command) {
 	cmd.Flags().StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
 	cmd.Flags().String("source", "github", "Source from which to install the tools")
 	cmd.Flags().String("strategy", "none", "Strategy to use for updating tools")
-	cmd.Flags().String("github-token", "", "GitHub token for authentication")
+	cmd.Flags().String("github-token", os.Getenv("GODYL_GITHUB_TOKEN"), "GitHub token for authentication")
 	cmd.Flags().String("os", "", "Operating system to install the tools for")
 	cmd.Flags().String("arch", "", "Architecture to install the tools for")
 }

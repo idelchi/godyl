@@ -10,6 +10,7 @@ package unmarshal
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -68,11 +69,11 @@ func DecodeWithOptionalKnownFields(value *yaml.Node, out any, useKnownFields boo
 
 	enc := yaml.NewEncoder(&buf)
 	if err := enc.Encode(value); err != nil {
-		return err
+		return fmt.Errorf("encoding YAML node: %w", err)
 	}
 
 	if err := enc.Close(); err != nil {
-		return err
+		return fmt.Errorf("closing YAML encoder: %w", err)
 	}
 
 	// Decode from the buffer
@@ -95,7 +96,8 @@ func yamlTypeErrorConversion(err error, input string) error {
 		return nil
 	}
 
-	if _, ok := err.(*yaml.TypeError); !ok {
+	var typeErr *yaml.TypeError
+	if !errors.As(err, &typeErr) {
 		return err
 	}
 
@@ -103,15 +105,15 @@ func yamlTypeErrorConversion(err error, input string) error {
 		return err
 	}
 
-	typeErr := err.(*yaml.TypeError)
+	const expectedParts = 2
 
-	for i, err := range typeErr.Errors {
-		parts := strings.SplitN(err, " not found in type", 2)
-		if len(parts) != 2 {
+	for idx, errMsg := range typeErr.Errors {
+		parts := strings.SplitN(errMsg, " not found in type", expectedParts)
+		if len(parts) != expectedParts {
 			continue
 		}
 
-		typeErr.Errors[i] = fmt.Sprintf("%s not found in type %q", parts[0], input)
+		typeErr.Errors[idx] = fmt.Sprintf("%s not found in type %q", parts[0], input)
 	}
 
 	return err

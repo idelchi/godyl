@@ -46,13 +46,13 @@ func (e Executable) Command(ctx context.Context, cmdArgs []string) (string, erro
 // It iterates over predefined command strategies and tries to parse the version from the command output.
 // If successful, it sets the Version field of Executable; otherwise, it returns an error.
 func (e *Executable) ParseVersion(version *Version) error {
-	timeout := 60 * time.Second
+	const timeout = 60 * time.Second
 
 	// Create a context with a timeout to prevent hanging
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	var errs []error
+	errs := make([]error, 0, len(version.Commands))
 
 	// Iterate through each command strategy
 	for _, cmdArgs := range version.Commands {

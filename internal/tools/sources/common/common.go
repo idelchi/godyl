@@ -26,33 +26,35 @@ type InstallData struct {
 
 // Download handles downloading files based on the InstallData configuration.
 // It creates a temporary folder if needed and manages the download process.
-func Download(d InstallData) (string, file.File, error) {
+func Download(data InstallData) (string, file.File, error) {
 	var err error
+
 	var found file.File
 
-	folder := file.Folder(d.Output)
+	folder := file.Folder(data.Output)
 
-	if d.Mode == "find" {
+	if data.Mode == "find" {
 		if err := folder.CreateRandomInTempDir(); err != nil {
 			return "", "", fmt.Errorf("creating temp dir: %w", err)
 		}
+
 		defer func() {
 			if err == nil {
-				folder.Remove()
+				folder.Remove() //nolint:gosec 		// TODO(Idelchi): Address this later.
 			}
 		}()
 	}
 
 	downloader := download.New()
-	downloader.InsecureSkipVerify = d.NoVerifySSL
+	downloader.InsecureSkipVerify = data.NoVerifySSL
 
-	destination, err := downloader.Download(d.Path, folder.Path())
+	destination, err := downloader.Download(data.Path, folder.Path())
 	if err != nil {
-		return "", "", fmt.Errorf("downloading %q: %w", d.Path, err)
+		return "", "", fmt.Errorf("downloading %q: %w", data.Path, err)
 	}
 
-	if d.Mode == "find" {
-		found, err = FindAndSymlink(destination, d)
+	if data.Mode == "find" {
+		found, err = FindAndSymlink(destination, data)
 	}
 
 	return "", found, err
@@ -60,6 +62,8 @@ func Download(d InstallData) (string, file.File, error) {
 
 // FindAndSymlink finds the executable within the downloaded folder and creates symlinks for it
 // based on the provided InstallData. It handles directories and sets up aliases as needed.
+//
+//nolint:gocognit   // TODO(Idelchi): Address this later.
 func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 	if destination.IsDir() {
 		searchDir := destination.Dir()
@@ -86,6 +90,7 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 				if err != nil {
 					return false, fmt.Errorf("compiling pattern %q: %w", pattern, err)
 				}
+
 				matched := re.MatchString(file.Normalized().Name())
 
 				if matched {
@@ -100,8 +105,9 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 			destination, err = searchDir.FindFile(match)
 			if err != nil {
 				if !errors.Is(err, file.ErrNotFound) {
-					return destination, err
+					return destination, fmt.Errorf("finding executable: %w", err)
 				}
+
 				continue
 			} else {
 				found = true
@@ -134,5 +140,6 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 
 	// Create symlinks for the aliases
 	aliases := file.NewFiles(d.Output, d.Aliases...)
+
 	return destination, aliases.SymlinksFor(target)
 }

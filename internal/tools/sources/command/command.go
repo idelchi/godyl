@@ -14,8 +14,8 @@ import (
 type Command string
 
 // String returns the Command as a string.
-func (c Command) String() string {
-	return string(c)
+func (c *Command) String() string {
+	return string(*c)
 }
 
 // From assigns a new shell command string to the Command.
@@ -25,12 +25,13 @@ func (c *Command) From(command string) {
 
 // Shell runs the Command using mvdan/sh, capturing both stdout and stderr output.
 // It accepts optional environment variables and returns the stdout output and any errors encountered.
-func (c Command) Shell(env ...string) (string, error) {
+func (c *Command) Shell(env ...string) (string, error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 
 	// Parse the command string into a shell script
 	parser := syntax.NewParser()
-	file, err := parser.Parse(bytes.NewReader([]byte(c)), "")
+
+	file, err := parser.Parse(bytes.NewReader([]byte(*c)), "")
 	if err != nil {
 		return "", fmt.Errorf("parsing shell command: %w", err)
 	}

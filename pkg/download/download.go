@@ -54,10 +54,12 @@ type Downloader struct {
 
 // New returns a new Downloader instance with default timeout values set to 5 minutes.
 func New() *Downloader {
+	const defaultTimeout = 5 * time.Minute
+
 	return &Downloader{
-		ContextTimeout:     5 * time.Minute,
-		ReadTimeout:        5 * time.Minute,
-		HeadTimeout:        5 * time.Minute,
+		ContextTimeout:     defaultTimeout,
+		ReadTimeout:        defaultTimeout,
+		HeadTimeout:        defaultTimeout,
 		InsecureSkipVerify: false,
 	}
 }
@@ -84,7 +86,7 @@ func (d Downloader) Download(url, output string) (file.File, error) {
 		httpClient.Transport = &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
-			}, 
+			},
 		}
 	}
 
@@ -94,6 +96,8 @@ func (d Downloader) Download(url, output string) (file.File, error) {
 		GetMode: getter.ModeAny,
 	}
 
+	// TODO(Idelchi): Go-Getter messes up ? queries etc and doesn't seem to follow redirects then,
+	// or perhaps messes up the whole URL
 	client := &getter.Client{
 		Getters: []getter.Getter{
 			httpGetter,

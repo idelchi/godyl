@@ -2,31 +2,45 @@ package github
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sync"
 )
 
-var (
-	exportMutex sync.Mutex
-	exportFile  = "tests/assets2.json"
-	importFile  = "tests/assets.json"
-)
+// ExportConfig holds configuration for exporting GitHub data.
+type ExportConfig struct {
+	ExportPath string // Path to export data to
+	ImportPath string // Path to import data from
+}
+
+// DefaultExportConfig returns the default export configuration.
+func DefaultExportConfig() ExportConfig {
+	return ExportConfig{
+		ExportPath: "tests/assets2.json",
+		ImportPath: "tests/assets.json",
+	}
+}
+
+// exportMutex is a mutex to prevent concurrent writes to the export file.
+var exportMutex sync.Mutex //nolint:gochecknoglobals
 
 // Export retrieves the latest release for the repository and stores its assets in a JSON file.
-func (g *Repository) Export(release *Release) error {
+func (g *Repository) Export(release *Release, config ExportConfig) error {
 	exportMutex.Lock()
 	defer exportMutex.Unlock()
 
+	const permsDir = 0o750
+
 	// Ensure the directory exists
-	if err := os.MkdirAll(filepath.Dir(exportFile), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(config.ExportPath), permsDir); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 
 	// Load existing data
 	var data map[string][]Asset
-	if fileData, err := os.ReadFile(exportFile); err == nil {
+	if fileData, err := os.ReadFile(config.ExportPath); err == nil {
 		if err := json.Unmarshal(fileData, &data); err != nil {
 			return fmt.Errorf("failed to unmarshal existing data: %w", err)
 		}
@@ -48,17 +62,24 @@ func (g *Repository) Export(release *Release) error {
 		return fmt.Errorf("failed to marshal data: %w", err)
 	}
 
-	if err := os.WriteFile(exportFile, jsonData, 0o644); err != nil {
+	const permsFile = 0o600
+
+	if err := os.WriteFile(config.ExportPath, jsonData, permsFile); err != nil {
 		return fmt.Errorf("failed to write file: %w", err)
 	}
 
 	return nil
 }
 
+// ExportWithDefaults exports the release with default configuration.
+func (g *Repository) ExportWithDefaults(release *Release) error {
+	return g.Export(release, DefaultExportConfig())
+}
+
 // LatestReleaseFromExport retrieves the latest release information from the exported JSON file.
-func (g *Repository) LatestReleaseFromExport() (*Release, error) {
+func (g *Repository) LatestReleaseFromExport(config ExportConfig) (*Release, error) {
 	// Read the exported file
-	fileData, err := os.ReadFile(importFile)
+	fileData, err := os.ReadFile(config.ImportPath)
 	if err != nil {
 		return g.LatestRelease()
 	}
@@ -70,8 +91,9 @@ func (g *Repository) LatestReleaseFromExport() (*Release, error) {
 
 	key := fmt.Sprintf("%s/%s", g.Owner, g.Repo)
 	assets, ok := data[key]
+
 	if !ok {
-		return nil, fmt.Errorf("no data found for repository %s", key)
+		return nil, fmt.Errorf("%w: no data found for repository %s", ErrExporter, key)
 	}
 
 	release := &Release{
@@ -80,3 +102,11 @@ func (g *Repository) LatestReleaseFromExport() (*Release, error) {
 
 	return release, nil
 }
+
+// LatestReleaseFromExportWithDefaults retrieves the latest release with default configuration.
+func (g *Repository) LatestReleaseFromExportWithDefaults() (*Release, error) {
+	return g.LatestReleaseFromExport(DefaultExportConfig())
+}
+
+// ErrExporter is an error returned when an exporter operation fails.
+var ErrExporter = errors.New("exporter error")

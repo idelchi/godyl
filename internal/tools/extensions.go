@@ -15,6 +15,7 @@ type Extensions = unmarshal.SingleOrSliceType[string]
 // ExtensionsToHint converts a list of extensions into a match.Hint.
 func ExtensionsToHint(exts Extensions) match.Hint {
 	var noExtensionPart string
+
 	var extensionParts []string
 
 	for _, ext := range slices.Compact(exts) {

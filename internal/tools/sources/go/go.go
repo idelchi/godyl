@@ -52,6 +52,7 @@ func (g *Go) Version(name string) error {
 // Path sets the path for the Go project based on its version, using the format github.com/{owner}/{repo}@{version}.
 func (g *Go) Path(_ string, _ []string, version string, _ match.Requirements) error {
 	g.github.Data.Set("path", fmt.Sprintf("github.com/%s/%s@%s", g.github.Owner, g.github.Repo, version))
+
 	return nil
 }
 
@@ -61,6 +62,7 @@ var mu sync.Mutex
 // and returns the output, the found file, and any error encountered during installation.
 func (g *Go) Install(d common.InstallData) (output string, found file.File, err error) {
 	mu.Lock()
+
 	binary, err := goi.New(d.NoVerifySSL)
 	if err != nil {
 		return "", "", err
@@ -72,6 +74,7 @@ func (g *Go) Install(d common.InstallData) (output string, found file.File, err 
 	}
 
 	var folder file.Folder
+
 	folder.CreateRandomInTempDir()
 
 	installer.Binary.Env.Append(

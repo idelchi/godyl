@@ -10,7 +10,7 @@ type Extension string
 
 // Default returns the default file extension based on the operating system.
 // For Windows, it returns ".exe", and for other operating systems, it returns an empty string.
-func (e Extension) Default(os OS) Extension {
+func (e *Extension) Default(os OS) Extension {
 	switch os.Type {
 	case "windows":
 		return Extension(".exe")
@@ -20,10 +20,11 @@ func (e Extension) Default(os OS) Extension {
 }
 
 // String returns the Extension as a string.
-func (e Extension) String() string {
-	return string(e)
+func (e *Extension) String() string {
+	return string(*e)
 }
 
+// Parse extracts the file extension from a given filename.
 func (e *Extension) Parse(name string) error {
 	switch ext := filepath.Ext(name); ext {
 	case ".gz":

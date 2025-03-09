@@ -19,7 +19,9 @@ func (t *Tags) UnmarshalYAML(value *yaml.Node) error {
 	if err != nil {
 		return err
 	}
+
 	*t = result
+
 	return nil
 }
 
@@ -54,5 +56,6 @@ func (t Tags) HasNot(tags Tags) bool {
 	if len(tags) == 0 {
 		return true
 	}
+
 	return !t.Has(tags)
 }

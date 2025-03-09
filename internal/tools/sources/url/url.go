@@ -25,7 +25,7 @@ func (u *URL) Get(attribute string) string {
 }
 
 // Initialize prepares the URL based on the given name. (Ineffective).
-func (u *URL) Initialize(name string) error {
+func (u *URL) Initialize(_ string) error {
 	return nil
 }
 
@@ -35,13 +35,14 @@ func (u *URL) Exe() error {
 }
 
 // Version sets the version for the URL. (Ineffective).
-func (u *URL) Version(name string) error {
+func (u *URL) Version(_ string) error {
 	return nil
 }
 
 // Path sets the path for the URL, storing the provided name in the metadata.
 func (u *URL) Path(name string, _ []string, _ string, _ match.Requirements) error {
 	u.Data.Set("path", name)
+
 	return nil
 }
 

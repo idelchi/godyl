@@ -20,27 +20,30 @@ type Repository struct {
 // NewRepository creates a new instance of Repository.
 // It requires the repository owner, repository name, and a GitHub client.
 func NewRepository(owner, repo string, client *github.Client) *Repository {
-	ctx := context.Background()
-
 	return &Repository{
 		Owner:  owner,
 		Repo:   repo,
 		client: client,
-		ctx:    ctx,
+		ctx:    context.Background(),
 	}
+}
+
+// WithContext returns a copy of the repository with the given context.
+func (g *Repository) WithContext(ctx context.Context) *Repository {
+	repo := *g
+	repo.ctx = ctx
+
+	return &repo
 }
 
 // LatestRelease retrieves the latest release for the repository.
 func (g *Repository) LatestRelease() (*Release, error) {
-	ctx := context.TODO()
-
-	repositoryRelease, _, err := g.client.Repositories.GetLatestRelease(ctx, g.Owner, g.Repo)
+	repositoryRelease, _, err := g.client.Repositories.GetLatestRelease(g.ctx, g.Owner, g.Repo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get latest release: %w", err)
 	}
 
 	release := &Release{}
-
 	if err := release.FromRepositoryRelease(repositoryRelease); err != nil {
 		return nil, fmt.Errorf("failed to parse release: %w", err)
 	}
@@ -50,15 +53,12 @@ func (g *Repository) LatestRelease() (*Release, error) {
 
 // GetRelease retrieves a specific release for the repository based on the provided tag.
 func (g *Repository) GetRelease(tag string) (*Release, error) {
-	ctx := context.TODO()
-
-	repositoryRelease, _, err := g.client.Repositories.GetReleaseByTag(ctx, g.Owner, g.Repo, tag)
+	repositoryRelease, _, err := g.client.Repositories.GetReleaseByTag(g.ctx, g.Owner, g.Repo, tag)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get assets for release tag %q: %w", tag, err)
 	}
 
 	release := &Release{}
-
 	if err := release.FromRepositoryRelease(repositoryRelease); err != nil {
 		return nil, fmt.Errorf("failed to parse release: %w", err)
 	}
@@ -68,9 +68,7 @@ func (g *Repository) GetRelease(tag string) (*Release, error) {
 
 // Languages retrieves the programming languages used in the repository, sorted by usage in descending order.
 func (g *Repository) Languages() ([]string, error) {
-	ctx := context.TODO()
-
-	languages, _, err := g.client.Repositories.ListLanguages(ctx, g.Owner, g.Repo)
+	languages, _, err := g.client.Repositories.ListLanguages(g.ctx, g.Owner, g.Repo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get languages: %w", err)
 	}

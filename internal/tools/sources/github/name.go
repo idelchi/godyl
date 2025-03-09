@@ -12,7 +12,8 @@ func SplitName(name string) (parts [2]string, err error) {
 	split := strings.Split(name, "/")
 
 	// Check if the name is in the correct format
-	if len(split) != 2 {
+	const expectedParts = 2
+	if len(split) != expectedParts {
 		return parts, fmt.Errorf("invalid source name: %s", name)
 	}
 

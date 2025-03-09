@@ -50,33 +50,34 @@ func (OSInfo) Supported() []OSInfo {
 func (o *OS) Parse(name string) error {
 	name = strings.ToLower(name)
 
-	info := OSInfo{}
+	osInfo := OSInfo{}
 
-	for _, info := range info.Supported() {
+	for _, info := range osInfo.Supported() {
 		for _, alias := range append([]string{info.Type}, info.Aliases...) {
 			if strings.Contains(name, alias) {
 				o.Type = info.Type
 				o.Raw = alias
+
 				return nil
 			}
 		}
 	}
 
-	return fmt.Errorf("unable to parse OS from name: %s", name)
+	return fmt.Errorf("%w: OS from name: %s", ErrParse, name)
 }
 
 // IsUnset returns true if the OS type is not set.
-func (o OS) IsUnset() bool {
+func (o *OS) IsUnset() bool {
 	return o.Type == ""
 }
 
 // Is checks if this OS is exactly the same as another.
-func (o OS) Is(other OS) bool {
+func (o *OS) Is(other OS) bool {
 	return other.Raw == o.Raw && !o.IsUnset() && !other.IsUnset()
 }
 
 // IsCompatibleWith checks if this OS is compatible with another.
-func (o OS) IsCompatibleWith(other OS) bool {
+func (o *OS) IsCompatibleWith(other OS) bool {
 	if o.IsUnset() || other.IsUnset() {
 		return false
 	}
@@ -85,6 +86,6 @@ func (o OS) IsCompatibleWith(other OS) bool {
 }
 
 // String returns a string representation of the OS.
-func (o OS) String() string {
+func (o *OS) String() string {
 	return o.Type
 }

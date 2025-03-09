@@ -23,13 +23,14 @@ type Binary struct {
 	noVerifySSL bool
 }
 
-var mu sync.Mutex
+// mutex is a mutex to prevent concurrent binary creation.
+var mutex sync.Mutex //nolint:gochecknoglobals 		// TODO(Idelchi): Address this later.
 
 // New creates a new Binary instance, setting up the directory, downloading the latest release if necessary,
 // and initializing environment variables. It ensures thread-safe execution by using a mutex lock.
 func New(noVerifySSL bool) (binary Binary, err error) {
-	mu.Lock()
-	defer mu.Unlock()
+	mutex.Lock()
+	defer mutex.Unlock()
 
 	binary.noVerifySSL = noVerifySSL
 
@@ -47,10 +48,11 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 			binary.Env = Env{}
 			binary.Dir = file.Dir()
 		}
+
 		return binary, nil
-	} else {
-		binary.Dir = dir
 	}
+
+	binary.Dir = dir
 
 	release, err := binary.Latest()
 	if err != nil {
@@ -58,6 +60,7 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 	}
 
 	targets := Targets{}
+
 	for _, file := range release.Files {
 		if file.IsArchive() {
 			targets.Files = append(targets.Files, file)
@@ -100,7 +103,7 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 // Download downloads the Go binary from the provided path and saves it to the directory.
 // It returns an error if the download or file validation fails.
 func (b *Binary) Download(path string) error {
-	url := fmt.Sprintf("https://go.dev/dl/%s", path)
+	url := "https://go.dev/dl/" + path
 
 	downloader := download.New()
 	downloader.InsecureSkipVerify = b.noVerifySSL
@@ -133,22 +136,23 @@ func (b *Binary) CleanUp() error {
 
 // Latest fetches the latest Go release information from the official Go download page.
 // It returns the most recent release or an error if the process fails.
-func (b Binary) Latest() (Release, error) {
+func (b *Binary) Latest() (Release, error) {
 	client := resty.New()
+
 	resp, err := client.R().Get("https://go.dev/dl/?mode=json")
 	if err != nil {
-		return Release{}, err
+		return Release{}, fmt.Errorf("fetching latest Go release: %w", err)
 	}
 
 	var releases []Release
 
 	if err := json.Unmarshal(resp.Body(), &releases); err != nil {
-		return Release{}, err
+		return Release{}, fmt.Errorf("unmarshalling Go releases: %w", err)
 	}
 
 	if len(releases) > 0 {
 		return releases[0], nil
 	}
 
-	return Release{}, fmt.Errorf("no versions found")
+	return Release{}, errors.New("no versions found")
 }

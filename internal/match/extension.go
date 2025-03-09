@@ -12,8 +12,8 @@ const (
 	None Extension = iota
 	// EXE represents the ".exe" file extension.
 	EXE
-	// GZ represents the ".gz" file extension.
-	GZ
+	// GZip represents the ".gz" file extension.
+	GZip
 	// ZIP represents the ".zip" file extension.
 	ZIP
 	// Other represents any other file extension.
@@ -29,7 +29,7 @@ func (a *Asset) Extension() Extension {
 	case ".exe":
 		return EXE
 	case ".gz":
-		return GZ
+		return GZip
 	case ".zip":
 		return ZIP
 	case "":

@@ -63,7 +63,7 @@ func (d *Distribution) Parse(name string) error {
 		}
 	}
 
-	return fmt.Errorf("unable to parse distribution from name: %s", name)
+	return fmt.Errorf("unable to parse distribution from name: %q", name)
 }
 
 // IsUnset returns true if the distribution type is not set.

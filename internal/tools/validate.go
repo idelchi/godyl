@@ -16,6 +16,7 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
+// ErrCausesEarlyReturn checks if the error should cause early return.
 func ErrCausesEarlyReturn(err error) bool {
 	return errors.Is(ErrAlreadyExists, err) ||
 		errors.Is(ErrUpToDate, err) ||
@@ -27,17 +28,17 @@ func ErrCausesEarlyReturn(err error) bool {
 
 var (
 	// ErrAlreadyExists indicates that the tool already exists in the system.
-	ErrAlreadyExists = fmt.Errorf("tool already exists")
+	ErrAlreadyExists = errors.New("tool already exists")
 	// ErrUpToDate indicates that the tool is already up to date.
-	ErrUpToDate = fmt.Errorf("tool is up to date")
+	ErrUpToDate = errors.New("tool is up to date")
 	// ErrDoesHaveTags indicates that the tool has tags that are in the excluded tags list.
-	ErrDoesHaveTags = fmt.Errorf("tool contains excluded tags")
+	ErrDoesHaveTags = errors.New("tool contains excluded tags")
 	// ErrDoesNotHaveTags indicates that the tool does not contain required tags.
-	ErrDoesNotHaveTags = fmt.Errorf("tool does not contain included tags")
+	ErrDoesNotHaveTags = errors.New("tool does not contain included tags")
 	// ErrSkipped indicates that the tool has been skipped due to conditions.
-	ErrSkipped = fmt.Errorf("tool skipped")
+	ErrSkipped = errors.New("tool skipped")
 	// ErrFailed indicates that the tool has failed to install or resolve.
-	ErrFailed = fmt.Errorf("tool failed")
+	ErrFailed = errors.New("tool failed")
 )
 
 // Resolve attempts to resolve the tool's source and strategy based on the provided tags.
@@ -56,8 +57,9 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	// Expand and set the output folder path.
 	output := file.Folder(t.Output)
 	if err := output.Expand(); err != nil {
-		return err
+		return fmt.Errorf("expanding output path: %w", err)
 	}
+
 	t.Output = output.Path()
 
 	// Set the strategy to Force if the mode is "extract".
@@ -128,6 +130,8 @@ func (t *Tool) CheckSkipConditions(withTags, withoutTags []string) error {
 }
 
 // tryResolveFallback attempts to resolve a tool using a specific fallback source type.
+//
+//nolint:cyclop,funlen 	// TODO(Idelchi): Refactor this function to reduce cyclomatic complexity.
 func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, withoutTags []string) error {
 	// Append the tool's name as a tag.
 	t.Tags.Append(t.Name)
@@ -190,6 +194,7 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 			return err
 		}
 	}
+
 	utils.SetIfZeroValue(&t.Path, populator.Get("path"))
 	utils.SetIfZeroValue(&t.Path, path)
 
@@ -221,12 +226,14 @@ func (t *Tool) Validate() error {
 	if err := validate.Struct(t); err != nil {
 		return fmt.Errorf("validating config: %w", err)
 	}
+
 	return nil
 }
 
 // Exists checks if the tool's executable already exists in the output path.
 func (t *Tool) Exists() bool {
 	f := file.NewFile(t.Output, t.Exe.Name)
+
 	return f.Exists() && f.IsFile()
 }
 

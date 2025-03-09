@@ -48,7 +48,7 @@ jobs:
           check-latest: true
 
       - name: Run tests
-        run: go run . --show-platform
+        run: go run . dump platform
 
   next-tag:
     uses: idelchi/devenv/.github/workflows/next-tag.yml@main

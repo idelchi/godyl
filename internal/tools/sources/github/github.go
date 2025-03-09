@@ -1,6 +1,7 @@
 package github
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/github"
@@ -26,11 +27,12 @@ func (g *GitHub) Get(attribute string) string {
 	return g.Data.Get(attribute)
 }
 
-// Get retrieves a specific attribute from the GitHub repository's metadata.
+// Export exports the latest stored release to a file.
 func (g *GitHub) Export() error {
 	client := github.NewClient(g.Token)
+
 	repository := github.NewRepository(g.Owner, g.Repo, client)
-	if err := repository.Export(g.latestStoredRelease); err != nil {
+	if err := repository.ExportWithDefaults(g.latestStoredRelease); err != nil {
 		return fmt.Errorf("failed to export release: %w", err)
 	}
 
@@ -44,7 +46,7 @@ func (g *GitHub) LatestVersion() (string, error) {
 
 	release, err := repository.LatestRelease()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to get latest release: %w", err)
 	}
 
 	// Store the latest release for future use
@@ -57,14 +59,14 @@ func (g *GitHub) LatestVersion() (string, error) {
 	return release.Tag, nil
 }
 
-// LatestVersion fetches the latest release version of the GitHub repository.
+// LatestVersionFromExport fetches the latest release version from the exported file.
 func (g *GitHub) LatestVersionFromExport() (string, error) {
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
-	release, err := repository.LatestReleaseFromExport()
+	release, err := repository.LatestReleaseFromExportWithDefaults()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to get latest release from export: %w", err)
 	}
 
 	// Store the latest release for future use
@@ -80,7 +82,7 @@ func (g *GitHub) LatestVersionFromExport() (string, error) {
 // MatchAssetsToRequirements matches release assets to specific file extensions and requirements,
 // returning the URL of the matched asset.
 func (g *GitHub) MatchAssetsToRequirements(
-	filters []string,
+	_ []string,
 	version string,
 	requirements match.Requirements,
 ) (string, error) {
@@ -88,12 +90,13 @@ func (g *GitHub) MatchAssetsToRequirements(
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
 	var release *github.Release
+
 	if g.latestStoredRelease == nil {
 		var err error
 
 		release, err = repository.GetRelease(version)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("failed to get release: %w", err)
 		}
 	} else {
 		release = g.latestStoredRelease
@@ -110,7 +113,12 @@ func (g *GitHub) MatchAssetsToRequirements(
 		return "", fmt.Errorf("no assets found for requirements: %v", requirements)
 	}
 
-	return assets.FilterByName(matches[0].Asset.Name)[0].URL, matches.Status()
+	err := matches.Status()
+	if err != nil {
+		err = fmt.Errorf("status: %w", err)
+	}
+
+	return assets.FilterByName(matches[0].Asset.Name)[0].URL, err
 }
 
 // PopulateOwnerAndRepo sets the Owner and Repo fields based on the given name.
@@ -121,7 +129,7 @@ func (g *GitHub) PopulateOwnerAndRepo(name string) error {
 		return nil
 	case g.Owner == "" && g.Repo == "":
 	default:
-		return fmt.Errorf("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
+		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
 	}
 
 	parts, err := SplitName(name)
@@ -148,17 +156,19 @@ func (g *GitHub) Initialize(name string) error {
 // Exe sets the executable name in the metadata to the repository name.
 func (g *GitHub) Exe() error {
 	g.Data.Set("exe", g.Repo)
+
 	return nil
 }
 
 // Version fetches and sets the latest release version in the metadata.
-func (g *GitHub) Version(name string) error {
+func (g *GitHub) Version(_ string) error {
 	version, err := g.LatestVersion()
 	if err != nil {
 		return err
 	}
 
 	g.Data.Set("version", version)
+
 	return nil
 }
 

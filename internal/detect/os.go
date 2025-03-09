@@ -11,11 +11,13 @@ import (
 // Detect gathers information about the current platform, such as the operating system, architecture,
 // distribution, library, and file extension, and populates the Platform struct accordingly.
 func (p *Platform) Detect() error {
-	var os platform.OS
-	var arch platform.Architecture
-	var library platform.Library
-	var distro platform.Distribution
-	var extension platform.Extension
+	var (
+		operatingSystem platform.OS
+		architecture    platform.Architecture
+		library         platform.Library
+		distro          platform.Distribution
+		extension       platform.Extension
+	)
 
 	info, err := host.Info()
 	if err != nil {
@@ -23,35 +25,35 @@ func (p *Platform) Detect() error {
 	}
 
 	// Determine the OS from runtime information
-	if err := os.Parse(info.OS); err != nil {
-		return err
+	if err := operatingSystem.Parse(info.OS); err != nil {
+		return fmt.Errorf("parsing OS: %w", err)
 	}
 
 	// Determine the Linux distribution from system information
-	distro.Parse(info.Platform)
+	distro.Parse(info.Platform) //nolint:errcheck 	// Ignore error as it's not critical
 
 	// Set the default library based on the OS and distribution
-	library = library.Default(os, distro)
+	library = library.Default(operatingSystem, distro)
 
 	// Determine the architecture from the system's kernel architecture
-	if err := arch.Parse(info.KernelArch); err != nil {
-		return err
+	if err := architecture.Parse(info.KernelArch); err != nil {
+		return fmt.Errorf("parsing architecture: %w", err)
 	}
 
-	if arch.Is64Bit() && os.Type == "linux" {
+	if architecture.Is64Bit() && operatingSystem.Type == "linux" {
 		is32Bit, err := platform.Is32Bit()
 		if err == nil && is32Bit {
-			arch.To32BitUserLand()
+			architecture.To32BitUserLand()
 		}
 	}
 
 	// Populate the Platform struct with the detected values
 	*p = Platform{
-		OS:           os,
+		OS:           operatingSystem,
 		Distribution: distro,
-		Architecture: arch,
+		Architecture: architecture,
 		Library:      library,
-		Extension:    extension.Default(os),
+		Extension:    extension.Default(operatingSystem),
 	}
 
 	return nil

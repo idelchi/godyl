@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/idelchi/godyl/pkg/unmarshal"
@@ -23,17 +24,18 @@ type Condition struct {
 // True checks if any condition in the Skip list evaluates to true.
 // It returns a boolean indicating if the skip should occur, the associated reason, and any error encountered while
 // evaluating the condition.
-func (s Skip) True() (bool, string, error) {
-	for _, condition := range s {
+func (s *Skip) True() (bool, string, error) {
+	for _, condition := range *s {
 		// Parse the condition string into a boolean value.
 		if val, err := strconv.ParseBool(condition.Condition); err != nil {
-			return false, condition.Reason, err
+			return false, condition.Reason, fmt.Errorf("parsing condition %q: %w", condition.Condition, err)
 		} else {
 			if val {
 				return true, condition.Reason, nil
 			}
 		}
 	}
+
 	return false, "", nil
 }
 
@@ -43,6 +45,7 @@ func (s *Skip) UnmarshalYAML(value *yaml.Node) error {
 	// If the YAML value is a scalar (e.g., just a single condition), handle it directly.
 	if value.Kind == yaml.ScalarNode {
 		*s = []Condition{{Condition: value.Value}}
+
 		return nil
 	}
 
@@ -51,6 +54,8 @@ func (s *Skip) UnmarshalYAML(value *yaml.Node) error {
 	if err != nil {
 		return err
 	}
+
 	*s = result
+
 	return nil
 }

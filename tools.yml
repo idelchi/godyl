@@ -16,14 +16,17 @@
 - name: bcicen/ctop
   description: Top-like interface for container metrics
   skip:
-    - reason: "ctop is not available for darwin arm64"
-      condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
+    reason: "ctop is not available for darwin arm64"
+    condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
   extensions: []
   tags:
     - docker
 
 - name: kdash-rs/kdash
-  description: A simple and fast dashboard for Kubernetes
+  description: |
+    A simple and fast dashboard for Kubernetes
+    TODO: Remove pinned release once the GitHub build is fixed - they messed up and only built a couple of Mac binaries
+  version: v0.6.1
   hints:
     - pattern: "{{ .OS }}"
       weight: -1
@@ -56,8 +59,8 @@
   version:
     commands: version
   skip:
-    - reason: "k9s is not available for armv6"
-      condition: '{{ and (eq .ARCH "arm") (eq .ARCH_VERSION 6) }}'
+    reason: "k9s is not available for armv6"
+    condition: '{{ and (eq .ARCH "arm") (eq .ARCH_VERSION 6) }}'
   tags:
     - kubernetes
 
@@ -114,6 +117,11 @@
   description: The Cloud Native Application Proxy
   version:
     commands: version
+  tags:
+    - automation
+
+- name: ldez/traefik-certs-dumper
+  description: A tool to dump ACME certs from Traefik
   tags:
     - automation
 
@@ -181,6 +189,9 @@
   skip:
     reason: "eza is not available on darwin"
     condition: '{{ eq .OS "darwin" }}'
+  hints:
+    - pattern: no_libgit
+      weight: -1
   tags:
     - terminal
 
@@ -188,6 +199,14 @@
   description: Share your terminal as a web application
   skip:
     reason: "gotty is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
+
+- name: filebrowser/filebrowser
+  description:
+  skip:
+    reason: "filebrowser is not available on windows"
     condition: '{{ eq .OS "windows" }}'
   tags:
     - terminal
@@ -233,8 +252,8 @@
   version:
     commands: []
   skip:
-    - reason: "reflex does not work on Windows"
-      condition: '{{ eq .OS "windows" }}'
+    reason: "reflex does not work on Windows"
+    condition: '{{ eq .OS "windows" }}'
   fallbacks:
     - go
   tags:
@@ -272,8 +291,8 @@
 - name: pemistahl/grex
   description: A command-line tool for generating regular expressions
   skip:
-    - reason: "grex is not available for ARM32 architecture"
-      condition: '{{ eq .ARCH "arm" }}'
+    reason: "grex is not available for ARM32 architecture"
+    condition: '{{ eq .ARCH "arm" }}'
   fallbacks:
     - rust
   tags:
@@ -377,8 +396,8 @@
 - name: antonmedv/fx
   description: Command-line JSON processing tool
   skip:
-    - reason: "fx is not available for ARM32 architecture"
-      condition: '{{ eq .ARCH "arm" }}'
+    reason: "fx is not available for ARM32 architecture"
+    condition: '{{ eq .ARCH "arm" }}'
   tags:
     - processing
 
@@ -503,9 +522,24 @@
     - automation
 
 - name: hashicorp/vault
-  description: Infrastructure as Code tool
+  description: Secure, store, and tightly control access to tokens, passwords, certificates, API keys, and other secrets
   path: https://releases.hashicorp.com/vault/{{ .Version | trimPrefix "v" }}/vault_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
-  aliases: tf
+  tags:
+    - automation
+
+- name: authelia/authelia
+  description: The Single Sign-On Multi-Factor portal for web apps
+  skip:
+    - reason: "authelia is not available on windows"
+      condition: '{{ eq .OS "windows" }}'
+    - reason: "authelia is not available on darwin"
+      condition: '{{ eq .OS "darwin" }}'
+  exe:
+    name: authelia
+    patterns: ^authelia
+  hints:
+    - pattern: "-musl"
+      weight: '{{ if eq .DISTRIBUTION "alpine" }}0{{ else }}-2{{ end }}'
   tags:
     - automation
 
@@ -665,6 +699,73 @@
     - elevated
     - native
     - processing
+
+- name: hairyhenderson/gomplate
+  description: A versatile Go template processor
+  exe:
+    patterns: ^gomplate
+  tags:
+    - terminal
+
+- name: coredns/coredns
+  description: DNS server that chains plugins
+  extensions: .tgz
+  tags:
+    - networking
+
+- name: watchexec/watchexec
+  description: Executes commands in response to file modifications
+  extensions: |
+    {{- if eq .OS "windows" -}}
+        .zip
+    {{- else -}}
+        .tar.xz
+    {{- end -}}
+  tags:
+    - automation
+
+- name: bitwarden/cli
+  description: The Bitwarden command-line interface
+  version: 2025.1.0
+  exe: bw
+  path: |-
+    {{- if eq .OS "darwin" -}}
+    https://github.com/bitwarden/clients/releases/download/cli-v{{ .Version }}/bw-macos-{{ .Version }}.zip
+    {{- else -}}
+    https://github.com/bitwarden/clients/releases/download/cli-v{{ .Version }}/bw-{{ .OS }}-{{ .Version }}.zip
+    {{- end -}}
+  source:
+    type: url
+  tags:
+    - automation
+
+- name: gotify/cli
+  exe: gotify
+  description: A command-line client for Gotify
+
+- name: getsops/sops
+  description: Simple and flexible tool for managing secrets
+  skip:
+    - reason: "sops is not available on windows"
+      condition: '{{ eq .OS "windows" }}'
+    - reason: "sops is not available for ARM32 architecture"
+      condition: '{{ eq .ARCH "arm" }}'
+  extensions: "{{ .ARCH }}"
+  tags:
+    - security
+
+- name: dagu-org/dagu
+  description: Developer-friendly minimalism Cron/Airflow alternative
+  skip:
+    reason: "dagu is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - automation
+
+- name: binwiederhier/ntfy
+  description: Send push notifications to your phone or desktop using PUT/POST
+  tags:
+    - terminal
 
 - idelchi/gocry
 - idelchi/gogen

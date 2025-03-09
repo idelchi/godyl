@@ -116,6 +116,8 @@ func NewRootCommand(version string, cfg *config.Config, funcs ...func(*cobra.Com
 
 	root.SetVersionTemplate("{{ .Version }}\n")
 
+	root.SetHelpCommand(&cobra.Command{Hidden: true})
+
 	return root
 }
 

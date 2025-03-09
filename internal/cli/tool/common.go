@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/idelchi/godyl/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/idelchi/godyl/internal/config"
 )
 
-// addToolFlags adds tool-related flags to the command.
-// This include `install` and `download`.
 func addToolFlags(cmd *cobra.Command) {
 	cmd.Flags().StringP("output", "o", "./bin", "Output path for the downloaded tools")
 	cmd.Flags().StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
@@ -21,6 +20,11 @@ func addToolFlags(cmd *cobra.Command) {
 	cmd.Flags().String("arch", "", "Architecture to install the tools for")
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
 	cmd.Flags().IntP("parallel", "j", 0, "Number of parallel downloads. 0 means unlimited.")
+}
+
+func addUpdateFlags(cmd *cobra.Command) {
+	cmd.Flags().String("github-token", "", "GitHub token for authentication")
+	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
 }
 
 func commonPreRunE(cmd *cobra.Command, tool *config.Tool) error {

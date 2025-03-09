@@ -130,6 +130,8 @@ func (t *Tool) CheckSkipConditions(withTags, withoutTags []string) error {
 }
 
 // tryResolveFallback attempts to resolve a tool using a specific fallback source type.
+//
+//nolint:cyclop,funlen 	// TODO(Idelchi): Refactor this function to reduce cyclomatic complexity.
 func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, withoutTags []string) error {
 	// Append the tool's name as a tag.
 	t.Tags.Append(t.Name)

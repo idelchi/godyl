@@ -6,8 +6,6 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/dump"
 	"github.com/idelchi/godyl/internal/cli/tool"
-	"github.com/idelchi/godyl/internal/cli/update"
-
 	"github.com/idelchi/godyl/internal/cli/version"
 	"github.com/idelchi/godyl/pkg/logger"
 )
@@ -19,7 +17,7 @@ func (f *CommandFactory) addSubcommands(root *cobra.Command) {
 		dump.NewCommand(f.cfg, f.files),
 		tool.NewInstallCommand(f.cfg, f.files),
 		tool.NewDownloadCommand(f.cfg, f.files),
-		update.NewCommand(f.cfg, f.files),
+		tool.NewUpdateCommand(f.cfg, f.files),
 	)
 }
 

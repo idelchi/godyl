@@ -54,10 +54,12 @@ type Downloader struct {
 
 // New returns a new Downloader instance with default timeout values set to 5 minutes.
 func New() *Downloader {
+	const defaultTimeout = 5 * time.Minute
+
 	return &Downloader{
-		ContextTimeout:     5 * time.Minute,
-		ReadTimeout:        5 * time.Minute,
-		HeadTimeout:        5 * time.Minute,
+		ContextTimeout:     defaultTimeout,
+		ReadTimeout:        defaultTimeout,
+		HeadTimeout:        defaultTimeout,
 		InsecureSkipVerify: false,
 	}
 }

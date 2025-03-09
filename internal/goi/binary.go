@@ -24,7 +24,7 @@ type Binary struct {
 }
 
 // mutex is a mutex to prevent concurrent binary creation.
-var mutex sync.Mutex // nolint:gochecknoglobals 		// TODO(Idelchi): Address this later.
+var mutex sync.Mutex //nolint:gochecknoglobals 		// TODO(Idelchi): Address this later.
 
 // New creates a new Binary instance, setting up the directory, downloading the latest release if necessary,
 // and initializing environment variables. It ensures thread-safe execution by using a mutex lock.

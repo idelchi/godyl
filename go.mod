@@ -15,7 +15,7 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2
 	github.com/hashicorp/go-getter/v2 v2.2.3
 	github.com/idelchi/go-next-tag v0.0.1
-	github.com/idelchi/gogen v0.1.0-beta.0.20250114054957-4978468f4054
+	github.com/idelchi/gogen v0.0.0-20250114054957-4978468f4054
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
 	github.com/joho/godotenv v1.5.1
 	github.com/schollz/closestmatch v2.1.0+incompatible

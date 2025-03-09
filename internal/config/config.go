@@ -23,9 +23,6 @@ type Config struct {
 
 	Tool Tool
 
-	// Update level configuration
-	Update Update
-
 	// Dump level configuration
 	Dump Dump
 }

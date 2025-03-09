@@ -75,11 +75,6 @@ type DefaultReplacer struct{}
 
 // Update performs the update process for the godyl tool, applying the specified strategy.
 func (u *Updater) Update(version string) error {
-	// Set default strategy if none is provided.
-	if u.Strategy == tools.None {
-		u.Strategy = tools.Upgrade
-	}
-
 	// Determine the tool path from build info, defaulting to "idelchi/godyl" if not available.
 	path := "idelchi/godyl"
 	info, ok := debug.ReadBuildInfo()

@@ -40,7 +40,10 @@ func NewDefaults() *Defaults {
 // Unmarshal parses the provided YAML data into the Defaults struct.
 func (d *Defaults) Unmarshal(data []byte) error {
 	// Using the yaml tag to ensure proper unmarshaling
-	err := yaml.Unmarshal(data, d) // nolint:musttag		// TODO(Idelchi): Not sure what is expected here, check later.
+	err := yaml.Unmarshal(
+		data,
+		d,
+	) // nolint:musttag		// TODO(Idelchi): Not sure what is expected here, check later.
 	if err != nil {
 		return fmt.Errorf("unmarshalling defaults: %w", err)
 	}

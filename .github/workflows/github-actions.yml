@@ -27,7 +27,7 @@ jobs:
   #   needs: info
 
   test:
-    needs: verify
+    needs: info
     if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
     strategy:
       matrix:

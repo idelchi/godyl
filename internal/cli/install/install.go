@@ -1,3 +1,5 @@
+// Package install implements the install command for godyl.
+// It provides functionality to install tools from a YAML configuration file.
 package install
 
 import (
@@ -17,7 +19,19 @@ import (
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
-func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+// Command encapsulates the install cobra command with its associated config and embedded files.
+type Command struct {
+	// Command is the install cobra.Command instance
+	Command *cobra.Command
+}
+
+// Flags adds install-specific flags to the command.
+func (cmd *Command) Flags() {
+	flags.Tool(cmd.Command)
+}
+
+// NewInstallCommand creates a Command for installing tools from a YAML file.
+func NewInstallCommand(cfg *config.Config, files config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:     "install [tools.yml]",
 		Aliases: []string{"i", "get"},
@@ -82,8 +96,18 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 		},
 	}
 
-	// Add tool-specific flags
-	flags.Tool(cmd)
+	return &Command{
+		Command: cmd,
+	}
+}
 
-	return cmd
+// NewCommand creates a cobra.Command instance containing the install command.
+func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+	// Create the install command
+	cmd := NewInstallCommand(cfg, files)
+
+	// Add tool-specific flags
+	cmd.Flags()
+
+	return cmd.Command
 }

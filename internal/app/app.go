@@ -29,13 +29,13 @@ func New(version string, embeds embed.FS) *Application {
 func (a *Application) Execute() error {
 	cfg := &config.Config{}
 
-	root, err := cli.NewRootCmd(cfg, a.version, a.embeds)
+	root, err := cli.NewCommand(cfg, a.version, a.embeds)
 	if err != nil {
 		return fmt.Errorf("application failed to initialize: %w", err)
 	}
 
 	// Execute the application
-	if err := root.Execute(); err != nil {
+	if err := root.Run(); err != nil {
 		return err //nolint:wrapcheck 		// Wrapping here adds no value.
 	}
 

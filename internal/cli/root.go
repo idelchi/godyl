@@ -1,4 +1,3 @@
-// Package cli provides the command-line interface for the application.
 package cli
 
 import (
@@ -20,24 +19,39 @@ import (
 	"github.com/idelchi/gogen/pkg/cobraext"
 )
 
-// NewRootCmd creates the root command with all configuration.
-func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Command, error) {
-	files := config.Embedded{}
-	var err error
+// Command encapsulates a root cobra command with its associated config and embedded files.
+type Command struct {
+	// Command is the root cobra.Command instance
+	Command *cobra.Command
+	// Config contains application configuration
+	Config *config.Config
+	// Files contains the embedded configuration files and templates
+	Files config.Embedded
+}
 
-	// Read embedded files
-	if files.Defaults, err = embeds.ReadFile("defaults.yml"); err != nil {
-		return nil, fmt.Errorf("reading defaults file: %w", err)
-	}
+// Run executes the root command.
+func (cmd *Command) Run() error {
+	return cmd.Command.Execute()
+}
 
-	if files.Tools, err = embeds.ReadFile("tools.yml"); err != nil {
-		return nil, fmt.Errorf("reading tools file: %w", err)
-	}
+// Flags adds all root-level flags to the command.
+func (cmd *Command) Flags() {
+	flags.Root(cmd.Command)
+}
 
-	if files.Template, err = embeds.ReadFile("internal/core/updater/scripts/cleanup.bat.template"); err != nil {
-		return nil, fmt.Errorf("reading cleanup template: %w", err)
-	}
+// Subcommands adds all subcommands to the root command.
+func (cmd *Command) Subcommands() {
+	cmd.Command.AddCommand(
+		version.NewCommand(cmd.Command.Version),
+		dump.NewCommand(cmd.Config, cmd.Files),
+		install.NewCommand(cmd.Config, cmd.Files),
+		download.NewCommand(cmd.Config, cmd.Files),
+		update.NewCommand(cmd.Config, cmd.Files),
+	)
+}
 
+// NewRootCommand creates the root cobra command with configuration and embedded files.
+func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *Command {
 	// Create the root command
 	root := &cobra.Command{
 		Use:   "godyl [command]",
@@ -49,12 +63,9 @@ func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Com
 		SilenceErrors:    true,
 		TraverseChildren: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			// Bind root-level flags
 			if err := flags.Bind(cmd.Root(), cmd.Root().Name(), &cfg.Root); err != nil {
 				return fmt.Errorf("binding flags: %w", err)
-			}
-
-			if err := cfg.Root.Validate(); err != nil {
-				return fmt.Errorf("validating config: %w", err)
 			}
 
 			// Load environment variables from .env file
@@ -62,6 +73,11 @@ func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Com
 				if config.IsSet("env-file") {
 					return fmt.Errorf("loading .env file: %w", err)
 				}
+			}
+
+			// Validate the root configuration
+			if err := cfg.Root.Validate(); err != nil {
+				return fmt.Errorf("validating config: %w", err)
 			}
 
 			return nil
@@ -73,21 +89,29 @@ func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Com
 	root.Flags().SortFlags = false
 	root.SetVersionTemplate("{{ .Version }}\n")
 
-	// Add root-level flags
-	flags.Root(root)
-
-	// Add subcommands
-	subcommands(root, cfg, files)
-
-	return root, nil
+	return &Command{
+		Command: root,
+		Config:  cfg,
+		Files:   files,
+	}
 }
 
-func subcommands(cmd *cobra.Command, cfg *config.Config, files config.Embedded) {
-	cmd.AddCommand(
-		version.NewCommand(cmd.Version),
-		dump.NewCommand(cfg, files),
-		install.NewCommand(cfg, files),
-		download.NewCommand(cfg, files),
-		update.NewCommand(cfg, files),
-	)
+// NewCommand creates a fully configured Command instance with embedded files and subcommands.
+func NewCommand(cfg *config.Config, version string, embeds embed.FS) (*Command, error) {
+	// Get the embedded files
+	files, err := NewEmbeddedFiles(embeds)
+	if err != nil {
+		return nil, fmt.Errorf("creating embedded files: %w", err)
+	}
+
+	// Create the root command
+	cmd := NewRootCommand(cfg, files, version)
+
+	// Add root-level flags
+	cmd.Flags()
+
+	// Add subcommands
+	cmd.Subcommands()
+
+	return cmd, nil
 }

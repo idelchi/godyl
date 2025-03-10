@@ -5,6 +5,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Root adds the root-level command flags to the provided cobra command.
+// These flags apply to the root command.
 func Root(cmd *cobra.Command) {
 	cmd.Flags().Bool("dry", false, "Run without making any changes (dry run)")
 	cmd.Flags().String("log", logger.INFO.String(), "Log level (DEBUG, INFO, WARN, ERROR, SILENT)")
@@ -13,6 +15,8 @@ func Root(cmd *cobra.Command) {
 	cmd.Flags().BoolP("show", "s", false, "Show the configuration and exit")
 }
 
+// Tool adds tool-related command flags to the provided cobra command.
+// These flags control how tools are downloaded and installed.
 func Tool(cmd *cobra.Command) {
 	cmd.Flags().StringP("output", "o", "./bin", "Output path for the downloaded tools")
 	cmd.Flags().StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
@@ -26,6 +30,8 @@ func Tool(cmd *cobra.Command) {
 	cmd.Flags().StringSlice("hints", []string{""}, "Hints to use for tool resolution")
 }
 
+// Update adds update-related command flags to the provided cobra command.
+// These flags control the self-update.
 func Update(cmd *cobra.Command) {
 	cmd.Flags().String("github-token", "brooo", "GitHub token for authentication")
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")

@@ -1,3 +1,5 @@
+// Package download implements the download command for godyl.
+// It provides functionality to download and extract tools from various sources.
 package download
 
 import (
@@ -18,7 +20,20 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
-func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+// Command encapsulates the download cobra command with its associated config and embedded files.
+type Command struct {
+	// Command is the download cobra.Command instance
+	Command *cobra.Command
+}
+
+// Flags adds download-specific flags to the command.
+func (cmd *Command) Flags() {
+	flags.Tool(cmd.Command)
+}
+
+// NewDownloadCommand creates a Command for downloading and unpacking tools.
+func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
+	// Create the download command
 	cmd := &cobra.Command{
 		Use:     "download [tool]",
 		Aliases: []string{"dl", "unpack", "extract", "x"},
@@ -84,8 +99,18 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 		},
 	}
 
-	// Add tool-specific flags
-	flags.Tool(cmd)
+	return &Command{
+		Command: cmd,
+	}
+}
 
-	return cmd
+// NewCommand creates a cobra.Command instance containing the download command.
+func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+	// Create the download command
+	cmd := NewDownloadCommand(cfg, files)
+
+	// Add tool-specific flags
+	cmd.Flags()
+
+	return cmd.Command
 }

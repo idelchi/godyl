@@ -1,3 +1,5 @@
+// Package update implements the update command for godyl.
+// It provides functionality to update the application itself to the latest version.
 package update
 
 import (
@@ -12,7 +14,19 @@ import (
 	"github.com/idelchi/godyl/internal/tools"
 )
 
-func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+// Command encapsulates the update cobra command with its associated config and embedded files.
+type Command struct {
+	// Command is the update cobra.Command instance
+	Command *cobra.Command
+}
+
+// Flags adds update-specific flags to the command.
+func (cmd *Command) Flags() {
+	flags.Update(cmd.Command)
+}
+
+// NewUpdateCommand creates a Command for updating the application to the latest version.
+func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:     "update",
 		Aliases: []string{"upgrade", "up"},
@@ -37,7 +51,18 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 		},
 	}
 
-	flags.Update(cmd)
+	return &Command{
+		Command: cmd,
+	}
+}
 
-	return cmd
+// NewCommand creates a cobra.Command instance containing the update command.
+func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+	// Create the update command
+	cmd := NewUpdateCommand(cfg, files)
+
+	// Add update-specific flags
+	cmd.Flags()
+
+	return cmd.Command
 }

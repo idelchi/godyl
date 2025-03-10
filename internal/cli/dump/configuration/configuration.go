@@ -32,7 +32,7 @@ func NewConfigCommand(cfg *config.Config, files config.Embedded) *Command {
 		Short: "Display root configuration information",
 		Args:  cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return flags.Bind(cmd.Parent(), cmd.Root().Name(), &cfg.Dump)
+			return flags.Bind(cmd.Parent(), &cfg.Dump, cmd.Root().Name(), cmd.Parent().Name())
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
 			c, err := getConfig(cfg)

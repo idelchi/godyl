@@ -33,7 +33,7 @@ func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
 		Short:   "Update the application",
 		Long:    "Update the godyl application to the latest version",
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return flags.Bind(cmd, cmd.Root().Name(), &cfg.Tool)
+			return flags.Bind(cmd, &cfg.Tool, cmd.Root().Name(), cmd.Name())
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
 			toolDefaults := tools.Defaults{}

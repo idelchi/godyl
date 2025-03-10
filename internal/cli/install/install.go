@@ -40,8 +40,8 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *Command {
 		Long:    "Install tools as specified in a YAML configuration file",
 		Args:    cobra.MaximumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			if err := flags.Bind(cmd, cmd.Root().Name(), &cfg.Tool); err != nil {
-				return fmt.Errorf("common pre-run: %w", err)
+			if err := flags.Bind(cmd, &cfg.Tool, cmd.Root().Name(), "TOOL"); err != nil {
+				return err
 			}
 
 			return validate.Validate(cfg.Tool)

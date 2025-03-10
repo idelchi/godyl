@@ -64,7 +64,7 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 		TraverseChildren: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			// Bind root-level flags
-			if err := flags.Bind(cmd.Root(), cmd.Root().Name(), &cfg.Root); err != nil {
+			if err := flags.Bind(cmd.Root(), &cfg.Root, cmd.Root().Name()); err != nil {
 				return fmt.Errorf("binding flags: %w", err)
 			}
 

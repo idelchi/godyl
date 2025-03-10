@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // UnknownSubcommandAction is a cobra.Command.RunE function that prints an error message for unknown subcommands.
@@ -27,4 +28,10 @@ func UnknownSubcommandAction(cmd *cobra.Command, args []string) error {
 	}
 
 	return errors.New(err) //nolint: err113
+}
+
+// IsSet checks if a flag is set in viper,
+// to avoid using it's default values unless explicitly passed.
+func IsSet(flag string) bool {
+	return viper.IsSet(flag)
 }

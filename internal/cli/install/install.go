@@ -1,10 +1,13 @@
-package tool
+// Package install implements the install command for godyl.
+// It provides functionality to install tools from a YAML configuration file.
+package install
 
 import (
 	"fmt"
 
 	"github.com/spf13/cobra"
 
+	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/core/defaults"
 	"github.com/idelchi/godyl/internal/core/processor"
@@ -14,9 +17,22 @@ import (
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/pretty"
+	"github.com/idelchi/godyl/pkg/validate"
 )
 
-func NewInstallCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+// Command encapsulates the install cobra command with its associated config and embedded files.
+type Command struct {
+	// Command is the install cobra.Command instance
+	Command *cobra.Command
+}
+
+// Flags adds install-specific flags to the command.
+func (cmd *Command) Flags() {
+	flags.Tool(cmd.Command)
+}
+
+// NewInstallCommand creates a Command for installing tools from a YAML file.
+func NewInstallCommand(cfg *config.Config, files config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:     "install [tools.yml]",
 		Aliases: []string{"i", "get"},
@@ -24,11 +40,11 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *cobra.Command
 		Long:    "Install tools as specified in a YAML configuration file",
 		Args:    cobra.MaximumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			if err := commonPreRunE(cmd, &cfg.Tool); err != nil {
+			if err := flags.Bind(cmd, cmd.Root().Name(), &cfg.Tool); err != nil {
 				return fmt.Errorf("common pre-run: %w", err)
 			}
 
-			return config.Validate(cfg.Tool)
+			return validate.Validate(cfg.Tool)
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
 			if cfg.Root.Show {
@@ -56,7 +72,7 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *cobra.Command
 
 			// Load defaults
 			toolDefaults := tools.Defaults{}
-			if err := defaults.LoadDefaults(&toolDefaults, cfg.Root.Defaults.Name(), files.Defaults, *cfg); err != nil {
+			if err := defaults.LoadDefaults(&toolDefaults, cfg.Root.Defaults.Name(), files, *cfg); err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
@@ -81,8 +97,20 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *cobra.Command
 		},
 	}
 
-	// Add tool-specific flags
-	addToolFlags(cmd)
+	return &Command{
+		Command: cmd,
+	}
+}
 
-	return cmd
+// NewCommand creates a cobra.Command instance containing the install command.
+func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+	// Create the install command
+	cmd := NewInstallCommand(cfg, files)
+
+	// Add tool-specific flags
+	cmd.Flags()
+
+	cmd.Command.Flags().MarkHidden("version")
+
+	return cmd.Command
 }

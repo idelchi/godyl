@@ -1,33 +1,16 @@
 package config
 
-import (
-	"errors"
+// Config holds the top level configuration for godyl.
+// It is split into sub-structs for each command.
 
-	"github.com/spf13/viper"
-)
-
-// ErrUsage is returned when there is an error in the configuration.
-var ErrUsage = errors.New("usage error")
-
-// Embedded holds the embedded files for the application.
-type Embedded struct {
-	Defaults []byte
-	Tools    []byte
-	Template []byte
-}
-
-// Config holds all the configuration options for godyl.
 type Config struct {
-	// Root level configuration
+	// Root level configuration, mapping configurations on the root `godyl` command
 	Root Root
 
+	// Tool level configuration, mapping configurations on the `install`, `download`,
+	// and (partially) the `update` commands
 	Tool Tool
 
-	// Dump level configuration
+	// Dump level configuration, mapping configurations on the `dump` command
 	Dump Dump
-}
-
-// IsSet checks if a flag is set in viper.
-func IsSet(flag string) bool {
-	return viper.IsSet(flag)
 }

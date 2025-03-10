@@ -7,7 +7,7 @@ import (
 )
 
 type Tool struct {
-	// Output path for the downloaded tools
+	// Path to output the fetched tools to
 	Output string
 
 	// Tags to filter tools by
@@ -37,8 +37,11 @@ type Tool struct {
 	// Skip SSL verification
 	NoVerifySSL bool `mapstructure:"no-verify-ssl"`
 
-	// Hints to use for tool resolution
+	// Additional hints to use for tool resolution
 	Hints []string
+
+	// Version of the tool to install
+	Version string
 }
 
 // Tokens holds the configuration options for authentication tokens.

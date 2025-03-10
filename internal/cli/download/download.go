@@ -18,6 +18,7 @@ import (
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/pretty"
 	"github.com/idelchi/godyl/pkg/utils"
+	"github.com/idelchi/godyl/pkg/validate"
 )
 
 // Command encapsulates the download cobra command with its associated config and embedded files.
@@ -45,7 +46,7 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
 				return fmt.Errorf("common pre-run: %w", err)
 			}
 
-			return config.Validate(cfg.Tool)
+			return validate.Validate(cfg.Tool)
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
 			if cfg.Root.Show {
@@ -66,7 +67,7 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
 
 			// Load defaults
 			toolDefaults := tools.Defaults{}
-			if err := defaults.LoadDefaults(&toolDefaults, cfg.Root.Defaults.Name(), files.Defaults, *cfg); err != nil {
+			if err := defaults.LoadDefaults(&toolDefaults, cfg.Root.Defaults.Name(), files, *cfg); err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
@@ -75,15 +76,23 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
 			log.Info("*** ***")
 
 			toolsList := []tools.Tool{}
+
+			var version string
+			utils.SetIfZeroValue(&version, cfg.Tool.Version)
+
 			for _, name := range args {
 				tool := tools.Tool{
 					Name: name,
 					Mode: tools.Extract,
+					Version: tools.Version{
+						Version: version,
+					},
 				}
 				if utils.IsURL(name) {
 					tool.Name = filepath.Base(name)
 					tool.Path = name
 					tool.Source.Type = sources.DIRECT
+					tool.Version.Version = version
 				}
 
 				toolsList = append(toolsList, tool)

@@ -17,6 +17,7 @@ import (
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/pretty"
+	"github.com/idelchi/godyl/pkg/validate"
 )
 
 // Command encapsulates the install cobra command with its associated config and embedded files.
@@ -43,7 +44,7 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *Command {
 				return fmt.Errorf("common pre-run: %w", err)
 			}
 
-			return config.Validate(cfg.Tool)
+			return validate.Validate(cfg.Tool)
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
 			if cfg.Root.Show {
@@ -71,7 +72,7 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *Command {
 
 			// Load defaults
 			toolDefaults := tools.Defaults{}
-			if err := defaults.LoadDefaults(&toolDefaults, cfg.Root.Defaults.Name(), files.Defaults, *cfg); err != nil {
+			if err := defaults.LoadDefaults(&toolDefaults, cfg.Root.Defaults.Name(), files, *cfg); err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
@@ -108,6 +109,8 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 
 	// Add tool-specific flags
 	cmd.Flags()
+
+	cmd.Command.Flags().MarkHidden("version")
 
 	return cmd.Command
 }

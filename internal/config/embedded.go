@@ -1,15 +1,23 @@
-package cli
+package config
 
 import (
 	"embed"
 	"fmt"
-
-	"github.com/idelchi/godyl/internal/config"
 )
 
+// Embedded holds the embedded files for the application.
+type Embedded struct {
+	// Defaults to be set for each tool (not flags).
+	Defaults []byte
+	// Default list of tools that can be used to either view or dump out.
+	Tools []byte
+	// A template for the cleanup script.
+	Template []byte
+}
+
 // NewEmbeddedFiles loads embedded configuration files and templates.
-func NewEmbeddedFiles(embeds embed.FS) (config.Embedded, error) {
-	files := config.Embedded{}
+func NewEmbeddedFiles(embeds embed.FS) (Embedded, error) {
+	files := Embedded{}
 	var err error
 
 	// Read embedded files

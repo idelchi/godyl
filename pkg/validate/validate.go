@@ -1,11 +1,16 @@
-package config
+// Package validate provides functionality for validating configuration options.
+// It wraps the `gogen` validator package to provide a more user-friendly interface.
+package validate
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/idelchi/gogen/pkg/validator"
 )
+
+var ErrValidation = errors.New("validation error")
 
 // Validate performs validation checks.
 func Validate(validations ...any) error {
@@ -24,17 +29,12 @@ func Validate(validations ...any) error {
 		return nil
 	}
 
-	if len(allErrors) == 1 {
-		return fmt.Errorf("%w: %w\nSee --help for more info on usage", ErrUsage, allErrors[0])
-	}
-
-	// Create a bulleted list for multiple errors
+	// Create a bulleted list for the errors
 	var errList strings.Builder
-	errList.WriteString("validation errors:\n")
 	for _, err := range allErrors {
-		errList.WriteString(fmt.Sprintf("  • %v\n", err))
+		errList.WriteString(fmt.Sprintf("  • %s\n", err))
 	}
-	errList.WriteString("See --help for more info on usage")
 
-	return fmt.Errorf("%w: %s", ErrUsage, errList.String())
+	// Add help text
+	return fmt.Errorf("%w\n%sSee --help for more info on usage", ErrValidation, errList.String())
 }

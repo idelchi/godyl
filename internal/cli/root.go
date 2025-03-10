@@ -15,8 +15,8 @@ import (
 	"github.com/idelchi/godyl/internal/cli/version"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/utils"
+	"github.com/idelchi/godyl/pkg/cobraext"
 	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/gogen/pkg/cobraext"
 )
 
 // Command encapsulates a root cobra command with its associated config and embedded files.
@@ -70,7 +70,7 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 
 			// Load environment variables from .env file
 			if err := utils.LoadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
-				if config.IsSet("env-file") {
+				if cobraext.IsSet("env-file") {
 					return fmt.Errorf("loading .env file: %w", err)
 				}
 			}
@@ -99,7 +99,7 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 // NewCommand creates a fully configured Command instance with embedded files and subcommands.
 func NewCommand(cfg *config.Config, version string, embeds embed.FS) (*Command, error) {
 	// Get the embedded files
-	files, err := NewEmbeddedFiles(embeds)
+	files, err := config.NewEmbeddedFiles(embeds)
 	if err != nil {
 		return nil, fmt.Errorf("creating embedded files: %w", err)
 	}

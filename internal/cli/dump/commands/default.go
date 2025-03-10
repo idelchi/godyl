@@ -5,6 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/core/defaults"
 	"github.com/idelchi/godyl/internal/tools"
@@ -17,7 +18,7 @@ func NewDefaultsCommand(cfg *config.Config, files config.Embedded) *cobra.Comman
 		Short: "Display default configuration settings",
 		Args:  cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return commonPreRunE(cmd, &cfg.Dump)
+			return flags.Bind(cmd.Parent(), cmd.Root().Name(), &cfg.Dump)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
 			c, err := getDefaults(cfg, files)

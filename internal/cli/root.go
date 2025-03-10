@@ -4,105 +4,63 @@ package cli
 import (
 	"embed"
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/idelchi/godyl/internal/cli/download"
+	"github.com/idelchi/godyl/internal/cli/dump"
+	"github.com/idelchi/godyl/internal/cli/flags"
+	"github.com/idelchi/godyl/internal/cli/install"
+	"github.com/idelchi/godyl/internal/cli/update"
+	"github.com/idelchi/godyl/internal/cli/version"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/gogen/pkg/cobraext"
 )
 
-// CommandFactory creates and configures commands.
-type CommandFactory struct {
-	cfg     *config.Config
-	version string
-	files   config.Embedded
-}
-
-// NewRootCmd creates the root command with common configuration.
-// It sets up environment variable binding and flag handling.
+// NewRootCmd creates the root command with all configuration.
 func NewRootCmd(cfg *config.Config, version string, embeds embed.FS) (*cobra.Command, error) {
-	factory := &CommandFactory{
-		cfg:     cfg,
-		version: version,
-	}
-
+	files := config.Embedded{}
 	var err error
 
-	factory.files.Defaults, err = embeds.ReadFile("defaults.yml")
-	if err != nil {
+	// Read embedded files
+	if files.Defaults, err = embeds.ReadFile("defaults.yml"); err != nil {
 		return nil, fmt.Errorf("reading defaults file: %w", err)
 	}
 
-	factory.files.Tools, err = embeds.ReadFile("tools.yml")
-	if err != nil {
+	if files.Tools, err = embeds.ReadFile("tools.yml"); err != nil {
 		return nil, fmt.Errorf("reading tools file: %w", err)
 	}
 
-	factory.files.Template, err = embeds.ReadFile("internal/core/updater/scripts/cleanup.bat.template")
-	if err != nil {
+	if files.Template, err = embeds.ReadFile("internal/core/updater/scripts/cleanup.bat.template"); err != nil {
 		return nil, fmt.Errorf("reading cleanup template: %w", err)
 	}
 
-	return factory.CreateRootCommand(), nil
-}
-
-// CreateRootCommand creates and configures the root command.
-func (f *CommandFactory) CreateRootCommand() *cobra.Command {
-	// Custom functions for the NewDefaultRootCommand
-	funcs := []func(*cobra.Command, []string) error{
-		f.loadDotEnvFunc(),
-	}
-
-	root := NewRootCommand(f.version, f.cfg, funcs...)
-
-	// Add subcommands
-	f.addSubcommands(root)
-
-	// Add root-level flags
-	f.addRootFlags(root)
-
-	// Make certain flags persistent so they can be used with subcommands
-
-	return root
-}
-
-// NewDefaultRootCommand creates a root command with default settings.
-// It sets up integration with viper, with environment variable and flag binding.
-// Additional functions can be passed to be executed before the command is run.
-func NewRootCommand(version string, cfg *config.Config, funcs ...func(*cobra.Command, []string) error) *cobra.Command {
+	// Create the root command
 	root := &cobra.Command{
 		Use:   "godyl [command]",
 		Short: "Asset downloader for tools",
-		Long: "godyl helps with batch-downloading and installing statically compiled binaries from GitHub releases, " +
+		Long: "godyl helps with batch-fetching and extracting statically compiled binaries from GitHub releases, " +
 			"URLs, and Go projects.",
 		Version:          version,
 		SilenceUsage:     true,
 		SilenceErrors:    true,
 		TraverseChildren: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			viper.SetEnvPrefix(cmd.Root().Name())
-			viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
-			viper.AutomaticEnv()
-
-			if err := viper.BindPFlags(cmd.Root().Flags()); err != nil {
-				return fmt.Errorf("binding command flags: %w", err)
-			}
-
-			if err := viper.Unmarshal(&cfg.Root); err != nil {
-				return fmt.Errorf("unmarshalling config: %w", err)
+			if err := flags.Bind(cmd.Root(), cmd.Root().Name(), &cfg.Root); err != nil {
+				return fmt.Errorf("binding flags: %w", err)
 			}
 
 			if err := cfg.Root.Validate(); err != nil {
 				return fmt.Errorf("validating config: %w", err)
 			}
 
-			for _, f := range funcs {
-				if err := f(cmd, args); err != nil {
-					return err
+			// Load environment variables from .env file
+			if err := utils.LoadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
+				if config.IsSet("env-file") {
+					return fmt.Errorf("loading .env file: %w", err)
 				}
 			}
 
@@ -113,23 +71,23 @@ func NewRootCommand(version string, cfg *config.Config, funcs ...func(*cobra.Com
 
 	root.CompletionOptions.DisableDefaultCmd = true
 	root.Flags().SortFlags = false
-
 	root.SetVersionTemplate("{{ .Version }}\n")
 
-	root.SetHelpCommand(&cobra.Command{Hidden: true})
+	// Add root-level flags
+	flags.Root(root)
 
-	return root
+	// Add subcommands
+	subcommands(root, cfg, files)
+
+	return root, nil
 }
 
-// loadDotEnvFunc returns a function that loads environment variables from a .env file.
-func (f *CommandFactory) loadDotEnvFunc() func(*cobra.Command, []string) error {
-	return func(_ *cobra.Command, _ []string) error {
-		if err := utils.LoadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
-			if config.IsSet("env-file") {
-				return fmt.Errorf("loading .env file: %w", err)
-			}
-		}
-
-		return nil
-	}
+func subcommands(cmd *cobra.Command, cfg *config.Config, files config.Embedded) {
+	cmd.AddCommand(
+		version.NewCommand(cmd.Version),
+		dump.NewCommand(cfg, files),
+		install.NewCommand(cfg, files),
+		download.NewCommand(cfg, files),
+		update.NewCommand(cfg, files),
+	)
 }

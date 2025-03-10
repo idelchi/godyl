@@ -17,21 +17,9 @@ import (
 	"github.com/idelchi/godyl/pkg/logger"
 )
 
-const osWindows = "windows"
-
-// UpdateStrategy defines how updates are applied.
-type UpdateStrategy string
-
-const (
-	// None means no updates will be applied.
-	None UpdateStrategy = "none"
-
-	// Upgrade means only newer versions will be applied.
-	Upgrade UpdateStrategy = "upgrade"
-
-	// Force means updates will be applied regardless of version.
-	Force UpdateStrategy = "force"
-)
+func IsWindows() bool {
+	return runtime.GOOS == "windows"
+}
 
 // ToolDownloader is responsible for downloading tools.
 type ToolDownloader interface {
@@ -45,7 +33,6 @@ type BinaryReplacer interface {
 
 // Updater is responsible for updating the godyl tool using the specified update strategy and defaults.
 type Updater struct {
-	Strategy    tools.Strategy // Strategy defines how updates are applied (e.g., Upgrade, Downgrade, None).
 	Defaults    tools.Defaults // Defaults holds tool-specific default values for the update process.
 	NoVerifySSL bool           // NoVerifySSL disables SSL verification for the update process.
 	Template    []byte
@@ -56,11 +43,11 @@ type Updater struct {
 }
 
 // NewUpdater creates a new Updater with the specified strategy and defaults.
-func NewUpdater(strategy tools.Strategy, defaults tools.Defaults, noVerifySSL bool) *Updater {
+func NewUpdater(defaults tools.Defaults, noVerifySSL bool, template []byte) *Updater {
 	return &Updater{
-		Strategy:    strategy,
 		Defaults:    defaults,
 		NoVerifySSL: noVerifySSL,
+		Template:    template,
 		downloader:  &DefaultDownloader{},
 		replacer:    &DefaultReplacer{},
 		log:         logger.New(logger.INFO),
@@ -74,13 +61,16 @@ type DefaultDownloader struct{}
 type DefaultReplacer struct{}
 
 // Update performs the update process for the godyl tool, applying the specified strategy.
-func (u *Updater) Update(version string) error {
+func (u *Updater) Update() error {
 	// Determine the tool path from build info, defaulting to "idelchi/godyl" if not available.
 	path := "idelchi/godyl"
 	info, ok := debug.ReadBuildInfo()
 
+	var version string
+
 	if ok {
 		path = strings.TrimPrefix(info.Main.Path, "github.com/")
+		version = info.Main.Version
 	}
 
 	// Create a new Tool object with the appropriate strategy and source.
@@ -89,7 +79,7 @@ func (u *Updater) Update(version string) error {
 		Source: sources.Source{
 			Type: sources.GITHUB,
 		},
-		Strategy:    u.Strategy,
+		Strategy:    tools.Upgrade,
 		NoVerifySSL: u.NoVerifySSL,
 	}
 
@@ -110,12 +100,6 @@ func (u *Updater) Update(version string) error {
 
 // shouldUpdate determines if an update should be performed based on the strategy and versions.
 func (u *Updater) shouldUpdate(tool tools.Tool, currentVersion string) bool {
-	if u.Strategy == tools.Force {
-		u.log.Info("Forcing update...")
-
-		return true
-	}
-
 	if tool.Version.Version == currentVersion {
 		u.log.Info("godyl (%v) is already up-to-date", currentVersion)
 
@@ -149,7 +133,7 @@ func (u *Updater) performUpdate(tool tools.Tool) error {
 	}
 
 	// Perform platform-specific cleanup
-	if runtime.GOOS == osWindows {
+	if IsWindows() {
 		if err := winCleanup(u.Template); err != nil {
 			return fmt.Errorf("issuing delete command: %w", err)
 		}
@@ -180,7 +164,7 @@ func (r *DefaultReplacer) Replace(path string) error {
 	options := update.Options{}
 
 	// Removed empty block - uncomment if needed in the future
-	// if runtime.GOOS == osWindows {
+	// if IsWindows() {
 	//	options.OldSavePath = filepath.Join(filepath.Dir(path), ".godyl.exe.old")
 	// }
 
@@ -207,7 +191,7 @@ func (d *DefaultDownloader) Download(tool tools.Tool) (string, error) {
 	var dir file.Folder
 
 	// For Windows, get the directory of the current executable
-	if runtime.GOOS == osWindows {
+	if IsWindows() {
 		current, err := os.Executable()
 		if err != nil {
 			return "", fmt.Errorf("getting current executable: %w", err)

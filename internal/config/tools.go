@@ -36,6 +36,9 @@ type Tool struct {
 
 	// Skip SSL verification
 	NoVerifySSL bool `mapstructure:"no-verify-ssl"`
+
+	// Hints to use for tool resolution
+	Hints []string
 }
 
 // Tokens holds the configuration options for authentication tokens.

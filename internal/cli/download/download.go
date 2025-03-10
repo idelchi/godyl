@@ -1,4 +1,4 @@
-package tool
+package download
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/core/defaults"
 	"github.com/idelchi/godyl/internal/core/processor"
@@ -17,7 +18,7 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
-func NewDownloadCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "download [tool]",
 		Aliases: []string{"dl", "unpack", "extract", "x"},
@@ -25,7 +26,11 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *cobra.Comman
 		Long:    "Download and unpack tools from GitHub, URLs, or Go projects",
 		Args:    cobra.MinimumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return commonPreRunE(cmd, &cfg.Tool)
+			if err := flags.Bind(cmd, cmd.Root().Name(), &cfg.Tool); err != nil {
+				return fmt.Errorf("common pre-run: %w", err)
+			}
+
+			return config.Validate(cfg.Tool)
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
 			if cfg.Root.Show {
@@ -80,7 +85,7 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *cobra.Comman
 	}
 
 	// Add tool-specific flags
-	addToolFlags(cmd)
+	flags.Tool(cmd)
 
 	return cmd
 }

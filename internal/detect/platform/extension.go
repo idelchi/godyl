@@ -20,8 +20,8 @@ func (e *Extension) Default(os OS) Extension {
 }
 
 // String returns the Extension as a string.
-func (e *Extension) String() string {
-	return string(*e)
+func (e Extension) String() string {
+	return string(e)
 }
 
 // Parse extracts the file extension from a given filename.

@@ -1,10 +1,11 @@
-package tool
+package install
 
 import (
 	"fmt"
 
 	"github.com/spf13/cobra"
 
+	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/core/defaults"
 	"github.com/idelchi/godyl/internal/core/processor"
@@ -16,7 +17,7 @@ import (
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
-func NewInstallCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "install [tools.yml]",
 		Aliases: []string{"i", "get"},
@@ -24,7 +25,11 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *cobra.Command
 		Long:    "Install tools as specified in a YAML configuration file",
 		Args:    cobra.MaximumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return commonPreRunE(cmd, &cfg.Tool)
+			if err := flags.Bind(cmd, cmd.Root().Name(), &cfg.Tool); err != nil {
+				return fmt.Errorf("common pre-run: %w", err)
+			}
+
+			return config.Validate(cfg.Tool)
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
 			if cfg.Root.Show {
@@ -78,7 +83,7 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *cobra.Command
 	}
 
 	// Add tool-specific flags
-	addToolFlags(cmd)
+	flags.Tool(cmd)
 
 	return cmd
 }

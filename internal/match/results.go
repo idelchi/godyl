@@ -34,7 +34,7 @@ func (m Results) ToString() string {
 		result += fmt.Sprintf("		score: %d\n", res.Score)
 		result += fmt.Sprintf("		qualified: %t\n", res.Qualified)
 		result += "		detected as:\n"
-		result += fmt.Sprintf("		  os: %s\n", res.Asset.Platform.OS)
+		result += fmt.Sprintf("		  os: %v\n", res.Asset.Platform.OS)
 		result += fmt.Sprintf("		  arch: %v\n", res.Asset.Platform.Architecture)
 		result += fmt.Sprintf("		  library: %s\n", res.Asset.Platform.Library)
 		result += fmt.Sprintf("		  extension: %s\n", res.Asset.Platform.Extension)

@@ -86,6 +86,6 @@ func (o *OS) IsCompatibleWith(other OS) bool {
 }
 
 // String returns a string representation of the OS.
-func (o *OS) String() string {
+func (o OS) String() string {
 	return o.Type
 }

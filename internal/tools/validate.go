@@ -105,6 +105,7 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	}
 
 	// If all fallbacks fail, return the last encountered error.
+
 	return lastErr
 }
 

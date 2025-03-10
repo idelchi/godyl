@@ -3,6 +3,7 @@ package dump
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/utils"
 	iutils "github.com/idelchi/godyl/internal/utils"
@@ -14,7 +15,7 @@ func NewToolsCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 		Short: "Display tools information",
 		Args:  cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return commonPreRunE(cmd, &cfg.Dump)
+			return flags.Bind(cmd.Parent(), cmd.Root().Name(), &cfg.Dump)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
 			c, err := getTools(cfg, files)

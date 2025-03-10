@@ -6,10 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/go-playground/validator/v10"
-
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/pkg/utils"
 
 	"gopkg.in/yaml.v3"
 )
@@ -46,90 +46,6 @@ func (d *Defaults) Unmarshal(data []byte) error {
 	) // nolint:musttag		// TODO(Idelchi): Not sure what is expected here, check later.
 	if err != nil {
 		return fmt.Errorf("unmarshalling defaults: %w", err)
-	}
-
-	return nil
-}
-
-// FromFile reads and parses a YAML file from the given path into the Defaults struct.
-func (d *Defaults) FromFile(path string) error {
-	data, err := os.ReadFile(filepath.Clean(path))
-	if err != nil {
-		return fmt.Errorf("reading file %q: %w", path, err)
-	}
-
-	return d.Unmarshal(data)
-}
-
-// Default loads the embedded default YAML configuration.
-func (d *Defaults) Default(defaults []byte) error {
-	return d.Unmarshal(defaults)
-}
-
-// Validate checks the Defaults struct to ensure all required fields are properly set.
-func (d *Defaults) Validate() error {
-	validate := validator.New()
-	if err := validate.Struct(d); err != nil {
-		return fmt.Errorf("validating Defaults: %w", err)
-	}
-
-	return nil
-}
-
-// Merge applies values from a Config object into the Defaults struct, only if corresponding values are set.
-func (d *Defaults) Merge(cfg config.Config) error {
-	if config.IsSet("output") {
-		d.Output = cfg.Tool.Output
-	}
-
-	if config.IsSet("source") {
-		d.Source.Type = cfg.Tool.Source
-	}
-
-	if config.IsSet("strategy") {
-		d.Strategy = cfg.Tool.Strategy
-	}
-
-	if config.IsSet("github-token") {
-		d.Source.Github.Token = cfg.Tool.Tokens.GitHub
-	}
-
-	if config.IsSet("os") {
-		if err := d.Platform.OS.Parse(cfg.Tool.OS); err != nil {
-			return fmt.Errorf("parsing OS: %w", err)
-		}
-
-		d.Platform.Extension = d.Platform.Extension.Default(d.Platform.OS)
-		d.Platform.Library = d.Platform.Library.Default(d.Platform.OS, d.Platform.Distribution)
-	}
-
-	if config.IsSet("arch") {
-		if err := d.Platform.Architecture.Parse(cfg.Tool.Arch); err != nil {
-			return fmt.Errorf("parsing architecture: %w", err)
-		}
-	}
-
-	if err := d.Validate(); err != nil {
-		return fmt.Errorf("merging defaults: %w", err)
-	}
-
-	return nil
-}
-
-// Load loads configuration defaults from a file or uses embedded defaults if not specified.
-func (d *Defaults) Load(path string, defaults []byte) error {
-	if config.IsSet("defaults") {
-		if err := d.FromFile(path); err != nil {
-			return fmt.Errorf("loading defaults from %q: %w", path, err)
-		}
-	} else {
-		if err := d.Default(defaults); err != nil {
-			return fmt.Errorf("setting defaults: %w", err)
-		}
-	}
-
-	if err := d.Initialize(); err != nil {
-		return fmt.Errorf("setting tool defaults: %w", err)
 	}
 
 	return nil
@@ -195,24 +111,32 @@ func (m *Manager) LoadDefaults(path string, defaultEmbedded []byte) error {
 
 // ApplyConfig applies configuration overrides to the defaults.
 func (m *Manager) ApplyConfig(cfg config.Config) error {
-	// Apply configuration overrides
-	if config.IsSet("output") {
+	if config.IsSet("hints") {
+		for _, hint := range cfg.Tool.Hints {
+			m.defaults.Hints.Add(match.Hint{
+				Pattern: hint,
+				Weight:  "1",
+			})
+		}
+	}
+
+	if config.IsSet("output") || utils.IsZeroValue(m.defaults.Output) {
 		m.defaults.Output = cfg.Tool.Output
 	}
 
-	if config.IsSet("source") {
+	if config.IsSet("source") || utils.IsZeroValue(m.defaults.Source.Type) {
 		m.defaults.Source.Type = cfg.Tool.Source
 	}
 
-	if config.IsSet("strategy") {
+	if config.IsSet("strategy") || utils.IsZeroValue(m.defaults.Strategy) {
 		m.defaults.Strategy = cfg.Tool.Strategy
 	}
 
-	if config.IsSet("github-token") {
+	if config.IsSet("github-token") || utils.IsZeroValue(m.defaults.Source.Github.Token) {
 		m.defaults.Source.Github.Token = cfg.Tool.Tokens.GitHub
 	}
 
-	if config.IsSet("os") {
+	if config.IsSet("os") || utils.IsZeroValue(m.defaults.Platform.OS) {
 		if err := m.defaults.Platform.OS.Parse(cfg.Tool.OS); err != nil {
 			return fmt.Errorf("parsing OS: %w", err)
 		}
@@ -224,7 +148,7 @@ func (m *Manager) ApplyConfig(cfg config.Config) error {
 		)
 	}
 
-	if config.IsSet("arch") {
+	if config.IsSet("arch") || utils.IsZeroValue(m.defaults.Platform.Architecture) {
 		if err := m.defaults.Platform.Architecture.Parse(cfg.Tool.Arch); err != nil {
 			return fmt.Errorf("parsing architecture: %w", err)
 		}

@@ -219,6 +219,7 @@ The following flags are available for tool-related commands (`install` and `down
 | `--github-token`        | `GODYL_GITHUB_TOKEN`  | `""`          | GitHub token for authentication               |
 | `--parallel`, `-j`      | `GODYL_PARALLEL`      | `0`           | Number of parallel downloads (0 is unlimited) |
 | `--no-verify-ssl`, `-k` | `GODYL_NO_VERIFY_SSL` | `false`       | Skip SSL verification                         |
+| `--hint`                | `GODYL_HINT`          | `[""]`        | Add hint patterns with weight 1               |
 
 For the `install` command, the path to the file containing the tool installation instructions is provided as a positional argument, defaulting to `tools.yml`.
 
@@ -986,6 +987,10 @@ However, to be certain that the right binary is downloaded, it's recommended to 
 
 [yes]: https://img.shields.io/badge/Yes-green
 [no]: https://img.shields.io/badge/No-red
+[inferred]: https://img.shields.io/badge/Inferred-blue
+[required]: https://img.shields.io/badge/Required-red
+[optional]: https://img.shields.io/badge/Optional-green
+[not-implemented]: https://img.shields.io/badge/Not%20Implemented-gray
 [na]: https://img.shields.io/badge/N%2FA-lightgrey
 
 <!-- Badges -->

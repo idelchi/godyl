@@ -140,7 +140,7 @@ func (a *Architecture) IsCompatibleWith(other Architecture) bool {
 }
 
 // String returns a string representation of the architecture.
-func (a *Architecture) String() string {
+func (a Architecture) String() string {
 	if a.Version != 0 {
 		if a.Type == armString {
 			return fmt.Sprintf("armv%d", a.Version)

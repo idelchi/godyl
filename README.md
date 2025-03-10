@@ -44,6 +44,10 @@ However, most properties can be overridden, with `hints` and `skip` used to help
 >
 > for tools listed in [tools.yml](./tools.yml)
 
+> [!NOTE]
+> Set up a GitHub API token to avoid rate limiting when using `github` as a source type.
+> See [configuration](#configuration) for more information, or simply `export GODYL_GITHUB_TOKEN=<token>`
+
 Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
 
 ---
@@ -140,7 +144,7 @@ Download multiple tools:
 godyl download idelchi/godyl idelchi/gogen idelchi/wslint
 ```
 
-When using the `download` command, the `mode` will be set to `extract` by default.
+When using the `download` command, the tool will be unarchived directly into the output directory.
 
 Override `os` and `arch` to download a specific binary:
 
@@ -178,10 +182,6 @@ Update the godyl application to the latest version:
 godyl update
 ```
 
-> [!NOTE]
-> Set up a GitHub API token to avoid rate limiting when using `github` as a source type.
-> See [configuration](#configuration) for more information, or simply `export GODYL_GITHUB_TOKEN=<token>`
-
 ## Configuration
 
 The tools can be configured (in order of priority) by:
@@ -194,31 +194,31 @@ The tools can be configured (in order of priority) by:
 
 The following global flags are available for all commands:
 
-| Flag                    | Environment Variable  | Default        | Description                                   |
-| ----------------------- | --------------------- | -------------- | --------------------------------------------- |
-| `--help`, `-h`          | `GODYL_HELP`          | `false`        | Show help message and exit                    |
-| `--version`             | `GODYL_VERSION`       | `false`        | Show version information and exit             |
-| `--dry`                 | `GODYL_DRY`           | `false`        | Run without making any changes (dry run)      |
-| `--log`                 | `GODYL_LOG`           | `info`         | Log level (debug, info, warn, error, silent)  |
-| `--parallel`, `-j`      | `GODYL_PARALLEL`      | `0`            | Number of parallel downloads (0 is unlimited) |
-| `--no-verify-ssl`, `-k` | `GODYL_NO_VERIFY_SSL` | `false`        | Skip SSL verification                         |
-| `--env-file`            | `GODYL_DOT_ENV`       | `.env`         | Path to .env file                             |
-| `--defaults`, `-d`      | `GODYL_DEFAULTS`      | `defaults.yml` | Path to defaults file                         |
-| `--show`, `-s`          | `GODYL_SHOW`          | `false`        | Show the configuration and exit               |
+| Flag               | Environment Variable | Default        | Description                                  |
+| ------------------ | -------------------- | -------------- | -------------------------------------------- |
+| `--help`, `-h`     | `GODYL_HELP`         | `false`        | Show help message and exit                   |
+| `--version`        | `GODYL_VERSION`      | `false`        | Show version information and exit            |
+| `--dry`            | `GODYL_DRY`          | `false`        | Run without making any changes (dry run)     |
+| `--log`            | `GODYL_LOG`          | `info`         | Log level (debug, info, warn, error, silent) |
+| `--env-file`       | `GODYL_DOT_ENV`      | `.env`         | Path to .env file                            |
+| `--defaults`, `-d` | `GODYL_DEFAULTS`     | `defaults.yml` | Path to defaults file                        |
+| `--show`, `-s`     | `GODYL_SHOW`         | `false`        | Show the configuration and exit              |
 
 ### Tool-specific Flags
 
 The following flags are available for tool-related commands (`install` and `download`):
 
-| Flag             | Environment Variable | Default       | Description                                 |
-| ---------------- | -------------------- | ------------- | ------------------------------------------- |
-| `--output`, `-o` | `GODYL_OUTPUT`       | `./bin`       | Output path for the downloaded tools        |
-| `--tags`, `-t`   | `GODYL_TAGS`         | `["!native"]` | Tags to filter tools by. Use `!` to exclude |
-| `--source`       | `GODYL_SOURCE`       | `github`      | Source from which to install the tools      |
-| `--strategy`     | `GODYL_STRATEGY`     | `none`        | Strategy to use for updating tools          |
-| `--os`           | `GODYL_OS`           | `""`          | Operating system to use for downloading     |
-| `--arch`         | `GODYL_ARCH`         | `""`          | Architecture to use for downloading         |
-| `--github-token` | `GODYL_GITHUB_TOKEN` | `""`          | GitHub token for authentication             |
+| Flag                    | Environment Variable  | Default       | Description                                   |
+| ----------------------- | --------------------- | ------------- | --------------------------------------------- |
+| `--output`, `-o`        | `GODYL_OUTPUT`        | `./bin`       | Output path for the downloaded tools          |
+| `--tags`, `-t`          | `GODYL_TAGS`          | `["!native"]` | Tags to filter tools by. Use `!` to exclude   |
+| `--source`              | `GODYL_SOURCE`        | `github`      | Source from which to install the tools        |
+| `--strategy`            | `GODYL_STRATEGY`      | `none`        | Strategy to use for updating tools            |
+| `--os`                  | `GODYL_OS`            | `""`          | Operating system to use for downloading       |
+| `--arch`                | `GODYL_ARCH`          | `""`          | Architecture to use for downloading           |
+| `--github-token`        | `GODYL_GITHUB_TOKEN`  | `""`          | GitHub token for authentication               |
+| `--parallel`, `-j`      | `GODYL_PARALLEL`      | `0`           | Number of parallel downloads (0 is unlimited) |
+| `--no-verify-ssl`, `-k` | `GODYL_NO_VERIFY_SSL` | `false`       | Skip SSL verification                         |
 
 For the `install` command, the path to the file containing the tool installation instructions is provided as a positional argument, defaulting to `tools.yml`.
 

@@ -20,6 +20,7 @@ func addToolFlags(cmd *cobra.Command) {
 	cmd.Flags().String("arch", "", "Architecture to install the tools for")
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
 	cmd.Flags().IntP("parallel", "j", 0, "Number of parallel downloads. 0 means unlimited.")
+	cmd.Flags().StringSlice("hints", []string{""}, "Hints to use for tool resolution")
 }
 
 func addUpdateFlags(cmd *cobra.Command) {
@@ -40,5 +41,5 @@ func commonPreRunE(cmd *cobra.Command, tool *config.Tool) error {
 		return fmt.Errorf("unmarshalling config: %w", err)
 	}
 
-	return config.Validate(tool)
+	return nil
 }

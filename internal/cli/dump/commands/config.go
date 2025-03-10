@@ -1,12 +1,9 @@
 package dump
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/internal/core/defaults"
 	iutils "github.com/idelchi/godyl/internal/utils"
 )
 
@@ -19,7 +16,7 @@ func NewConfigCommand(cfg *config.Config, files config.Embedded) *cobra.Command 
 			return commonPreRunE(cmd, &cfg.Dump)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			c, err := getConfig(cfg, files)
+			c, err := getConfig(cfg)
 			if err != nil {
 				return err
 			}
@@ -33,15 +30,6 @@ func NewConfigCommand(cfg *config.Config, files config.Embedded) *cobra.Command 
 	return cmd
 }
 
-func getConfig(cfg *config.Config, files config.Embedded) (*config.Config, error) {
-	defs := &defaults.Defaults{}
-	if err := defs.Load(cfg.Root.Defaults.Name(), files.Defaults); err != nil {
-		return nil, fmt.Errorf("error loading defaults: %w", err)
-	}
-
-	if err := defs.Merge(*cfg); err != nil {
-		return nil, fmt.Errorf("error merging defaults: %w", err)
-	}
-
+func getConfig(cfg *config.Config) (*config.Config, error) {
 	return cfg, nil
 }

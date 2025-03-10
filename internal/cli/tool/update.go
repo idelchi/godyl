@@ -6,7 +6,9 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/core/defaults"
 	"github.com/idelchi/godyl/internal/core/updater"
+	"github.com/idelchi/godyl/internal/tools"
 )
 
 func NewUpdateCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
@@ -19,13 +21,14 @@ func NewUpdateCommand(cfg *config.Config, files config.Embedded) *cobra.Command 
 			return commonPreRunE(cmd, &cfg.Tool)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			appUpdater := updater.Updater{
-				Strategy:    cfg.Tool.Strategy,
-				NoVerifySSL: cfg.Tool.NoVerifySSL,
-				Template:    files.Template,
+			toolDefaults := tools.Defaults{}
+			if err := defaults.LoadDefaults(&toolDefaults, cfg.Root.Defaults.Name(), files.Defaults, *cfg); err != nil {
+				return fmt.Errorf("loading defaults: %w", err)
 			}
 
-			if err := appUpdater.Update(""); err != nil {
+			appUpdater := updater.NewUpdater(toolDefaults, cfg.Tool.NoVerifySSL, files.Template)
+
+			if err := appUpdater.Update(); err != nil {
 				return fmt.Errorf("updating: %w", err)
 			}
 

@@ -13,10 +13,11 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 		Aliases: []string{"show"},
 		Short:   "Dump configuration information",
 		Long:    "Display various configuration settings and information about the environment",
-		Args:    cobra.NoArgs,
 	}
 
 	cmd.Flags().StringP("format", "f", "yaml", "Output format (json or yaml)")
+
+	cmd.SetHelpCommand(&cobra.Command{Hidden: true})
 
 	cmd.AddCommand(
 		dump.NewConfigCommand(cfg, files),

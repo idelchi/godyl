@@ -1,9 +1,6 @@
 package match
 
-import (
-	"fmt"
-	"strconv"
-)
+import "strconv"
 
 // Hint represents a pattern used to match asset names.
 // It can be a regular expression or a simple string pattern.
@@ -19,7 +16,7 @@ type Hint struct {
 func (h *Hint) SetWeight() error {
 	val, err := strconv.Atoi(h.Weight)
 	if err != nil {
-		return fmt.Errorf("failed to convert weight to integer: %w", err)
+		return err
 	}
 
 	h.weightInt = val

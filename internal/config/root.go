@@ -6,7 +6,6 @@ import (
 	"github.com/idelchi/godyl/pkg/file"
 )
 
-// Root contains the base configuration options for the application.
 type Root struct {
 	// Show enables output display
 	Show bool

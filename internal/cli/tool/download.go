@@ -25,7 +25,11 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *cobra.Comman
 		Long:    "Download and unpack tools from GitHub, URLs, or Go projects",
 		Args:    cobra.MinimumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return commonPreRunE(cmd, &cfg.Tool)
+			if err := commonPreRunE(cmd, &cfg.Tool); err != nil {
+				return fmt.Errorf("common pre-run: %w", err)
+			}
+
+			return config.Validate(cfg.Tool)
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
 			if cfg.Root.Show {

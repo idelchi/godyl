@@ -6,7 +6,6 @@ import (
 	"github.com/idelchi/godyl/pkg/file"
 )
 
-// Tool contains configuration options for tool management operations.
 type Tool struct {
 	// Output path for the downloaded tools
 	Output string
@@ -37,6 +36,9 @@ type Tool struct {
 
 	// Skip SSL verification
 	NoVerifySSL bool `mapstructure:"no-verify-ssl"`
+
+	// Hints to use for tool resolution
+	Hints []string
 }
 
 // Tokens holds the configuration options for authentication tokens.

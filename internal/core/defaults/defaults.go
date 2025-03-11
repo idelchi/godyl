@@ -19,17 +19,12 @@ import (
 // Defaults holds all the configuration options for godyl, including tool-specific defaults.
 type Defaults struct {
 	// Inline tool-specific defaults.
-	tools.Defaults `yaml:",inline"`
-}
-
-// NewDefaults creates a new Defaults instance.
-func NewDefaults() *Defaults {
-	return &Defaults{}
+	defaults tools.Defaults
 }
 
 // Unmarshal parses the provided YAML data into the Defaults struct.
 func (d *Defaults) Unmarshal(data []byte) error {
-	if err := yaml.Unmarshal(data, d); err != nil {
+	if err := yaml.Unmarshal(data, &d.defaults); err != nil {
 		return fmt.Errorf("unmarshalling defaults: %w", err)
 	}
 
@@ -65,43 +60,43 @@ func (d *Defaults) Validate() error {
 func (d *Defaults) Merge(cfg config.Config) error {
 	if cobraext.IsSet("hints") {
 		for _, hint := range cfg.Tool.Hints {
-			d.Hints.Add(match.Hint{
+			d.defaults.Hints.Add(match.Hint{
 				Pattern: hint,
 				Weight:  "1",
 			})
 		}
 	}
 
-	if cobraext.IsSet("output") || utils.IsZeroValue(d.Output) {
-		d.Output = cfg.Tool.Output
+	if cobraext.IsSet("output") || utils.IsZeroValue(d.defaults.Output) {
+		d.defaults.Output = cfg.Tool.Output
 	}
 
-	if cobraext.IsSet("source") || utils.IsZeroValue(d.Source.Type) {
-		d.Source.Type = cfg.Tool.Source
+	if cobraext.IsSet("source") || utils.IsZeroValue(d.defaults.Source.Type) {
+		d.defaults.Source.Type = cfg.Tool.Source
 	}
 
-	if cobraext.IsSet("strategy") || utils.IsZeroValue(d.Strategy) {
-		d.Strategy = cfg.Tool.Strategy
+	if cobraext.IsSet("strategy") || utils.IsZeroValue(d.defaults.Strategy) {
+		d.defaults.Strategy = cfg.Tool.Strategy
 	}
 
-	if cobraext.IsSet("github-token") || utils.IsZeroValue(d.Source.Github.Token) {
-		d.Source.Github.Token = cfg.Tool.Tokens.GitHub
+	if cobraext.IsSet("github-token") || utils.IsZeroValue(d.defaults.Source.Github.Token) {
+		d.defaults.Source.Github.Token = cfg.Tool.Tokens.GitHub
 	}
 
-	if cobraext.IsSet("os") || utils.IsZeroValue(d.Platform.OS) {
-		if err := d.Platform.OS.Parse(cfg.Tool.OS); err != nil {
+	if cobraext.IsSet("os") || utils.IsZeroValue(d.defaults.Platform.OS) {
+		if err := d.defaults.Platform.OS.Parse(cfg.Tool.OS); err != nil {
 			return fmt.Errorf("parsing OS: %w", err)
 		}
 
-		d.Platform.Extension = d.Platform.Extension.Default(d.Platform.OS)
-		d.Platform.Library = d.Platform.Library.Default(
-			d.Platform.OS,
-			d.Platform.Distribution,
+		d.defaults.Platform.Extension = d.defaults.Platform.Extension.Default(d.defaults.Platform.OS)
+		d.defaults.Platform.Library = d.defaults.Platform.Library.Default(
+			d.defaults.Platform.OS,
+			d.defaults.Platform.Distribution,
 		)
 	}
 
-	if cobraext.IsSet("arch") || utils.IsZeroValue(d.Platform.Architecture) {
-		if err := d.Platform.Architecture.Parse(cfg.Tool.Arch); err != nil {
+	if cobraext.IsSet("arch") || utils.IsZeroValue(d.defaults.Platform.Architecture) {
+		if err := d.defaults.Platform.Architecture.Parse(cfg.Tool.Arch); err != nil {
 			return fmt.Errorf("parsing architecture: %w", err)
 		}
 	}
@@ -121,31 +116,27 @@ func (d *Defaults) Load(path string, defaults []byte) error {
 		}
 	}
 
-	if err := d.Initialize(); err != nil {
+	if err := d.defaults.Initialize(); err != nil {
 		return fmt.Errorf("initializing defaults: %w", err)
 	}
 
 	return nil
 }
 
-// LoadDefaults loads the default configuration.
-// This function is kept for backward compatibility.
-func LoadDefaults(defaults *tools.Defaults, path string, embeds config.Embedded, cfg config.Config) error {
+// Load loads the default configuration.
+func Load(path string, embeds config.Embedded, cfg config.Config) (tools.Defaults, error) {
 	// Create a new Defaults instance
-	d := NewDefaults()
+	defaults := &Defaults{}
 
 	// Load defaults from file or embedded data
-	if err := d.Load(path, embeds.Defaults); err != nil {
-		return err
+	if err := defaults.Load(path, embeds.Defaults); err != nil {
+		return tools.Defaults{}, err
 	}
 
 	// Apply configuration overrides
-	if err := d.Merge(cfg); err != nil {
-		return err
+	if err := defaults.Merge(cfg); err != nil {
+		return tools.Defaults{}, err
 	}
 
-	// Copy the loaded defaults to the provided defaults struct
-	*defaults = d.Defaults
-
-	return nil
+	return defaults.defaults, nil
 }

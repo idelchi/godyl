@@ -11,7 +11,6 @@ import (
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/core/defaults"
 	"github.com/idelchi/godyl/internal/core/processor"
-	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/utils"
 	iutils "github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/file"
@@ -71,13 +70,13 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *Command {
 			log.Info("*** ***")
 
 			// Load defaults
-			toolDefaults := tools.Defaults{}
-			if err := defaults.LoadDefaults(&toolDefaults, cfg.Root.Defaults.Name(), files, *cfg); err != nil {
+			defaults, err := defaults.Load(cfg.Root.Defaults.Name(), files, *cfg)
+			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
 			log.Info("platform:")
-			log.Info("%s", pretty.YAML(toolDefaults.Platform))
+			log.Info("%s", pretty.YAML(defaults.Platform))
 			log.Info("*** ***")
 
 			// Load tools
@@ -88,7 +87,7 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *Command {
 
 			tags, withoutTags := utils.SplitTags(cfg.Tool.Tags)
 
-			proc := processor.New(toolsList, toolDefaults, *cfg, log)
+			proc := processor.New(toolsList, defaults, *cfg, log)
 			if err := proc.Process(tags, withoutTags); err != nil {
 				return fmt.Errorf("processing tools: %w", err)
 			}

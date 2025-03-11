@@ -69,11 +69,11 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 }
 
 // getDefaults loads and returns the application's default settings.
-func getDefaults(cfg *config.Config, files config.Embedded) (*tools.Defaults, error) {
-	tools := &tools.Defaults{}
-	if err := defaults.LoadDefaults(tools, cfg.Root.Defaults.Name(), files, *cfg); err != nil {
-		return nil, fmt.Errorf("loading defaults: %w", err)
+func getDefaults(cfg *config.Config, files config.Embedded) (tools.Defaults, error) {
+	defaults, err := defaults.Load(cfg.Root.Defaults.Name(), files, *cfg)
+	if err != nil {
+		return defaults, fmt.Errorf("loading defaults: %w", err)
 	}
 
-	return tools, nil
+	return defaults, nil
 }

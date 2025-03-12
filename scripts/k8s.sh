@@ -2,6 +2,7 @@
 set -e
 
 GITHUB_TOKEN=${GODYL_GITHUB_TOKEN:-${GITHUB_TOKEN}}
+DISABLE_SSL=${GODYL_DISABLE_SSL:-${DISABLE_SSL}}
 
 # Usage function
 usage() {
@@ -22,7 +23,7 @@ All arguments are passed to 'godyl install' command, and as such, you're advised
 Environment variables:
 
   GODYL_GITHUB_TOKEN/GITHUB_TOKEN       GitHub token to use for downloading assets from GitHub.
-  DISABLE_SSL                           Disable SSL verification when downloading assets.
+  GODYL_DISABLE_SSL/DISABLE_SSL         Disable SSL verification when downloading assets.
 
 Example:
 

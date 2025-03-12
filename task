@@ -6,3 +6,7 @@ internal/config
 internal/core/updater
 
 and try to make the updater setup a bit more idiomatic w.r.t how it handles Windows specific cleanups, and how it gets and uses the template file from the embedded files. The updater.go file is a bit of an unidiomatic mess at the moment
+
+Given the instructions in .clinerules, rewrite ./internal/core/processor/processor.go. If necessary, you can split up into several files - but only if it makes sense.
+
+I'm asking you to rewrite because I feel like it's overcomplicated and not adhering to a SIMPLE approach.

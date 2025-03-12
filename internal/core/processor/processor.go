@@ -19,238 +19,183 @@ import (
 // ErrToolsFailedToInstall is returned when one or more tools failed to install.
 var ErrToolsFailedToInstall = errors.New("tools failed to install")
 
-// ToolResult holds the result of processing a tool.
-type ToolResult struct {
+// result holds the result of processing a tool.
+// It's used internally to pass information between goroutines.
+type result struct {
 	Tool  *tools.Tool
 	Found file.File
 	Err   error
 	Msg   string
 }
 
-// ToolProcessor processes tools with concurrency support.
-type ToolProcessor struct {
-	toolsList tools.Tools
+// Processor handles tool installation and management.
+type Processor struct {
+	tools     tools.Tools
 	defaults  tools.Defaults
-	cfg       config.Config
+	config    config.Config
 	log       *logger.Logger
-
-	// Components
-	concurrencyManager *ConcurrencyManager
-	resultHandler      ResultHandler
+	hasErrors bool
 }
 
-// ResultHandler handles the results of tool processing.
-type ResultHandler interface {
-	HandleResult(result ToolResult)
-	HasErrors() bool
-}
-
-// DefaultResultHandler is the default implementation of ResultHandler.
-type DefaultResultHandler struct {
-	log             *logger.Logger
-	hasInstallError bool
-}
-
-// ConcurrencyManager manages concurrent execution of tool processing.
-type ConcurrencyManager struct {
-	errGroup  *errgroup.Group
-	waitGroup *sync.WaitGroup
-	resultCh  chan ToolResult
-	parallel  int
-}
-
-// New creates a new ToolProcessor.
-func New(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log *logger.Logger) *ToolProcessor {
-	resultHandler := &DefaultResultHandler{
-		log: log,
-	}
-
-	concurrencyManager := &ConcurrencyManager{
-		errGroup: &errgroup.Group{},
-		resultCh: make(chan ToolResult),
-		parallel: cfg.Tool.Parallel,
-	}
-
-	return &ToolProcessor{
-		toolsList:          toolsList,
-		defaults:           defaults,
-		cfg:                cfg,
-		log:                log,
-		concurrencyManager: concurrencyManager,
-		resultHandler:      resultHandler,
+// New creates a new Processor.
+func New(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log *logger.Logger) *Processor {
+	return &Processor{
+		tools:    toolsList,
+		defaults: defaults,
+		config:   cfg,
+		log:      log,
 	}
 }
 
-// Process starts processing tools with the given tags.
-func (tp *ToolProcessor) Process(tags, withoutTags []string) error {
+// Process installs and manages tools with the given tags.
+func (p *Processor) Process(tags, withoutTags []string) error {
 	// Setup concurrency
-	tp.setupConcurrency()
+	resultCh := make(chan result)
+
+	// Create error group for concurrent processing
+	g := &errgroup.Group{}
+	if p.config.Tool.Parallel > 0 {
+		g.SetLimit(p.config.Tool.Parallel)
+		p.log.Info("running with %d parallel downloads", p.config.Tool.Parallel)
+	}
 
 	// Start collecting results
-	go tp.collectResults()
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for r := range resultCh {
+			p.handleResult(r)
+		}
+	}()
 
 	// Process each tool concurrently
-	for i := range tp.toolsList {
-		tool := &tp.toolsList[i]
-		tp.concurrencyManager.errGroup.Go(func() error {
-			return tp.processTool(tool, tags, withoutTags)
+	for i := range p.tools {
+		tool := &p.tools[i]
+		g.Go(func() error {
+			p.processTool(tool, tags, withoutTags, resultCh)
+			return nil
 		})
 	}
 
 	// Wait for all tool processing to complete
-	// if err := tp.concurrencyManager.errGroup.Wait(); err != nil {
-	// 	return fmt.Errorf("processing tools: %w", err)
-	// }
-	tp.concurrencyManager.errGroup.Wait() //nolint:errcheck	// Error is checked further down instead
+	g.Wait()
 
 	// Close the result channel and wait for result collection to complete
-	close(tp.concurrencyManager.resultCh)
-	tp.concurrencyManager.waitGroup.Wait()
+	close(resultCh)
+	wg.Wait()
 
-	// Check if any tools failed to install
-	if tp.resultHandler.HasErrors() {
+	// Return error if any tools failed to install
+	if p.hasErrors {
 		return fmt.Errorf("one or more %w", ErrToolsFailedToInstall)
 	}
 
 	return nil
 }
 
-// setupConcurrency sets up the concurrency management.
-func (tp *ToolProcessor) setupConcurrency() {
-	// Set concurrency limit if specified
-	if tp.cfg.Tool.Parallel > 0 {
-		tp.concurrencyManager.errGroup.SetLimit(tp.cfg.Tool.Parallel)
-		tp.log.Info("running with %d parallel downloads", tp.cfg.Tool.Parallel)
-	}
-
-	// Initialize wait group for result collection
-	tp.concurrencyManager.waitGroup = &sync.WaitGroup{}
-	tp.concurrencyManager.waitGroup.Add(1)
-}
-
-// collectResults collects and processes results from the result channel.
-func (tp *ToolProcessor) collectResults() {
-	defer tp.concurrencyManager.waitGroup.Done()
-
-	for result := range tp.concurrencyManager.resultCh {
-		tp.resultHandler.HandleResult(result)
-	}
-}
-
-// processTool processes an individual tool.
-func (tp *ToolProcessor) processTool(tool *tools.Tool, tags, withoutTags []string) error {
+// processTool processes an individual tool and sends the result to the result channel.
+func (p *Processor) processTool(tool *tools.Tool, tags, withoutTags []string, resultCh chan<- result) {
 	// Apply defaults and resolve tool configuration
-	tool.ApplyDefaults(tp.defaults)
+	tool.ApplyDefaults(p.defaults)
 
 	if err := tool.Resolve(tags, withoutTags); err != nil {
-		tp.concurrencyManager.resultCh <- ToolResult{Tool: tool, Err: err}
-
-		return fmt.Errorf("resolving tool %q: %w", tool.Name, err)
+		resultCh <- result{Tool: tool, Err: err}
+		return
 	}
 
 	// Handle dry run
-	if tp.cfg.Root.Dry {
-		tp.concurrencyManager.resultCh <- ToolResult{Tool: tool}
-
-		return nil
+	if p.config.Root.Dry {
+		resultCh <- result{Tool: tool}
+		return
 	}
 
 	// Apply SSL verification setting
-	if tp.cfg.Tool.NoVerifySSL {
+	if p.config.Tool.NoVerifySSL {
 		tool.NoVerifySSL = true
 	}
 
 	// Download the tool
 	msg, found, err := tool.Download()
-	tp.concurrencyManager.resultCh <- ToolResult{Tool: tool, Found: found, Err: err, Msg: msg}
+	resultCh <- result{Tool: tool, Found: found, Err: err, Msg: msg}
 
 	if err != nil {
-		return fmt.Errorf("downloading tool %q: %w", tool.Name, err)
+		return
 	}
 
 	// Execute post-installation commands if any exist
 	if len(tool.Post) > 0 {
 		if err := tool.Post.Exe(); err != nil {
-			tp.concurrencyManager.resultCh <- ToolResult{
+			resultCh <- result{
 				Tool: tool,
 				Err:  fmt.Errorf("executing post-installation commands: %w", err),
 			}
 		}
 	}
-
-	return nil
 }
 
-// HandleResult processes the result of a tool operation.
-func (h *DefaultResultHandler) HandleResult(result ToolResult) {
-	tool := result.Tool
-	err := result.Err
-	msg := result.Msg
-	found := result.Found
+// handleResult processes the result of a tool operation.
+func (p *Processor) handleResult(r result) {
+	tool := r.Tool
 
-	h.log.Info("")
-	h.log.Info("%s", tool.Name)
-	h.log.Debug("configuration:")
-	h.log.Debug("-------")
-	h.log.Debug("%s", pretty.YAMLMasked(tool))
-	h.log.Debug("-------")
+	p.log.Info("")
+	p.log.Info("%s", tool.Name)
+	p.log.Debug("configuration:")
+	p.log.Debug("-------")
+	p.log.Debug("%s", pretty.YAMLMasked(tool))
+	p.log.Debug("-------")
 
-	if err != nil {
-		h.handleToolError(tool, err, msg)
+	if r.Err != nil {
+		p.handleToolError(tool, r.Err, r.Msg)
 	} else {
-		h.logToolSuccess(tool, found)
+		p.logToolSuccess(tool, r.Found)
 	}
-}
-
-// HasErrors returns true if any tools failed to install.
-func (h *DefaultResultHandler) HasErrors() bool {
-	return h.hasInstallError
 }
 
 // handleToolError logs errors encountered during tool processing.
-func (h *DefaultResultHandler) handleToolError(tool *tools.Tool, err error, msg string) {
-	if errors.Is(err, tools.ErrAlreadyExists) ||
+func (p *Processor) handleToolError(tool *tools.Tool, err error, msg string) {
+	// These errors are expected and don't indicate a failure
+	isExpectedError := errors.Is(err, tools.ErrAlreadyExists) ||
 		errors.Is(err, tools.ErrUpToDate) ||
 		errors.Is(err, tools.ErrDoesNotHaveTags) ||
 		errors.Is(err, tools.ErrDoesHaveTags) ||
-		errors.Is(err, tools.ErrSkipped) {
-		h.log.Warn("  %v", err)
-	} else {
-		h.hasInstallError = true // Set the flag if a tool fails to install
-		h.log.Error("  failed to install")
-		h.log.Debug("configuration:")
-		h.log.Debug("-------")
-		h.log.Debug("%s", pretty.JSONMasked(tool))
-		h.log.Debug("-------")
-		h.log.Error("  %v", err)
-		h.log.Error("  %s", msg)
+		errors.Is(err, tools.ErrSkipped)
+
+	if isExpectedError {
+		p.log.Warn("  %v", err)
+		return
 	}
+
+	// Unexpected error - mark as installation failure
+	p.hasErrors = true
+	p.log.Error("  failed to install")
+	p.log.Debug("configuration:")
+	p.log.Debug("-------")
+	p.log.Debug("%s", pretty.JSONMasked(tool))
+	p.log.Debug("-------")
+	p.log.Error("  %v", err)
+	p.log.Error("  %s", msg)
 }
 
 // logToolSuccess logs information about successfully processed tools.
-func (h *DefaultResultHandler) logToolSuccess(tool *tools.Tool, found file.File) {
+func (p *Processor) logToolSuccess(tool *tools.Tool, found file.File) {
 	if tool.Version.Version != "" {
-		h.log.Info("  version: %s", tool.Version.Version)
+		p.log.Info("  version: %s", tool.Version.Version)
 	}
 
-	h.log.Info("  picked download %q", filepath.Base(tool.Path))
+	p.log.Info("  picked download %q", filepath.Base(tool.Path))
 
 	if tool.Mode == "find" {
-		h.log.Info("  picked file %q", found)
-		h.log.Info("  installed successfully at %q", filepath.Join(tool.Output, tool.Exe.Name))
-		h.logToolAliases(tool)
-	} else {
-		h.log.Info("  extracted to %q", tool.Output)
-	}
-}
+		p.log.Info("  picked file %q", found)
+		p.log.Info("  installed successfully at %q", filepath.Join(tool.Output, tool.Exe.Name))
 
-// logToolAliases logs any aliases for the tool.
-func (h *DefaultResultHandler) logToolAliases(tool *tools.Tool) {
-	if tool.Aliases != nil {
-		h.log.Info("  symlinks:")
-
-		for _, alias := range tool.Aliases {
-			h.log.Info("    - %q", filepath.Join(tool.Output, alias))
+		// Log aliases if any
+		if tool.Aliases != nil {
+			p.log.Info("  symlinks:")
+			for _, alias := range tool.Aliases {
+				p.log.Info("    - %q", filepath.Join(tool.Output, alias))
+			}
 		}
+	} else {
+		p.log.Info("  extracted to %q", tool.Output)
 	}
 }

@@ -118,7 +118,8 @@
         "json": true,
         "jsonc": true,
         "csharp": true
-    }
+    },
+    "cline.enableCheckpoints": false
 }
 // Note that environment variables might not work in config path
 // TODO: https://code.visualstudio.com/docs/editor/intellisense

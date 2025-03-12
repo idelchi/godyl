@@ -36,6 +36,6 @@ func Tool(cmd *cobra.Command) {
 // Update adds update-related command flags to the provided cobra command.
 // These flags control the self-update.
 func Update(cmd *cobra.Command) {
-	cmd.Flags().String("github-token", "brooo", "GitHub token for authentication")
+	cmd.Flags().String("github-token", os.Getenv("GODYL_GITHUB_TOKEN"), "GitHub token for authentication")
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
 }

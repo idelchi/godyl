@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"runtime/debug"
 	"strings"
 
@@ -17,210 +16,168 @@ import (
 	"github.com/idelchi/godyl/pkg/logger"
 )
 
-func IsWindows() bool {
-	return runtime.GOOS == "windows"
-}
-
-// ToolDownloader is responsible for downloading tools.
-type ToolDownloader interface {
-	Download(tool tools.Tool) (string, error)
-}
-
-// BinaryReplacer is responsible for replacing the current binary with a new one.
-type BinaryReplacer interface {
-	Replace(path string) error
-}
-
-// Updater is responsible for updating the godyl tool using the specified update strategy and defaults.
+// Updater handles tool self-updating functionality.
 type Updater struct {
-	Defaults    tools.Defaults // Defaults holds tool-specific default values for the update process.
-	NoVerifySSL bool           // NoVerifySSL disables SSL verification for the update process.
-	Template    []byte
-
-	downloader ToolDownloader
-	replacer   BinaryReplacer
-	log        *logger.Logger
+	defaults    tools.Defaults
+	noVerifySSL bool
+	log         *logger.Logger
+	template    []byte // Used for Windows cleanup batch script
 }
 
-// NewUpdater creates a new Updater with the specified strategy and defaults.
-func NewUpdater(defaults tools.Defaults, noVerifySSL bool, template []byte) *Updater {
+// New creates a new Updater with the specified configuration.
+func New(defaults tools.Defaults, noVerifySSL bool, template []byte) *Updater {
 	return &Updater{
-		Defaults:    defaults,
-		NoVerifySSL: noVerifySSL,
-		Template:    template,
-		downloader:  &DefaultDownloader{},
-		replacer:    &DefaultReplacer{},
+		defaults:    defaults,
+		noVerifySSL: noVerifySSL,
 		log:         logger.New(logger.INFO),
+		template:    template,
 	}
 }
 
-// DefaultDownloader is the default implementation of ToolDownloader.
-type DefaultDownloader struct{}
-
-// DefaultReplacer is the default implementation of BinaryReplacer.
-type DefaultReplacer struct{}
-
-// Update performs the update process for the godyl tool, applying the specified strategy.
+// Update performs the self-update process for the godyl tool.
 func (u *Updater) Update() error {
-	// Determine the tool path from build info, defaulting to "idelchi/godyl" if not available.
-	path := "idelchi/godyl"
-	info, ok := debug.ReadBuildInfo()
+	tool, currentVersion, err := u.prepareToolInfo()
+	if err != nil {
+		return err
+	}
 
+	// Skip if already up to date
+	if tool.Version.Version == currentVersion {
+		u.log.Info("godyl (%v) is already up-to-date", currentVersion)
+		return nil
+	}
+
+	u.log.Info("Update requested from %q -> %q", currentVersion, tool.Version.Version)
+	return u.performUpdate(tool)
+}
+
+// prepareToolInfo gathers information about the current binary and prepares the tool configuration.
+func (u *Updater) prepareToolInfo() (tools.Tool, string, error) {
+	// Get path and version from build info
+	path := "idelchi/godyl" // Default
 	var version string
 
-	if ok {
+	if info, ok := debug.ReadBuildInfo(); ok {
 		path = strings.TrimPrefix(info.Main.Path, "github.com/")
 		version = info.Main.Version
 	}
 
-	// Create a new Tool object with the appropriate strategy and source.
+	// Create tool configuration
 	tool := tools.Tool{
 		Name: path,
 		Source: sources.Source{
 			Type: sources.GITHUB,
 		},
 		Strategy:    tools.Upgrade,
-		NoVerifySSL: u.NoVerifySSL,
+		NoVerifySSL: u.noVerifySSL,
 	}
 
-	// Apply any default values to the tool.
-	tool.ApplyDefaults(u.Defaults)
+	// Apply defaults and resolve configuration
+	tool.ApplyDefaults(u.defaults)
 
 	if err := tool.Resolve(nil, nil); err != nil {
-		return fmt.Errorf("resolving tool: %w", err)
+		return tool, version, fmt.Errorf("resolving tool: %w", err)
 	}
 
-	// Check if update is needed based on strategy
-	if u.shouldUpdate(tool, version) {
-		return u.performUpdate(tool)
-	}
-
-	return nil
-}
-
-// shouldUpdate determines if an update should be performed based on the strategy and versions.
-func (u *Updater) shouldUpdate(tool tools.Tool, currentVersion string) bool {
-	if tool.Version.Version == currentVersion {
-		u.log.Info("godyl (%v) is already up-to-date", currentVersion)
-
-		return false
-	}
-
-	u.log.Info("Update requested from %q -> %q", currentVersion, tool.Version.Version)
-
-	return true
+	return tool, version, nil
 }
 
 // performUpdate downloads and applies the update.
 func (u *Updater) performUpdate(tool tools.Tool) error {
-	// Download the tool
-	output, err := u.Get(tool)
+	// Download the tool to a temporary directory
+	outputDir, err := u.downloadTool(tool)
 	if err != nil {
-		return fmt.Errorf("getting godyl: %w", err)
+		return err
 	}
 
 	// Clean up the temporary directory when done
 	defer func() {
-		folder := file.Folder(output)
+		folder := file.Folder(outputDir)
 		if err := folder.Remove(); err != nil {
 			u.log.Warn("Failed to remove temporary folder: %v", err)
 		}
 	}()
 
-	// Replace the existing godyl binary with the newly downloaded version
-	if err := u.Replace(filepath.Join(output, tool.Exe.Name)); err != nil {
-		return fmt.Errorf("replacing godyl: %w", err)
+	// Replace the existing binary with the newly downloaded version
+	newBinaryPath := filepath.Join(outputDir, tool.Exe.Name)
+	if err := u.replaceBinary(newBinaryPath); err != nil {
+		return fmt.Errorf("replacing binary: %w", err)
 	}
 
-	// Perform platform-specific cleanup
+	// Handle platform-specific cleanup
 	if IsWindows() {
-		if err := winCleanup(u.Template); err != nil {
-			return fmt.Errorf("issuing delete command: %w", err)
+		if err := u.cleanupWindows(); err != nil {
+			return fmt.Errorf("windows cleanup: %w", err)
 		}
 	}
 
 	u.log.Info("Godyl updated successfully")
-
 	return nil
 }
 
-// Replace applies the new godyl binary by replacing the current executable with the downloaded one.
-func (u *Updater) Replace(path string) error {
-	if err := u.replacer.Replace(path); err != nil {
-		return fmt.Errorf("replacing binary: %w", err)
-	}
-
-	return nil
-}
-
-// Replace implements the BinaryReplacer interface.
-func (r *DefaultReplacer) Replace(path string) error {
-	body, err := os.Open(filepath.Clean(path))
+// downloadTool downloads the tool to a temporary directory.
+func (u *Updater) downloadTool(tool tools.Tool) (string, error) {
+	// Create a temporary directory based on the platform
+	dir, err := u.createTempDir()
 	if err != nil {
-		return fmt.Errorf("opening file %q: %w", path, err)
+		return "", err
 	}
-	defer body.Close()
+
+	// Configure the tool for download
+	tool.Output = dir
+
+	// Download the tool
+	_, msg, err := tool.Download()
+	if err != nil {
+		return "", fmt.Errorf("downloading tool: %w: %s", err, msg)
+	}
+
+	return tool.Output, nil
+}
+
+// createTempDir creates an appropriate temporary directory based on the platform.
+func (u *Updater) createTempDir() (string, error) {
+	var dir file.Folder
+	var err error
+
+	if IsWindows() {
+		// On Windows, create temp dir in the same directory as the executable
+		exePath, err := os.Executable()
+		if err != nil {
+			return "", fmt.Errorf("getting executable path: %w", err)
+		}
+
+		folder := filepath.Dir(exePath)
+		if err := dir.CreateRandomInDir(folder); err != nil {
+			return "", fmt.Errorf("creating temporary directory: %w", err)
+		}
+	} else {
+		// On other platforms, use system temp directory
+		if err := dir.CreateRandomInTempDir(); err != nil {
+			return "", fmt.Errorf("creating temporary directory: %w", err)
+		}
+	}
+
+	return dir.Path(), err
+}
+
+// replaceBinary replaces the current executable with the new binary.
+func (u *Updater) replaceBinary(newBinaryPath string) error {
+	file, err := os.Open(filepath.Clean(newBinaryPath))
+	if err != nil {
+		return fmt.Errorf("opening new binary: %w", err)
+	}
+	defer file.Close()
 
 	options := update.Options{}
-
-	// Removed empty block - uncomment if needed in the future
-	// if IsWindows() {
-	//	options.OldSavePath = filepath.Join(filepath.Dir(path), ".godyl.exe.old")
-	// }
-
-	if err := update.Apply(body, options); err != nil {
+	if err := update.Apply(file, options); err != nil {
 		return fmt.Errorf("applying update: %w", err)
 	}
 
 	return nil
 }
 
-// Get downloads the tool based on its source, placing it in a temporary directory, and returns the output path.
-func (u *Updater) Get(tool tools.Tool) (string, error) {
-	path, err := u.downloader.Download(tool)
-	if err != nil {
-		return "", fmt.Errorf("downloading tool: %w", err)
-	}
-
-	return path, nil
-}
-
-// Download implements the ToolDownloader interface.
-func (d *DefaultDownloader) Download(tool tools.Tool) (string, error) {
-	// Create a temporary directory to store the downloaded tool
-	var dir file.Folder
-
-	// For Windows, get the directory of the current executable
-	if IsWindows() {
-		current, err := os.Executable()
-		if err != nil {
-			return "", fmt.Errorf("getting current executable: %w", err)
-		}
-
-		folder := filepath.Dir(current)
-		if err := dir.CreateRandomInDir(folder); err != nil {
-			return "", fmt.Errorf("creating temporary directory: %w", err)
-		}
-	} else {
-		if err := dir.CreateRandomInTempDir(); err != nil {
-			return "", fmt.Errorf("creating temporary directory: %w", err)
-		}
-	}
-
-	tool.Output = dir.Path()
-
-	// Resolve any dependencies or settings for the tool
-	if err := tool.Resolve(nil, nil); err != nil {
-		return "", fmt.Errorf("resolving tool: %w", err)
-	}
-
-	// Download the tool and capture any messages or errors
-	if output, msg, err := tool.Download(); err != nil {
-		return "", fmt.Errorf("downloading tool: %w: %s: %s", err, output, msg)
-	}
-
-	// Using logger would be ideal, but DefaultDownloader doesn't have access to it
-	// For now, we'll just return the output path and let the caller log anything needed
-
-	return tool.Output, nil
+// cleanupWindows handles Windows-specific cleanup after an update.
+func (u *Updater) cleanupWindows() error {
+	return createAndRunCleanupScript(u.template, u.log)
 }

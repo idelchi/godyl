@@ -93,14 +93,6 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install
 
 for all available options.
 
-Run
-
-```sh
-curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts/tools.sh | sh -s -- -d ~/.local/bin
-```
-
-to install all [tools](./tools.yml) listed in the `tools.yml` file.
-
 ## Usage
 
 ```sh
@@ -180,6 +172,30 @@ Update the godyl application to the latest version:
 
 ```sh
 godyl update
+```
+
+### Usage without installation
+
+A few convenience scripts are provided to run `godyl` without installation.
+
+You can see the help for each by passing `-h`
+
+#### Install all tools defined in the embedded [tools](./tools.yml) file
+
+```sh
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts/tools.sh | sh -s -- -o ~/.local/bin
+```
+
+#### Install some k8s related tools
+
+```sh
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts/k8s.sh | sh -s -- -o ~/.local/bin
+```
+
+#### Extract tools passed as arguments
+
+```sh
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts/extract.sh | sh -s -- -o ~/.local/bin idelchi/gogen idelchi/tcisd
 ```
 
 ## Configuration

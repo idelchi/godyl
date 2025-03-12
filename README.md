@@ -116,11 +116,7 @@ godyl install [tools.yml] --output ./bin
 
 If no file is specified, `godyl` defaults to using `tools.yml` in the current directory.
 
-You can dump out a default `tools.yml` file by running:
-
-```sh
-godyl dump tools > tools.yml
-```
+If the argument is set to `-`, `godyl` will read from `stdin`.
 
 ### Download Command
 
@@ -1011,6 +1007,16 @@ All `regex` expressions are evaluated using `search`, meaning that `^` and `$` a
 When running `32-bit` userland on a `64-bit` Kernel, there's some attempts to infer the matching `32-bit` architecture.
 
 However, to be certain that the right binary is downloaded, it's recommended to pass the `--arch` flag to the tool.
+
+## `yq` gymnastics
+
+Extract a subset of the embedded `tools.yml` to construct your own.
+
+Matching only `docker` tagged tools:
+
+```sh
+godyl dump tools | yq --yaml-output '[.[] | try (select(.tags != null and (.tags[] == "docker")))]' > my-tools.yml
+```
 
 <!-- Badges -->
 

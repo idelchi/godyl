@@ -4,9 +4,11 @@ package tools
 
 import (
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 
 	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/utils"
 	iutils "github.com/idelchi/godyl/internal/utils"
 )
@@ -68,4 +70,13 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 // getTools returns the tools configuration from embedded files.
 func getTools(files config.Embedded) (any, error) {
 	return utils.PrintYAMLBytes(files.Tools), nil
+
+	tools := &tools.Tools{}
+
+	err := yaml.Unmarshal(files.Tools, tools)
+	if err != nil {
+		return nil, err
+	}
+
+	return tools, nil
 }

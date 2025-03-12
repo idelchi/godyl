@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     git \
     jq \
+    yq \
     && rm -rf /var/lib/apt/lists/*
 
 ARG TASK_VERSION=v3.41.0

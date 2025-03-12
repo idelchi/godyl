@@ -1,61 +1,37 @@
 #!/bin/sh
 set -e
 
-INSTALL_DIR="./bin"
-DISABLE_SSL=""
-GODYL_GITHUB_TOKEN=${GODYL_GITHUB_TOKEN}
+GITHUB_TOKEN=${GODYL_GITHUB_TOKEN:-${GITHUB_TOKEN}}
 
 # Usage function
 usage() {
   cat <<EOF
 Usage: ${0} [OPTIONS]
-Installs all tools from tools.yml using godyl.
+Installs all tools defined in the embedded 'tools.yaml' file.
 
-This script will install all tools defined in 'tools.yaml' file.
+All arguments are passed to 'godyl download' command, and as such, you're advised to check the documentation at https://github.com/idelchi/godyl.
 
-Output directory can be controlled with the '-d' flag. Defaults to './bin'.
+Environment variables:
+
+  GODYL_GITHUB_TOKEN/GITHUB_TOKEN       GitHub token to use for downloading assets from GitHub.
+  DISABLE_SSL                           Disable SSL verification when downloading assets.
 
 Example:
 
-    curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts/tools.sh | sh -s
-
-Options:
-
-    -d  DIR     Output directory for installed tools (default: ./bin)
-    -k          Disable SSL verification
-    -t          GitHub Token to use for API requests. Can be set with environment variable GODYL_GITHUB_TOKEN as well.
-
-All remaining arguments are passed to godyl.
+    curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts/tools.sh | sh -s -- -o ./bin
 EOF
   exit 1
 }
 
 # Parse arguments
 parse_args() {
-  REMAINING_ARGS=""
-
   # Handle known options with getopts
-  while getopts ":d:t:kh" opt; do
+  while getopts ":h" opt; do
     case "${opt}" in
-      d) INSTALL_DIR="${OPTARG}" ;;
-      k) DISABLE_SSL=yes ;;
-      t) GODYL_GITHUB_TOKEN="${OPTARG}" ;;
       h) usage ;;
-      \?) # Unknown option
-        REMAINING_ARGS="${REMAINING_ARGS} $1"
-        shift
-        continue
-        ;;
     esac
     shift $((OPTIND - 1))
     OPTIND=1
-  done
-
-  # Collect remaining args
-  shift $((OPTIND - 1)) # Shift off any remaining getopts-processed args
-  while [ $# -gt 0 ]; do
-    REMAINING_ARGS="${REMAINING_ARGS} $1"
-    shift
   done
 }
 
@@ -75,25 +51,22 @@ setup_temp_dir() {
 
 # Install godyl and tools
 install_tools() {
+  local args="${1}"
+
   tmp=$(mktemp -d)
   trap 'rm -rf "${tmp}"' EXIT
 
   curl ${DISABLE_SSL:+-k} -sSL \
     "https://raw.githubusercontent.com/idelchi/scripts/refs/heads/dev/install.sh" |
-    INSTALLER_TOOL=godyl \
+    INSTALLER_TOOL=godyl GODYL_GITHUB_TOKEN=${GITHUB_TOKEN} \
       sh -s -- \
       -d "${tmp}" \
-      ${DISABLE_SSL:+-k} \
-      -t "${GODYL_GITHUB_TOKEN}"
+      ${DISABLE_SSL:+-k}
 
-  curl ${DISABLE_SSL:+-k} -sSL "https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/tools.yml" -o "${tmp}/tools.yml"
-
-  printf "Installing tools from '${tmp}/tools.yml' to '${INSTALL_DIR}'\n"
-
-  [ -n "${REMAINING_ARGS}" ] && printf "Calling godyl with extra arguments: '${REMAINING_ARGS}'\n"
+  [ -n "${args}" ] && printf "Calling 'godyl install' with arguments: '${args}'\n"
 
   # Install tools using godyl
-  GODYL_GITHUB_TOKEN=${GODYL_GITHUB_TOKEN} "${tmp}/godyl" ${DISABLE_SSL:+-k} install "${REMAINING_ARGS}" --output="${INSTALL_DIR}" "${tmp}"/tools.yml
+  "${tmp}/godyl" show tools | GODYL_GITHUB_TOKEN=${GITHUB_TOKEN} "${tmp}/godyl" install ${args} ${DISABLE_SSL:+-k} -
 
   rm -rf "${tmp}"
   printf "All tools installed successfully to ${INSTALL_DIR}\n"
@@ -113,7 +86,8 @@ main() {
   need_cmd curl
 
   # Install tools
-  install_tools
+  args="$@"
+  install_tools "${args}"
 }
 
 main "$@"

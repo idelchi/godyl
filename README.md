@@ -93,18 +93,6 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/instal
 
 for all available options.
 
-## Update
-
-```sh
-godyl --update
-```
-
-## Update
-
-```sh
-godyl update
-```
-
 ## Usage
 
 ```sh
@@ -212,19 +200,19 @@ The following global flags are available for all commands:
 
 The following flags are available for tool-related commands (`install` and `download`):
 
-| Flag                    | Environment Variable  | Default       | Description                                           |
-| ----------------------- | --------------------- | ------------- | ----------------------------------------------------- |
-| `--output`, `-o`        | `GODYL_OUTPUT`        | `./bin`       | Output path for the downloaded tools                  |
-| `--tags`, `-t`          | `GODYL_TAGS`          | `["!native"]` | Tags to filter tools by. Use `!` to exclude           |
-| `--source`              | `GODYL_SOURCE`        | `github`      | Source from which to install the tools                |
-| `--strategy`            | `GODYL_STRATEGY`      | `none`        | Strategy to use for updating tools                    |
-| `--os`                  | `GODYL_OS`            | `""`          | Operating system to use for downloading               |
-| `--arch`                | `GODYL_ARCH`          | `""`          | Architecture to use for downloading                   |
-| `--github-token`        | `GODYL_GITHUB_TOKEN`  | `""`          | GitHub token for authentication                       |
-| `--parallel`, `-j`      | `GODYL_PARALLEL`      | `0`           | Number of parallel downloads (0 is unlimited)         |
-| `--no-verify-ssl`, `-k` | `GODYL_NO_VERIFY_SSL` | `false`       | Skip SSL verification                                 |
-| `--hint`                | `GODYL_HINT`          | `[""]`        | Add hint patterns with weight 1                       |
-| `--version`, `-v`       | `GODYL_VERSION`       | `""`          | Version to download (only makes sense for `download`) |
+| Flag                    | Environment Variable                            | Default       | Description                                           |
+| ----------------------- | ----------------------------------------------- | ------------- | ----------------------------------------------------- |
+| `--output`, `-o`        | `GODYL_TOOL_OUTPUT`                             | `./bin`       | Output path for the downloaded tools                  |
+| `--tags`, `-t`          | `GODYL_TOOL_TAGS`                               | `["!native"]` | Tags to filter tools by. Use `!` to exclude           |
+| `--source`              | `GODYL_TOOL_SOURCE`                             | `github`      | Source from which to install the tools                |
+| `--strategy`            | `GODYL_TOOL_STRATEGY`                           | `none`        | Strategy to use for updating tools                    |
+| `--os`                  | `GODYL_TOOL_OS`                                 | `""`          | Operating system to use for downloading               |
+| `--arch`                | `GODYL_TOOL_ARCH`                               | `""`          | Architecture to use for downloading                   |
+| `--github-token`        | `GODYL_TOOL_GITHUB_TOKEN`, `GODYL_GITHUB_TOKEN` | `""`          | GitHub token for authentication                       |
+| `--parallel`, `-j`      | `GODYL_TOOL_PARALLEL`                           | `0`           | Number of parallel downloads (0 is unlimited)         |
+| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL`                      | `false`       | Skip SSL verification                                 |
+| `--hint`                | `GODYL_TOOL_HINT`                               | `[""]`        | Add hint patterns with weight 1                       |
+| `--version`, `-v`       | `GODYL_TOOL_VERSION`                            | `""`          | Version to download (only makes sense for `download`) |
 
 For the `install` command, the path to the file containing the tool installation instructions is provided as a positional argument, defaulting to `tools.yml`.
 
@@ -247,13 +235,13 @@ In general, settings can be set in the following ways (order of priority):
 - as an environment variable
 
   ```sh
-  GODYL_OUTPUT=~/.local/bin godyl
+  GODYL_TOOL_OUTPUT=~/.local/bin godyl
   ```
 
 - in an `.env` file
 
   ```
-  GODYL_OUTPUT=~/.local/bin
+  GODYL_TOOL_OUTPUT=~/.local/bin
   ```
 
 - by setting the value in a `defaults.yml` file (see [defaults](#defaults))
@@ -782,6 +770,7 @@ The example above defines:
     ```
 
   - prefer the three last versions of the arm architecture, in descending order
+
     ```
     - pattern: "armv{{.ARCH_VERSION}}"
       weight: 3
@@ -903,7 +892,7 @@ Only certain fields are templated. Below is a list of fields where templating is
 
   ```yaml
   commands:
-    - pip install {{ .Exe}}=={{ .Version }}
+    - pip install {{ .Exe }}=={{ .Version }}
   ```
 
 - `hints[].pattern`

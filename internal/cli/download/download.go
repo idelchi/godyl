@@ -42,8 +42,8 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
 		Long:    "Download and unpack tools from GitHub, URLs, or Go projects",
 		Args:    cobra.MinimumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			if err := flags.Bind(cmd, cmd.Root().Name(), &cfg.Tool); err != nil {
-				return fmt.Errorf("common pre-run: %w", err)
+			if err := flags.Bind(cmd, &cfg.Tool, cmd.Root().Name(), "TOOL"); err != nil {
+				return err
 			}
 
 			return validate.Validate(cfg.Tool)
@@ -66,13 +66,13 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
 			log.Info("*** ***")
 
 			// Load defaults
-			toolDefaults := tools.Defaults{}
-			if err := defaults.LoadDefaults(&toolDefaults, cfg.Root.Defaults.Name(), files, *cfg); err != nil {
+			defaults, err := defaults.Load(cfg.Root.Defaults.Name(), files, *cfg)
+			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
 			log.Info("platform:")
-			log.Info("%s", pretty.YAML(toolDefaults.Platform))
+			log.Info("%s", pretty.YAML(defaults.Platform))
 			log.Info("*** ***")
 
 			toolsList := []tools.Tool{}
@@ -99,7 +99,7 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
 			}
 
 			// Process tools
-			proc := processor.New(toolsList, toolDefaults, *cfg, log)
+			proc := processor.New(toolsList, defaults, *cfg, log)
 			if err := proc.Process(nil, nil); err != nil {
 				return fmt.Errorf("processing tools: %w", err)
 			}

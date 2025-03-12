@@ -6,6 +6,9 @@ import (
 	"github.com/idelchi/godyl/pkg/file"
 )
 
+// Tool holds the configuration options for fetching tools.
+// These are used as flags, environment variables for the corresponding CLI commands,
+// and used to set the tool configuration for each tool requested, unless explicitly set by the tool itself.
 type Tool struct {
 	// Path to output the fetched tools to
 	Output string

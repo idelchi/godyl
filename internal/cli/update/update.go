@@ -11,7 +11,6 @@ import (
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/core/defaults"
 	"github.com/idelchi/godyl/internal/core/updater"
-	"github.com/idelchi/godyl/internal/tools"
 )
 
 // Command encapsulates the update cobra command with its associated config and embedded files.
@@ -33,15 +32,15 @@ func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
 		Short:   "Update the application",
 		Long:    "Update the godyl application to the latest version",
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return flags.Bind(cmd, cmd.Root().Name(), &cfg.Tool)
+			return flags.Bind(cmd, &cfg.Tool, cmd.Root().Name(), cmd.Name())
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			toolDefaults := tools.Defaults{}
-			if err := defaults.LoadDefaults(&toolDefaults, cfg.Root.Defaults.Name(), files, *cfg); err != nil {
+			defaults, err := defaults.Load(cfg.Root.Defaults.Name(), files, *cfg)
+			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
-			appUpdater := updater.NewUpdater(toolDefaults, cfg.Tool.NoVerifySSL, files.Template)
+			appUpdater := updater.New(defaults, cfg.Tool.NoVerifySSL, files.Template)
 
 			if err := appUpdater.Update(); err != nil {
 				return fmt.Errorf("updating: %w", err)

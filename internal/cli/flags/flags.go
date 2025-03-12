@@ -1,6 +1,8 @@
 package flags
 
 import (
+	"os"
+
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/spf13/cobra"
 )
@@ -22,7 +24,7 @@ func Tool(cmd *cobra.Command) {
 	cmd.Flags().StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
 	cmd.Flags().String("source", "github", "Source from which to install the tools (github, url, go, command)")
 	cmd.Flags().String("strategy", "none", "Strategy to use for updating tools (none, upgrade, force)")
-	cmd.Flags().String("github-token", "", "GitHub token for authentication")
+	cmd.Flags().String("github-token", os.Getenv("GODYL_GITHUB_TOKEN"), "GitHub token for authentication")
 	cmd.Flags().String("os", "", "Operating system to install the tools for")
 	cmd.Flags().String("arch", "", "Architecture to install the tools for")
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
@@ -34,6 +36,6 @@ func Tool(cmd *cobra.Command) {
 // Update adds update-related command flags to the provided cobra command.
 // These flags control the self-update.
 func Update(cmd *cobra.Command) {
-	cmd.Flags().String("github-token", "brooo", "GitHub token for authentication")
+	cmd.Flags().String("github-token", os.Getenv("GODYL_GITHUB_TOKEN"), "GitHub token for authentication")
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
 }

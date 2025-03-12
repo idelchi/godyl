@@ -111,16 +111,12 @@ Available commands:
 Install tools defined in a YAML configuration file:
 
 ```sh
-godyl install [tools.yml] --output ./bin
+godyl install [tools.yml|STDIN] --output ./bin
 ```
 
 If no file is specified, `godyl` defaults to using `tools.yml` in the current directory.
 
-You can dump out a default `tools.yml` file by running:
-
-```sh
-godyl dump tools > tools.yml
-```
+If the argument is set to `-`, `godyl` will read from `stdin`.
 
 ### Download Command
 
@@ -133,7 +129,7 @@ godyl download idelchi/godyl --output ./bin
 Download multiple tools:
 
 ```sh
-godyl download idelchi/godyl idelchi/gogen idelchi/wslint
+godyl download idelchi/tcisd idelchi/gogen idelchi/wslint
 ```
 
 When using the `download` command, the tool will be unarchived directly into the output directory.
@@ -165,6 +161,12 @@ Subcommands:
 - `env` - Display environment variables that affect the application
 - `platform` - Display information about the current platform
 - `tools` - Display information about available tools
+
+For example, install all tools that were embedded when the application was built:
+
+```sh
+godyl dump tools | godyl install - --output ./bin
+```
 
 ### Update Command
 
@@ -1011,6 +1013,16 @@ All `regex` expressions are evaluated using `search`, meaning that `^` and `$` a
 When running `32-bit` userland on a `64-bit` Kernel, there's some attempts to infer the matching `32-bit` architecture.
 
 However, to be certain that the right binary is downloaded, it's recommended to pass the `--arch` flag to the tool.
+
+## `yq` gymnastics
+
+Extract a subset of the embedded `tools.yml` to construct your own.
+
+Matching only `docker` tagged tools:
+
+```sh
+godyl dump tools | yq --yaml-output '[.[] | try (select(.tags != null and (.tags[] == "docker")))]' > my-tools.yml
+```
 
 <!-- Badges -->
 

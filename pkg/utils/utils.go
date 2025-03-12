@@ -35,6 +35,13 @@ func SetSliceIfNil[S ~[]T, T any](input *S, values ...T) {
 	}
 }
 
+// SetSliceIfZero sets the value of input to the provided values slice if input is nil or empty.
+func SetSliceIfZero[S ~[]T, T any](input *S, values ...T) {
+	if *input == nil || len(*input) == 0 {
+		*input = append([]T(nil), values...)
+	}
+}
+
 // SetMapIfNil sets the value of input to the provided defaultMap if input is nil.
 func SetMapIfNil[M ~map[K]V, K comparable, V any](input *M, values M) {
 	if *input == nil {

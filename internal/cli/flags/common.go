@@ -20,7 +20,7 @@ func Bind(cmd *cobra.Command, cfg any, prefix ...string) error {
 	}
 
 	if err := viper.Unmarshal(cfg); err != nil {
-		return fmt.Errorf("unmarshalling config: %w", err)
+		return fmt.Errorf("unmarshalling config for %q: %w", cmd.Name(), err)
 	}
 
 	return nil

@@ -91,6 +91,7 @@ func (t *Tool) UnmarshalYAML(value *yaml.Node) error {
 // ApplyDefaults applies default values to the Tool configuration.
 // If a field is empty or nil, it is replaced with the corresponding default from the Defaults struct.
 // TODO(Idelchi): Improve - what if someone wants a value to be ""?
+// TODO(Idelchi): Perhaps SetSliceIfNil should be SetSliceIfZero?
 func (t *Tool) ApplyDefaults(d Defaults) {
 	utils.SetIfZeroValue(&t.Output, d.Output)
 	utils.SetIfZeroValue(&t.Source.Type, d.Source.Type)

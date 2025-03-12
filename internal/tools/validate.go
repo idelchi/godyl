@@ -205,7 +205,7 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 	}
 
 	// Set patterns for finding the executable.
-	utils.SetSliceIfNil(&t.Exe.Patterns, fmt.Sprintf("^%s$", t.Exe.Name))
+	utils.SetSliceIfZero(&t.Exe.Patterns, fmt.Sprintf("^%s$", t.Exe.Name))
 
 	// Append platform-specific extensions to aliases.
 	for i, alias := range t.Aliases {

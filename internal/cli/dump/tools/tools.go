@@ -25,7 +25,7 @@ type Command struct {
 
 // Flags adds tools-specific flags to the command.
 func (cmd *Command) Flags() {
-	// No specific flags for this command
+	cmd.Command.Flags().BoolP("rendered", "r", false, "Render the tools in full")
 }
 
 // NewToolsCommand creates a Command for displaying tools information.
@@ -35,10 +35,14 @@ func NewToolsCommand(cfg *config.Config, files config.Embedded) *Command {
 		Short: "Display tools information",
 		Args:  cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return flags.Bind(cmd.Parent(), &cfg.Dump, cmd.Root().Name(), cmd.Parent().Name())
+			if err := flags.Bind(cmd.Parent(), &cfg.Dump, cmd.Root().Name(), cmd.Parent().Name()); err != nil {
+				return err
+			}
+
+			return flags.Bind(cmd, &cfg.Dump.Tools, cmd.Root().Name(), cmd.Parent().Name(), cmd.Name())
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			c, err := getTools(files)
+			c, err := getTools(files, cfg.Dump.Tools.Rendered)
 			if err != nil {
 				return err
 			}
@@ -68,8 +72,10 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 }
 
 // getTools returns the tools configuration from embedded files.
-func getTools(files config.Embedded) (any, error) {
-	return utils.PrintYAMLBytes(files.Tools), nil
+func getTools(files config.Embedded, rendered bool) (any, error) {
+	if !rendered {
+		return utils.PrintYAMLBytes(files.Tools), nil
+	}
 
 	tools := &tools.Tools{}
 

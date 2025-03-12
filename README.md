@@ -171,7 +171,7 @@ Subcommands:
 Update the godyl application to the latest version:
 
 ```sh
-godyl update
+godyl update [--version <version>]
 ```
 
 ### Usage without installation
@@ -241,6 +241,18 @@ The following flags are available for tool-related commands (`install` and `down
 For the `install` command, the path to the file containing the tool installation instructions is provided as a positional argument, defaulting to `tools.yml`.
 
 An example [tools.yml](./tools.yml) is provided.
+
+### Update flags
+
+The following flags are available for the `update` command:
+
+| Flag                    | Environment Variable                            | Default | Description                     |
+| ----------------------- | ----------------------------------------------- | ------- | ------------------------------- |
+| `--github-token`        | `GODYL_TOOL_GITHUB_TOKEN`, `GODYL_GITHUB_TOKEN` | `""`    | GitHub token for authentication |
+| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL`                      | `false` | Skip SSL verification           |
+| `--version`, `-v`       | `GODYL_TOOL_VERSION`                            | `""`    | Version to download             |
+
+## tools.yml, flags, environment variables and defaults
 
 In general, settings can be set in the following ways (order of priority):
 

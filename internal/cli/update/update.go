@@ -40,9 +40,14 @@ func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
-			appUpdater := updater.New(defaults, cfg.Tool.NoVerifySSL, cfg.Tool.Version, files.Template)
+			appUpdater := updater.New(defaults, cfg.Tool.NoVerifySSL, files.Template)
 
-			if err := appUpdater.Update(cmd.Root().Version); err != nil {
+			versions := updater.Versions{
+				Current:   cmd.Root().Version,
+				Requested: cfg.Tool.Version,
+			}
+
+			if err := appUpdater.Update(versions); err != nil {
 				return fmt.Errorf("updating: %w", err)
 			}
 

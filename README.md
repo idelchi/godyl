@@ -171,7 +171,7 @@ Subcommands:
 Update the godyl application to the latest version:
 
 ```sh
-godyl update
+godyl update [--version <version>]
 ```
 
 ### Usage without installation

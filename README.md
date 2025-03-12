@@ -174,6 +174,30 @@ Update the godyl application to the latest version:
 godyl update
 ```
 
+### Usage without installation
+
+A few convenience scripts are provided to run `godyl` without installation.
+
+You can see the help for each by passing `-h`
+
+#### Install all tools defined in the embedded [tools](./tools.yml) file
+
+```sh
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/scripts/tools.sh | sh -s -- -o ~/.local/bin
+```
+
+#### Install some k8s related tools
+
+```sh
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/scripts/k8s.sh | sh -s -- -o ~/.local/bin
+```
+
+#### Extract tools passed as arguments
+
+```sh
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/scripts/extract.sh | sh -s -- -o ~/.local/bin idelchi/gogen idelchi/tcisd
+```
+
 ## Configuration
 
 The tools can be configured (in order of priority) by:

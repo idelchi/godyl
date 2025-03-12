@@ -16,7 +16,6 @@ import (
 	"github.com/idelchi/godyl/internal/tools/sources"
 	iutils "github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/logger"
-	"github.com/idelchi/godyl/pkg/pretty"
 	"github.com/idelchi/godyl/pkg/utils"
 	"github.com/idelchi/godyl/pkg/validate"
 )
@@ -61,19 +60,12 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
 			}
 
 			log := logger.New(lvl)
-			log.Info("*** ***")
-			log.Info("godyl download running with:")
-			log.Info("*** ***")
 
 			// Load defaults
 			defaults, err := defaults.Load(cfg.Root.Defaults.Name(), files, *cfg)
 			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
-
-			log.Info("platform:")
-			log.Info("%s", pretty.YAML(defaults.Platform))
-			log.Info("*** ***")
 
 			toolsList := []tools.Tool{}
 

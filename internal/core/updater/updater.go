@@ -24,6 +24,12 @@ type Updater struct {
 	template    []byte // Used for Windows cleanup batch script
 }
 
+// Versions contains the current and requested versions of the tool.
+type Versions struct {
+	Current   string
+	Requested string
+}
+
 // New creates a new Updater with the specified configuration.
 func New(defaults tools.Defaults, noVerifySSL bool, template []byte) *Updater {
 	return &Updater{
@@ -35,8 +41,8 @@ func New(defaults tools.Defaults, noVerifySSL bool, template []byte) *Updater {
 }
 
 // Update performs the self-update process for the godyl tool.
-func (u *Updater) Update() error {
-	tool, currentVersion, err := u.prepareToolInfo()
+func (u *Updater) Update(versions Versions) error {
+	tool, currentVersion, err := u.prepareToolInfo(versions)
 	if err != nil {
 		return err
 	}
@@ -52,19 +58,23 @@ func (u *Updater) Update() error {
 }
 
 // prepareToolInfo gathers information about the current binary and prepares the tool configuration.
-func (u *Updater) prepareToolInfo() (tools.Tool, string, error) {
+func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error) {
 	// Get path and version from build info
 	path := "idelchi/godyl" // Default
-	var version string
 
 	if info, ok := debug.ReadBuildInfo(); ok {
 		path = strings.TrimPrefix(info.Main.Path, "github.com/")
-		version = info.Main.Version
+		if versions.Current == "" {
+			versions.Current = info.Main.Version
+		}
 	}
 
 	// Create tool configuration
 	tool := tools.Tool{
 		Name: path,
+		Version: tools.Version{
+			Version: versions.Requested,
+		},
 		Source: sources.Source{
 			Type: sources.GITHUB,
 		},
@@ -76,10 +86,10 @@ func (u *Updater) prepareToolInfo() (tools.Tool, string, error) {
 	tool.ApplyDefaults(u.defaults)
 
 	if err := tool.Resolve(nil, nil); err != nil {
-		return tool, version, fmt.Errorf("resolving tool: %w", err)
+		return tool, versions.Current, fmt.Errorf("resolving tool: %w", err)
 	}
 
-	return tool, version, nil
+	return tool, versions.Current, nil
 }
 
 // performUpdate downloads and applies the update.

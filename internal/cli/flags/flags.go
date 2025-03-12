@@ -30,7 +30,7 @@ func Tool(cmd *cobra.Command) {
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
 	cmd.Flags().IntP("parallel", "j", 0, "Number of parallel downloads. 0 means unlimited.")
 	cmd.Flags().StringSlice("hints", []string{""}, "Hints to use for tool resolution")
-	cmd.Flags().String("version", "", "Version of the tool to install")
+	cmd.Flags().String("version", "", "Version of the tool to install. Empty means latest.")
 }
 
 // Update adds update-related command flags to the provided cobra command.
@@ -38,4 +38,5 @@ func Tool(cmd *cobra.Command) {
 func Update(cmd *cobra.Command) {
 	cmd.Flags().String("github-token", os.Getenv("GODYL_GITHUB_TOKEN"), "GitHub token for authentication")
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
+	cmd.Flags().String("version", "", "Version of the tool to install. Empty means latest.")
 }

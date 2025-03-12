@@ -111,7 +111,7 @@ Available commands:
 Install tools defined in a YAML configuration file:
 
 ```sh
-godyl install [tools.yml] --output ./bin
+godyl install [tools.yml|STDIN] --output ./bin
 ```
 
 If no file is specified, `godyl` defaults to using `tools.yml` in the current directory.
@@ -129,7 +129,7 @@ godyl download idelchi/godyl --output ./bin
 Download multiple tools:
 
 ```sh
-godyl download idelchi/godyl idelchi/gogen idelchi/wslint
+godyl download idelchi/tcisd idelchi/gogen idelchi/wslint
 ```
 
 When using the `download` command, the tool will be unarchived directly into the output directory.
@@ -161,6 +161,12 @@ Subcommands:
 - `env` - Display environment variables that affect the application
 - `platform` - Display information about the current platform
 - `tools` - Display information about available tools
+
+For example, install all tools that were embedded when the application was built:
+
+```sh
+godyl dump tools | godyl install - --output ./bin
+```
 
 ### Update Command
 

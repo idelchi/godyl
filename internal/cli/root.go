@@ -42,7 +42,7 @@ func (cmd *Command) Flags() {
 // Subcommands adds all subcommands to the root command.
 func (cmd *Command) Subcommands() {
 	cmd.Command.AddCommand(
-		version.NewCommand(cmd.Command.Version),
+		version.NewCommand(),
 		dump.NewCommand(cmd.Config, cmd.Files),
 		install.NewCommand(cmd.Config, cmd.Files),
 		download.NewCommand(cmd.Config, cmd.Files),

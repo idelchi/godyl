@@ -22,21 +22,23 @@ type Updater struct {
 	noVerifySSL bool
 	log         *logger.Logger
 	template    []byte // Used for Windows cleanup batch script
+	version     string
 }
 
 // New creates a new Updater with the specified configuration.
-func New(defaults tools.Defaults, noVerifySSL bool, template []byte) *Updater {
+func New(defaults tools.Defaults, noVerifySSL bool, version string, template []byte) *Updater {
 	return &Updater{
 		defaults:    defaults,
 		noVerifySSL: noVerifySSL,
 		log:         logger.New(logger.INFO),
+		version:     version,
 		template:    template,
 	}
 }
 
 // Update performs the self-update process for the godyl tool.
-func (u *Updater) Update() error {
-	tool, currentVersion, err := u.prepareToolInfo()
+func (u *Updater) Update(version string) error {
+	tool, currentVersion, err := u.prepareToolInfo(version)
 	if err != nil {
 		return err
 	}
@@ -52,19 +54,23 @@ func (u *Updater) Update() error {
 }
 
 // prepareToolInfo gathers information about the current binary and prepares the tool configuration.
-func (u *Updater) prepareToolInfo() (tools.Tool, string, error) {
+func (u *Updater) prepareToolInfo(version string) (tools.Tool, string, error) {
 	// Get path and version from build info
 	path := "idelchi/godyl" // Default
-	var version string
 
 	if info, ok := debug.ReadBuildInfo(); ok {
 		path = strings.TrimPrefix(info.Main.Path, "github.com/")
-		version = info.Main.Version
+		if version == "" {
+			version = info.Main.Version
+		}
 	}
 
 	// Create tool configuration
 	tool := tools.Tool{
 		Name: path,
+		Version: tools.Version{
+			Version: u.version,
+		},
 		Source: sources.Source{
 			Type: sources.GITHUB,
 		},

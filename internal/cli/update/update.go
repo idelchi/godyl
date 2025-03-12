@@ -34,15 +34,15 @@ func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			return flags.Bind(cmd, &cfg.Tool, cmd.Root().Name(), cmd.Name())
 		},
-		RunE: func(_ *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			defaults, err := defaults.Load(cfg.Root.Defaults.Name(), files, *cfg)
 			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
-			appUpdater := updater.New(defaults, cfg.Tool.NoVerifySSL, files.Template)
+			appUpdater := updater.New(defaults, cfg.Tool.NoVerifySSL, cfg.Tool.Version, files.Template)
 
-			if err := appUpdater.Update(); err != nil {
+			if err := appUpdater.Update(cmd.Root().Version); err != nil {
 				return fmt.Errorf("updating: %w", err)
 			}
 

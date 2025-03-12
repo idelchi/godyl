@@ -5,9 +5,11 @@
 !**/*.go
 !go.mod
 !go.sum
+
+# bashrc
 !.bashrc
+
+# Embedded files
 !defaults.yml
 !tools.yml
-
-# Don't ignore stuff in internal/
-!internal/**
+!internal/core/updater/scripts/*

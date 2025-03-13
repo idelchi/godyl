@@ -10,7 +10,6 @@ import (
 	"github.com/idelchi/godyl/internal/cli/dump/tools"
 	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/pkg/validate"
 )
 
 // Command encapsulates the dump cobra command with its associated config and embedded files.
@@ -47,15 +46,7 @@ func NewDumpCommand(cfg *config.Config, files config.Embedded) *Command {
 		Short:   "Dump configuration information",
 		Long:    "Display various configuration settings and information about the environment",
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			if err := cmd.Parent().PreRunE(cmd, nil); err != nil {
-				return err
-			}
-
-			if err := flags.Bind(cmd, &cfg.Dump); err != nil {
-				return err
-			}
-
-			return validate.Validate(cfg.Dump)
+			return flags.ChainPreRun(cmd, &cfg.Dump)
 		},
 	}
 

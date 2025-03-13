@@ -6,6 +6,11 @@
   tags:
     - docker
 
+- name: mrjackwills/oxker
+  description: A simple tui to view & control docker containers
+  tags:
+    - docker
+
 - name: jesseduffield/lazydocker
   description: The lazier way to manage everything docker
   aliases: lazy

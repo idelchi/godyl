@@ -39,7 +39,7 @@ func NewDefaultsCommand(cfg *config.Config, files config.Embedded) *Command {
 			return flags.ChainPreRun(cmd, nil)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			c, err := getDefaults(cfg, files)
+			c, err := getDefaults(files)
 			if err != nil {
 				return err
 			}
@@ -69,11 +69,12 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 }
 
 // getDefaults loads and returns the application's default settings.
-func getDefaults(cfg *config.Config, files config.Embedded) (tools.Defaults, error) {
-	defaults, err := defaults.Load(cfg.Root.Defaults.Name(), files, *cfg)
-	if err != nil {
-		return defaults, fmt.Errorf("loading defaults: %w", err)
+func getDefaults(files config.Embedded) (tools.Defaults, error) {
+	d := defaults.Defaults{}
+
+	if err := d.Default(files.Defaults); err != nil {
+		return d.Get(), fmt.Errorf("setting defaults: %w", err)
 	}
 
-	return defaults, nil
+	return d.Get(), nil
 }

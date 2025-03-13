@@ -57,7 +57,7 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
 			log := logger.New(lvl)
 
 			// Load defaults
-			defaults, err := defaults.Load(cfg.Root.Defaults.Name(), files, *cfg)
+			defaults, err := defaults.Load(cfg.Root.Defaults, files, *cfg)
 			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}

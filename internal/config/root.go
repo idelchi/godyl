@@ -20,7 +20,7 @@ type Root struct {
 	Log string `validate:"oneof=DEBUG INFO WARN ERROR SILENT"`
 
 	// Path to .env file
-	DotEnv file.File `mapstructure:"env-file"`
+	EnvFile file.File `mapstructure:"env-file"`
 
 	// Path to defaults file
 	Defaults file.File
@@ -32,8 +32,8 @@ func (c *Root) Validate() error {
 		return fmt.Errorf("%w: defaults file %q does not exist", ErrUsage, c.Defaults)
 	}
 
-	if cobraext.IsSet("env-file") && !c.DotEnv.Exists() {
-		return fmt.Errorf("%w: env-file file %q does not exist", ErrUsage, c.DotEnv)
+	if cobraext.IsSet("env-file") && !c.EnvFile.Exists() {
+		return fmt.Errorf("%w: env-file file %q does not exist", ErrUsage, c.EnvFile)
 	}
 
 	return validate.Validate(c)

@@ -13,6 +13,7 @@ import (
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/cobraext"
+	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
@@ -20,6 +21,11 @@ import (
 type Defaults struct {
 	// Inline tool-specific defaults.
 	defaults tools.Defaults
+}
+
+// Get returns the Defaults struct.
+func (d *Defaults) Get() tools.Defaults {
+	return d.defaults
 }
 
 // Unmarshal parses the provided YAML data into the Defaults struct.
@@ -105,14 +111,14 @@ func (d *Defaults) Merge(cfg config.Config) error {
 }
 
 // Load loads configuration defaults from a file or uses embedded defaults if not specified.
-func (d *Defaults) Load(path string, defaults []byte) error {
-	if cobraext.IsSet("defaults") {
-		if err := d.FromFile(path); err != nil {
+func (d *Defaults) Load(path file.File, defaults []byte) error {
+	if err := d.FromFile(path.Name()); err != nil {
+		if cobraext.IsSet("defaults") {
 			return fmt.Errorf("loading defaults from %q: %w", path, err)
-		}
-	} else {
-		if err := d.Default(defaults); err != nil {
-			return fmt.Errorf("setting defaults: %w", err)
+		} else {
+			if err := d.Default(defaults); err != nil {
+				return fmt.Errorf("setting defaults: %w", err)
+			}
 		}
 	}
 
@@ -124,7 +130,7 @@ func (d *Defaults) Load(path string, defaults []byte) error {
 }
 
 // Load loads the default configuration.
-func Load(path string, embeds config.Embedded, cfg config.Config) (tools.Defaults, error) {
+func Load(path file.File, embeds config.Embedded, cfg config.Config) (tools.Defaults, error) {
 	// Create a new Defaults instance
 	defaults := &Defaults{}
 

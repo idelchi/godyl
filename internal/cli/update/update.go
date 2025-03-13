@@ -35,7 +35,7 @@ func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
 			return flags.ChainPreRun(cmd, &cfg.Update)
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			defaults, err := defaults.Load(cfg.Root.Defaults.Name(), files, *cfg)
+			defaults, err := defaults.Load(cfg.Root.Defaults, files, *cfg)
 			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}

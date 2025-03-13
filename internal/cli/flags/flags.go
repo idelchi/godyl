@@ -12,7 +12,7 @@ import (
 func Root(cmd *cobra.Command) {
 	cmd.Flags().Bool("dry", false, "Run without making any changes (dry run)")
 	cmd.Flags().String("log", logger.INFO.String(), "Log level (DEBUG, INFO, WARN, ERROR, SILENT)")
-	cmd.Flags().String("env-file", ".env", "Path to .env file")
+	cmd.Flags().StringP("env-file", "e", ".env", "Path to .env file")
 	cmd.Flags().StringP("defaults", "d", "defaults.yml", "Path to defaults file")
 	cmd.Flags().BoolP("show", "s", false, "Show the configuration and exit")
 }

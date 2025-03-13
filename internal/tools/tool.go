@@ -62,7 +62,7 @@ type Tool struct {
 	// Check defines a set of instructions for verifying the tool's integrity or functionality.
 	Check Checker
 	// NoVerifySSL specifies whether SSL verification should be disabled when fetching the tool.
-	NoVerifySSL bool `json:"-" mapstructure:"-" yaml:"-"`
+	NoVerifySSL bool
 }
 
 // UnmarshalYAML implements custom unmarshaling for Tool with KnownFields check.

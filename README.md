@@ -226,33 +226,43 @@ The following global flags are available for all commands:
 
 The following flags are available for tool-related commands (`install` and `download`):
 
-| Flag                    | Environment Variable                            | Default       | Description                                           |
-| ----------------------- | ----------------------------------------------- | ------------- | ----------------------------------------------------- |
-| `--output`, `-o`        | `GODYL_TOOL_OUTPUT`                             | `./bin`       | Output path for the downloaded tools                  |
-| `--tags`, `-t`          | `GODYL_TOOL_TAGS`                               | `["!native"]` | Tags to filter tools by. Use `!` to exclude           |
-| `--source`              | `GODYL_TOOL_SOURCE`                             | `github`      | Source from which to install the tools                |
-| `--strategy`            | `GODYL_TOOL_STRATEGY`                           | `none`        | Strategy to use for updating tools                    |
-| `--os`                  | `GODYL_TOOL_OS`                                 | `""`          | Operating system to use for downloading               |
-| `--arch`                | `GODYL_TOOL_ARCH`                               | `""`          | Architecture to use for downloading                   |
-| `--github-token`        | `GODYL_TOOL_GITHUB_TOKEN`, `GODYL_GITHUB_TOKEN` | `""`          | GitHub token for authentication                       |
-| `--parallel`, `-j`      | `GODYL_TOOL_PARALLEL`                           | `0`           | Number of parallel downloads (0 is unlimited)         |
-| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL`                      | `false`       | Skip SSL verification                                 |
-| `--hint`                | `GODYL_TOOL_HINT`                               | `[""]`        | Add hint patterns with weight 1                       |
-| `--version`, `-v`       | `GODYL_TOOL_VERSION`                            | `""`          | Version to download (only makes sense for `download`) |
+| Flag                    | Environment Variable                            | Default       | Description                                    |
+| ----------------------- | ----------------------------------------------- | ------------- | ---------------------------------------------- |
+| `--output`, `-o`        | `GODYL_TOOL_OUTPUT`                             | `./bin`       | Output path for the downloaded tools           |
+| `--tags`, `-t`          | `GODYL_TOOL_TAGS`                               | `["!native"]` | Tags to filter tools by. Use `!` to exclude    |
+| `--source`              | `GODYL_TOOL_SOURCE`                             | `github`      | Source from which to install the tools         |
+| `--strategy`            | `GODYL_TOOL_STRATEGY`                           | `none`        | Strategy to use for updating tools             |
+| `--os`                  | `GODYL_TOOL_OS`                                 | `""`          | Operating system to use for downloading        |
+| `--arch`                | `GODYL_TOOL_ARCH`                               | `""`          | Architecture to use for downloading            |
+| `--github-token`        | `GODYL_TOOL_GITHUB_TOKEN`, `GODYL_GITHUB_TOKEN` | `""`          | GitHub token for authentication                |
+| `--parallel`, `-j`      | `GODYL_TOOL_PARALLEL`                           | `0`           | Number of parallel downloads (0 is unlimited)  |
+| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL`                      | `false`       | Skip SSL verification                          |
+| `--hint`                | `GODYL_TOOL_HINT`                               | `[""]`        | Add hint patterns with weight 1                |
+| `--version`, `-v`       | `GODYL_TOOL_VERSION`                            | `""`          | Version to download (only used for `download`) |
 
 For the `install` command, the path to the file containing the tool installation instructions is provided as a positional argument, defaulting to `tools.yml`.
 
-An example [tools.yml](./tools.yml) is provided.
+An example [tools.yml](./tools.yml) is provided and can be dumped using the `dump tools` command.
 
 ### Update flags
 
 The following flags are available for the `update` command:
 
-| Flag                    | Environment Variable                            | Default | Description                     |
-| ----------------------- | ----------------------------------------------- | ------- | ------------------------------- |
-| `--github-token`        | `GODYL_TOOL_GITHUB_TOKEN`, `GODYL_GITHUB_TOKEN` | `""`    | GitHub token for authentication |
-| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL`                      | `false` | Skip SSL verification           |
-| `--version`, `-v`       | `GODYL_TOOL_VERSION`                            | `""`    | Version to download             |
+| Flag                    | Environment Variable                              | Default | Description                     |
+| ----------------------- | ------------------------------------------------- | ------- | ------------------------------- |
+| `--github-token`        | `GODYL_UPDATE_GITHUB_TOKEN`, `GODYL_GITHUB_TOKEN` | `""`    | GitHub token for authentication |
+| `--no-verify-ssl`, `-k` | `GODYL_UPDATE_NO_VERIFY_SSL`                      | `false` | Skip SSL verification           |
+| `--version`, `-v`       | `GODYL_UPDATE_VERSION`                            | `""`    | Version to download             |
+
+### Dump flags
+
+#### Tools flags
+
+The following flags are available for the `dump tools` command:
+
+| Flag          | Environment Variable    | Default | Description                |
+| ------------- | ----------------------- | ------- | -------------------------- |
+| `--full`, `f` | `GODYL_DUMP_TOOLS_FULL` | `false` | Show full tool information |
 
 ## tools.yml, flags, environment variables and defaults
 

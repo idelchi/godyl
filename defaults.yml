@@ -1,4 +1,4 @@
-output: .bin-{{ .OS }}-{{ .DISTRIBUTION }}-{{ .ARCH }}-{{ .ARCH_VERSION }}
+output: .bin-{{ .OS }}-{{ .ARCH_LONG }}
 exe:
   patterns:
     - "^{{ .Exe }}{{ .EXTENSION }}$"

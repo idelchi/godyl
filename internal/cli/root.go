@@ -62,22 +62,22 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 		SilenceUsage:     true,
 		SilenceErrors:    true,
 		TraverseChildren: true,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			// Bind root-level flags
-			if err := flags.Bind(cmd.Root(), &cfg.Root, cmd.Root().Name()); err != nil {
+			if err := flags.Bind(cmd.Root(), &cfg.Root); err != nil {
 				return fmt.Errorf("binding flags: %w", err)
-			}
-
-			// Load environment variables from .env file
-			if err := utils.LoadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
-				if cobraext.IsSet("env-file") {
-					return fmt.Errorf("loading .env file: %w", err)
-				}
 			}
 
 			// Validate the root configuration
 			if err := cfg.Root.Validate(); err != nil {
 				return fmt.Errorf("validating config: %w", err)
+			}
+
+			// Load environment variables from .env file such that it's available for the subcommands
+			if err := utils.LoadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
+				if cobraext.IsSet("env-file") {
+					return fmt.Errorf("loading .env file: %w", err)
+				}
 			}
 
 			return nil

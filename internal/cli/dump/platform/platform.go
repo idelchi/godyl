@@ -7,7 +7,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/detect"
 	iutils "github.com/idelchi/godyl/internal/utils"
@@ -35,7 +34,7 @@ func NewPlatformCommand(cfg *config.Config, files config.Embedded) *Command {
 		Short: "Display platform information",
 		Args:  cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return flags.Bind(cmd.Parent(), &cfg.Dump, cmd.Root().Name(), cmd.Parent().Name())
+			return cmd.Parent().PreRunE(cmd.Parent(), nil)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
 			c, err := getPlatform()

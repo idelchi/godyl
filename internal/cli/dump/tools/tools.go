@@ -25,7 +25,7 @@ type Command struct {
 
 // Flags adds tools-specific flags to the command.
 func (cmd *Command) Flags() {
-	cmd.Command.Flags().BoolP("rendered", "r", false, "Render the tools in full")
+	cmd.Command.Flags().BoolP("full", "f", false, "Show the tools in full syntax")
 }
 
 // NewToolsCommand creates a Command for displaying tools information.
@@ -35,14 +35,10 @@ func NewToolsCommand(cfg *config.Config, files config.Embedded) *Command {
 		Short: "Display tools information",
 		Args:  cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			if err := flags.Bind(cmd.Parent(), &cfg.Dump, cmd.Root().Name(), cmd.Parent().Name()); err != nil {
-				return err
-			}
-
-			return flags.Bind(cmd, &cfg.Dump.Tools, cmd.Root().Name(), cmd.Parent().Name(), cmd.Name())
+			return flags.ChainPreRun(cmd, &cfg.Dump.Tools)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			c, err := getTools(files, cfg.Dump.Tools.Rendered)
+			c, err := getTools(files, cfg.Dump.Tools.Full)
 			if err != nil {
 				return err
 			}

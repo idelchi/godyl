@@ -32,7 +32,7 @@ func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
 		Short:   "Update the application",
 		Long:    "Update the godyl application to the latest version",
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return flags.Bind(cmd, &cfg.Tool, cmd.Root().Name(), cmd.Name())
+			return flags.ChainPreRun(cmd, &cfg.Update)
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			defaults, err := defaults.Load(cfg.Root.Defaults.Name(), files, *cfg)
@@ -40,11 +40,11 @@ func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
-			appUpdater := updater.New(defaults, cfg.Tool.NoVerifySSL, files.Template)
+			appUpdater := updater.New(defaults, cfg.Update.NoVerifySSL, files.Template)
 
 			versions := updater.Versions{
 				Current:   cmd.Root().Version,
-				Requested: cfg.Tool.Version,
+				Requested: cfg.Update.Version,
 			}
 
 			if err := appUpdater.Update(versions); err != nil {

@@ -21,11 +21,10 @@ func (cmd *Command) Flags() {
 // NewVersionCommand creates a Command for displaying the application version.
 func NewVersionCommand() *Command {
 	cmd := &cobra.Command{
-		Use:               "version",
-		Short:             "Print the version number of godyl",
-		Long:              `All software has versions. This is godyl's`,
-		Args:              cobra.MaximumNArgs(1),
-		PersistentPreRunE: func(_ *cobra.Command, _ []string) error { return nil },
+		Use:   "version",
+		Short: "Print the version number of godyl",
+		Long:  `All software has versions. This is godyl's`,
+		Args:  cobra.MaximumNArgs(1),
 		Run: func(cmd *cobra.Command, _ []string) {
 			fmt.Println(cmd.Root().Version)
 		},

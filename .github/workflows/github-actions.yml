@@ -51,7 +51,7 @@ jobs:
         run: go run . dump platform
 
       - name: Dry install files
-        run: go run . install -dry
+        run: go run . install --dry
 
   next-tag:
     uses: idelchi/devenv/.github/workflows/next-tag.yml@dev

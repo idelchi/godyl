@@ -8,6 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/cli/dump/env"
 	"github.com/idelchi/godyl/internal/cli/dump/platform"
 	"github.com/idelchi/godyl/internal/cli/dump/tools"
+	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
 )
 
@@ -44,6 +45,9 @@ func NewDumpCommand(cfg *config.Config, files config.Embedded) *Command {
 		Aliases: []string{"show"},
 		Short:   "Dump configuration information",
 		Long:    "Display various configuration settings and information about the environment",
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			return flags.ChainPreRun(cmd, &cfg.Dump)
+		},
 	}
 
 	cmd.SetHelpCommand(&cobra.Command{Hidden: true})

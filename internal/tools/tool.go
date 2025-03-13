@@ -62,7 +62,7 @@ type Tool struct {
 	// Check defines a set of instructions for verifying the tool's integrity or functionality.
 	Check Checker
 	// NoVerifySSL specifies whether SSL verification should be disabled when fetching the tool.
-	NoVerifySSL bool `json:"-" mapstructure:"-" yaml:"-"`
+	NoVerifySSL bool
 }
 
 // UnmarshalYAML implements custom unmarshaling for Tool with KnownFields check.
@@ -91,6 +91,7 @@ func (t *Tool) UnmarshalYAML(value *yaml.Node) error {
 // ApplyDefaults applies default values to the Tool configuration.
 // If a field is empty or nil, it is replaced with the corresponding default from the Defaults struct.
 // TODO(Idelchi): Improve - what if someone wants a value to be ""?
+// TODO(Idelchi): Perhaps SetSliceIfNil should be SetSliceIfZero?
 func (t *Tool) ApplyDefaults(d Defaults) {
 	utils.SetIfZeroValue(&t.Output, d.Output)
 	utils.SetIfZeroValue(&t.Source.Type, d.Source.Type)

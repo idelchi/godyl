@@ -54,6 +54,9 @@ func (u *Updater) Update(versions Versions) error {
 	}
 
 	u.log.Info("Update requested from %q -> %q", currentVersion, tool.Version.Version)
+
+	// TODO(Idelchi): Use `dry` flag here if set.
+
 	return u.performUpdate(tool)
 }
 

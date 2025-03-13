@@ -7,9 +7,11 @@ type Config struct {
 	// Root level configuration, mapping configurations on the root `godyl` command
 	Root Root
 
-	// Tool level configuration, mapping configurations on the `install`, `download`,
-	// and (partially) the `update` commands
+	// Tool level configuration, mapping configurations on the `install`, `download`
 	Tool Tool
+
+	// Update level configuration, mapping configurations on the `update` command
+	Update Update
 
 	// Dump level configuration, mapping configurations on the `dump` command
 	Dump Dump

@@ -6,8 +6,6 @@ exe:
 hints:
   - pattern: "{{ .Exe }}"
     weight: 1
-  - pattern: zip
-    weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
   - pattern: "armv{{ .ARCH_VERSION }}"
     weight: 4
   - pattern: "armv{{sub .ARCH_VERSION 1}}"

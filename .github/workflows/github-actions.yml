@@ -47,8 +47,11 @@ jobs:
           go-version: "1.23.2"
           check-latest: true
 
-      - name: Run tests
+      - name: Dump out platform
         run: go run . dump platform
+
+      - name: Dry install files
+        run: go run . --dry install
 
   next-tag:
     uses: idelchi/devenv/.github/workflows/next-tag.yml@main

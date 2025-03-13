@@ -15,7 +15,6 @@ import (
 	iutils "github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
-	"github.com/idelchi/godyl/pkg/validate"
 )
 
 // Command encapsulates the install cobra command with its associated config and embedded files.
@@ -38,11 +37,7 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *Command {
 		Long:    "Install tools as specified in a YAML configuration file",
 		Args:    cobra.MaximumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			if err := flags.Bind(cmd, &cfg.Tool, cmd.Root().Name(), "TOOL"); err != nil {
-				return err
-			}
-
-			return validate.Validate(cfg.Tool)
+			return flags.ChainPreRun(cmd, &cfg.Tool, cmd.Root().Name(), "tool")
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
 			if cfg.Root.Show {

@@ -248,11 +248,21 @@ An example [tools.yml](./tools.yml) is provided.
 
 The following flags are available for the `update` command:
 
-| Flag                    | Environment Variable                            | Default | Description                     |
-| ----------------------- | ----------------------------------------------- | ------- | ------------------------------- |
-| `--github-token`        | `GODYL_TOOL_GITHUB_TOKEN`, `GODYL_GITHUB_TOKEN` | `""`    | GitHub token for authentication |
-| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL`                      | `false` | Skip SSL verification           |
-| `--version`, `-v`       | `GODYL_TOOL_VERSION`                            | `""`    | Version to download             |
+| Flag                    | Environment Variable                              | Default | Description                     |
+| ----------------------- | ------------------------------------------------- | ------- | ------------------------------- |
+| `--github-token`        | `GODYL_UPDATE_GITHUB_TOKEN`, `GODYL_GITHUB_TOKEN` | `""`    | GitHub token for authentication |
+| `--no-verify-ssl`, `-k` | `GODYL_UPDATE_NO_VERIFY_SSL`                      | `false` | Skip SSL verification           |
+| `--version`, `-v`       | `GODYL_UPDATE_VERSION`                            | `""`    | Version to download             |
+
+### Dump flags
+
+#### Tools flags
+
+The following flags are available for the `dump tools` command:
+
+| Flag          | Environment Variable    | Default | Description                |
+| ------------- | ----------------------- | ------- | -------------------------- |
+| `--full`, `f` | `GODYL_DUMP_TOOLS_FULL` | `false` | Show full tool information |
 
 ## tools.yml, flags, environment variables and defaults
 

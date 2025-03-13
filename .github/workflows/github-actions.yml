@@ -50,7 +50,7 @@ jobs:
       - name: Dump out platform
         run: go run . dump platform
 
-      - name: Dry install files
+      - name: Dry install tools
         run: go run . --dry install
 
   next-tag:

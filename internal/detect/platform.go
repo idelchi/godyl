@@ -40,6 +40,7 @@ func (p Platform) ToMap() map[string]any {
 	platformMap["OS"] = p.OS.String()
 	platformMap["ARCH"] = p.Architecture.Type
 	platformMap["ARCH_VERSION"] = p.Architecture.Version
+	platformMap["ARCH_LONG"] = p.Architecture.String()
 	platformMap["LIBRARY"] = p.Library.String()
 	platformMap["EXTENSION"] = p.Extension.String()
 	platformMap["DISTRIBUTION"] = p.Distribution.String()

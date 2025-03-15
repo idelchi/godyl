@@ -3,6 +3,7 @@ package github
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
@@ -15,6 +16,7 @@ type GitHub struct {
 	Repo  string
 	Owner string
 	Token string `mask:"fixed"`
+	Pre   bool
 
 	// Data holds additional metadata related to the repository.
 	Data common.Metadata `yaml:"-"`
@@ -44,7 +46,21 @@ func (g *GitHub) LatestVersion() (string, error) {
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
-	release, err := repository.LatestRelease()
+	var release *github.Release
+	var err error
+
+	if g.Pre {
+		fmt.Println("Getting latest pre-release")
+		release, err = repository.GetLatestIncludingPreRelease()
+	} else {
+		fmt.Println("Getting latest release")
+		release, err = repository.LatestRelease()
+	}
+
+	fmt.Println("Got latest release", release)
+
+	os.Exit(0)
+
 	if err != nil {
 		return "", fmt.Errorf("failed to get latest release: %w", err)
 	}

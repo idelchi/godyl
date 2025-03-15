@@ -39,4 +39,5 @@ func Update(cmd *cobra.Command) {
 	cmd.Flags().String("github-token", os.Getenv("GODYL_GITHUB_TOKEN"), "GitHub token for authentication")
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
 	cmd.Flags().String("version", "", "Version of the tool to install. Empty means latest.")
+	cmd.Flags().Bool("pre", false, "Enable pre-release versions")
 }

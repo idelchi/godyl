@@ -45,6 +45,7 @@ func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
 			versions := updater.Versions{
 				Current:   cmd.Root().Version,
 				Requested: cfg.Update.Version,
+				Pre:       cfg.Update.Pre,
 			}
 
 			if err := appUpdater.Update(versions); err != nil {

@@ -8,6 +8,9 @@
 
 - name: mrjackwills/oxker
   description: A simple tui to view & control docker containers
+  skip:
+    reason: "oxker is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
   tags:
     - docker
 

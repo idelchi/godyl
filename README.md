@@ -173,7 +173,7 @@ godyl dump tools | godyl install - --output ./bin
 Update the godyl application to the latest version:
 
 ```sh
-godyl update [--version <version>]
+godyl update [flags]
 ```
 
 ### Usage without installation

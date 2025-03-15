@@ -15,6 +15,7 @@ type GitHub struct {
 	Repo  string
 	Owner string
 	Token string `mask:"fixed"`
+	Pre   bool
 
 	// Data holds additional metadata related to the repository.
 	Data common.Metadata `yaml:"-"`
@@ -44,7 +45,15 @@ func (g *GitHub) LatestVersion() (string, error) {
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
-	release, err := repository.LatestRelease()
+	var release *github.Release
+	var err error
+
+	if g.Pre {
+		release, err = repository.GetLatestIncludingPreRelease()
+	} else {
+		release, err = repository.LatestRelease()
+	}
+
 	if err != nil {
 		return "", fmt.Errorf("failed to get latest release: %w", err)
 	}

@@ -86,3 +86,45 @@ func (g *Repository) Languages() ([]string, error) {
 
 	return keys, nil
 }
+
+// GetLatestIncludingPreRelease retrieves the most recently published release for the repository,
+// including pre-releases. This returns the newest release by published date, regardless of
+// whether it's a regular release or pre-release.
+func (g *Repository) GetLatestIncludingPreRelease() (*Release, error) {
+	// List all releases including pre-releases
+	opts := &github.ListOptions{
+		PerPage: 100, // Get a reasonable number of releases to compare
+	}
+
+	repositoryReleases, _, err := g.client.Repositories.ListReleases(g.ctx, g.Owner, g.Repo, opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list releases: %w", err)
+	}
+
+	if len(repositoryReleases) == 0 {
+		return nil, fmt.Errorf("no releases found for %s/%s", g.Owner, g.Repo)
+	}
+
+	// Find the most recent release by published date
+	var latestRelease *github.RepositoryRelease
+	for i, release := range repositoryReleases {
+		if i == 0 || release.PublishedAt == nil || latestRelease.PublishedAt == nil {
+			latestRelease = release
+
+			continue
+		}
+
+		// Compare the timestamps - need to use the Time property of Timestamp
+		if release.PublishedAt.Time.After(latestRelease.PublishedAt.Time) {
+			latestRelease = release
+		}
+	}
+
+	// Convert to our Release type
+	release := &Release{}
+	if err := release.FromRepositoryRelease(latestRelease); err != nil {
+		return nil, fmt.Errorf("failed to parse release: %w", err)
+	}
+
+	return release, nil
+}

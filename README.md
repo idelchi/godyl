@@ -255,6 +255,7 @@ The following flags are available for the `update` command:
 | `--github-token`        | `GODYL_UPDATE_GITHUB_TOKEN`  | `${GODYL_GITHUB_TOKEN}` | GitHub token for authentication |
 | `--no-verify-ssl`, `-k` | `GODYL_UPDATE_NO_VERIFY_SSL` | `false`                 | Skip SSL verification           |
 | `--version`, `-v`       | `GODYL_UPDATE_VERSION`       | `""`                    | Version to download             |
+| `--pre`                 | `GODYL_UPDATE_PRE`           | `false`                 | Include pre-releases            |
 
 ### Dump flags
 

@@ -12,6 +12,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
 )
@@ -28,6 +29,7 @@ type Updater struct {
 type Versions struct {
 	Current   string
 	Requested string
+	Pre       bool
 }
 
 // New creates a new Updater with the specified configuration.
@@ -80,6 +82,9 @@ func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error)
 		},
 		Source: sources.Source{
 			Type: sources.GITHUB,
+			Github: github.GitHub{
+				Pre: versions.Pre,
+			},
 		},
 		Strategy:    tools.Upgrade,
 		NoVerifySSL: u.noVerifySSL,

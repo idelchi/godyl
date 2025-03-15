@@ -11,4 +11,7 @@ type Update struct {
 
 	// Version of the tool to install
 	Version string
+
+	// Enable pre-release versions
+	Pre bool
 }

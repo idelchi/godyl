@@ -110,6 +110,7 @@ func (g *Repository) GetLatestIncludingPreRelease() (*Release, error) {
 	for i, release := range repositoryReleases {
 		if i == 0 || release.PublishedAt == nil || latestRelease.PublishedAt == nil {
 			latestRelease = release
+
 			continue
 		}
 

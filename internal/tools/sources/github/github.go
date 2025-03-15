@@ -3,7 +3,6 @@ package github
 import (
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
@@ -50,16 +49,10 @@ func (g *GitHub) LatestVersion() (string, error) {
 	var err error
 
 	if g.Pre {
-		fmt.Println("Getting latest pre-release")
 		release, err = repository.GetLatestIncludingPreRelease()
 	} else {
-		fmt.Println("Getting latest release")
 		release, err = repository.LatestRelease()
 	}
-
-	fmt.Println("Got latest release", release)
-
-	os.Exit(0)
 
 	if err != nil {
 		return "", fmt.Errorf("failed to get latest release: %w", err)

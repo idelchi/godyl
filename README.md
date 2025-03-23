@@ -366,6 +366,7 @@ post: []
 mode: string
 env:
   key: string
+no_verify_ssl: boolean
 ```
 
 Any field that accepts a list, can also be provided as a string.
@@ -650,7 +651,7 @@ They will be tried in order until the tool is found or all have been tried.
 | -------- | --------- | ----------- |
 | ![na]    | ![no]     | ![no]       |
 
-`source.go` can be set to the relative path of the go `command` to download, if non-standard (i.e not matching `<name>`, `cmd/<name>` or `cmd`).
+`source.go.command` can be set to the relative path of the go `command` to download, if non-standard (i.e not matching `<name>`, `cmd/<name>` or `cmd`).
 
 > [!WARNING]
 > Go will be downloaded into a temporary directory `/tmp/.godyl-go` if not present.

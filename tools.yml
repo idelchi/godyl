@@ -787,6 +787,26 @@
   tags:
     - terminal
 
+- name: zouuup/landrun
+  description: A lightweight, secure sandbox for running Linux processes using Landlock LSM
+  source:
+    type: go
+    go:
+      command: cmd/landrun
+  tags:
+    - terminal
+
+- name: znscli/zns
+  description: A command-line utility for querying DNS records
+  tags:
+    - networking
+
+- name: paololazzari/play
+  description: A TUI playground for your favorite programs, such as grep, sed and awk
+  extensions: zip
+  tags:
+    - terminal
+
 - idelchi/gocry
 - idelchi/gogen
 - idelchi/go-match

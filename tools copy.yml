@@ -6,6 +6,14 @@
   tags:
     - docker
 
+- name: mrjackwills/oxker
+  description: A simple tui to view & control docker containers
+  skip:
+    reason: "oxker is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
+  tags:
+    - docker
+
 - name: jesseduffield/lazydocker
   description: The lazier way to manage everything docker
   aliases: lazy
@@ -776,6 +784,15 @@
 
 - name: binwiederhier/ntfy
   description: Send push notifications to your phone or desktop using PUT/POST
+  tags:
+    - terminal
+
+- name: zouuup/landrun
+  description: A lightweight, secure sandbox for running Linux processes using Landlock LSM
+  source:
+    type: go
+    go:
+      command: cmd/landrun
   tags:
     - terminal
 

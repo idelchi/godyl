@@ -25,14 +25,6 @@ This uses simple heuristics to select the correct binary to download, and will n
 
 However, most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
 
-> [!WARNING]
-> This repo is a work in progress!
-> Needing both cleaning up and documenting.
-
-> [!CAUTION]
-> This project serves as a learning exercise for Go and its surrounding ecosystem and tooling.
-> As such, it might be of limited use for others.
-
 > [!NOTE]
 > Tested on:
 >
@@ -40,7 +32,7 @@ However, most properties can be overridden, with `hints` and `skip` used to help
 >
 > **Windows**: `amd64`
 >
-> **MacOS**: `amd64`, `arm64`
+> **MacOS**: `arm64`
 >
 > for tools listed in [tools.yml](./tools.yml)
 
@@ -96,7 +88,7 @@ for all available options.
 ## Usage
 
 ```sh
-godyl [command] [flags]
+godyl [flags] [command] [flags]
 ```
 
 Available commands:
@@ -173,7 +165,7 @@ godyl dump tools | godyl install - --output ./bin
 Update the godyl application to the latest version:
 
 ```sh
-godyl update [--version <version>]
+godyl update [flags]
 ```
 
 ### Usage without installation

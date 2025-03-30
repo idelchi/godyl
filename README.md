@@ -88,7 +88,7 @@ for all available options.
 ## Usage
 
 ```sh
-godyl [command] [flags]
+godyl [flags] [command] [flags]
 ```
 
 Available commands:

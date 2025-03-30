@@ -89,6 +89,29 @@ func (f File) String() string {
 	return string(f)
 }
 
+// Base returns the base name of the File.
+func (f File) Base() string {
+	return filepath.Base(f.String())
+}
+
+// WithDir returns a new File with the specified directory.
+func (f File) WithDir(dir string) File {
+	return NewFile(dir, f.Base())
+}
+
+// Expand expands the File path to an absolute path.
+func (f *File) Expand() error {
+	// Expand and set the output folder path.
+	dir := f.Dir()
+	if err := dir.Expand(); err != nil {
+		return fmt.Errorf("expanding path: %w", err)
+	}
+
+	*f = f.WithDir(f.Dir().Path())
+
+	return nil
+}
+
 // Dir returns the file.Folder object representing the directory of the file.
 // If it is actually a folder, it returns itself as a Folder object.
 func (f File) Dir() Folder {

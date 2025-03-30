@@ -33,7 +33,7 @@ type DefaultToolsLoader struct{}
 func LoadDotEnv(path file.File) error {
 	loader := &DefaultEnvironmentLoader{}
 
-	return loader.LoadFromDotEnv(path.Name())
+	return loader.LoadFromDotEnv(path.Expanded().Path())
 }
 
 // LoadFromDotEnv loads environment variables from a .env file.

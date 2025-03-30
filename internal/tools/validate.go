@@ -55,12 +55,7 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	t.Env.Merge(env.FromEnv())
 
 	// Expand and set the output folder path.
-	output := file.Folder(t.Output)
-	if err := output.Expand(); err != nil {
-		return fmt.Errorf("expanding output path: %w", err)
-	}
-
-	t.Output = output.Path()
+	t.Output = file.Folder(t.Output).Expanded().Path()
 
 	// Set the strategy to Force if the mode is "extract".
 	if t.Mode == "extract" {

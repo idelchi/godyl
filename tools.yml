@@ -537,7 +537,7 @@
 
 - name: hashicorp/packer
   description: Create identical machine images for multiple platforms from a single source configuration
-  path: https://releases.hashicorp.com/packer/{{ .Version | trimPrefix "v" }}/vault_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
+  path: https://releases.hashicorp.com/packer/{{ .Version | trimPrefix "v" }}/packer{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   tags:
     - automation
 

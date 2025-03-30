@@ -28,12 +28,12 @@ type Root struct {
 
 // Validate checks the configuration for errors.
 func (c *Root) Validate() error {
-	if cobraext.IsSet("defaults") && !c.Defaults.Exists() {
-		return fmt.Errorf("%w: defaults file %q does not exist", ErrUsage, c.Defaults)
+	if cobraext.IsSet("defaults") && !c.Defaults.Expanded().Exists() {
+		return fmt.Errorf("%w: defaults file %q does not exist", ErrUsage, c.Defaults.Expanded())
 	}
 
-	if cobraext.IsSet("env-file") && !c.EnvFile.Exists() {
-		return fmt.Errorf("%w: env-file file %q does not exist", ErrUsage, c.EnvFile)
+	if cobraext.IsSet("env-file") && !c.EnvFile.Expanded().Exists() {
+		return fmt.Errorf("%w: env-file file %q does not exist", ErrUsage, c.EnvFile.Expanded())
 	}
 
 	return validate.Validate(c)

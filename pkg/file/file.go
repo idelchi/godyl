@@ -99,17 +99,9 @@ func (f File) WithDir(dir string) File {
 	return NewFile(dir, f.Base())
 }
 
-// Expand expands the File path to an absolute path.
-func (f *File) Expand() error {
-	// Expand and set the output folder path.
-	dir := f.Dir()
-	if err := dir.Expand(); err != nil {
-		return fmt.Errorf("expanding path: %w", err)
-	}
-
-	*f = f.WithDir(f.Dir().Path())
-
-	return nil
+// Expand expands the File path in case of ~.
+func (f *File) Expanded() File {
+	return f.WithDir(f.Dir().Expanded().Path())
 }
 
 // Dir returns the file.Folder object representing the directory of the file.

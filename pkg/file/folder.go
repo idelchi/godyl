@@ -33,18 +33,19 @@ func (f *Folder) IsParentOf(other Folder) bool {
 	return strings.HasPrefix(other.Path(), f.Path())
 }
 
-// Expand expands a Folder path that begins with "~" to the user's home directory.
-func (f *Folder) Expand() error {
-	if strings.HasPrefix(f.Path(), "~/") {
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			return fmt.Errorf("getting user home directory: %w", err)
-		}
-
-		f.Set(filepath.Join(homeDir, f.Path()[2:]))
+// Expanded returns a new Folder with the path expanded to the user's home directory.
+// If not successful, it returns the original Folder.
+func (f Folder) Expanded() Folder {
+	if !strings.HasPrefix(f.Path(), "~") {
+		return f
 	}
 
-	return nil
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return f
+	}
+
+	return NewFolder(homeDir, f.Path()[1:])
 }
 
 // String returns the Folder as a string.

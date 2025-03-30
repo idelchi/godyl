@@ -33,12 +33,7 @@ type DefaultToolsLoader struct{}
 func LoadDotEnv(path file.File) error {
 	loader := &DefaultEnvironmentLoader{}
 
-	// Expand the path to include the directory
-	if err := path.Expand(); err != nil {
-		return fmt.Errorf("expanding env-file path: %w", err)
-	}
-
-	return loader.LoadFromDotEnv(path.Path())
+	return loader.LoadFromDotEnv(path.Expanded().Path())
 }
 
 // LoadFromDotEnv loads environment variables from a .env file.

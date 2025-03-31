@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/idelchi/godyl/internal/cli/download"
 	"github.com/idelchi/godyl/internal/cli/dump"
@@ -74,10 +73,16 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 			}
 
 			// Load environment variables from .env file such that it's available for the subcommands
-			if err := utils.LoadDotEnv(file.File(viper.GetString("env-file"))); err != nil {
-				if cobraext.IsSet("env-file") {
+			if err := utils.LoadDotEnv(file.File(cfg.Root.EnvFile)); err != nil {
+				if cfg.Root.IsSet("env-file") {
 					return fmt.Errorf("loading .env file: %w", err)
 				}
+			}
+
+			// Bind root-level flags
+			// Once more to get the .env file values too
+			if err := flags.Bind(cmd.Root(), &cfg.Root); err != nil {
+				return fmt.Errorf("binding flags: %w", err)
 			}
 
 			return nil

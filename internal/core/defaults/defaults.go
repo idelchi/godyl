@@ -12,7 +12,7 @@ import (
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools"
-	"github.com/idelchi/godyl/pkg/cobraext"
+	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/utils"
 )
@@ -66,7 +66,7 @@ func (d *Defaults) Validate() error {
 //
 // TODO(Idelchi): This is not subcommand-agnostic.
 func (d *Defaults) Merge(cfg config.Config) error {
-	if cobraext.IsSet("hints") {
+	if cfg.Tool.IsSet("hints") {
 		for _, hint := range cfg.Tool.Hints {
 			d.defaults.Hints.Add(match.Hint{
 				Pattern: hint,
@@ -75,28 +75,27 @@ func (d *Defaults) Merge(cfg config.Config) error {
 		}
 	}
 
-	if cobraext.IsSet("output") || utils.IsZeroValue(d.defaults.Output) {
+	if cfg.Tool.IsSet("output") || utils.IsZeroValue(d.defaults.Output) {
 		d.defaults.Output = cfg.Tool.Output
 	}
 
-	if cobraext.IsSet("source") || utils.IsZeroValue(d.defaults.Source.Type) {
+	if cfg.Tool.IsSet("source") || utils.IsZeroValue(d.defaults.Source.Type) {
 		d.defaults.Source.Type = cfg.Tool.Source
 	}
 
-	if cobraext.IsSet("strategy") || utils.IsZeroValue(d.defaults.Strategy) {
+	if cfg.Tool.IsSet("strategy") || utils.IsZeroValue(d.defaults.Strategy) {
 		d.defaults.Strategy = cfg.Tool.Strategy
 	}
 
-	// TODO(Idelchi): This is pretty bad.
-	if cobraext.IsSet("github-token") || utils.IsZeroValue(d.defaults.Source.Github.Token) {
-		if utils.IsZeroValue(cfg.Tool.Tokens.GitHub) {
-			d.defaults.Source.Github.Token = cfg.Update.Tokens.GitHub
-		} else {
-			d.defaults.Source.Github.Token = cfg.Tool.Tokens.GitHub
-		}
+	switch {
+	case cfg.Root.IsSet("github-token"):
+		d.defaults.Source.Github.Token = cfg.Root.Tokens.GitHub
+	case utils.IsZeroValue(d.defaults.Source.Github.Token):
+		env := env.FromEnv()
+		d.defaults.Source.Github.Token = env.GetAny("GODYL_GITHUB_TOKEN", "GH_TOKEN")
 	}
 
-	if cobraext.IsSet("os") || utils.IsZeroValue(d.defaults.Platform.OS) {
+	if cfg.Tool.IsSet("os") || utils.IsZeroValue(d.defaults.Platform.OS) {
 		if err := d.defaults.Platform.OS.Parse(cfg.Tool.OS); err != nil {
 			return fmt.Errorf("parsing OS: %w", err)
 		}
@@ -108,7 +107,7 @@ func (d *Defaults) Merge(cfg config.Config) error {
 		)
 	}
 
-	if cobraext.IsSet("arch") || utils.IsZeroValue(d.defaults.Platform.Architecture) {
+	if cfg.Tool.IsSet("arch") || utils.IsZeroValue(d.defaults.Platform.Architecture) {
 		if err := d.defaults.Platform.Architecture.Parse(cfg.Tool.Arch); err != nil {
 			return fmt.Errorf("parsing architecture: %w", err)
 		}
@@ -118,9 +117,9 @@ func (d *Defaults) Merge(cfg config.Config) error {
 }
 
 // Load loads configuration defaults from a file or uses embedded defaults if not specified.
-func (d *Defaults) Load(path file.File, defaults []byte) error {
+func (d *Defaults) Load(path file.File, defaults []byte, isSet bool) error {
 	if err := d.FromFile(path.Name()); err != nil {
-		if cobraext.IsSet("defaults") {
+		if isSet {
 			return fmt.Errorf("loading defaults from %q: %w", path, err)
 		} else {
 			if err := d.Default(defaults); err != nil {
@@ -142,7 +141,7 @@ func Load(path file.File, embeds config.Embedded, cfg config.Config) (tools.Defa
 	defaults := &Defaults{}
 
 	// Load defaults from file or embedded data
-	if err := defaults.Load(path, embeds.Defaults); err != nil {
+	if err := defaults.Load(path, embeds.Defaults, cfg.Root.IsSet("defaults")); err != nil {
 		return tools.Defaults{}, err
 	}
 

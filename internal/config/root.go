@@ -3,16 +3,12 @@ package config
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/pkg/cobraext"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/validate"
 )
 
 // Root holds the root configuration options.
 type Root struct {
-	// Show enables output display
-	Show bool
-
 	// Run without making any changes
 	Dry bool
 
@@ -24,17 +20,29 @@ type Root struct {
 
 	// Path to defaults file
 	Defaults file.File
+
+	// Tokens for authentication
+	Tokens Tokens `mapstructure:",squash"`
+
+	// Viper instance
+	viperable `mapstructure:"-" yaml:"-" json:"-"`
+}
+
+// Tokens holds the configuration options for authentication tokens.
+type Tokens struct {
+	// GitHub token for authentication
+	GitHub string `mapstructure:"github-token" mask:"fixed"`
 }
 
 // Validate checks the configuration for errors.
-func (c *Root) Validate() error {
-	if cobraext.IsSet("defaults") && !c.Defaults.Expanded().Exists() {
-		return fmt.Errorf("%w: defaults file %q does not exist", ErrUsage, c.Defaults.Expanded())
+func (r *Root) Validate() error {
+	if r.IsSet("defaults") && !r.Defaults.Expanded().Exists() {
+		return fmt.Errorf("%w: defaults file %q does not exist", ErrUsage, r.Defaults.Expanded())
 	}
 
-	if cobraext.IsSet("env-file") && !c.EnvFile.Expanded().Exists() {
-		return fmt.Errorf("%w: env-file file %q does not exist", ErrUsage, c.EnvFile.Expanded())
+	if r.IsSet("env-file") && !r.EnvFile.Expanded().Exists() {
+		return fmt.Errorf("%w: env-file file %q does not exist", ErrUsage, r.EnvFile.Expanded())
 	}
 
-	return validate.Validate(c)
+	return validate.Validate(r)
 }

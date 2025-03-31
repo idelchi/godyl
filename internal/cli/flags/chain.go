@@ -6,7 +6,7 @@ import (
 )
 
 // ChainPreRun is a helper function to chain the PreRunE functions of a command and its parent.
-func ChainPreRun(cmd *cobra.Command, s any, prefix ...string) error {
+func ChainPreRun(cmd *cobra.Command, s Viperable, prefix ...string) error {
 	if err := cmd.Parent().PreRunE(cmd.Parent(), nil); err != nil {
 		return err
 	}

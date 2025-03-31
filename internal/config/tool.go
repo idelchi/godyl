@@ -22,9 +22,6 @@ type Tool struct {
 	// Strategy to use for updating tools
 	Strategy tools.Strategy `validate:"oneof=none upgrade force"`
 
-	// Tokens for authentication
-	Tokens Tokens `mapstructure:",squash"`
-
 	// Operating system to install the tools for
 	OS string
 
@@ -45,10 +42,10 @@ type Tool struct {
 
 	// Version of the tool to install
 	Version string
-}
 
-// Tokens holds the configuration options for authentication tokens.
-type Tokens struct {
-	// GitHub token for authentication
-	GitHub string `mapstructure:"github-token" mask:"fixed"`
+	// Show enables output display
+	Show bool
+
+	// Viper instance
+	viperable `mapstructure:"-" yaml:"-" json:"-"`
 }

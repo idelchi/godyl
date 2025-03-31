@@ -8,14 +8,19 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Viperable is an interface for types that can hold a viper instance
+type Viperable interface {
+	SetViper(v *viper.Viper)
+}
+
 // Bind connects cobra flags to viper and unmarshals the configuration into the provided struct.
 // It sets up environment variable handling with the given prefix and handles flag binding.
 // Omit the prefix to use the command hierarchy as the prefix.
-func Bind(cmd *cobra.Command, cfg any, prefix ...string) error {
+func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	// Set up Viper with our environment prefix
 	envPrefix := prefixFromCmdOrPrefixes(cmd, prefix...)
 
-	// fmt.Printf("Bind called for command %q with prefix %q\n", cmd.Name(), envPrefix)
+	viper := viper.New()
 
 	viper.SetEnvPrefix(envPrefix)
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
@@ -28,6 +33,11 @@ func Bind(cmd *cobra.Command, cfg any, prefix ...string) error {
 	if err := viper.Unmarshal(cfg); err != nil {
 		return fmt.Errorf("unmarshalling config for %q: %w", cmd.Name(), err)
 	}
+
+	// Set the viper instance on the config struct
+	cfg.SetViper(viper)
+
+	fmt.Printf("Processed cmd %s with prefix %s\n", cmd.Name(), envPrefix)
 
 	return nil
 }

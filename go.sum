@@ -72,8 +72,6 @@ github.com/idelchi/go-next-tag v0.0.1 h1:HeSCqWSf7BLkramgXzC5V/PUq1x8g5pWAH+Hrmk
 github.com/idelchi/go-next-tag v0.0.1/go.mod h1:EL+0x8u/00AGG8/xZQ0ZPWJF1mG19Ofypwgyn4po4cg=
 github.com/idelchi/gogen v0.0.0-20250114054957-4978468f4054 h1:0ZXDt4CSBA3fdYV9614zveZ2lanIH1CywqnN6lkcn0U=
 github.com/idelchi/gogen v0.0.0-20250114054957-4978468f4054/go.mod h1:EspfFBd6Peomdp3eEHd2zrwPrlpO/vhubXztfr/6Uog=
-github.com/idelchi/gogen v0.1.0-beta.0.20250114054957-4978468f4054 h1:FMbH0Rarvf4r+0vUu3qFSCu1retI4yWdVNexBXSghVc=
-github.com/idelchi/gogen v0.1.0-beta.0.20250114054957-4978468f4054/go.mod h1:EspfFBd6Peomdp3eEHd2zrwPrlpO/vhubXztfr/6Uog=
 github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf h1:WfD7VjIE6z8dIvMsI4/s+1qr5EL+zoIGev1BQj1eoJ8=
 github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf/go.mod h1:hyb9oH7vZsitZCiBt0ZvifOrB+qc8PS5IiilCIb87rg=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=

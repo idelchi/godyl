@@ -204,41 +204,35 @@ The tools can be configured (in order of priority) by:
 
 The following global flags are available for all commands:
 
-| Flag               | Environment Variable | Default        | Description                                  |
-| ------------------ | -------------------- | -------------- | -------------------------------------------- |
-| `--help`, `-h`     | `GODYL_HELP`         | `false`        | Show help message and exit                   |
-| `--version`        | `GODYL_VERSION`      | `false`        | Show version information and exit            |
-| `--dry`            | `GODYL_DRY`          | `false`        | Run without making any changes (dry run)     |
-| `--log`            | `GODYL_LOG`          | `info`         | Log level (debug, info, warn, error, silent) |
-| `--env-file`, `-e` | `GODYL_ENV_FILE`     | `.env`         | Path to `.env` file.                         |
-| `--defaults`, `-d` | `GODYL_DEFAULTS`     | `defaults.yml` | Path to defaults file.                       |
-| `--show`, `-s`     | `GODYL_SHOW`         | `false`        | Show the configuration and exit              |
+| Flag               | Environment Variable | Default                                               | Description                                  |
+| ------------------ | -------------------- | ----------------------------------------------------- | -------------------------------------------- |
+| `--help`, `-h`     | `GODYL_HELP`         | `false`                                               | Show help message and exit                   |
+| `--version`        | `GODYL_VERSION`      | `false`                                               | Show version information and exit            |
+| `--dry`            | `GODYL_DRY`          | `false`                                               | Run without making any changes (dry run)     |
+| `--log`            | `GODYL_LOG`          | `info`                                                | Log level (debug, info, warn, error, silent) |
+| `--env-file`, `-e` | `GODYL_ENV_FILE`     | `.env`                                                | Path to `.env` file.                         |
+| `--defaults`, `-d` | `GODYL_DEFAULTS`     | `defaults.yml`                                        | Path to defaults file.                       |
+| `--github-token`   | `GODYL_GITHUB_TOKEN` | `${GODYL_GITHUB_TOKEN}, ${GITHUB_TOKEN}, ${GH_TOKEN}` | GitHub token for authentication              |
 
 For `--env-file` and `--defaults`, the defaults are used only if no issue is encountered while loading them.
-
-> [!NOTE]
-> The values in `--env-file` will not be effective for the `GODYL_GITHUB_TOKEN` environment variable
-> which must be set explicitly with `export GODYL_GITHUB_TOKEN` or `GODYL_GITHUB_TOKEN=<token> godyl [...]`.
->
-> This is due to the initial values of the environment variables being set before the `.env` file is loaded.
 
 ### Tool-specific Flags
 
 The following flags are available for tool-related commands (`install` and `download`):
 
-| Flag                    | Environment Variable       | Default                 | Description                                    |
-| ----------------------- | -------------------------- | ----------------------- | ---------------------------------------------- |
-| `--output`, `-o`        | `GODYL_TOOL_OUTPUT`        | `./bin`                 | Output path for the downloaded tools           |
-| `--tags`, `-t`          | `GODYL_TOOL_TAGS`          | `["!native"]`           | Tags to filter tools by. Use `!` to exclude    |
-| `--source`              | `GODYL_TOOL_SOURCE`        | `github`                | Source from which to install the tools         |
-| `--strategy`            | `GODYL_TOOL_STRATEGY`      | `none`                  | Strategy to use for updating tools             |
-| `--os`                  | `GODYL_TOOL_OS`            | `""`                    | Operating system to use for downloading        |
-| `--arch`                | `GODYL_TOOL_ARCH`          | `""`                    | Architecture to use for downloading            |
-| `--github-token`        | `GODYL_TOOL_GITHUB_TOKEN`  | `${GODYL_GITHUB_TOKEN}` | GitHub token for authentication                |
-| `--parallel`, `-j`      | `GODYL_TOOL_PARALLEL`      | `0`                     | Number of parallel downloads (0 is unlimited)  |
-| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL` | `false`                 | Skip SSL verification                          |
-| `--hint`                | `GODYL_TOOL_HINT`          | `[""]`                  | Add hint patterns with weight 1                |
-| `--version`, `-v`       | `GODYL_TOOL_VERSION`       | `""`                    | Version to download (only used for `download`) |
+| Flag                    | Environment Variable       | Default       | Description                                    |
+| ----------------------- | -------------------------- | ------------- | ---------------------------------------------- |
+| `--output`, `-o`        | `GODYL_TOOL_OUTPUT`        | `./bin`       | Output path for the downloaded tools           |
+| `--tags`, `-t`          | `GODYL_TOOL_TAGS`          | `["!native"]` | Tags to filter tools by. Use `!` to exclude    |
+| `--source`              | `GODYL_TOOL_SOURCE`        | `github`      | Source from which to install the tools         |
+| `--strategy`            | `GODYL_TOOL_STRATEGY`      | `none`        | Strategy to use for updating tools             |
+| `--os`                  | `GODYL_TOOL_OS`            | `""`          | Operating system to use for downloading        |
+| `--arch`                | `GODYL_TOOL_ARCH`          | `""`          | Architecture to use for downloading            |
+| `--parallel`, `-j`      | `GODYL_TOOL_PARALLEL`      | `0`           | Number of parallel downloads (0 is unlimited)  |
+| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL` | `false`       | Skip SSL verification                          |
+| `--hint`                | `GODYL_TOOL_HINT`          | `[""]`        | Add hint patterns with weight 1                |
+| `--version`, `-v`       | `GODYL_TOOL_VERSION`       | `""`          | Version to download (only used for `download`) |
+| `--show`, `-s`          | `GODYL_TOOL_SHOW`          | `false`       | Show the configuration and exit                |
 
 For the `install` command, the path to the file containing the tool installation instructions is provided as a positional argument, defaulting to `tools.yml`.
 
@@ -248,12 +242,11 @@ An example [tools.yml](./tools.yml) is provided and can be dumped using the `dum
 
 The following flags are available for the `update` command:
 
-| Flag                    | Environment Variable         | Default                 | Description                     |
-| ----------------------- | ---------------------------- | ----------------------- | ------------------------------- |
-| `--github-token`        | `GODYL_UPDATE_GITHUB_TOKEN`  | `${GODYL_GITHUB_TOKEN}` | GitHub token for authentication |
-| `--no-verify-ssl`, `-k` | `GODYL_UPDATE_NO_VERIFY_SSL` | `false`                 | Skip SSL verification           |
-| `--version`, `-v`       | `GODYL_UPDATE_VERSION`       | `""`                    | Version to download             |
-| `--pre`                 | `GODYL_UPDATE_PRE`           | `false`                 | Include pre-releases            |
+| Flag                    | Environment Variable         | Default | Description           |
+| ----------------------- | ---------------------------- | ------- | --------------------- |
+| `--no-verify-ssl`, `-k` | `GODYL_UPDATE_NO_VERIFY_SSL` | `false` | Skip SSL verification |
+| `--version`, `-v`       | `GODYL_UPDATE_VERSION`       | `""`    | Version to download   |
+| `--pre`                 | `GODYL_UPDATE_PRE`           | `false` | Include pre-releases  |
 
 ### Dump flags
 
@@ -372,6 +365,7 @@ post: []
 mode: string
 env:
   key: string
+no_verify_ssl: boolean
 ```
 
 Any field that accepts a list, can also be provided as a string.
@@ -656,7 +650,7 @@ They will be tried in order until the tool is found or all have been tried.
 | -------- | --------- | ----------- |
 | ![na]    | ![no]     | ![no]       |
 
-`source.go` can be set to the relative path of the go `command` to download, if non-standard (i.e not matching `<name>`, `cmd/<name>` or `cmd`).
+`source.go.command` can be set to the relative path of the go `command` to download, if non-standard (i.e not matching `<name>`, `cmd/<name>` or `cmd`).
 
 > [!WARNING]
 > Go will be downloaded into a temporary directory `/tmp/.godyl-go` if not present.

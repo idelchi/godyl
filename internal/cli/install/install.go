@@ -40,12 +40,6 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *Command {
 			return flags.ChainPreRun(cmd, &cfg.Tool, cmd.Root().Name(), "tool")
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
-			if cfg.Root.Show {
-				iutils.Print("yaml", cfg.Root, cfg.Tool)
-
-				return nil
-			}
-
 			lvl, err := logger.LevelString(cfg.Root.Log)
 			if err != nil {
 				return fmt.Errorf("parsing log level: %w", err)
@@ -64,6 +58,12 @@ func NewInstallCommand(cfg *config.Config, files config.Embedded) *Command {
 			defaults, err := defaults.Load(cfg.Root.Defaults, files, *cfg)
 			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
+			}
+
+			if cfg.Tool.Show {
+				iutils.Print("yaml", cfg.Root, cfg.Tool)
+
+				return nil
 			}
 
 			// Load tools

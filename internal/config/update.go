@@ -14,4 +14,7 @@ type Update struct {
 
 	// Enable pre-release versions
 	Pre bool
+
+	// Viper instance
+	viperable `mapstructure:"-" yaml:"-" json:"-"`
 }

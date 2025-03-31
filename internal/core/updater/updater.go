@@ -33,11 +33,11 @@ type Versions struct {
 }
 
 // New creates a new Updater with the specified configuration.
-func New(defaults tools.Defaults, noVerifySSL bool, template []byte) *Updater {
+func New(defaults tools.Defaults, noVerifySSL bool, template []byte, level logger.Level) *Updater {
 	return &Updater{
 		defaults:    defaults,
 		noVerifySSL: noVerifySSL,
-		log:         logger.New(logger.INFO),
+		log:         logger.New(level),
 		template:    template,
 	}
 }
@@ -127,6 +127,8 @@ func (u *Updater) performUpdate(tool tools.Tool) error {
 		if err := u.cleanupWindows(); err != nil {
 			return fmt.Errorf("windows cleanup: %w", err)
 		}
+
+		u.log.Debug("Windows cleanup completed successfully")
 	}
 
 	u.log.Info("Godyl updated successfully")

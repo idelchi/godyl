@@ -11,6 +11,7 @@ import (
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/core/defaults"
 	"github.com/idelchi/godyl/internal/core/updater"
+	"github.com/idelchi/godyl/pkg/logger"
 )
 
 // Command encapsulates the update cobra command with its associated config and embedded files.
@@ -35,12 +36,17 @@ func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
 			return flags.ChainPreRun(cmd, &cfg.Update)
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			lvl, err := logger.LevelString(cfg.Root.Log)
+			if err != nil {
+				return fmt.Errorf("parsing log level: %w", err)
+			}
+
 			defaults, err := defaults.Load(cfg.Root.Defaults, files, *cfg)
 			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
-			appUpdater := updater.New(defaults, cfg.Update.NoVerifySSL, files.Template)
+			appUpdater := updater.New(defaults, cfg.Update.NoVerifySSL, files.Template, lvl)
 
 			versions := updater.Versions{
 				Current:   cmd.Root().Version,

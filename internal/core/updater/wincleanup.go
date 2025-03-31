@@ -30,6 +30,8 @@ func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error
 	}
 	exeDir := file.NewFile(exePath).Dir()
 
+	log.Debug("Executable path: %q", exePath)
+
 	// Create a temporary folder for cleanup files
 	var folder file.Folder
 	if err := folder.CreateRandomInTempDir(); err != nil {

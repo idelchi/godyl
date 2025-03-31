@@ -37,8 +37,6 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	// Set the viper instance on the config struct
 	cfg.SetViper(viper)
 
-	fmt.Printf("Processed cmd %s with prefix %s\n", cmd.Name(), envPrefix)
-
 	return nil
 }
 

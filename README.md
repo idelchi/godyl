@@ -216,8 +216,11 @@ The following global flags are available for all commands:
 
 For `--env-file` and `--defaults`, the defaults are used only if no issue is encountered while loading them.
 
-Note that the values in `--env-file` will not be effective for the `GODYL_GITHUB_TOKEN` environment variable, which
-must be set explicitly with `export GODYL_GITHUB_TOKEN` or `GODYL_GITHUB_TOKEN=<token> godyl [...]`.
+> [!NOTE]
+> The values in `--env-file` will not be effective for the `GODYL_GITHUB_TOKEN` environment variable
+> which must be set explicitly with `export GODYL_GITHUB_TOKEN` or `GODYL_GITHUB_TOKEN=<token> godyl [...]`.
+>
+> This is due to the initial values of the environment variables being set before the `.env` file is loaded.
 
 ### Tool-specific Flags
 

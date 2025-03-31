@@ -1,6 +1,8 @@
 package env
 
-import "os"
+import (
+	"os"
+)
 
 // ToSlice converts the Env to a slice of `key=value` strings.
 // Each key-value pair in the Env is formatted as "key=value" and added to the slice.

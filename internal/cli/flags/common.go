@@ -19,6 +19,8 @@ func Bind(cmd *cobra.Command, cfg any, prefix ...string) error {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()
 
+	// TODO(Idelchi): How to leverage `viper.SetConfigFile and viper.ReadInConfig()` here?
+
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
 		return fmt.Errorf("binding flags: %w", err)
 	}

@@ -216,6 +216,9 @@ The following global flags are available for all commands:
 
 For `--env-file` and `--defaults`, the defaults are used only if no issue is encountered while loading them.
 
+Note that the values in `--env-file` will not be effective for the `GODYL_GITHUB_TOKEN` environment variable, which
+must be set explicitly with `export GODYL_GITHUB_TOKEN` or `GODYL_GITHUB_TOKEN=<token> godyl [...]`.
+
 ### Tool-specific Flags
 
 The following flags are available for tool-related commands (`install` and `download`):
@@ -833,7 +836,7 @@ The example above defines:
 - `find` mode for downloading, extracting and finding the executable
 - The default source type as `github`
 - `none` strategy to skip tools which already exist
-- Settings the environment variable `GH_TOKEN` to the value of `GODYL_GITHUB_TOKEN`
+- Settings the environment variable `GH_TOKEN` to the value of `GH_TOKEN`
 
 The full set of default options are:
 

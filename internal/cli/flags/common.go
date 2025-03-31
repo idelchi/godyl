@@ -15,8 +15,6 @@ func Bind(cmd *cobra.Command, cfg any, prefix ...string) error {
 	// Set up Viper with our environment prefix
 	envPrefix := prefixFromCmdOrPrefixes(cmd, prefix...)
 
-	// fmt.Printf("Bind called for command %q with prefix %q\n", cmd.Name(), envPrefix)
-
 	viper.SetEnvPrefix(envPrefix)
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()

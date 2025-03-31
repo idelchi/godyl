@@ -210,11 +210,17 @@ The following global flags are available for all commands:
 | `--version`        | `GODYL_VERSION`      | `false`        | Show version information and exit            |
 | `--dry`            | `GODYL_DRY`          | `false`        | Run without making any changes (dry run)     |
 | `--log`            | `GODYL_LOG`          | `info`         | Log level (debug, info, warn, error, silent) |
-| `--env-file`, `-e` | `GODYL_ENV_FILE`     | `.env`         | Path to .env file.                           |
+| `--env-file`, `-e` | `GODYL_ENV_FILE`     | `.env`         | Path to `.env` file.                         |
 | `--defaults`, `-d` | `GODYL_DEFAULTS`     | `defaults.yml` | Path to defaults file.                       |
 | `--show`, `-s`     | `GODYL_SHOW`         | `false`        | Show the configuration and exit              |
 
 For `--env-file` and `--defaults`, the defaults are used only if no issue is encountered while loading them.
+
+> [!NOTE]
+> The values in `--env-file` will not be effective for the `GODYL_GITHUB_TOKEN` environment variable
+> which must be set explicitly with `export GODYL_GITHUB_TOKEN` or `GODYL_GITHUB_TOKEN=<token> godyl [...]`.
+>
+> This is due to the initial values of the environment variables being set before the `.env` file is loaded.
 
 ### Tool-specific Flags
 

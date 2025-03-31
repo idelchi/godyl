@@ -21,7 +21,7 @@ type cleanupData struct {
 
 // createAndRunCleanupScript creates and executes a Windows cleanup batch script.
 func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error {
-	log.Info("Issuing a delete command for the old godyl binary")
+	log.Debug("Issuing a delete command for the old godyl binary")
 
 	// Get the current executable path
 	exePath, err := os.Executable()
@@ -41,7 +41,7 @@ func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error
 	batchFile := file.NewFile(folder.Path(), "cleanup.bat")
 	logFile := file.NewFile(folder.Path(), "cleanup_debug.log")
 
-	log.Info("Batch file stored in: %s", batchFile.Path())
+	log.Debug("Batch file stored in: %s", batchFile.Path())
 
 	// Create cleanup script
 	if err := createBatchFile(templateContent, batchFile.Path(), cleanupData{

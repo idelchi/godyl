@@ -31,7 +31,7 @@ source:
   type: github
 strategy: none
 env:
-  GH_TOKEN: $GODYL_GITHUB_TOKEN
+  GH_TOKEN: $GH_TOKEN
 version:
   commands:
     - --version

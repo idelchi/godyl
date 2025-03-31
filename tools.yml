@@ -1,8 +1,5 @@
 - name: moncho/dry
   description: A Docker manager for the terminal
-  exe:
-    name: dry
-    patterns: ^dry
   tags:
     - docker
 
@@ -537,7 +534,7 @@
 
 - name: hashicorp/packer
   description: Create identical machine images for multiple platforms from a single source configuration
-  path: https://releases.hashicorp.com/packer/{{ .Version | trimPrefix "v" }}/packer{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
+  path: https://releases.hashicorp.com/packer/{{ .Version | trimPrefix "v" }}/packer_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   tags:
     - automation
 
@@ -716,8 +713,6 @@
 
 - name: hairyhenderson/gomplate
   description: A versatile Go template processor
-  exe:
-    patterns: ^gomplate
   hints:
     # gomplate releases both the `.exe` and `.zip` which would have identical scores
     - pattern: .exe$
@@ -809,6 +804,24 @@
   extensions: zip
   tags:
     - terminal
+
+- name: google/go-jsonnet
+  description: Jsonnet is a data templating language for app and tool developers
+  exe: jsonnet
+  tags:
+    - processing
+
+- name: google/go-jsonnet
+  description: A linter for Jsonnet
+  exe: jsonnet-lint
+  tags:
+    - processing
+
+- name: google/go-jsonnet
+  description: A formatter for Jsonnet
+  exe: jsonnetfmt
+  tags:
+    - processing
 
 - idelchi/gocry
 - idelchi/gogen

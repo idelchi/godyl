@@ -63,6 +63,8 @@ func (d *Defaults) Validate() error {
 }
 
 // Merge applies configuration overrides to the defaults.
+//
+// TODO(Idelchi): This is not subcommand-agnostic.
 func (d *Defaults) Merge(cfg config.Config) error {
 	if cobraext.IsSet("hints") {
 		for _, hint := range cfg.Tool.Hints {
@@ -85,8 +87,13 @@ func (d *Defaults) Merge(cfg config.Config) error {
 		d.defaults.Strategy = cfg.Tool.Strategy
 	}
 
+	// TODO(Idelchi): This is pretty bad.
 	if cobraext.IsSet("github-token") || utils.IsZeroValue(d.defaults.Source.Github.Token) {
-		d.defaults.Source.Github.Token = cfg.Tool.Tokens.GitHub
+		if utils.IsZeroValue(cfg.Tool.Tokens.GitHub) {
+			d.defaults.Source.Github.Token = cfg.Update.Tokens.GitHub
+		} else {
+			d.defaults.Source.Github.Token = cfg.Tool.Tokens.GitHub
+		}
 	}
 
 	if cobraext.IsSet("os") || utils.IsZeroValue(d.defaults.Platform.OS) {

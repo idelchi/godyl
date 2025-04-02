@@ -39,9 +39,14 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 		return binary, fmt.Errorf("creating temp dir: %w", err)
 	}
 
+	fmt.Printf("dir: %s\n", dir.Path())
+
 	if file, err := binary.Find(dir.Path()); err == nil {
 		binary.File = file
+
+		fmt.Printf("binary.File: %s\n", binary.File)
 		if dir.IsParentOf(file.Dir()) {
+			fmt.Printf("binary.Dir: %s\n", binary.Dir)
 			binary.Dir = dir
 			binary.Env.Default(binary.Dir.Path())
 		} else {
@@ -97,6 +102,7 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 		return file.File(""), fmt.Errorf("go binary not found: %w", err)
 	}
 
+	fmt.Printf("binary: %s\n", binary)
 	return file.NewFile(binary), nil
 }
 

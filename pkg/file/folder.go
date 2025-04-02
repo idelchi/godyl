@@ -112,13 +112,13 @@ func (f *Folder) CreateRandomInTempDir() error {
 func (f *Folder) CreateInTempDir() error {
 	name := filepath.Join(os.TempDir(), f.Name())
 
+	f.Set(name)
+
 	const perm = 0o755
 
 	if err := os.Mkdir(name, perm); err != nil {
 		return fmt.Errorf("creating directory in temporary directory: %w", err)
 	}
-
-	f.Set(name)
 
 	return nil
 }

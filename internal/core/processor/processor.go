@@ -146,7 +146,9 @@ func (p *Processor) handleResult(r result) {
 
 	if r.Err != nil {
 		p.handleToolError(tool, r.Err, r.Msg)
-	} else {
+	}
+
+	if r.Err == nil || errors.Is(r.Err, tools.ErrRequiresUpdate) {
 		p.logToolSuccess(tool, r.Found)
 	}
 }
@@ -156,6 +158,7 @@ func (p *Processor) handleToolError(tool *tools.Tool, err error, msg string) {
 	// These errors are expected and don't indicate a failure
 	isExpectedError := errors.Is(err, tools.ErrAlreadyExists) ||
 		errors.Is(err, tools.ErrUpToDate) ||
+		errors.Is(err, tools.ErrRequiresUpdate) ||
 		errors.Is(err, tools.ErrDoesNotHaveTags) ||
 		errors.Is(err, tools.ErrDoesHaveTags) ||
 		errors.Is(err, tools.ErrSkipped)

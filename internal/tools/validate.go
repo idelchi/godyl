@@ -32,6 +32,8 @@ var (
 	ErrAlreadyExists = errors.New("tool already exists")
 	// ErrUpToDate indicates that the tool is already up to date.
 	ErrUpToDate = errors.New("tool is up to date")
+	// ErrRequiresUpdate indicates that the tool requires an update.
+	ErrRequiresUpdate = errors.New("tool requires update")
 	// ErrDoesHaveTags indicates that the tool has tags that are in the excluded tags list.
 	ErrDoesHaveTags = errors.New("tool contains excluded tags")
 	// ErrDoesNotHaveTags indicates that the tool does not contain required tags.

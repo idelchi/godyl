@@ -123,7 +123,11 @@
     - automation
 
 - name: ldez/traefik-certs-dumper
-  description: A tool to dump ACME certs from Traefik
+  description: |
+    A tool to dump ACME certs from Traefik
+    Note, does not contain a version stamp and will therefore always reinstall
+  version:
+    commands: []
   tags:
     - automation
 
@@ -209,7 +213,9 @@
     - terminal
 
 - name: filebrowser/filebrowser
-  description:
+  description: File Browser is a web-based file manager
+  version:
+    commands: version
   skip:
     reason: "filebrowser is not available on windows"
     condition: '{{ eq .OS "windows" }}'
@@ -221,6 +227,11 @@
   exe:
     patterns:
       - "^{{ .OS }}-{{ .Exe }}"
+  skip:
+    - reason: "dooit not available for arm64"
+      condition: '{{ eq .ARCH "arm64" }}'
+    - reason: "dooit not available for arm"
+      condition: '{{ eq .ARCH "arm" }}'
   tags:
     - terminal
 
@@ -253,7 +264,9 @@
     - processing
 
 - name: cespare/reflex
-  description: Run a command when files change
+  description: |
+    Run a command when files change
+    Note, does not contain a version stamp and will therefore always reinstall
   version:
     commands: []
   skip:
@@ -265,7 +278,9 @@
     - automation
 
 - name: trntv/sshed
-  description: SSH client with easy bookmarking and config management
+  description: |
+    SSH client with easy bookmarking and config management
+    Note, does not contain a version stamp and will therefore always reinstall
   version:
     commands: []
   exe:
@@ -280,7 +295,6 @@
       must: true
   tags:
     - terminal
-
 - name: AlDanial/cloc
   description: Count Lines of Code
   extensions:
@@ -432,7 +446,7 @@
   skip:
     - reason: "jnv not available for arm64"
       condition: '{{ eq .ARCH "arm64" }}'
-    - reason: "jnv not available for arm"
+    - reason: "jnv not available for arm32"
       condition: '{{ eq .ARCH "arm" }}'
   extensions: |
     {{- if eq .OS "windows" -}}
@@ -733,6 +747,9 @@
 
 - name: watchexec/watchexec
   description: Executes commands in response to file modifications
+  hints:
+    - pattern: "-musl"
+      weight: 2
   extensions: |
     {{- if eq .OS "windows" -}}
         .zip
@@ -752,6 +769,11 @@
     {{- else -}}
     https://github.com/bitwarden/clients/releases/download/cli-v{{ .Version }}/bw-{{ .OS }}-{{ .Version }}.zip
     {{- end -}}
+  skip:
+    - reason: "cli not available for arm64"
+      condition: '{{ eq .ARCH "arm64" }}'
+    - reason: "cli not available for arm"
+      condition: '{{ eq .ARCH "arm" }}'
   source:
     type: url
   tags:

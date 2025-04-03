@@ -80,7 +80,8 @@ func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error)
 	tool := tools.Tool{
 		Name: path,
 		Version: tools.Version{
-			Version: versions.Requested,
+			Version:  versions.Requested,
+			Patterns: []string{`.*?(\d+\.\d+\.\d+(?:-beta)?).*`},
 		},
 		Source: sources.Source{
 			Type: sources.GITHUB,

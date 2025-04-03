@@ -2,6 +2,7 @@
 package updater
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -80,7 +81,8 @@ func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error)
 	tool := tools.Tool{
 		Name: path,
 		Version: tools.Version{
-			Version: versions.Requested,
+			Version:  versions.Requested,
+			Patterns: []string{`.*?(\d+\.\d+\.\d+(?:-beta)?).*`},
 		},
 		Source: sources.Source{
 			Type: sources.GITHUB,
@@ -95,7 +97,7 @@ func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error)
 	// Apply defaults and resolve configuration
 	tool.ApplyDefaults(u.defaults)
 
-	if err := tool.Resolve(nil, nil); err != nil {
+	if err := tool.Resolve(nil, nil); err != nil && !(errors.Is(err, tools.ErrRequiresUpdate) || errors.Is(err, tools.ErrUpToDate)) {
 		return tool, versions.Current, fmt.Errorf("resolving tool: %w", err)
 	}
 

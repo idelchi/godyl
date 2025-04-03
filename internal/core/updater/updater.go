@@ -2,6 +2,7 @@
 package updater
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -96,9 +97,8 @@ func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error)
 	// Apply defaults and resolve configuration
 	tool.ApplyDefaults(u.defaults)
 
-	if err := tool.Resolve(nil, nil); err != nil {
-		u.log.Debug("Failed to resolve tool: %q", err)
-		// return tool, versions.Current, fmt.Errorf("resolving tool: %w", err)
+	if err := tool.Resolve(nil, nil); err != nil && !(errors.Is(err, tools.ErrRequiresUpdate) || !errors.Is(err, tools.ErrUpToDate)) {
+		return tool, versions.Current, fmt.Errorf("resolving tool: %w", err)
 	}
 
 	return tool, versions.Current, nil

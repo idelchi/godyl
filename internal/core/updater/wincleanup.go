@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"os"
 	"os/exec"
-	"path/filepath"
 
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/file"
@@ -67,8 +66,13 @@ func createBatchFile(templateContent []byte, batchFilePath string, data cleanupD
 		return fmt.Errorf("parsing cleanup template: %w", err)
 	}
 
+	batchFile := file.New(batchFilePath)
+	if err := batchFile.Create(); err != nil {
+		return fmt.Errorf("creating batch file: %w", err)
+	}
+
 	// Create the batch file
-	batchFileHandle, err := os.Create(filepath.Clean(batchFilePath))
+	batchFileHandle, err := batchFile.OpenForWriting()
 	if err != nil {
 		return fmt.Errorf("creating batch file: %w", err)
 	}

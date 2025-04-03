@@ -168,6 +168,9 @@ Update the godyl application to the latest version:
 godyl update [flags]
 ```
 
+> [!NOTE]
+> On `Windows`, this will launch a background process to clean up the old version.
+
 ### Usage without installation
 
 A few convenience scripts are provided to run `godyl` without installation.

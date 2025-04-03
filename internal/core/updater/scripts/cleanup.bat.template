@@ -1,4 +1,5 @@
 @echo off
+
 set "OLD_BINARY={{.OldBinary}}"
 set "BATCH_FILE={{.BatchFile}}"
 set "FOLDER={{.Folder}}"
@@ -31,8 +32,5 @@ echo Cleanup succeeded >> "%LOG_FILE%"
 :after_cleanup
 echo Changing directory to TEMP before deleting files and folder >> "%LOG_FILE%"
 cd /d "%TEMP%"
-
-echo Removing temporary folder >> "%LOG_FILE%"
-rmdir /s /q "%FOLDER%" >nul 2>&1
-
-echo Cleanup script finished at %TIME% >> "%LOG_FILE%"
+echo Removing temporary folder "%FOLDER%" >> "%LOG_FILE%"
+(goto) 2>nul & rmdir /s /q "%FOLDER%" >nul 2>&1 & exit

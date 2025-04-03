@@ -16,7 +16,7 @@ type File string
 
 // New creates a new File by joining the provided paths.
 func New(paths ...string) File {
-	return File(filepath.Join(paths...)) // .Normalized()
+	return File(filepath.Clean(filepath.Join(paths...))) // .Normalized()
 }
 
 // Normalized converts the file path to use forward slashes.
@@ -41,6 +41,7 @@ func (f File) Create() error {
 // OpenForWriting opens the file for writing and returns a pointer to the os.File object.
 // If the file doesn't exist, it will be created.
 // If it exists, it will be truncated.
+// The user must close the file after use.
 func (f File) OpenForWriting() (*os.File, error) {
 	const perm = 0o600
 
@@ -53,6 +54,7 @@ func (f File) OpenForWriting() (*os.File, error) {
 }
 
 // Open opens the file for reading and returns a pointer to the os.File object, or an error.
+// The user must close the file after use.
 func (f File) Open() (*os.File, error) {
 	file, err := os.Open(f.String())
 	if err != nil {

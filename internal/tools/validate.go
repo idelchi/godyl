@@ -13,6 +13,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/folder"
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
@@ -55,7 +56,7 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	t.Env.Merge(env.FromEnv())
 
 	// Expand and set the output folder path.
-	t.Output = file.Folder(t.Output).Expanded().Path()
+	t.Output = folder.New(t.Output).Expanded().Path()
 
 	// Set the strategy to Force if the mode is "extract".
 	if t.Mode == "extract" {
@@ -228,7 +229,7 @@ func (t *Tool) Validate() error {
 
 // Exists checks if the tool's executable already exists in the output path.
 func (t *Tool) Exists() bool {
-	f := file.NewFile(t.Output, t.Exe.Name)
+	f := file.New(t.Output, t.Exe.Name)
 
 	return f.Exists() && f.IsFile()
 }

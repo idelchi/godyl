@@ -12,6 +12,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/goi"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/pkg/file"
@@ -73,9 +74,10 @@ func (g *Go) Install(d common.InstallData) (output string, found file.File, err 
 		Binary: binary,
 	}
 
-	var folder file.Folder
-
-	folder.CreateRandomInTempDir()
+	folder, err := tmp.GodylCreateRandomDir()
+	if err != nil {
+		return "", "", fmt.Errorf("creating random dir: %w", err)
+	}
 
 	installer.Binary.Env.Append(
 		goi.Env{
@@ -101,12 +103,18 @@ func (g *Go) Install(d common.InstallData) (output string, found file.File, err 
 		paths[i] = strings.ToLower(path)
 	}
 
+	defer func() {
+		if err == nil {
+			folder.Remove() //nolint:gosec 		// TODO(Idelchi): Address this later.
+		}
+	}()
+
 	for _, path := range paths {
 		output, err = installer.Install(path)
 
 		if err == nil {
 			d.Path = path
-			found, err := common.FindAndSymlink(file.NewFile(folder.Path()), d)
+			found, err := common.FindAndSymlink(file.New(folder.Path()), d)
 
 			return output, found, err
 		}

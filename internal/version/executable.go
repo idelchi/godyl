@@ -24,7 +24,7 @@ type Executable struct {
 
 // NewExecutable creates a new Executable instance from the provided paths.
 func NewExecutable(paths ...string) Executable {
-	return Executable{File: file.NewFile(paths...)}
+	return Executable{File: file.New(paths...)}
 }
 
 // Command runs the specified command arguments on the executable using the provided context.
@@ -32,7 +32,7 @@ func NewExecutable(paths ...string) Executable {
 func (e Executable) Command(ctx context.Context, cmdArgs []string) (string, error) {
 	var out bytes.Buffer
 
-	cmd := exec.CommandContext(ctx, e.File.Name(), cmdArgs...)
+	cmd := exec.CommandContext(ctx, e.File.Path(), cmdArgs...)
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 	cmd.Stdin = os.Stdin

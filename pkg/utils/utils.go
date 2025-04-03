@@ -2,6 +2,9 @@ package utils
 
 import (
 	"net/url"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -89,4 +92,19 @@ func DeepMergeMapsWithoutOverwrite(first, second map[string]any) {
 			first[key] = secondVal
 		}
 	}
+}
+
+// ExpandHome checks if the path starts with "~" and expands it to the user's home directory.
+// If not successful, it returns the original string.
+func ExpandHome(path string) string {
+	if !strings.HasPrefix(path, "~") {
+		return path
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return path
+	}
+
+	return filepath.Join(home, path[1:])
 }

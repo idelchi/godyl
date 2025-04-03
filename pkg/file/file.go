@@ -7,24 +7,21 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // File represents a file path as a string, providing methods for file operations.
 type File string
 
-// NewFile creates a new File by joining the provided paths.
-func NewFile(paths ...string) File {
+// New creates a new File by joining the provided paths.
+func New(paths ...string) File {
 	return File(filepath.Join(paths...)) // .Normalized()
-}
-
-// Normalize converts the file path to use forward slashes.
-func (f *File) Normalize() {
-	*f = f.Normalized()
 }
 
 // Normalized converts the file path to use forward slashes.
 func (f File) Normalized() File {
-	return File(filepath.ToSlash(f.Name()))
+	return New(filepath.ToSlash(f.Path()))
 }
 
 // Create creates a new file.
@@ -74,11 +71,6 @@ func (f File) Remove() error {
 	return nil
 }
 
-// Name returns the name (string representation) of the File.
-func (f File) Name() string {
-	return f.String()
-}
-
 // Path returns the path of the File.
 func (f File) Path() string {
 	return f.String()
@@ -94,24 +86,19 @@ func (f File) Base() string {
 	return filepath.Base(f.String())
 }
 
-// WithDir returns a new File with the specified directory.
-func (f File) WithDir(dir string) File {
-	return NewFile(dir, f.Base())
+// Expanded expands the file path in case of ~ and returns the expanded path.
+func (f File) Expanded() File {
+	return New(utils.ExpandHome(f.Path()))
 }
 
-// Expand expands the File path in case of ~.
-func (f *File) Expanded() File {
-	return f.WithDir(f.Dir().Expanded().Path())
-}
-
-// Dir returns the file.Folder object representing the directory of the file.
-// If it is actually a folder, it returns itself as a Folder object.
-func (f File) Dir() Folder {
+// Dir returns the directory of the file.
+// If the file is a directory, it returns the path of the directory itself.
+func (f File) Dir() string {
 	if f.IsDir() {
-		return NewFolder(f.String())
+		return f.Path()
 	}
 
-	return NewFolder(filepath.Dir(f.String()))
+	return filepath.Dir(f.Path())
 }
 
 // IsExecutable checks if the file has executable permissions.
@@ -191,7 +178,7 @@ func (f File) IsDir() bool {
 
 // Extension returns the file extension of the File, mapped to a predefined Extension constant.
 func (f File) Extension() Extension {
-	ext := filepath.Ext(f.Name())
+	ext := filepath.Ext(f.Path())
 
 	switch strings.ToLower(ext) {
 	case ".exe":

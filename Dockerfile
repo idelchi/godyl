@@ -65,6 +65,10 @@ RUN cp bin/godyl /home/${USER}/.local/bin
 
 WORKDIR /home/${USER}
 
+USER root
+RUN rm -rf /tmp/go
+USER ${USER}
+
 # Timezone
 ENV TZ=Europe/Zurich
 

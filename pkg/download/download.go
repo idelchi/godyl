@@ -106,8 +106,8 @@ func (d Downloader) Download(url, output string) (file.File, error) {
 
 	res, err := client.Get(ctx, req)
 	if err != nil {
-		return file.NewFile(), err
+		return file.New(), err
 	}
 
-	return file.NewFile(res.Dst), nil
+	return file.New(res.Dst), nil
 }

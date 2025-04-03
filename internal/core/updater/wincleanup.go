@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
 )
@@ -28,20 +29,19 @@ func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error
 	if err != nil {
 		return fmt.Errorf("getting executable path: %w", err)
 	}
-	exeDir := file.NewFile(exePath).Dir()
 
 	log.Debug("Executable path: %q", exePath)
 
 	// Create a temporary folder for cleanup files
-	var folder file.Folder
-	if err := folder.CreateRandomInTempDir(); err != nil {
+	folder, err := tmp.GodylCreateRandomDir()
+	if err != nil {
 		return fmt.Errorf("creating temporary directory: %w", err)
 	}
 
 	// Prepare file paths
-	oldBinary := file.NewFile(exeDir.Path(), ".godyl.exe.old")
-	batchFile := file.NewFile(folder.Path(), "cleanup.bat")
-	logFile := file.NewFile(folder.Path(), "cleanup_debug.log")
+	oldBinary := file.New(file.New(exePath).Dir(), ".godyl.exe.old")
+	batchFile := file.New(folder.Path(), "cleanup.bat")
+	logFile := file.New(folder.Path(), "cleanup_debug.log")
 
 	log.Debug("Batch file stored in: %s", batchFile.Path())
 

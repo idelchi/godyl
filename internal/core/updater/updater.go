@@ -97,7 +97,7 @@ func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error)
 	// Apply defaults and resolve configuration
 	tool.ApplyDefaults(u.defaults)
 
-	if err := tool.Resolve(nil, nil); err != nil && !(errors.Is(err, tools.ErrRequiresUpdate) || !errors.Is(err, tools.ErrUpToDate)) {
+	if err := tool.Resolve(nil, nil); err != nil && !(errors.Is(err, tools.ErrRequiresUpdate) || errors.Is(err, tools.ErrUpToDate)) {
 		return tool, versions.Current, fmt.Errorf("resolving tool: %w", err)
 	}
 

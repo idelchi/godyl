@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/files"
+	"github.com/idelchi/godyl/pkg/folder"
 )
 
 // InstallData holds the details required for downloading and installing files,
@@ -31,16 +34,16 @@ func Download(data InstallData) (string, file.File, error) {
 
 	var found file.File
 
-	folder := file.Folder(data.Output)
+	dir := folder.New(data.Output)
 
 	if data.Mode == "find" {
-		if err := folder.CreateRandomInTempDir(); err != nil {
-			return "", "", fmt.Errorf("creating temp dir: %w", err)
+		if dir, err = tmp.GodylCreateRandomDir(); err != nil {
+			return "", "", fmt.Errorf("creating random dir: %w", err)
 		}
 
 		defer func() {
 			if err == nil {
-				folder.Remove() //nolint:gosec 		// TODO(Idelchi): Address this later.
+				dir.Remove() //nolint:gosec 		// TODO(Idelchi): Address this later.
 			}
 		}()
 	}
@@ -48,7 +51,7 @@ func Download(data InstallData) (string, file.File, error) {
 	downloader := download.New()
 	downloader.InsecureSkipVerify = data.NoVerifySSL
 
-	destination, err := downloader.Download(data.Path, folder.Path())
+	destination, err := downloader.Download(data.Path, dir.Path())
 	if err != nil {
 		return "", "", fmt.Errorf("downloading %q: %w", data.Path, err)
 	}
@@ -66,7 +69,7 @@ func Download(data InstallData) (string, file.File, error) {
 //nolint:gocognit   // TODO(Idelchi): Address this later.
 func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 	if destination.IsDir() {
-		searchDir := destination.Dir()
+		searchDir := folder.New(destination.Dir())
 
 		folders, err := searchDir.ListFolders()
 		if err != nil {
@@ -91,7 +94,7 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 					return false, fmt.Errorf("compiling pattern %q: %w", pattern, err)
 				}
 
-				matched := re.MatchString(file.Normalized().Name())
+				matched := re.MatchString(file.Normalized().Path())
 
 				if matched {
 					return true, nil
@@ -104,7 +107,7 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 
 			destination, err = searchDir.FindFile(match)
 			if err != nil {
-				if !errors.Is(err, file.ErrNotFound) {
+				if !errors.Is(err, folder.ErrNotFound) {
 					return destination, fmt.Errorf("finding executable: %w", err)
 				}
 
@@ -125,7 +128,7 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 		}
 	}
 
-	folder := file.NewFolder(d.Output)
+	folder := folder.New(d.Output)
 	if !folder.Exists() {
 		if err := folder.Create(); err != nil {
 			return destination, fmt.Errorf("creating output folder: %w", err)
@@ -133,13 +136,13 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 	}
 
 	// Copy the executable to the output directory
-	target := file.NewFile(d.Output, d.Exe)
+	target := file.New(d.Output, d.Exe)
 	if err := destination.Copy(target); err != nil {
 		return destination, fmt.Errorf("copying %q to %q: %w", destination, target, err)
 	}
 
 	// Create symlinks for the aliases
-	aliases := file.NewFiles(d.Output, d.Aliases...)
+	aliases := files.New(d.Output, d.Aliases...)
 
 	return destination, aliases.SymlinksFor(target)
 }

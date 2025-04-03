@@ -9,7 +9,7 @@ import (
 // Returns an error if any of the copy operations fail.
 func (f File) Symlink(symlinks ...File) error {
 	for _, symlink := range symlinks {
-		if symlink.Name() == f.Name() {
+		if symlink.Path() == f.Path() {
 			continue
 		}
 

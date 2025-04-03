@@ -118,7 +118,7 @@ func (d *Defaults) Merge(cfg config.Config) error {
 
 // Load loads configuration defaults from a file or uses embedded defaults if not specified.
 func (d *Defaults) Load(path file.File, defaults []byte, isSet bool) error {
-	if err := d.FromFile(path.Name()); err != nil {
+	if err := d.FromFile(path.Path()); err != nil {
 		if isSet {
 			return fmt.Errorf("loading defaults from %q: %w", path, err)
 		} else {

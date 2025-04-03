@@ -4,21 +4,22 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
 	"os/exec"
 	"sync"
 
 	"github.com/go-resty/resty/v2"
 
+	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/folder"
 )
 
 // Binary represents a Go binary, including its associated file, directory, and environment variables.
 type Binary struct {
-	File file.File   // File holds the file information for the Go binary.
-	Dir  file.Folder // Dir refers to the directory where the binary is stored.
-	Env  Env         // Env contains the environment variables for running the binary.
+	File file.File     // File holds the file information for the Go binary.
+	Dir  folder.Folder // Dir refers to the directory where the binary is stored.
+	Env  Env           // Env contains the environment variables for running the binary.
 
 	noVerifySSL bool
 }
@@ -34,25 +35,33 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 
 	binary.noVerifySSL = noVerifySSL
 
-	dir := file.NewFolder(".godyl-go")
-	if err := dir.CreateInTempDir(); err != nil && !errors.Is(err, os.ErrExist) {
-		return binary, fmt.Errorf("creating temp dir: %w", err)
-	}
+	// Step 1: Search for go binary on system
+	if path, err := exec.LookPath("go"); err == nil {
+		binary.File = file.New(path)
+		binary.Env = Env{}
+		binary.Dir = folder.New(binary.File.Dir())
 
-	if file, err := binary.Find(dir.Path()); err == nil {
-		binary.File = file
-		if dir.IsParentOf(file.Dir()) {
-			binary.Dir = dir
-			binary.Env.Default(binary.Dir.Path())
-		} else {
-			binary.Env = Env{}
-			binary.Dir = file.Dir()
-		}
+		return binary, nil
+		// Step 2: Else search in other possible paths
+		// } else if path, err := binary.Find("/some", "/other", "/paths"); err == nil {
+		// 	binary.File = path
+		// 	binary.Env = Env{}
+		// 	binary.Dir = folder.New(binary.File.Dir())
+
+		// 	return binary, nil
+		// Step 3: Else search in the (possibly) previously created directory
+	} else if path, err := binary.Find(tmp.GodylDir("go").Path()); err == nil {
+		binary.File = path
+		binary.Dir = folder.New(binary.File.Dir())
+		binary.Env.Default(binary.Dir.Path())
 
 		return binary, nil
 	}
 
-	binary.Dir = dir
+	binary.Dir = tmp.GodylDir("go")
+	if err := binary.Dir.Create(); err != nil {
+		return binary, fmt.Errorf("creating dir: %w", err)
+	}
 
 	release, err := binary.Latest()
 	if err != nil {
@@ -82,22 +91,17 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 	return binary, nil
 }
 
-// Find searches for the Go binary in the given paths or system path, returning the file if found.
+// Find searches for the Go binary in the given paths, returning the file if found.
 func (b *Binary) Find(paths ...string) (file.File, error) {
-	binary, err := exec.LookPath("go")
-	if err != nil {
-		for _, path := range paths {
-			file := file.NewFile(path, "go", "bin", "go")
+	for _, path := range paths {
+		file := file.New(path, "go", "bin", "go")
 
-			if file.Exists() {
-				return file, nil
-			}
+		if file.Exists() {
+			return file, nil
 		}
-
-		return file.File(""), fmt.Errorf("go binary not found: %w", err)
 	}
 
-	return file.NewFile(binary), nil
+	return file.File(""), fmt.Errorf("go binary not found: %w", folder.ErrNotFound)
 }
 
 // Download downloads the Go binary from the provided path and saves it to the directory.
@@ -113,7 +117,7 @@ func (b *Binary) Download(path string) error {
 		return fmt.Errorf("downloading %q: %w", url, err)
 	}
 
-	b.File = file.NewFile(destination.String(), "go", "bin", "go")
+	b.File = file.New(destination.String(), "go", "bin", "go")
 
 	return nil
 }

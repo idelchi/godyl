@@ -1,29 +1,31 @@
-package file
+package files
 
 import (
 	"path/filepath"
+
+	"github.com/idelchi/godyl/pkg/file"
 )
 
 // Files represents a collection of File objects.
-type Files []File
+type Files []file.File
 
-// NewFiles creates a new Files collection from the provided list of paths.
+// New creates a new Files collection from the provided list of paths.
 // The paths are joined with the provided directory to create the full file paths.
 // Pass `dir` as an empty string to use the paths as-is.
-func NewFiles(dir string, paths ...string) (fs Files) {
+func New(dir string, paths ...string) (fs Files) {
 	for _, path := range paths {
 		if path == "" {
 			continue
 		}
 
-		fs = append(fs, File(filepath.Join(dir, path)))
+		fs = append(fs, file.File(filepath.Join(dir, path)))
 	}
 
 	return
 }
 
-// NewFilesFromFile creates a new Files collection from the provided list of File objects.
-func NewFilesFromFile(files ...File) (fs Files) {
+// NewFromFiles creates a new Files collection from the provided list of File objects.
+func NewFromFiles(files ...file.File) (fs Files) {
 	for _, file := range files {
 		fs = append(fs, file)
 	}
@@ -42,6 +44,6 @@ func (es Files) Paths() (paths []string) {
 
 // SymlinksFor creates symbolic links for all Files in the collection, linking them to the specified target File.
 // It returns an error if the operation fails.
-func (es Files) SymlinksFor(file File) error {
+func (es Files) SymlinksFor(file file.File) error {
 	return file.Symlink(es...)
 }

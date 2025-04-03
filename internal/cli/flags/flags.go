@@ -27,7 +27,7 @@ func Tool(cmd *cobra.Command) {
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
 	cmd.Flags().IntP("parallel", "j", 0, "Number of parallel downloads. 0 means unlimited.")
 	cmd.Flags().StringSlice("hints", []string{""}, "Hints to use for tool resolution")
-	cmd.Flags().String("version", "", "Version of the tool to install. Empty means latest. Useful only for the extract command when using one tool")
+	cmd.Flags().String("version", "", "Version of the tool to install. Empty means latest. Obviously not so useful when downloading multiple tools.")
 	cmd.Flags().BoolP("show", "s", false, "Show the configuration and exit")
 }
 

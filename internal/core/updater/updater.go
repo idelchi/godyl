@@ -10,10 +10,12 @@ import (
 
 	"github.com/inconshreveable/go-update"
 
+	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/folder"
 	"github.com/idelchi/godyl/pkg/logger"
 )
 
@@ -110,8 +112,7 @@ func (u *Updater) performUpdate(tool tools.Tool) error {
 
 	// Clean up the temporary directory when done
 	defer func() {
-		folder := file.Folder(outputDir)
-		if err := folder.Remove(); err != nil {
+		if err := folder.New(outputDir).Remove(); err != nil {
 			u.log.Warn("Failed to remove temporary folder: %v", err)
 		}
 	}()
@@ -157,9 +158,6 @@ func (u *Updater) downloadTool(tool tools.Tool) (string, error) {
 
 // createTempDir creates an appropriate temporary directory based on the platform.
 func (u *Updater) createTempDir() (string, error) {
-	var dir file.Folder
-	var err error
-
 	if IsWindows() {
 		// On Windows, create temp dir in the same directory as the executable
 		exePath, err := os.Executable()
@@ -167,18 +165,21 @@ func (u *Updater) createTempDir() (string, error) {
 			return "", fmt.Errorf("getting executable path: %w", err)
 		}
 
-		folder := filepath.Dir(exePath)
-		if err := dir.CreateRandomInDir(folder); err != nil {
+		dir, err := tmp.GodylCreateRandomDirIn(folder.New(file.New(exePath).Dir()))
+		if err != nil {
 			return "", fmt.Errorf("creating temporary directory: %w", err)
 		}
-	} else {
-		// On other platforms, use system temp directory
-		if err := dir.CreateRandomInTempDir(); err != nil {
-			return "", fmt.Errorf("creating temporary directory: %w", err)
-		}
+
+		return dir.Path(), nil
+
+	}
+	// On other platforms, use system temp directory
+	dir, err := tmp.GodylCreateRandomDir()
+	if err != nil {
+		return "", fmt.Errorf("creating temporary directory: %w", err)
 	}
 
-	return dir.Path(), err
+	return dir.Path(), nil
 }
 
 // replaceBinary replaces the current executable with the new binary.

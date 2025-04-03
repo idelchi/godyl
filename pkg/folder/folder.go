@@ -19,7 +19,7 @@ type Folder string
 
 // New creates a new Folder object from the provided path segments by joining them.
 func New(paths ...string) Folder {
-	return Folder(filepath.Join(paths...))
+	return Folder(filepath.Clean(filepath.Join(paths...)))
 }
 
 // NewInTempDir assigns but does not create a directory inside the system's temporary directory.
@@ -39,7 +39,7 @@ func CreateRandomInDir(dir string, pattern string) (Folder, error) {
 		return Folder(""), fmt.Errorf("creating temporary directory in %s: %w", dir, err)
 	}
 
-	return Folder(name), nil
+	return New(name), nil
 }
 
 // CreateIgnoreExisting creates the Folder and all necessary parent directories with 0755 permissions.

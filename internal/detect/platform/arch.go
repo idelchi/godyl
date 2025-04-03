@@ -171,6 +171,11 @@ func (a *Architecture) Is64Bit() bool {
 	return strings.Contains(a.Type, "64")
 }
 
+// IsARM returns true if the architecture is ARM.
+func (a *Architecture) IsARM() bool {
+	return a.Type == armString || a.Type == "arm64"
+}
+
 // Is32Bit returns true if the system is running in 32-bit mode.
 func Is32Bit() (bool, error) {
 	cmd := exec.Command("getconf", "LONG_BIT")

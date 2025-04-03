@@ -47,7 +47,7 @@ func (s Strategy) Upgrade(t *Tool) error {
 	case Upgrade:
 		if t.Version.Commands != nil && len(t.Version.Commands) == 0 {
 			// No commands to run, so we can't check the version, forcing an upgrade.
-			return nil
+			return fmt.Errorf("%w: no commands to run, forcing update", ErrRequiresUpdate)
 		}
 
 		// Parse the version of the existing tool.
@@ -60,17 +60,17 @@ func (s Strategy) Upgrade(t *Tool) error {
 
 		if err := exe.ParseVersion(parser); err != nil {
 			// Force an upgrade if the version cannot be parsed.
-			return nil //nolint:nilerr
+			return fmt.Errorf("%w: failed to parse version", ErrRequiresUpdate)
 		}
 
 		source := ToVersion(exe.Version)
 		if source == nil {
-			return fmt.Errorf("parsing version %q: failed: %q -> %q", exe.Version, exe.Version, t.Version.Version)
+			return fmt.Errorf("%w: converting source version %q: failed: %q -> %q", ErrRequiresUpdate, exe.Version, exe.Version, t.Version.Version)
 		}
 
 		target := ToVersion(t.Version.Version)
 		if target == nil {
-			return fmt.Errorf("parsing version %q: failed: %q -> %q", t.Version.Version, exe.Version, t.Version.Version)
+			return fmt.Errorf("%w: converting target version %q: failed: %q -> %q", ErrRequiresUpdate, t.Version.Version, exe.Version, t.Version.Version)
 		}
 
 		// If the versions match, return an error indicating the tool is already up to date.
@@ -78,7 +78,7 @@ func (s Strategy) Upgrade(t *Tool) error {
 			return fmt.Errorf("%w: current version %q and target version %q match", ErrUpToDate, source, target)
 		}
 
-		return nil
+		return fmt.Errorf("%w: current version %q and target version %q do not match", ErrRequiresUpdate, source, target)
 	case Force:
 		// If the strategy is "Force", always proceed with the installation or update.
 		return nil

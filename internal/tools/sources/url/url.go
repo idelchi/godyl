@@ -13,7 +13,7 @@ import (
 // URL represents a download source with an associated URL and optional token for authorization.
 type URL struct {
 	URL   string
-	Token string
+	Token string `mask:"fixed"`
 
 	// Data holds additional metadata related to the URL.
 	Data common.Metadata `yaml:"-"`
@@ -49,5 +49,7 @@ func (u *URL) Path(name string, _ []string, _ string, _ match.Requirements) erro
 // Install downloads the file from the URL and processes it based on the provided InstallData.
 // It returns the output, the downloaded file, and any error encountered.
 func (u *URL) Install(d common.InstallData) (output string, found file.File, err error) {
+	d.Headers = append(d.Headers, u.Token)
+
 	return common.Download(d)
 }

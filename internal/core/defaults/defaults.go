@@ -95,6 +95,14 @@ func (d *Defaults) Merge(cfg config.Config) error {
 		d.defaults.Source.Github.Token = env.GetAny("GODYL_GITHUB_TOKEN", "GH_TOKEN")
 	}
 
+	switch {
+	case cfg.Root.IsSet("url-token"):
+		d.defaults.Source.URL.Token = cfg.Root.Tokens.URL
+	case utils.IsZeroValue(d.defaults.Source.URL.Token):
+		env := env.FromEnv()
+		d.defaults.Source.URL.Token = env.GetAny("GODYL_URL_TOKEN")
+	}
+
 	if cfg.Tool.IsSet("os") || utils.IsZeroValue(d.defaults.Platform.OS) {
 		if err := d.defaults.Platform.OS.Parse(cfg.Tool.OS); err != nil {
 			return fmt.Errorf("parsing OS: %w", err)

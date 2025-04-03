@@ -13,6 +13,7 @@ func Root(cmd *cobra.Command) {
 	cmd.Flags().StringP("env-file", "e", ".env", "Path to .env file")
 	cmd.Flags().StringP("defaults", "d", "defaults.yml", "Path to defaults file")
 	cmd.Flags().String("github-token", "", "GitHub token for authentication")
+	cmd.Flags().String("url-token", "", "URL token for authentication")
 }
 
 // Tool adds tool-related command flags to the provided cobra command.

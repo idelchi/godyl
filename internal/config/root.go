@@ -32,6 +32,8 @@ type Root struct {
 type Tokens struct {
 	// GitHub token for authentication
 	GitHub string `mapstructure:"github-token" mask:"fixed"`
+	// URL token for authentication
+	URL string `mapstructure:"url-token" mask:"fixed"`
 }
 
 // Validate checks the configuration for errors.

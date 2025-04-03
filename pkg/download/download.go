@@ -29,7 +29,9 @@ package download
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/go-cleanhttp"
@@ -67,11 +69,26 @@ func New() *Downloader {
 // Download fetches a file from the given URL and saves it to the specified output path.
 // If the file is an archive, it will be extracted to the output directory.
 // It returns the destination path of the downloaded file (or folder) and any error encountered.
-func (d Downloader) Download(url, output string) (file.File, error) {
+func (d Downloader) Download(url, output string, headers ...string) (file.File, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), d.ContextTimeout)
 	defer cancel()
 
 	httpClient := cleanhttp.DefaultClient()
+
+	var headersMap http.Header
+
+	for _, header := range headers {
+		parts := strings.SplitN(header, ":", 2)
+		if len(parts) != 2 {
+			return file.New(), errors.New("invalid header format")
+		}
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+		if headersMap == nil {
+			headersMap = make(http.Header)
+		}
+		headersMap.Add(key, value)
+	}
 
 	httpGetter := &getter.HttpGetter{
 		Netrc:                 true,
@@ -79,6 +96,7 @@ func (d Downloader) Download(url, output string) (file.File, error) {
 		HeadFirstTimeout:      d.HeadTimeout,
 		ReadTimeout:           d.ReadTimeout,
 		Client:                httpClient,
+		Header:                headersMap,
 	}
 
 	// Modify the default HTTP client's transport to skip SSL verification if requested

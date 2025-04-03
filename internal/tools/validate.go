@@ -253,6 +253,7 @@ func (t *Tool) Download() (string, file.File, error) {
 		Mode:        t.Mode.String(),
 		Env:         t.Env,
 		NoVerifySSL: t.NoVerifySSL,
+		Headers:     []string{},
 	}
 
 	return installer.Install(data)

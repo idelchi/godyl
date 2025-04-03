@@ -96,6 +96,7 @@ func (t *Tool) ApplyDefaults(d Defaults) {
 	utils.SetIfZeroValue(&t.Output, d.Output)
 	utils.SetIfZeroValue(&t.Source.Type, d.Source.Type)
 	utils.SetIfZeroValue(&t.Source.Github.Token, d.Source.Github.Token)
+	utils.SetIfZeroValue(&t.Source.URL.Token, d.Source.URL.Token)
 	utils.SetIfZeroValue(&t.Strategy, d.Strategy)
 	utils.SetSliceIfNil(&t.Skip, Condition{Condition: "false"})
 	utils.SetIfZeroValue(&t.Mode, d.Mode)

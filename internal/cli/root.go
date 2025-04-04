@@ -71,7 +71,7 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 				return fmt.Errorf("validating config: %w", err)
 			}
 
-			// Load environment variables from .env file such that it's available for the subcommands
+			// Load environment variables from .envs file such that it's available for the subcommands
 			for _, file := range cfg.Root.EnvFile {
 				if err := utils.LoadDotEnv(file); err != nil {
 					if cfg.Root.IsSet("env-file") {

@@ -126,6 +126,8 @@
   description: |
     A tool to dump ACME certs from Traefik
     Note, does not contain a version stamp and will therefore always reinstall
+  version:
+    commands: []
   tags:
     - automation
 
@@ -276,7 +278,9 @@
     - automation
 
 - name: trntv/sshed
-  description: SSH client with easy bookmarking and config management
+  description: |
+    SSH client with easy bookmarking and config management
+    Note, does not contain a version stamp and will therefore always reinstall
   version:
     commands: []
   exe:
@@ -291,7 +295,6 @@
       must: true
   tags:
     - terminal
-
 - name: AlDanial/cloc
   description: Count Lines of Code
   extensions:
@@ -443,7 +446,7 @@
   skip:
     - reason: "jnv not available for arm64"
       condition: '{{ eq .ARCH "arm64" }}'
-    - reason: "jnv not available for ARM32 architecture"
+    - reason: "jnv not available for arm32"
       condition: '{{ eq .ARCH "arm" }}'
   extensions: |
     {{- if eq .OS "windows" -}}

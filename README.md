@@ -213,7 +213,7 @@ The following global flags are available for all commands:
 | `--version`        | `GODYL_VERSION`      | `false`                                               | Show version information and exit            |
 | `--dry`            | `GODYL_DRY`          | `false`                                               | Run without making any changes (dry run)     |
 | `--log`            | `GODYL_LOG`          | `info`                                                | Log level (debug, info, warn, error, silent) |
-| `--env-file`, `-e` | `GODYL_ENV_FILE`     | `.env`                                                | Path to `.env` file.                         |
+| `--env-file`, `-e` | `GODYL_ENV_FILE`     | `[".env"]`                                            | Path to `.env` file(s).                      |
 | `--defaults`, `-d` | `GODYL_DEFAULTS`     | `defaults.yml`                                        | Path to defaults file.                       |
 | `--github-token`   | `GODYL_GITHUB_TOKEN` | `${GODYL_GITHUB_TOKEN}, ${GITHUB_TOKEN}, ${GH_TOKEN}` | GitHub token for authentication              |
 

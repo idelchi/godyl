@@ -15,7 +15,6 @@ import (
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/cobraext"
-	"github.com/idelchi/godyl/pkg/file"
 )
 
 // Command encapsulates a root cobra command with its associated config and embedded files.
@@ -72,10 +71,12 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 				return fmt.Errorf("validating config: %w", err)
 			}
 
-			// Load environment variables from .env file such that it's available for the subcommands
-			if err := utils.LoadDotEnv(file.File(cfg.Root.EnvFile)); err != nil {
-				if cfg.Root.IsSet("env-file") {
-					return fmt.Errorf("loading .env file: %w", err)
+			// Load environment variables from .env files such that it's available for the subcommands
+			for _, file := range cfg.Root.EnvFile {
+				if err := utils.LoadDotEnv(file); err != nil {
+					if cfg.Root.IsSet("env-file") {
+						return fmt.Errorf("loading .env file: %w", err)
+					}
 				}
 			}
 

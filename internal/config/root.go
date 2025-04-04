@@ -16,7 +16,7 @@ type Root struct {
 	Log string `validate:"oneof=DEBUG INFO WARN ERROR SILENT"`
 
 	// Path to .env file
-	EnvFile file.File `mapstructure:"env-file"`
+	EnvFile []file.File `mapstructure:"env-file"`
 
 	// Path to defaults file
 	Defaults file.File
@@ -40,8 +40,12 @@ func (r *Root) Validate() error {
 		return fmt.Errorf("%w: defaults file %q does not exist", ErrUsage, r.Defaults.Expanded())
 	}
 
-	if r.IsSet("env-file") && !r.EnvFile.Expanded().Exists() {
-		return fmt.Errorf("%w: env-file file %q does not exist", ErrUsage, r.EnvFile.Expanded())
+	if r.IsSet("env-file") {
+		for _, file := range r.EnvFile {
+			if !file.Expanded().Exists() {
+				return fmt.Errorf("%w: env-file file %q does not exist", ErrUsage, file.Expanded())
+			}
+		}
 	}
 
 	return validate.Validate(r)

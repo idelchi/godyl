@@ -228,10 +228,8 @@
     patterns:
       - "^{{ .OS }}-{{ .Exe }}"
   skip:
-    - reason: "dooit not available for arm64"
-      condition: '{{ eq .ARCH "arm64" }}'
-    - reason: "dooit not available for arm"
-      condition: '{{ eq .ARCH "arm" }}'
+    reason: "dooit not available for arm based architectures"
+    condition: "{{ .IS_ARM }}"
   tags:
     - terminal
 
@@ -423,10 +421,8 @@
 - name: tidwall/jj
   description: JSON Stream Editor
   skip:
-    - reason: "jj not available for arm64"
-      condition: '{{ eq .ARCH "arm64" }}'
-    - reason: "jj not available for arm"
-      condition: '{{ eq .ARCH "arm" }}'
+    reason: "jj not available for arm based architectures"
+    condition: "{{ .IS_ARM }}"
   tags:
     - processing
 
@@ -444,10 +440,8 @@
 - name: ynqa/jnv
   description: JSON navigator
   skip:
-    - reason: "jnv not available for arm64"
-      condition: '{{ eq .ARCH "arm64" }}'
-    - reason: "jnv not available for arm32"
-      condition: '{{ eq .ARCH "arm" }}'
+    reason: "jnv not available for arm based architectures"
+    condition: "{{ .IS_ARM }}"
   extensions: |
     {{- if eq .OS "windows" -}}
         .zip

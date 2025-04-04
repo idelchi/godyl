@@ -10,7 +10,7 @@ import (
 func Root(cmd *cobra.Command) {
 	cmd.Flags().Bool("dry", false, "Run without making any changes (dry run)")
 	cmd.Flags().String("log", logger.INFO.String(), "Log level (DEBUG, INFO, WARN, ERROR, SILENT)")
-	cmd.Flags().StringP("env-file", "e", ".env", "Path to .env file")
+	cmd.Flags().StringSliceP("env-file", "e", []string{".env"}, "Path to .env file")
 	cmd.Flags().StringP("defaults", "d", "defaults.yml", "Path to defaults file")
 	cmd.Flags().String("github-token", "", "GitHub token for authentication")
 }

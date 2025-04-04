@@ -228,8 +228,8 @@
     patterns:
       - "^{{ .OS }}-{{ .Exe }}"
   skip:
-    - reason: "dooit not available for arm based architectures"
-      condition: "{{ .IS_ARM }}"
+    reason: "dooit not available for arm based architectures"
+    condition: "{{ .IS_ARM }}"
   tags:
     - terminal
 
@@ -421,8 +421,8 @@
 - name: tidwall/jj
   description: JSON Stream Editor
   skip:
-    - reason: "jj not available for arm based architectures"
-      condition: "{{ .IS_ARM }}"
+    reason: "jj not available for arm based architectures"
+    condition: "{{ .IS_ARM }}"
   tags:
     - processing
 
@@ -440,8 +440,8 @@
 - name: ynqa/jnv
   description: JSON navigator
   skip:
-    - reason: "jnv not available for arm based architectures"
-      condition: "{{ .IS_ARM }}"
+    reason: "jnv not available for arm based architectures"
+    condition: "{{ .IS_ARM }}"
   extensions: |
     {{- if eq .OS "windows" -}}
         .zip

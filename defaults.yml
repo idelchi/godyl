@@ -1,5 +1,5 @@
-output: ~/.local/bin
-# output: .bin-{{ .OS }}-{{ .ARCH_LONG }}
+# output: ~/.local/bin
+output: .bin-{{ .OS }}-{{ .ARCH_LONG }}
 exe:
   patterns:
     - "^{{ .Exe }}{{ .EXTENSION }}$"
@@ -42,3 +42,6 @@ version:
   patterns:
     - '.*?(\d+\.\d+\.\d+).*'
     - '.*?(\d+\.\d+).*'
+
+tags:
+  - arse

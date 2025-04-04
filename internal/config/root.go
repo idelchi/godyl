@@ -34,6 +34,8 @@ type Tokens struct {
 	GitHub string `mapstructure:"github-token" mask:"fixed"`
 	// URL token for authentication
 	URL string `mapstructure:"url-token" mask:"fixed"`
+	// Header for URL token
+	Header string `mapstructure:"url-token-header"`
 }
 
 // Validate checks the configuration for errors.

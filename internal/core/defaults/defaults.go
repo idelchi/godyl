@@ -66,15 +66,6 @@ func (d *Defaults) Validate() error {
 //
 // TODO(Idelchi): This is not subcommand-agnostic.
 func (d *Defaults) Merge(cfg config.Config) error {
-	if cfg.Tool.IsSet("hints") {
-		for _, hint := range cfg.Tool.Hints {
-			d.defaults.Hints.Add(match.Hint{
-				Pattern: hint,
-				Weight:  "1",
-			})
-		}
-	}
-
 	if cfg.Tool.IsSet("output") || utils.IsZeroValue(d.defaults.Output) {
 		d.defaults.Output = cfg.Tool.Output
 	}
@@ -103,6 +94,14 @@ func (d *Defaults) Merge(cfg config.Config) error {
 		d.defaults.Source.URL.Token = env.GetAny("GODYL_URL_TOKEN")
 	}
 
+	switch {
+	case cfg.Root.IsSet("url-token"):
+		d.defaults.Source.URL.Token = cfg.Root.Tokens.URL
+	case utils.IsZeroValue(d.defaults.Source.URL.Token):
+		env := env.FromEnv()
+		d.defaults.Source.URL.Token = env.GetAny("GODYL_URL_TOKEN")
+	}
+
 	if cfg.Tool.IsSet("os") || utils.IsZeroValue(d.defaults.Platform.OS) {
 		if err := d.defaults.Platform.OS.Parse(cfg.Tool.OS); err != nil {
 			return fmt.Errorf("parsing OS: %w", err)
@@ -118,6 +117,15 @@ func (d *Defaults) Merge(cfg config.Config) error {
 	if cfg.Tool.IsSet("arch") || utils.IsZeroValue(d.defaults.Platform.Architecture) {
 		if err := d.defaults.Platform.Architecture.Parse(cfg.Tool.Arch); err != nil {
 			return fmt.Errorf("parsing architecture: %w", err)
+		}
+	}
+
+	if cfg.Tool.IsSet("hints") {
+		for _, hint := range cfg.Tool.Hints {
+			d.defaults.Hints.Add(match.Hint{
+				Pattern: hint,
+				Weight:  "1",
+			})
 		}
 	}
 

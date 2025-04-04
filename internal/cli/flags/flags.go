@@ -14,6 +14,7 @@ func Root(cmd *cobra.Command) {
 	cmd.Flags().StringP("defaults", "d", "defaults.yml", "Path to defaults file")
 	cmd.Flags().String("github-token", "", "GitHub token for authentication")
 	cmd.Flags().String("url-token", "", "URL token for authentication")
+	cmd.Flags().String("url-token-header", "Authorization: Bearer", "Header for URL token")
 }
 
 // Tool adds tool-related command flags to the provided cobra command.
@@ -25,9 +26,9 @@ func Tool(cmd *cobra.Command) {
 	cmd.Flags().String("strategy", "none", "Strategy to use for updating tools (none, upgrade, force)")
 	cmd.Flags().String("os", "", "Operating system to install the tools for")
 	cmd.Flags().String("arch", "", "Architecture to install the tools for")
+	cmd.Flags().StringSlice("hints", []string{""}, "Hints to use for tool resolution")
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
 	cmd.Flags().IntP("parallel", "j", 0, "Number of parallel downloads. 0 means unlimited.")
-	cmd.Flags().StringSlice("hints", []string{""}, "Hints to use for tool resolution")
 	cmd.Flags().String("version", "", "Version of the tool to install. Empty means latest. Obviously not so useful when downloading multiple tools.")
 	cmd.Flags().BoolP("show", "s", false, "Show the configuration and exit")
 }

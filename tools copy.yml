@@ -228,10 +228,8 @@
     patterns:
       - "^{{ .OS }}-{{ .Exe }}"
   skip:
-    - reason: "dooit not available for arm64"
-      condition: '{{ eq .ARCH "arm64" }}'
-    - reason: "dooit not available for arm"
-      condition: '{{ eq .ARCH "arm" }}'
+    reason: "dooit not available for arm based architectures"
+    condition: "{{ .IS_ARM }}"
   tags:
     - terminal
 
@@ -423,10 +421,8 @@
 - name: tidwall/jj
   description: JSON Stream Editor
   skip:
-    - reason: "jj not available for arm64"
-      condition: '{{ eq .ARCH "arm64" }}'
-    - reason: "jj not available for arm"
-      condition: '{{ eq .ARCH "arm" }}'
+    reason: "jj not available for arm based architectures"
+    condition: "{{ .IS_ARM }}"
   tags:
     - processing
 
@@ -444,10 +440,8 @@
 - name: ynqa/jnv
   description: JSON navigator
   skip:
-    - reason: "jnv not available for arm64"
-      condition: '{{ eq .ARCH "arm64" }}'
-    - reason: "jnv not available for arm32"
-      condition: '{{ eq .ARCH "arm" }}'
+    reason: "jnv not available for arm based architectures"
+    condition: "{{ .IS_ARM }}"
   extensions: |
     {{- if eq .OS "windows" -}}
         .zip
@@ -588,15 +582,16 @@
 
 - name: facebook/PathPicker
   description: A tool for selecting files from bash output
-  version: 3.32
+  version: 0.9.5
   source:
     type: command
     commands:
-      - cd {{ .Output }}
-      - rm -rf PathPicker
-      - git clone https://github.com/facebook/PathPicker.git
-      - cd PathPicker/
-      - ln -sf "$(pwd)/fpp" {{ .Output }}/fpp
+      - set -e
+      - rm -rf {{ .Output }} /tmp/PathPicker
+      - mkdir -p {{ .Output }}
+      - gissst clone --branchss={{ .Version }} https://github.com/facebook/PathPicker.git /tmp/PathPicker
+      - cp /tmp/PathPicker/fpp {{ .Output }}/fpp
+      - rm -rf /tmp/PathPicker
   tags:
     - linux
     - native

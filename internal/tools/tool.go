@@ -50,7 +50,9 @@ type Tool struct {
 	Extensions Extensions
 	// Skip defines conditions under which certain steps (e.g., downloading, testing) are skipped.
 	Skip Skip
-	// Post defines commands that should be run after the main operation, such as post-installation steps.
+	// Pre defines commands that should be run after the main operation.
+	Pre command.Commands
+	// Post defines commands that should be run after the main operation.
 	Post command.Commands
 	// Mode defines the operating mode for the tool, potentially controlling behavior such as silent mode or verbose
 	// mode.

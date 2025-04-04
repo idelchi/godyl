@@ -98,6 +98,16 @@ func (p *Processor) processTool(tool *tools.Tool, tags, withoutTags []string, re
 	// Apply defaults and resolve tool configuration
 	tool.ApplyDefaults(p.defaults)
 
+	// Execute pre-installation commands if any exist
+	if len(tool.Pre) > 0 {
+		if err := tool.Pre.Exe(); err != nil {
+			resultCh <- result{
+				Tool: tool,
+				Err:  fmt.Errorf("executing pre-installation commands: %w", err),
+			}
+		}
+	}
+
 	if err := tool.Resolve(tags, withoutTags); err != nil {
 		resultCh <- result{Tool: tool, Err: err}
 		return

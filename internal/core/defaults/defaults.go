@@ -63,7 +63,8 @@ func (d *Defaults) Validate() error {
 }
 
 // Merge applies configuration overrides to the defaults.
-//
+// Flags and environment variables are merged into the `defaults` struct,
+// which is used to set default values for `tool` entries in `tools`.
 // TODO(Idelchi): This is not subcommand-agnostic.
 func (d *Defaults) Merge(cfg config.Config) error {
 	if cfg.Tool.IsSet("output") || utils.IsZeroValue(d.defaults.Output) {

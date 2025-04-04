@@ -217,7 +217,7 @@ The following global flags are available for all commands:
 | `--defaults`, `-d` | `GODYL_DEFAULTS`     | `defaults.yml`                                        | Path to defaults file.                       |
 | `--github-token`   | `GODYL_GITHUB_TOKEN` | `${GODYL_GITHUB_TOKEN}, ${GITHUB_TOKEN}, ${GH_TOKEN}` | GitHub token for authentication              |
 
-For `--env-file` and `--defaults`, the defaults are used only if no issue is encountered while loading them.
+For `--env-file` and `--defaults`, the defaults are used only if n o issue is encountered while loading them.
 
 ### Tool-specific Flags
 

@@ -37,6 +37,8 @@ func NewCacheCommand(cfg *config.Config) *Command {
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
 			var folder folder.Folder
+
+			// TODO(Idelchi): This setting of flags to correct values should be centralized. Like flags.Defaults().
 			switch {
 			case cfg.Root.IsSet("cache-dir"):
 				folder = cfg.Root.Cache.Dir

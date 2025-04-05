@@ -12,9 +12,11 @@ import (
 	cachehandler "github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/cache/cache"
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/folder"
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
@@ -52,7 +54,15 @@ func New(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log 
 
 // Process installs and manages tools with the given tags.
 func (p *Processor) Process(tags, withoutTags []string) error {
-	cache, err := cachehandler.New(p.config.Root.Cache.Dir, p.config.Root.Cache.Type)
+	var folder folder.Folder
+	switch {
+	case p.config.Root.IsSet("cache-dir"):
+		folder = p.config.Root.Cache.Dir
+	default:
+		folder = tmp.CacheDir()
+	}
+
+	cache, err := cachehandler.New(folder, p.config.Root.Cache.Type)
 	if err != nil {
 		return fmt.Errorf("creating cache: %w", err)
 	}

@@ -77,7 +77,6 @@ func (fb *File) Save(item *cache.Item) error {
 
 	fb.items[item.Name] = item
 
-	fmt.Printf("Saving item: %s to %s\n", item.Name, fb.Path())
 	return fb.persist()
 }
 

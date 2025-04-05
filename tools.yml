@@ -2,11 +2,14 @@
   description: A tool for selecting files from bash output
   version: 0.9.5
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    pre:
       - set -e
       - rm -rf {{ .Output }} /tmp/PathPicker
       - mkdir -p {{ .Output }}
-      - gissst clone --branchss={{ .Version }} https://github.com/facebook/PathPicker.git /tmp/PathPicker
+    post:
+      - set -e
+      - git clone --branch={{ .Version }} https://github.com/facebook/PathPicker.git /tmp/PathPicker
       - cp /tmp/PathPicker/fpp {{ .Output }}/fpp
       - rm -rf /tmp/PathPicker

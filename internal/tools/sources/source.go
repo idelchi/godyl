@@ -8,10 +8,10 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/internal/tools/sources/command"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
 	goc "github.com/idelchi/godyl/internal/tools/sources/go"
+	"github.com/idelchi/godyl/internal/tools/sources/none"
 	"github.com/idelchi/godyl/internal/tools/sources/url"
 	"github.com/idelchi/godyl/pkg/file"
 )
@@ -29,22 +29,31 @@ func (t *Type) From(name string) {
 	*t = Type(name)
 }
 
+// TODO(Idelchi): go generate the source type strings
+
 const (
-	GITHUB  Type = "github"  // GitHub source type
-	GITLAB  Type = "gitlab"  // GitLab source type
-	DIRECT  Type = "url"     // URL source type
-	COMMAND Type = "command" // Command-based source type
-	GO      Type = "go"      // Go source type
-	RUST    Type = "rust"    // Rust source type
+	GITHUB Type = "github" // GitHub source type
+	GITLAB Type = "gitlab" // GitLab source type
+	DIRECT Type = "url"    // URL source type
+	NONE   Type = "none"   // No source type
+	GO     Type = "go"     // Go source type
+	RUST   Type = "rust"   // Rust source type
 )
 
 // Source represents a source of installation, which could be GitHub, URL, Go, or command-based.
+//
+// TODO(Idelchi): Add validation
 type Source struct {
-	Type     Type             // Type of the source
-	Github   github.GitHub    // GitHub repository source
-	URL      url.URL          // URL source for direct downloads
-	Go       goc.Go           // Go project source
-	Commands command.Commands // Command-based source
+	// Type of the source
+	Type Type `validate:"oneof=github gitlab url none go rust"`
+	// GitHub repository source
+	Github github.GitHub
+	// URL source for direct downloads
+	URL url.URL
+	// Go project source
+	Go goc.Go
+	// None
+	None none.None
 }
 
 // Populater defines the interface that all source types must implement to handle initialization, execution,
@@ -66,8 +75,8 @@ func (s *Source) Installer() (Populater, error) {
 		return &s.Github, nil
 	case DIRECT:
 		return &s.URL, nil
-	case COMMAND:
-		return &s.Commands, nil
+	case NONE:
+		return &s.None, nil
 	case GO:
 		s.Go.SetGitHub(&s.Github)
 

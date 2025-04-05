@@ -59,6 +59,16 @@ func (t *Tool) TemplateFirst() error {
 		return err
 	}
 
+	// Apply templating to Pre commands
+	for i, cmd := range t.Commands.Pre {
+		output, err := templates.Apply(cmd.String(), values)
+		if err != nil {
+			return err
+		}
+
+		t.Commands.Pre[i].From(output)
+	}
+
 	return nil
 }
 
@@ -83,24 +93,14 @@ func (t *Tool) TemplateLast() error {
 		}
 	}
 
-	// Apply templating to Source.Commands
-	for i, cmd := range t.Source.Commands {
-		output, err := templates.Apply(cmd.String(), values)
-		if err != nil {
-			return err
-		}
-
-		t.Source.Commands[i].From(output)
-	}
-
 	// Apply templating to Post commands
-	for i, cmd := range t.Post {
+	for i, cmd := range t.Commands.Post {
 		output, err := templates.Apply(cmd.String(), values)
 		if err != nil {
 			return err
 		}
 
-		t.Post[i].From(output)
+		t.Commands.Post[i].From(output)
 	}
 
 	// Apply templating to Hints patterns and weights

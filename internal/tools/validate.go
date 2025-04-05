@@ -83,6 +83,13 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	// Build the fallback sources from the primary source type and additional fallbacks.
 	fallbacks := append([]sources.Type{t.Source.Type}, t.Fallbacks...)
 
+	// Execute pre-installation commands if any exist
+	if len(t.Commands.Pre) > 0 {
+		if output, err := t.Commands.Pre.Exe(t.Env); err != nil {
+			return fmt.Errorf("executing pre-installation commands: %w: %s", err, output)
+		}
+	}
+
 	var lastErr error
 	// Try resolving with each fallback in order.
 	for _, fallback := range slices.Compact(fallbacks) {
@@ -256,5 +263,17 @@ func (t *Tool) Download() (string, file.File, error) {
 		Headers:     []string{},
 	}
 
-	return installer.Install(data)
+	output, file, err := installer.Install(data)
+	// Execute post-installation commands if any exist
+	if len(t.Commands.Post) > 0 {
+		if output, err := t.Commands.Post.Exe(t.Env); err != nil {
+			return output, file, fmt.Errorf("executing post-installation commands: %w: %s", err, output)
+		}
+	}
+
+	if err != nil {
+		return output, file, fmt.Errorf("installing tool: %w", err)
+	}
+
+	return output, file, nil
 }

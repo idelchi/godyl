@@ -19,8 +19,6 @@ type Command struct {
 	Command *cobra.Command
 	// Config contains application configuration
 	Config *config.Config
-	// Files contains the embedded configuration files and templates
-	Files config.Embedded
 }
 
 // Flags adds platform-specific flags to the command.
@@ -29,7 +27,7 @@ func (cmd *Command) Flags() {
 }
 
 // NewPlatformCommand creates a Command for displaying platform information.
-func NewPlatformCommand(cfg *config.Config, files config.Embedded) *Command {
+func NewPlatformCommand(cfg *config.Config) *Command {
 	cmd := &cobra.Command{
 		Use:   "platform",
 		Short: "Display platform information",
@@ -52,14 +50,13 @@ func NewPlatformCommand(cfg *config.Config, files config.Embedded) *Command {
 	return &Command{
 		Command: cmd,
 		Config:  cfg,
-		Files:   files,
 	}
 }
 
 // NewCommand creates a cobra.Command instance for the platform dump subcommand.
-func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+func NewCommand(cfg *config.Config) *cobra.Command {
 	// Create the platform command
-	cmd := NewPlatformCommand(cfg, files)
+	cmd := NewPlatformCommand(cfg)
 
 	// Add platform-specific flags
 	cmd.Flags()

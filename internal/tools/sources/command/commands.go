@@ -1,19 +1,56 @@
 package command
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/fatih/structs"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/env"
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/unmarshal"
+	"gopkg.in/yaml.v3"
 )
 
 // Commands represents a slice of shell commands.
-//
-// TODO(Idelchi): Change to a struct that holds data too, and make a custom unmarshal to still unmarshal into a slice of commands
-type Commands []Command
+type Commands struct {
+	// Commands hold the commands to execute
+	Commands unmarshal.SingleOrSliceType[Command]
+	// AllowFailure indicates whether the return code of the commands (combined) should be suppressed or not.
+	AllowFailure bool `yaml:"allow_failure"`
+	// ExitOnError indicates whether to exit on error (injects `set -e -o pipefail` or `set +e` depending on the value).
+	ExitOnError bool `yaml:"exit_on_error"`
+
+	// Data holds additional metadata related to the repository.
+	Data common.Metadata `yaml:"-"`
+}
+
+func (e *Commands) UnmarshalYAML(value *yaml.Node) error {
+	e.ExitOnError = true
+
+	if value.Kind == yaml.ScalarNode {
+		e.Commands = []Command{Command(value.Value)}
+
+		return nil
+	}
+
+	// Handle sequence node directly (list of commands)
+	if value.Kind == yaml.SequenceNode {
+		var commands []Command
+		if err := value.Decode(&commands); err != nil {
+			return err
+		}
+		e.Commands = commands
+
+		return nil
+	}
+
+	// Perform custom unmarshaling with field validation, allowing only known fields.
+	type raw Commands
+
+	return unmarshal.DecodeWithOptionalKnownFields(value, (*raw)(e), true, structs.New(e).Name())
+}
 
 // Get retrieves a specific attribute of the commands.
 func (c *Commands) Get(_ string) string {
@@ -41,28 +78,21 @@ func (c *Commands) Path(path string, patterns []string, _ string, _ match.Requir
 }
 
 // Combined returns all commands in the Commands slice as a single Command,
-// with each command joined by semicolons.
+// with commands joined by semicolons. It prepends "set -e" only if AllowFailure is false.
 func (c *Commands) Combined() Command {
-	stringCommands := make([]string, len(*c))
-	for i, cmd := range *c {
-		stringCommands[i] = string(cmd)
+	stringCommands := make([]string, 0, len(c.Commands)+1)
+
+	if c.ExitOnError {
+		stringCommands = append(stringCommands, "set -e -o pipefail")
+	} else {
+		stringCommands = append(stringCommands, "set +e")
+	}
+
+	for _, cmd := range c.Commands {
+		stringCommands = append(stringCommands, string(cmd))
 	}
 
 	return Command(strings.Join(stringCommands, "; "))
-}
-
-// Install runs the combined commands for installation using the provided InstallData,
-// captures the output, and returns it alongside any errors or found file information.
-func (c *Commands) Install(d common.InstallData) (output string, found file.File, err error) {
-	cmd := c.Combined()
-
-	// Execute the combined command
-	output, err = cmd.Shell(d.Env.ToSlice()...)
-	if err != nil {
-		return output, "", fmt.Errorf("running combined commands: %w", err)
-	}
-
-	return strings.TrimRight(output, "\n"), "", nil
 }
 
 func (c *Commands) Exe(env env.Env) (output string, err error) {
@@ -70,7 +100,7 @@ func (c *Commands) Exe(env env.Env) (output string, err error) {
 
 	// Execute the combined command
 	output, err = cmd.Shell(env.ToSlice()...)
-	if err != nil {
+	if err != nil && !(c.AllowFailure && errors.Is(err, ErrRun)) {
 		return output, fmt.Errorf("running combined commands: %w", err)
 	}
 

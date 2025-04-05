@@ -49,7 +49,8 @@ func (c *Command) Shell(env ...string) (string, error) {
 	err = runner.Run(context.TODO(), file)
 	if err != nil {
 		return "", fmt.Errorf(
-			"running shell command: %w: stdout: %s: stderr: %s",
+			"%w: %w: stdout: %s: stderr: %s",
+			ErrRun,
 			err,
 			stdoutBuf.String(),
 			stderrBuf.String(),
@@ -59,3 +60,5 @@ func (c *Command) Shell(env ...string) (string, error) {
 	// Return the captured stdout output
 	return stdoutBuf.String(), nil
 }
+
+var ErrRun = fmt.Errorf("running shell command")

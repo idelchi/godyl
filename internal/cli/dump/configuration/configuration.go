@@ -16,8 +16,6 @@ type Command struct {
 	Command *cobra.Command
 	// Config contains application configuration
 	Config *config.Config
-	// Files contains the embedded configuration files and templates
-	Files config.Embedded
 }
 
 // Flags adds config-specific flags to the command.
@@ -26,7 +24,7 @@ func (cmd *Command) Flags() {
 }
 
 // NewConfigCommand creates a Command for displaying application configuration.
-func NewConfigCommand(cfg *config.Config, files config.Embedded) *Command {
+func NewConfigCommand(cfg *config.Config) *Command {
 	cmd := &cobra.Command{
 		Use:   "config",
 		Short: "Display root configuration information",
@@ -49,14 +47,13 @@ func NewConfigCommand(cfg *config.Config, files config.Embedded) *Command {
 	return &Command{
 		Command: cmd,
 		Config:  cfg,
-		Files:   files,
 	}
 }
 
 // NewCommand creates a cobra.Command instance for the config dump subcommand.
-func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+func NewCommand(cfg *config.Config) *cobra.Command {
 	// Create the config command
-	cmd := NewConfigCommand(cfg, files)
+	cmd := NewConfigCommand(cfg)
 
 	// Add config-specific flags
 	cmd.Flags()

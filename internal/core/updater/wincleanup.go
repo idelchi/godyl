@@ -7,8 +7,8 @@ import (
 	"os/exec"
 
 	"github.com/idelchi/godyl/internal/tmp"
-	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // cleanupData contains data needed for the cleanup batch script template.

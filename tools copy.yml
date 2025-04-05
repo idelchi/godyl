@@ -567,8 +567,9 @@
   exe: thefuck
   version: 3.32
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - |
         {{ if eq .OS "linux" }}
         pip install {{ .Exe }}=={{ .Version }} --user --break-system-packages
@@ -584,8 +585,9 @@
   description: A tool for selecting files from bash output
   version: 0.9.5
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - set -e
       - rm -rf {{ .Output }} /tmp/PathPicker
       - mkdir -p {{ .Output }}
@@ -601,8 +603,9 @@
   description: Contextual, dynamic aliases for the bash shell
   version: 0.8.1
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - TMP_DIR=$(mktemp -d)
       - echo curl -L -o ${TMP_DIR}/aliases_{{ .Version }}.deb https://github.com/sebglazebrook/aliases/raw/refs/heads/master/releases/{{ .Version }}/debian/aliases_{{ .Version }}.deb
       - curl -L -o ${TMP_DIR}/aliases_{{ .Version }}.deb https://github.com/sebglazebrook/aliases/raw/refs/heads/master/releases/{{ .Version }}/debian/aliases_{{ .Version }}.deb
@@ -618,8 +621,9 @@
 - name: shannonmoeller/up
   description: Quickly navigate to a parent directory
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - |
         curl --create-dirs -o ~/.config/up/up.sh https://raw.githubusercontent.com/shannonmoeller/up/master/up.sh
         echo 'source ~/.config/up/up.sh' >> ~/.bashrc
@@ -638,8 +642,9 @@
   exe: stress
   version: v0.3.3
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - apt-get update
       - apt-get install -y {{ .Exe }}
   tags:
@@ -653,8 +658,9 @@
   exe: distrobox
   version: 1.7.2.1
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - apt-get update
       - apt-get install -y {{ .Exe }}
   tags:
@@ -667,8 +673,9 @@
   description: Sexy ANSI fonts for the console
   exe: cfonts
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - TMPDIR=$(mktemp -d)
       - export RUSTUP_HOME=${TMPDIR}/home
       - export CARGO_HOME=${TMPDIR}/cargo
@@ -686,8 +693,9 @@
   version: 1.3.0-1
   exe: yank-cli
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - |
         {{ if eq .OS "linux" }}
         apt-get update

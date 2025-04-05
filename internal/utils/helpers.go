@@ -7,8 +7,8 @@ import (
 
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/env"
-	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/path/file"
 
 	"gopkg.in/yaml.v3"
 )

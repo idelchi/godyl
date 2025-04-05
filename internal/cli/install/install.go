@@ -13,8 +13,8 @@ import (
 	"github.com/idelchi/godyl/internal/core/processor"
 	"github.com/idelchi/godyl/internal/utils"
 	iutils "github.com/idelchi/godyl/internal/utils"
-	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Command encapsulates the install cobra command with its associated config and embedded files.

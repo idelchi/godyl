@@ -53,6 +53,22 @@ func (f File) OpenForWriting() (*os.File, error) {
 	return file, nil
 }
 
+// Write writes the provided data to the file.
+func (f File) Write(data []byte) error {
+	file, err := f.OpenForWriting()
+	if err != nil {
+		return fmt.Errorf("opening file %q for writing: %w", f, err)
+	}
+
+	if _, err := file.Write(data); err != nil {
+		return fmt.Errorf("writing to file %q: %w", f, err)
+	}
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("closing file %q: %w", f, err)
+	}
+	return nil
+}
+
 // Open opens the file for reading and returns a pointer to the os.File object, or an error.
 // The user must close the file after use.
 func (f File) Open() (*os.File, error) {
@@ -62,6 +78,22 @@ func (f File) Open() (*os.File, error) {
 	}
 
 	return file, nil
+}
+
+// Contents returns the contents of the file as a byte slice.
+func (f File) Contents() ([]byte, error) {
+	file, err := os.Open(f.String())
+	if err != nil {
+		return nil, fmt.Errorf("opening file %q: %w", f, err)
+	}
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return nil, fmt.Errorf("reading file %q: %w", f, err)
+	}
+
+	return data, nil
 }
 
 // Remove deletes the file from the file system.
@@ -86,6 +118,11 @@ func (f File) String() string {
 // Base returns the base name of the File.
 func (f File) Base() string {
 	return filepath.Base(f.String())
+}
+
+// Join joins the File with the provided paths and returns a new File.
+func (f File) Join(paths ...string) File {
+	return New(append([]string{f.Path()}, paths...)...)
 }
 
 // Expanded expands the file path in case of ~ and returns the expanded path.

@@ -3,7 +3,7 @@ package none
 import (
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 type None struct{}

@@ -7,7 +7,7 @@ import (
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // GitHub represents a GitHub repository with optional authentication token and metadata.

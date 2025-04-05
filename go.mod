@@ -18,6 +18,7 @@ require (
 	github.com/idelchi/gogen v0.0.0-20250114054957-4978468f4054
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
 	github.com/joho/godotenv v1.5.1
+	github.com/mattn/go-sqlite3 v1.14.27
 	github.com/schollz/closestmatch v2.1.0+incompatible
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/showa-93/go-mask v0.6.2

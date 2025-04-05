@@ -12,8 +12,8 @@ import (
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/env"
-	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/folder"
+	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/folder"
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
@@ -78,17 +78,17 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 		return err
 	}
 
-	t.Fallbacks = slices.Compact(t.Fallbacks)
-
-	// Build the fallback sources from the primary source type and additional fallbacks.
-	fallbacks := append([]sources.Type{t.Source.Type}, t.Fallbacks...)
-
 	// Execute pre-installation commands if any exist
-	if len(t.Commands.Pre) > 0 {
+	if len(t.Commands.Pre.Commands) > 0 {
 		if output, err := t.Commands.Pre.Exe(t.Env); err != nil {
 			return fmt.Errorf("executing pre-installation commands: %w: %s", err, output)
 		}
 	}
+
+	t.Fallbacks = slices.Compact(t.Fallbacks)
+
+	// Build the fallback sources from the primary source type and additional fallbacks.
+	fallbacks := append([]sources.Type{t.Source.Type}, t.Fallbacks...)
 
 	var lastErr error
 	// Try resolving with each fallback in order.
@@ -265,7 +265,7 @@ func (t *Tool) Download() (string, file.File, error) {
 
 	output, file, err := installer.Install(data)
 	// Execute post-installation commands if any exist
-	if len(t.Commands.Post) > 0 {
+	if len(t.Commands.Post.Commands) > 0 {
 		if output, err := t.Commands.Post.Exe(t.Env); err != nil {
 			return output, file, fmt.Errorf("executing post-installation commands: %w: %s", err, output)
 		}

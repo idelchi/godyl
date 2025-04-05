@@ -8,9 +8,9 @@ import (
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/env"
-	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/files"
-	"github.com/idelchi/godyl/pkg/folder"
+	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/files"
+	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
 // InstallData holds the details required for downloading and installing files,

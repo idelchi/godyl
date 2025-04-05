@@ -15,6 +15,8 @@ func Root(cmd *cobra.Command) {
 	cmd.Flags().String("github-token", "", "GitHub token for authentication")
 	cmd.Flags().String("url-token", "", "URL token for authentication")
 	cmd.Flags().String("url-token-header", "Authorization: Bearer", "Header for URL token")
+	cmd.Flags().StringP("cache-dir", "c", "", "Path to cache directory")
+	cmd.Flags().StringP("cache-type", "", "file", "Type of cache (file, sqlite)")
 }
 
 // Tool adds tool-related command flags to the provided cobra command.

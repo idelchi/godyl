@@ -17,8 +17,6 @@ type Command struct {
 	Command *cobra.Command
 	// Config contains application configuration
 	Config *config.Config
-	// Files contains the embedded configuration files and templates
-	Files config.Embedded
 }
 
 // Flags adds env-specific flags to the command.
@@ -27,7 +25,7 @@ func (cmd *Command) Flags() {
 }
 
 // NewEnvCommand creates a Command for displaying environment information.
-func NewEnvCommand(cfg *config.Config, files config.Embedded) *Command {
+func NewEnvCommand(cfg *config.Config) *Command {
 	cmd := &cobra.Command{
 		Use:   "env",
 		Short: "Display environment information",
@@ -50,14 +48,13 @@ func NewEnvCommand(cfg *config.Config, files config.Embedded) *Command {
 	return &Command{
 		Command: cmd,
 		Config:  cfg,
-		Files:   files,
 	}
 }
 
 // NewCommand creates a cobra.Command instance for the env dump subcommand.
-func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
+func NewCommand(cfg *config.Config) *cobra.Command {
 	// Create the env command
-	cmd := NewEnvCommand(cfg, files)
+	cmd := NewEnvCommand(cfg)
 
 	// Add env-specific flags
 	cmd.Flags()

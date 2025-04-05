@@ -3,7 +3,8 @@ package config
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/folder"
 	"github.com/idelchi/godyl/pkg/validate"
 )
 
@@ -21,11 +22,21 @@ type Root struct {
 	// Path to defaults file
 	Defaults file.File
 
+	// Cache settings
+	Cache CacheSettings `mapstructure:",squash"`
+
 	// Tokens for authentication
 	Tokens Tokens `mapstructure:",squash"`
 
 	// Viper instance
 	viperable `mapstructure:"-" yaml:"-" json:"-"`
+}
+
+type CacheSettings struct {
+	// Path to cache folder
+	Dir folder.Folder `mapstructure:"cache-dir"`
+	// Type of cache (file, sqlite)
+	Type string `mapstructure:"cache-type" validate:"oneof=file sqlite"`
 }
 
 // Tokens holds the configuration options for authentication tokens.

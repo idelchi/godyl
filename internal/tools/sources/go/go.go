@@ -15,7 +15,7 @@ import (
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Go represents a Go project sourced from a GitHub repository.

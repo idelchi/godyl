@@ -7,7 +7,7 @@ package url
 import (
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // URL represents a download source with an associated URL and optional token for authorization.

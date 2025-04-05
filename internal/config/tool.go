@@ -3,7 +3,7 @@ package config
 import (
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Tool holds the configuration options for fetching tools.

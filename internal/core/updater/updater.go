@@ -15,9 +15,9 @@ import (
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
-	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/folder"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
 // Updater handles tool self-updating functionality.

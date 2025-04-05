@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/files"
+	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/files"
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
@@ -25,6 +25,11 @@ func New(paths ...string) Folder {
 // NewInTempDir assigns but does not create a directory inside the system's temporary directory.
 func NewInTempDir(paths ...string) Folder {
 	return New(os.TempDir(), filepath.Join(paths...))
+}
+
+// FromFile creates a folder from a file's directory path.
+func FromFile(f file.File) Folder {
+	return New(f.Dir())
 }
 
 // CreateRandomInDir creates a new random directory inside the given directory.
@@ -54,6 +59,11 @@ func (f Folder) CreateIgnoreExisting() error {
 	return nil
 }
 
+// WithFile returns a new Folder with the provided file name appended to the current folder.
+func (f Folder) WithFile(path string) file.File {
+	return file.New(f.Path(), path)
+}
+
 // Create creates the Folder and all necessary parent directories with 0755 permissions.
 func (f Folder) Create() error {
 	const perm = 0o755
@@ -78,6 +88,11 @@ func (f Folder) IsSet() bool {
 // IsParentOf determines if the Folder is a parent directory of the given 'other' Folder.
 func (f Folder) IsParentOf(other Folder) bool {
 	return strings.HasPrefix(other.Path(), f.Path())
+}
+
+// Join joins the Folder with the provided paths and returns a new Folder.
+func (f Folder) Join(paths ...string) Folder {
+	return New(append([]string{f.Path()}, paths...)...)
 }
 
 // Expanded expands the file path in case of ~ and returns the expanded path.

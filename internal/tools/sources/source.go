@@ -13,7 +13,7 @@ import (
 	goc "github.com/idelchi/godyl/internal/tools/sources/go"
 	"github.com/idelchi/godyl/internal/tools/sources/none"
 	"github.com/idelchi/godyl/internal/tools/sources/url"
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Type represents the source type, such as GitHub, URL, Go, or command-based sources.

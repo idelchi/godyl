@@ -3,7 +3,7 @@ package files
 import (
 	"path/filepath"
 
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Files represents a collection of File objects.

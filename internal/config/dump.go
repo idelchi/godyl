@@ -8,6 +8,9 @@ type Dump struct {
 	// Tools configuration
 	Tools Tools `mapstructure:"-"`
 
+	// Cache configuration
+	Cache Cache `mapstructure:"-"`
+
 	// Viper instance
 	viperable `mapstructure:"-" yaml:"-" json:"-"`
 }
@@ -16,6 +19,15 @@ type Dump struct {
 type Tools struct {
 	// Full specifies whether to output the tools in full syntax
 	Full bool
+
+	// Viper instance
+	viperable `mapstructure:"-" yaml:"-" json:"-"`
+}
+
+// Cache holds the configuration for the `dump cache` subcommand.
+type Cache struct {
+	// File specifies whether to output the path to the cache file
+	File bool
 
 	// Viper instance
 	viperable `mapstructure:"-" yaml:"-" json:"-"`

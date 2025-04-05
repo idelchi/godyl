@@ -9,10 +9,12 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
+	cachehandler "github.com/idelchi/godyl/internal/cache"
+	"github.com/idelchi/godyl/internal/cache/cache"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/tools"
-	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
@@ -34,6 +36,7 @@ type Processor struct {
 	defaults  tools.Defaults
 	config    config.Config
 	log       *logger.Logger
+	cache     *cache.Cache
 	hasErrors bool
 }
 
@@ -49,6 +52,13 @@ func New(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log 
 
 // Process installs and manages tools with the given tags.
 func (p *Processor) Process(tags, withoutTags []string) error {
+	cache, err := cachehandler.New(p.config.Root.Cache.Dir, p.config.Root.Cache.Type)
+	if err != nil {
+		return fmt.Errorf("creating cache: %w", err)
+	}
+
+	p.cache = cache
+
 	// Setup concurrency
 	resultCh := make(chan result)
 
@@ -187,6 +197,10 @@ func (p *Processor) logToolSuccess(tool *tools.Tool, found file.File) {
 			for _, alias := range tool.Aliases {
 				p.log.Info("    - %q", filepath.Join(tool.Output, alias))
 			}
+		}
+
+		if err := p.cache.Save(tool.Exe.Name, tool.Version.Version); err != nil {
+			p.log.Error("  failed to save cache: %v", err)
 		}
 	} else {
 		p.log.Info("  extracted to %q", tool.Output)

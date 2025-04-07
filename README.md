@@ -342,14 +342,13 @@ name: string
 description: string
 version:
   version: string
-  commands: []
-  patterns: []
+  commands: list[string]
+  patterns: list[regex]
 path: string
 output: string
 exe:
   name: string
-  patterns:
-    - regex
+  patterns: list[regex]
 platform:
   os: string
   architecture:
@@ -358,9 +357,9 @@ platform:
   library: string
   extension: string
   distribution: string
-aliases: []
-values: {}
-fallbacks: []
+aliases: list[string]
+values: dict[string]
+fallbacks: list[string]
 hints:
   - pattern: regex
     weight: string
@@ -371,12 +370,21 @@ source:
     repo: string
     owner: string
     token: string
-  url:
-    url: string
+  gitlab:
+    repo: string
+    owner: string
     token: string
+  url:
+    token:
+      token: string
+      header: string
+      scheme: string
+    headers: { string: [strings] }
   go:
     command: string
-  commands: []
+commands:
+  pre: list[string]
+  post: list[string]
 tags:
   - string
 strategy: string
@@ -385,7 +393,6 @@ extensions:
 skip:
   - condition: string
     reason: string
-post: []
 mode: string
 env:
   key: string

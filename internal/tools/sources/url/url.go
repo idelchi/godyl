@@ -13,9 +13,8 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// URL represents a download source with an associated URL and optional token for authorization.
+// URL represents a download source with optional headers and tokens for authorization.
 type URL struct {
-	URL     string
 	Token   Token
 	Headers http.Header
 

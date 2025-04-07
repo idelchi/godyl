@@ -3,7 +3,6 @@ package gitlab
 import (
 	"context"
 	"fmt"
-	"sort"
 
 	gitlab "gitlab.com/gitlab-org/api/client-go"
 )
@@ -36,30 +35,6 @@ func (g *Repository) WithContext(ctx context.Context) *Repository {
 	return &repo
 }
 
-// LatestRelease retrieves the latest release for the repository.
-func (g *Repository) LatestRelease() (*Release, error) {
-	path := fmt.Sprintf("%s/%s", g.Owner, g.Repo)
-
-	releases, _, err := g.client.Releases.ListReleases(path, &gitlab.ListReleasesOptions{})
-	if err != nil {
-		return nil, fmt.Errorf("failed to get list releases: %w", err)
-	}
-
-	if len(releases) == 0 {
-		return nil, fmt.Errorf("no releases found for %s/%s", g.Owner, g.Repo)
-	}
-
-	// Get the first release (should be the latest)
-	latestRelease := releases[0]
-
-	release := &Release{}
-	if err := release.FromRepositoryRelease(latestRelease); err != nil {
-		return nil, fmt.Errorf("failed to parse release: %w", err)
-	}
-
-	return release, nil
-}
-
 // GetRelease retrieves a specific release for the repository based on the provided tag.
 func (g *Repository) GetRelease(tag string) (*Release, error) {
 	path := fmt.Sprintf("%s/%s", g.Owner, g.Repo)
@@ -76,33 +51,10 @@ func (g *Repository) GetRelease(tag string) (*Release, error) {
 	return release, nil
 }
 
-// Languages retrieves the programming languages used in the repository, sorted by usage in descending order.
-func (g *Repository) Languages() ([]string, error) {
+// getReleasesWithOptions retrieves releases for the repository using the provided options.
+func (g *Repository) getReleasesWithOptions() ([]*gitlab.Release, error) {
 	path := fmt.Sprintf("%s/%s", g.Owner, g.Repo)
-	languages, _, err := g.client.Projects.GetProjectLanguages(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get languages: %w", err)
-	}
 
-	// Create a slice of keys to sort
-	keys := make([]string, 0, len(*languages))
-	for k := range *languages {
-		keys = append(keys, k)
-	}
-
-	// Sort the keys based on the values in descending order
-	sort.Slice(keys, func(i, j int) bool {
-		return (*languages)[keys[i]] > (*languages)[keys[j]]
-	})
-
-	return keys, nil
-}
-
-// GetLatestIncludingPreRelease retrieves the most recently published release for the repository,
-// including pre-releases. This returns the newest release by published date, regardless of
-// whether it's a regular release or pre-release.
-func (g *Repository) GetLatestIncludingPreRelease() (*Release, error) {
-	path := fmt.Sprintf("%s/%s", g.Owner, g.Repo)
 	releases, _, err := g.client.Releases.ListReleases(path, &gitlab.ListReleasesOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to list releases: %w", err)
@@ -110,6 +62,36 @@ func (g *Repository) GetLatestIncludingPreRelease() (*Release, error) {
 
 	if len(releases) == 0 {
 		return nil, fmt.Errorf("no releases found for %s/%s", g.Owner, g.Repo)
+	}
+
+	return releases, nil
+}
+
+// LatestRelease retrieves the latest release for the repository.
+func (g *Repository) LatestRelease() (*Release, error) {
+	releases, err := g.getReleasesWithOptions()
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the first release (should be the latest)
+	latestRelease := releases[0]
+
+	release := &Release{}
+	if err := release.FromRepositoryRelease(latestRelease); err != nil {
+		return nil, fmt.Errorf("failed to parse release: %w", err)
+	}
+
+	return release, nil
+}
+
+// GetLatestIncludingPreRelease retrieves the most recently published release for the repository,
+// including pre-releases. This returns the newest release by published date, regardless of
+// whether it's a regular release or pre-release.
+func (g *Repository) GetLatestIncludingPreRelease() (*Release, error) {
+	releases, err := g.getReleasesWithOptions()
+	if err != nil {
+		return nil, err
 	}
 
 	// Find the most recent release by published date

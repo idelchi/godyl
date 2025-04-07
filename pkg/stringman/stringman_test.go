@@ -1,1 +1,0 @@
-package stringman_test

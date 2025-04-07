@@ -105,23 +105,21 @@ func (g *GitLab) MatchAssetsToRequirements(
 
 // PopulateOwnerAndRepo sets the Owner and Repo fields based on the given name.
 // If Owner and Repo are already set, this method does nothing.
-func (g *GitLab) PopulateOwnerAndRepo(name string) error {
-	switch {
-	case g.Owner != "" && g.Repo != "":
+func (g *GitLab) PopulateOwnerAndRepo(name string) (err error) {
+	// If both Owner and Repo are already set, nothing to do
+	if g.Owner != "" && g.Repo != "" {
 		return nil
-	case g.Owner == "" && g.Repo == "":
-	default:
+	}
+
+	// If exactly one of Owner or Repo is set (but not both), that's invalid
+	if (g.Owner == "") != (g.Repo == "") {
 		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
 	}
 
-	parts, err := gitlab.SplitName(name)
+	g.Owner, g.Repo, err = common.SplitName(name)
 	if err != nil {
 		return err
 	}
-
-	// Set the owner and repo fields
-	g.Owner = parts[0]
-	g.Repo = parts[1]
 
 	return nil
 }
@@ -166,11 +164,15 @@ func (g *GitLab) Path(_ string, extensions []string, version string, requirement
 	return nil
 }
 
-// Install downloads the asset from GitLab and returns the output, the found file, and any error encountered.
-func (g *GitLab) Install(d common.InstallData) (output string, found file.File, err error) {
-	d.Header = http.Header{
+func (g *GitLab) GetHeaders() http.Header {
+	return http.Header{
 		"PRIVATE-TOKEN": []string{g.Token},
 	}
+}
+
+// Install downloads the asset from GitLab and returns the output, the found file, and any error encountered.
+func (g *GitLab) Install(d common.InstallData) (output string, found file.File, err error) {
+	d.Header = g.GetHeaders()
 
 	return common.Download(d)
 }

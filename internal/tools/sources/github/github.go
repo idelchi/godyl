@@ -96,23 +96,21 @@ func (g *GitHub) MatchAssetsToRequirements(
 
 // PopulateOwnerAndRepo sets the Owner and Repo fields based on the given name.
 // If Owner and Repo are already set, this method does nothing.
-func (g *GitHub) PopulateOwnerAndRepo(name string) error {
-	switch {
-	case g.Owner != "" && g.Repo != "":
+func (g *GitHub) PopulateOwnerAndRepo(name string) (err error) {
+	// If both Owner and Repo are already set, nothing to do
+	if g.Owner != "" && g.Repo != "" {
 		return nil
-	case g.Owner == "" && g.Repo == "":
-	default:
+	}
+
+	// If exactly one of Owner or Repo is set (but not both), that's invalid
+	if (g.Owner == "") != (g.Repo == "") {
 		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
 	}
 
-	parts, err := SplitName(name)
+	g.Owner, g.Repo, err = common.SplitName(name)
 	if err != nil {
 		return err
 	}
-
-	// Set the owner and repo fields
-	g.Owner = parts[0]
-	g.Repo = parts[1]
 
 	return nil
 }

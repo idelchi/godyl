@@ -41,7 +41,7 @@ func (cmd *Command) Subcommands() {
 }
 
 // NewDumpCommand creates a Command for displaying configuration information.
-func NewDumpCommand(cfg *config.Config, files config.Embedded) *Command {
+func NewDumpCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:     "dump [command]",
 		Aliases: []string{"show"},
@@ -57,7 +57,7 @@ func NewDumpCommand(cfg *config.Config, files config.Embedded) *Command {
 	return &Command{
 		Command: cmd,
 		Config:  cfg,
-		Files:   files,
+		Files:   embedded,
 	}
 }
 

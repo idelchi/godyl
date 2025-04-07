@@ -3,6 +3,7 @@ package common
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"regexp"
 
 	"github.com/idelchi/godyl/internal/tmp"
@@ -25,7 +26,7 @@ type InstallData struct {
 	Mode        string   // Mode of operation, such as "find" for locating executables
 	Env         env.Env  // Environment variables for the installation process
 	NoVerifySSL bool     // Skip SSL verification
-	Headers     []string // Custom headers for the download request
+	Header      http.Header
 }
 
 // Download handles downloading files based on the InstallData configuration.
@@ -52,7 +53,7 @@ func Download(data InstallData) (string, file.File, error) {
 	downloader := download.New()
 	downloader.InsecureSkipVerify = data.NoVerifySSL
 
-	destination, err := downloader.Download(data.Path, dir.Path(), data.Headers...)
+	destination, err := downloader.Download(data.Path, dir.Path(), data.Header)
 	if err != nil {
 		return "", "", fmt.Errorf("downloading %q: %w", data.Path, err)
 	}

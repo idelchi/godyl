@@ -8,7 +8,6 @@ import (
 	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/internal/tmp"
 	iutils "github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
@@ -23,7 +22,6 @@ type Command struct {
 
 // Flags adds defaults-specific flags to the command.
 func (cmd *Command) Flags() {
-	cmd.Command.Flags().BoolP("file", "f", false, "Show the path to the cache file")
 }
 
 // NewCacheCommand creates a Command for displaying tools information.
@@ -33,31 +31,15 @@ func NewCacheCommand(cfg *config.Config) *Command {
 		Short: "Display cache information",
 		Args:  cobra.MaximumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return flags.ChainPreRun(cmd, &cfg.Dump.Cache)
+			return flags.ChainPreRun(cmd, nil)
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
-			var folder folder.Folder
-
-			// TODO(Idelchi): This setting of flags to correct values should be centralized. Like flags.Defaults().
-			switch {
-			case cfg.Root.IsSet("cache-dir"):
-				folder = cfg.Root.Cache.Dir
-			default:
-				folder = tmp.CacheDir()
-			}
-
-			if cfg.Dump.Cache.File {
-				fmt.Println(cache.File(folder, cfg.Root.Cache.Type))
-
-				return nil
-			}
-
 			var name string
 			if len(args) > 0 {
 				name = args[0]
 			}
 
-			c, err := getCache(folder, cfg.Root.Cache.Type, name)
+			c, err := getCache(cfg.Root.Cache.Dir, cfg.Root.Cache.Type, name)
 			if err != nil {
 				return err
 			}
@@ -92,16 +74,6 @@ func getCache(folder folder.Folder, cacheType string, name string) (any, error) 
 		return nil, fmt.Errorf("failed to create cache: %w", err)
 	}
 	defer cache.Close()
-
-	// err = cache.Save("go", "1.18.0")
-	// if err != nil {
-	// 	log.Fatalf("Failed to save item: %v", err)
-	// }
-
-	// err = cache.Save("nodejs", "16.13.1")
-	// if err != nil {
-	// 	log.Fatalf("Failed to save item: %v", err)
-	// }
 
 	var content any
 

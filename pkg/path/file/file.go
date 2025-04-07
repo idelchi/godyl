@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/idelchi/godyl/pkg/utils"
+	"gopkg.in/yaml.v3"
 )
 
 // File represents a file path as a string, providing methods for file operations.
@@ -21,7 +22,7 @@ func New(paths ...string) File {
 
 // Normalized converts the file path to use forward slashes.
 func (f File) Normalized() File {
-	return New(filepath.ToSlash(f.Path()))
+	return New(filepath.ToSlash(f.String()))
 }
 
 // Create creates a new file.
@@ -69,6 +70,39 @@ func (f File) Write(data []byte) error {
 	return nil
 }
 
+// OpenForAppend opens the file for appending and returns a pointer to the os.File object.
+// If the file doesn't exist, it will be created.
+// The user must close the file after use.
+func (f File) OpenForAppend() (*os.File, error) {
+	const perm = 0o600
+
+	file, err := os.OpenFile(f.String(), os.O_WRONLY|os.O_CREATE|os.O_APPEND, perm)
+	if err != nil {
+		return nil, fmt.Errorf("opening file %q for appending: %w", f, err)
+	}
+
+	return file, nil
+}
+
+// Append appends the provided data to the file.
+func (f File) Append(data []byte) error {
+	file, err := f.OpenForAppend()
+	if err != nil {
+		return err
+	}
+
+	if _, err := file.Write(data); err != nil {
+		file.Close()
+		return fmt.Errorf("appending to file %q: %w", f, err)
+	}
+
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("closing file %q: %w", f, err)
+	}
+
+	return nil
+}
+
 // Open opens the file for reading and returns a pointer to the os.File object, or an error.
 // The user must close the file after use.
 func (f File) Open() (*os.File, error) {
@@ -80,20 +114,14 @@ func (f File) Open() (*os.File, error) {
 	return file, nil
 }
 
-// Contents returns the contents of the file as a byte slice.
-func (f File) Contents() ([]byte, error) {
-	file, err := os.Open(f.String())
-	if err != nil {
-		return nil, fmt.Errorf("opening file %q: %w", f, err)
-	}
-	defer file.Close()
-
-	data, err := io.ReadAll(file)
+// Read reads the contents of the file and returns it as a byte slice.
+func (f File) Read() ([]byte, error) {
+	file, err := os.ReadFile(f.String())
 	if err != nil {
 		return nil, fmt.Errorf("reading file %q: %w", f, err)
 	}
 
-	return data, nil
+	return file, nil
 }
 
 // Remove deletes the file from the file system.
@@ -110,6 +138,21 @@ func (f File) Path() string {
 	return f.String()
 }
 
+// WithoutExtension removes all recognized file extensions from the File.
+func (f File) WithoutExtension() File {
+	result := f
+	for ext := result.Extension(); ext != None && ext != Other; ext = result.Extension() {
+		result = File(strings.TrimSuffix(strings.ToLower(result.String()), "."+strings.ToLower(ext.String())))
+	}
+
+	if ext := result.Extension(); ext == Other {
+		// Trim everything after and including the last dot
+		result = File(strings.TrimSuffix(result.String(), filepath.Ext(result.String())))
+	}
+
+	return result
+}
+
 // String returns the string representation of the File.
 func (f File) String() string {
 	return string(f)
@@ -122,22 +165,22 @@ func (f File) Base() string {
 
 // Join joins the File with the provided paths and returns a new File.
 func (f File) Join(paths ...string) File {
-	return New(append([]string{f.Path()}, paths...)...)
+	return New(append([]string{f.String()}, paths...)...)
 }
 
 // Expanded expands the file path in case of ~ and returns the expanded path.
 func (f File) Expanded() File {
-	return New(utils.ExpandHome(f.Path()))
+	return New(utils.ExpandHome(f.String()))
 }
 
 // Dir returns the directory of the file.
 // If the file is a directory, it returns the path of the directory itself.
 func (f File) Dir() string {
 	if f.IsDir() {
-		return f.Path()
+		return f.String()
 	}
 
-	return filepath.Dir(f.Path())
+	return filepath.Dir(f.String())
 }
 
 // IsExecutable checks if the file has executable permissions.
@@ -217,7 +260,7 @@ func (f File) IsDir() bool {
 
 // Extension returns the file extension of the File, mapped to a predefined Extension constant.
 func (f File) Extension() Extension {
-	ext := filepath.Ext(f.Path())
+	ext := filepath.Ext(f.String())
 
 	switch strings.ToLower(ext) {
 	case ".exe":
@@ -226,9 +269,24 @@ func (f File) Extension() Extension {
 		return GZ
 	case ".zip":
 		return ZIP
+	case ".tar":
+		return TAR
 	case "":
 		return None
 	default:
 		return Other
 	}
+}
+
+// WriteYAML marshals the provided value to YAML and writes it to the file.
+// It adds a newline at the end of the YAML content.
+func (f File) WriteYAML(v any) error {
+	// Marshal the struct to YAML
+	data, err := yaml.Marshal(v)
+	if err != nil {
+		return fmt.Errorf("marshaling to YAML: %w", err)
+	}
+
+	// Use the Write method to write the YAML data
+	return f.Write(data)
 }

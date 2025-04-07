@@ -8,6 +8,7 @@
 .gitconfig
 .env
 gitlab.env
+gitlab.yml
 .clinerules
 .clineignore
 # *___generated.go

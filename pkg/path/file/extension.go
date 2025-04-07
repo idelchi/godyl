@@ -1,3 +1,4 @@
+//go:generate go tool enumer -type=Extension -output extension_enumer___generated.go
 package file
 
 // Extension represents a file extension type.
@@ -12,6 +13,8 @@ const (
 	GZ
 	// ZIP represents the ".zip" file extension.
 	ZIP
+	// TAR represents the ".tar" file extension.
+	TAR
 	// Other represents any other, unrecognized file extension.
 	Other
 )

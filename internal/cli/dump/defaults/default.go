@@ -30,7 +30,7 @@ func (cmd *Command) Flags() {
 }
 
 // NewDefaultsCommand creates a Command for displaying default configuration settings.
-func NewDefaultsCommand(cfg *config.Config, files config.Embedded) *Command {
+func NewDefaultsCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:   "defaults",
 		Short: "Display default configuration settings",
@@ -39,7 +39,7 @@ func NewDefaultsCommand(cfg *config.Config, files config.Embedded) *Command {
 			return flags.ChainPreRun(cmd, nil)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			c, err := getDefaults(files)
+			c, err := getDefaults(embedded)
 			if err != nil {
 				return err
 			}
@@ -53,7 +53,7 @@ func NewDefaultsCommand(cfg *config.Config, files config.Embedded) *Command {
 	return &Command{
 		Command: cmd,
 		Config:  cfg,
-		Files:   files,
+		Files:   embedded,
 	}
 }
 

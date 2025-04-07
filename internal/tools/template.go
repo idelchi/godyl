@@ -1,6 +1,8 @@
 package tools
 
 import (
+	"maps"
+
 	"github.com/idelchi/godyl/internal/templates"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/utils"
@@ -17,9 +19,7 @@ func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
 	}
 
 	for _, o := range flatten {
-		for k, v := range o {
-			templateMap[k] = v
-		}
+		maps.Copy(templateMap, o)
 	}
 
 	return templateMap

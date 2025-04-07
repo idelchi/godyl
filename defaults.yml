@@ -30,6 +30,11 @@ extensions:
 mode: find
 source:
   type: github
+  github:
+    token: from_default
+  url:
+    token:
+      scheme: Basic
 strategy: none
 env:
   GH_TOKEN: $GODYL_GITHUB_TOKEN
@@ -42,9 +47,9 @@ version:
   patterns:
     - '.*?(\d+\.\d+\.\d+).*'
     - '.*?(\d+\.\d+).*'
-# TODO(Idelchi): This handling is confusing:
-#   1) If a flag is defined, then we have to use defaults.go to merge/set properly
-#       This means some stuff like "--tags/tags:" will not be settable here
-#   2) If a flag is not defined, it will be possible to set them here
-# On the other hand, remember that tags: on a tool (which defaults.yml) is for, is not the same as
-# `tags` that is passed from the commandline
+  # TODO(Idelchi): This handling is confusing:
+  #   1) If a flag is defined, then we have to use defaults.go to merge/set properly
+  #       This means some stuff like "--tags/tags:" will not be settable here
+  #   2) If a flag is not defined, it will be possible to set them here
+  # On the other hand, remember that tags: on a tool (which defaults.yml) is for, is not the same as
+  # `tags` that is passed from the commandline

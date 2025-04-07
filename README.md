@@ -93,17 +93,18 @@ godyl [flags] [command] [flags]
 
 Available commands:
 
-- `install` - Install tools from a YAML file
+- `install` - Install tools from YAML files
 - `download` - Download and unpack individual tools
 - `dump` - Display configuration information
 - `update` - Update the godyl application
+- `cache` - Manage the godyl cache
 
 ### Install Command
 
-Install tools defined in a YAML configuration file:
+Install tools defined in YAML configuration files:
 
 ```sh
-godyl install [tools.yml|STDIN] --output ./bin
+godyl install [[tools.yml]...|STDIN] --output ./bin
 ```
 
 If no file is specified, `godyl` defaults to using `tools.yml` in the current directory.
@@ -153,6 +154,7 @@ Subcommands:
 - `env` - Display environment variables that affect the application
 - `platform` - Display information about the current platform
 - `tools` - Display information about available tools
+- `cache` - Display information about the cache
 
 For example, install all tools that were embedded when the application was built:
 
@@ -201,23 +203,34 @@ The tools can be configured (in order of priority) by:
 
 - flags
 - environment variables
-- `.env` file
+- `.env` file(s)
 
 ### Global Flags
 
 The following global flags are available for all commands:
 
-| Flag               | Environment Variable | Default                                               | Description                                  |
-| ------------------ | -------------------- | ----------------------------------------------------- | -------------------------------------------- |
-| `--help`, `-h`     | `GODYL_HELP`         | `false`                                               | Show help message and exit                   |
-| `--version`        | `GODYL_VERSION`      | `false`                                               | Show version information and exit            |
-| `--dry`            | `GODYL_DRY`          | `false`                                               | Run without making any changes (dry run)     |
-| `--log`            | `GODYL_LOG`          | `info`                                                | Log level (debug, info, warn, error, silent) |
-| `--env-file`, `-e` | `GODYL_ENV_FILE`     | `[".env"]`                                            | Path to `.env` file(s).                      |
-| `--defaults`, `-d` | `GODYL_DEFAULTS`     | `defaults.yml`                                        | Path to defaults file.                       |
-| `--github-token`   | `GODYL_GITHUB_TOKEN` | `${GODYL_GITHUB_TOKEN}, ${GITHUB_TOKEN}, ${GH_TOKEN}` | GitHub token for authentication              |
+| Flag                 | Environment Variable     | Default                          | Description                                  |
+| -------------------- | ------------------------ | -------------------------------- | -------------------------------------------- |
+| `--help`, `-h`       | `GODYL_HELP`             | `false`                          | Show help message and exit                   |
+| `--version`          | `GODYL_VERSION`          | `false`                          | Show version information and exit            |
+| `--dry`              | `GODYL_DRY`              | `false`                          | Run without making any changes (dry run)     |
+| `--log`              | `GODYL_LOG`              | `info`                           | Log level (debug, info, warn, error, silent) |
+| `--env-file`, `-e`   | `GODYL_ENV_FILE`         | `[".env"]`                       | Path to `.env` file(s).                      |
+| `--defaults`, `-d`   | `GODYL_DEFAULTS`         | `defaults.yml`                   | Path to defaults file.                       |
+| `--github-token`     | `GODYL_GITHUB_TOKEN`     | `${GODYL_GITHUB_TOKEN}`          | GitHub token for authentication              |
+| `--gitlab-token`     | `GODYL_GITLAB_TOKEN`     | `${GODYL_GITLAB_TOKEN}`          | GitLab token for authentication              |
+| `--url-token`        | `GODYL_URL_TOKEN`        | `${GODYL_URL_TOKEN}`             | URL token for authentication                 |
+| `--url-token-header` | `GODYL_URL_TOKEN_HEADER` | `Authorization`                  | URL header for authentication                |
+| `--cache-dir`, `-c`  | `GODYL_CACHE_DIR`        | `${XDG_CACHE_HOME}` (or similar) | Path to cache directory                      |
+| `--cache-type`       | `GODYL_CACHE_TYPE`       | `file`                           | Type of cache (file, sqlite)                 |
 
-For `--env-file` and `--defaults`, the defaults are used only if n o issue is encountered while loading them.
+For `--env-file` and `--defaults`, the defaults are used only if no issue is encountered while loading them.
+
+In addition, the following environment variables will be read directly from the environment (i.e not the `.env` file(s)):
+
+- `--github-token` from `GITHUB_TOKEN` or `GH_TOKEN`
+- `--gitlab-token` from `GITLAB_TOKEN`
+- `--url-token` from `URL_TOKEN`
 
 ### Tool-specific Flags
 
@@ -250,6 +263,14 @@ The following flags are available for the `update` command:
 | `--no-verify-ssl`, `-k` | `GODYL_UPDATE_NO_VERIFY_SSL` | `false` | Skip SSL verification |
 | `--version`, `-v`       | `GODYL_UPDATE_VERSION`       | `""`    | Version to download   |
 | `--pre`                 | `GODYL_UPDATE_PRE`           | `false` | Include pre-releases  |
+
+### Cache flags
+
+The following flags are available for the `cache` command:
+
+| Flag             | Environment Variable | Default | Description      |
+| ---------------- | -------------------- | ------- | ---------------- |
+| `--delete`, `-d` | `GODYL_CACHE_DELETE` | `false` | Delete the cache |
 
 ### Dump flags
 

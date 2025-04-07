@@ -17,10 +17,10 @@ func (v *viperable) SetViper(viper *viper.Viper) {
 
 // IsSet checks if a flag is set in viper,
 // to avoid using it's default values unless explicitly passed.
-func (v *viperable) IsSet(flag string) bool {
+func (v *viperable) IsSet(name string) bool {
 	if v.viper == nil {
 		return false
 	}
 
-	return v.viper.IsSet(flag)
+	return v.viper.IsSet(name)
 }

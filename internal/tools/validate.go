@@ -51,9 +51,6 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 		return fmt.Errorf("%w: tool name is empty", ErrFailed)
 	}
 
-	// Normalize values to ensure consistency in the .Values map.
-	t.Values = utils.NormalizeMap(t.Values)
-
 	// Load environment variables from the system.
 	t.Env.Merge(env.FromEnv())
 
@@ -218,7 +215,7 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 	}
 
 	// Attempt to upgrade the tool using the current strategy.
-	if err := t.Strategy.Upgrade(t); err != nil {
+	if err := t.Strategy.Upgrade(t); err != nil && !errors.Is(err, ErrRequiresUpdate) {
 		return err
 	}
 
@@ -260,7 +257,6 @@ func (t *Tool) Download() (string, file.File, error) {
 		Mode:        t.Mode.String(),
 		Env:         t.Env,
 		NoVerifySSL: t.NoVerifySSL,
-		Headers:     []string{},
 	}
 
 	output, file, err := installer.Install(data)

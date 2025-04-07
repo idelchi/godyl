@@ -12,11 +12,9 @@ import (
 	cachehandler "github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/cache/cache"
 	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/path/file"
-	"github.com/idelchi/godyl/pkg/path/folder"
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
@@ -54,15 +52,7 @@ func New(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log 
 
 // Process installs and manages tools with the given tags.
 func (p *Processor) Process(tags, withoutTags []string) error {
-	var folder folder.Folder
-	switch {
-	case p.config.Root.IsSet("cache-dir"):
-		folder = p.config.Root.Cache.Dir
-	default:
-		folder = tmp.CacheDir()
-	}
-
-	cache, err := cachehandler.New(folder, p.config.Root.Cache.Type)
+	cache, err := cachehandler.New(p.config.Root.Cache.Dir, p.config.Root.Cache.Type)
 	if err != nil {
 		return fmt.Errorf("creating cache: %w", err)
 	}
@@ -91,7 +81,7 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 
 	// Process each tool concurrently
 	for i := range p.tools {
-		tool := &p.tools[i]
+		tool := p.tools[i]
 		g.Go(func() error {
 			p.processTool(tool, tags, withoutTags, resultCh)
 			return nil
@@ -116,7 +106,7 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 // processTool processes an individual tool and sends the result to the result channel.
 func (p *Processor) processTool(tool *tools.Tool, tags, withoutTags []string, resultCh chan<- result) {
 	// Apply defaults and resolve tool configuration
-	tool.ApplyDefaults(p.defaults)
+	tool.ApplyDefaults(p.defaults, p.cache)
 
 	if err := tool.Resolve(tags, withoutTags); err != nil {
 		resultCh <- result{Tool: tool, Err: err}
@@ -175,6 +165,9 @@ func (p *Processor) handleToolError(tool *tools.Tool, err error, msg string) {
 
 	if isExpectedError {
 		p.log.Warn("  %v", err)
+		if err := p.cache.Save(file.New(tool.Output, tool.Exe.Name).Path(), tool.Version.Version); err != nil {
+			p.log.Error("  failed to save cache: %v", err)
+		}
 		return
 	}
 
@@ -209,7 +202,7 @@ func (p *Processor) logToolSuccess(tool *tools.Tool, found file.File) {
 			}
 		}
 
-		if err := p.cache.Save(tool.Exe.Name, tool.Version.Version); err != nil {
+		if err := p.cache.Save(file.New(tool.Output, tool.Exe.Name).Path(), tool.Version.Version); err != nil {
 			p.log.Error("  failed to save cache: %v", err)
 		}
 	} else {

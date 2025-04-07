@@ -3,34 +3,22 @@ package tmp
 import (
 	"os"
 
-	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
 // CacheDir returns the cache directory for Godyl.
 func CacheDir() folder.Folder {
-	switch env := env.FromEnv(); {
-	case env.Has("GODYL_CACHE_DIR"):
-		return folder.New(env.MustGet("GODYL_CACHE_DIR"), "godyl")
-	default:
-		cacheDir, err := os.UserCacheDir()
-		if err != nil {
-			return folder.New(os.TempDir(), "godyl")
-		}
-
-		return folder.New(cacheDir, "godyl")
-
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		return folder.New(os.TempDir(), "godyl")
 	}
+
+	return folder.New(cacheDir, "godyl")
 }
 
 // DownloadDir returns the download directory for Godyl.
 func DownloadDir() folder.Folder {
-	switch env := env.FromEnv(); {
-	case env.Has("GODYL_DOWNLOAD_DIR"):
-		return folder.New(env.MustGet("GODYL_DOWNLOAD_DIR"), "godyl")
-	default:
-		return folder.New(os.TempDir(), "godyl")
-	}
+	return folder.New(os.TempDir(), "godyl")
 }
 
 // GodylDir returns the temporary directory for Godyl.

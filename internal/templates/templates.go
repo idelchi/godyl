@@ -10,7 +10,7 @@ import (
 func Apply(field string, values any) (string, error) {
 	var buf bytes.Buffer
 
-	tmpl, err := template.New("tmpl").Funcs(sprig.FuncMap()).Parse(field)
+	tmpl, err := template.New("tmpl").Funcs(sprig.FuncMap()).Option("missingkey=error").Parse(field)
 	if err != nil {
 		return "", err
 	}

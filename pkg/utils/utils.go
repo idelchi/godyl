@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"maps"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -55,6 +56,30 @@ func SetMapIfNil[M ~map[K]V, K comparable, V any](input *M, values M) {
 	}
 }
 
+// CopySlice creates a deep copy of a slice.
+func CopySlice[S ~[]T, T any](input S) S {
+	if input == nil {
+		return nil
+	}
+
+	result := make(S, len(input))
+	copy(result, input)
+	return result
+}
+
+// CopyMap creates a deep copy of a map.
+func CopyMap[M ~map[K]V, K comparable, V any](input M) M {
+	if input == nil {
+		return nil
+	}
+
+	result := make(M, len(input))
+	for k, v := range input {
+		result[k] = v
+	}
+	return result
+}
+
 // NormalizeMap normalizes the keys of a map to title case recursively.
 // If the value is another map, it will recursively normalize its keys as well.
 func NormalizeMap(m map[string]any) map[string]any {
@@ -84,12 +109,21 @@ func DeepMergeMapsWithoutOverwrite(first, second map[string]any) {
 			// If both values are maps, recursively merge them
 			if firstMap, ok1 := firstVal.(map[string]any); ok1 {
 				if secondMap, ok2 := secondVal.(map[string]any); ok2 {
-					DeepMergeMapsWithoutOverwrite(firstMap, secondMap)
+					// If we already have an existing map at this key, make a clone
+					// to avoid modifying the original reference, then merge into it
+					clonedMap := maps.Clone(firstMap)
+					DeepMergeMapsWithoutOverwrite(clonedMap, secondMap)
+					first[key] = clonedMap
 				}
 			} // If the key exists but isn't a map, do nothing (keep the original value)
 		} else {
 			// If the key doesn't exist in first, add it from second
-			first[key] = secondVal
+			// For maps, clone to avoid shared references
+			if secondMap, ok := secondVal.(map[string]any); ok {
+				first[key] = maps.Clone(secondMap)
+			} else {
+				first[key] = secondVal
+			}
 		}
 	}
 }

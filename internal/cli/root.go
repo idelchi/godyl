@@ -3,9 +3,11 @@ package cli
 import (
 	"embed"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 
+	"github.com/idelchi/godyl/internal/cli/cache"
 	"github.com/idelchi/godyl/internal/cli/download"
 	"github.com/idelchi/godyl/internal/cli/dump"
 	"github.com/idelchi/godyl/internal/cli/flags"
@@ -45,6 +47,7 @@ func (cmd *Command) Subcommands() {
 		install.NewCommand(cmd.Config, cmd.Files),
 		download.NewCommand(cmd.Config, cmd.Files),
 		update.NewCommand(cmd.Config, cmd.Files),
+		cache.NewCommand(cmd.Config),
 	)
 }
 
@@ -65,6 +68,8 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 			if err := flags.Bind(cmd.Root(), &cfg.Root); err != nil {
 				return fmt.Errorf("binding flags: %w", err)
 			}
+
+			cfg.Root.Log = strings.ToUpper(cfg.Root.Log)
 
 			// Validate the root configuration
 			if err := cfg.Root.Validate(); err != nil {

@@ -16,6 +16,9 @@ type Config struct {
 	// Dump level configuration, mapping configurations on the `dump` command
 	Dump Dump
 
+	// Cache level configuration, mapping configurations on the `cache` command
+	Cache Cache
+
 	// Viper instance
 	viperable `mapstructure:"-" yaml:"-" json:"-"`
 }

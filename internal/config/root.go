@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 
+	"github.com/idelchi/godyl/internal/tools/sources/url"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
 	"github.com/idelchi/godyl/pkg/validate"
@@ -43,10 +44,10 @@ type CacheSettings struct {
 type Tokens struct {
 	// GitHub token for authentication
 	GitHub string `mapstructure:"github-token" mask:"fixed"`
+	// GitLab token for authentication
+	GitLab string `mapstructure:"gitlab-token" mask:"fixed"`
 	// URL token for authentication
-	URL string `mapstructure:"url-token" mask:"fixed"`
-	// Header for URL token
-	Header string `mapstructure:"url-token-header"`
+	URL url.Token `mapstructure:",squash"`
 }
 
 // Validate checks the configuration for errors.

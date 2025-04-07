@@ -10,6 +10,7 @@ import (
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
+	"github.com/idelchi/godyl/internal/tools/sources/gitlab"
 	goc "github.com/idelchi/godyl/internal/tools/sources/go"
 	"github.com/idelchi/godyl/internal/tools/sources/none"
 	"github.com/idelchi/godyl/internal/tools/sources/url"
@@ -34,7 +35,7 @@ func (t *Type) From(name string) {
 const (
 	GITHUB Type = "github" // GitHub source type
 	GITLAB Type = "gitlab" // GitLab source type
-	DIRECT Type = "url"    // URL source type
+	URL    Type = "url"    // URL source type
 	NONE   Type = "none"   // No source type
 	GO     Type = "go"     // Go source type
 	RUST   Type = "rust"   // Rust source type
@@ -47,7 +48,9 @@ type Source struct {
 	// Type of the source
 	Type Type `validate:"oneof=github gitlab url none go rust"`
 	// GitHub repository source
-	Github github.GitHub
+	GitHub github.GitHub
+	// GitLab repository source
+	GitLab gitlab.GitLab
 	// URL source for direct downloads
 	URL url.URL
 	// Go project source
@@ -72,16 +75,18 @@ type Populater interface {
 func (s *Source) Installer() (Populater, error) {
 	switch s.Type {
 	case GITHUB:
-		return &s.Github, nil
-	case DIRECT:
+		return &s.GitHub, nil
+	case GITLAB:
+		return &s.GitLab, nil
+	case URL:
 		return &s.URL, nil
 	case NONE:
 		return &s.None, nil
 	case GO:
-		s.Go.SetGitHub(&s.Github)
+		s.Go.SetGitHub(&s.GitHub)
 
 		return &s.Go, nil
-	case GITLAB, RUST:
+	case RUST:
 		return nil, fmt.Errorf("source type %s is not yet supported", s.Type)
 	default:
 		return nil, fmt.Errorf("unknown source type: %s", s.Type)

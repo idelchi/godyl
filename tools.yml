@@ -125,7 +125,7 @@
 - name: ldez/traefik-certs-dumper
   description: |
     A tool to dump ACME certs from Traefik
-    Note, does not contain a version stamp and will therefore always reinstall
+    Note, does not contain a version stamp and will therefore always reinstall, unless cache file is used.
   version:
     commands: []
   tags:
@@ -264,7 +264,7 @@
 - name: cespare/reflex
   description: |
     Run a command when files change
-    Note, does not contain a version stamp and will therefore always reinstall
+    Note, does not contain a version stamp and will therefore always reinstall, unless cache file is used.
   version:
     commands: []
   skip:
@@ -278,7 +278,7 @@
 - name: trntv/sshed
   description: |
     SSH client with easy bookmarking and config management
-    Note, does not contain a version stamp and will therefore always reinstall
+    Note, does not contain a version stamp and will therefore always reinstall, unless cache file is used.
   version:
     commands: []
   exe:
@@ -293,6 +293,7 @@
       must: true
   tags:
     - terminal
+
 - name: AlDanial/cloc
   description: Count Lines of Code
   extensions:

@@ -1,40 +1,45 @@
-package github
+package gitlab
 
 import (
 	"errors"
 	"fmt"
+	"net/http"
 
-	"github.com/idelchi/godyl/internal/github"
+	"github.com/idelchi/godyl/internal/gitlab"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// GitHub represents a GitHub repository with optional authentication token and metadata.
-type GitHub struct {
-	Repo  string
-	Owner string
-	Token string `mask:"fixed"`
-	Pre   bool
+// GitLab represents a GitLab repository with optional authentication token and metadata.
+type GitLab struct {
+	Repo   string
+	Owner  string
+	Token  string `mask:"fixed"`
+	Pre    bool
+	Server string
 
 	// Data holds additional metadata related to the repository.
 	Data common.Metadata `yaml:"-"`
 
-	latestStoredRelease *github.Release
+	latestStoredRelease *gitlab.Release
 }
 
-// Get retrieves a specific attribute from the GitHub repository's metadata.
-func (g *GitHub) Get(attribute string) string {
+// Get retrieves a specific attribute from the GitLab repository's metadata.
+func (g *GitLab) Get(attribute string) string {
 	return g.Data.Get(attribute)
 }
 
-// LatestVersion fetches the latest release version of the GitHub repository.
-func (g *GitHub) LatestVersion() (string, error) {
-	client := github.NewClient(g.Token)
-	repository := github.NewRepository(g.Owner, g.Repo, client)
+// LatestVersion fetches the latest release version of the GitLab repository.
+func (g *GitLab) LatestVersion() (string, error) {
+	client, err := gitlab.NewClient(g.Token, g.Server)
+	if err != nil {
+		return "", fmt.Errorf("failed to create GitLab client: %w", err)
+	}
 
-	var release *github.Release
-	var err error
+	repository := gitlab.NewRepository(g.Owner, g.Repo, client)
+
+	var release *gitlab.Release
 
 	if g.Pre {
 		release, err = repository.GetLatestIncludingPreRelease()
@@ -43,7 +48,7 @@ func (g *GitHub) LatestVersion() (string, error) {
 	}
 
 	if err != nil {
-		return "", fmt.Errorf("failed to retrieve latest release: %w", err)
+		return "", fmt.Errorf("failed to get latest release: %w", err)
 	}
 
 	// Store the latest release for future use
@@ -54,15 +59,19 @@ func (g *GitHub) LatestVersion() (string, error) {
 
 // MatchAssetsToRequirements matches release assets to specific file extensions and requirements,
 // returning the URL of the matched asset.
-func (g *GitHub) MatchAssetsToRequirements(
+func (g *GitLab) MatchAssetsToRequirements(
 	_ []string,
 	version string,
 	requirements match.Requirements,
 ) (string, error) {
-	client := github.NewClient(g.Token)
-	repository := github.NewRepository(g.Owner, g.Repo, client)
+	client, err := gitlab.NewClient(g.Token, g.Server)
+	if err != nil {
+		return "", fmt.Errorf("failed to create GitLab client: %w", err)
+	}
 
-	var release *github.Release
+	repository := gitlab.NewRepository(g.Owner, g.Repo, client)
+
+	var release *gitlab.Release
 
 	if g.latestStoredRelease == nil {
 		var err error
@@ -86,7 +95,7 @@ func (g *GitHub) MatchAssetsToRequirements(
 		return "", fmt.Errorf("no assets found for requirements: %v", requirements)
 	}
 
-	err := matches.Status()
+	err = matches.Status()
 	if err != nil {
 		err = fmt.Errorf("status: %w", err)
 	}
@@ -96,7 +105,7 @@ func (g *GitHub) MatchAssetsToRequirements(
 
 // PopulateOwnerAndRepo sets the Owner and Repo fields based on the given name.
 // If Owner and Repo are already set, this method does nothing.
-func (g *GitHub) PopulateOwnerAndRepo(name string) error {
+func (g *GitLab) PopulateOwnerAndRepo(name string) error {
 	switch {
 	case g.Owner != "" && g.Repo != "":
 		return nil
@@ -105,7 +114,7 @@ func (g *GitHub) PopulateOwnerAndRepo(name string) error {
 		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
 	}
 
-	parts, err := SplitName(name)
+	parts, err := gitlab.SplitName(name)
 	if err != nil {
 		return err
 	}
@@ -117,8 +126,8 @@ func (g *GitHub) PopulateOwnerAndRepo(name string) error {
 	return nil
 }
 
-// Initialize populates the GitHub repository's owner and name from the given input.
-func (g *GitHub) Initialize(name string) error {
+// Initialize populates the GitLab repository's owner and name from the given input.
+func (g *GitLab) Initialize(name string) error {
 	if err := g.PopulateOwnerAndRepo(name); err != nil {
 		return err
 	}
@@ -127,14 +136,14 @@ func (g *GitHub) Initialize(name string) error {
 }
 
 // Exe sets the executable name in the metadata to the repository name.
-func (g *GitHub) Exe() error {
+func (g *GitLab) Exe() error {
 	g.Data.Set("exe", g.Repo)
 
 	return nil
 }
 
 // Version fetches and sets the latest release version in the metadata.
-func (g *GitHub) Version(_ string) error {
+func (g *GitLab) Version(_ string) error {
 	version, err := g.LatestVersion()
 	if err != nil {
 		return err
@@ -146,7 +155,7 @@ func (g *GitHub) Version(_ string) error {
 }
 
 // Path sets the download URL of the matched asset in the metadata, based on version, file extensions, and requirements.
-func (g *GitHub) Path(_ string, extensions []string, version string, requirements match.Requirements) error {
+func (g *GitLab) Path(_ string, extensions []string, version string, requirements match.Requirements) error {
 	url, err := g.MatchAssetsToRequirements(extensions, version, requirements)
 	if err != nil {
 		return err
@@ -157,7 +166,11 @@ func (g *GitHub) Path(_ string, extensions []string, version string, requirement
 	return nil
 }
 
-// Install downloads the asset from GitHub and returns the output, the found file, and any error encountered.
-func (g *GitHub) Install(d common.InstallData) (output string, found file.File, err error) {
+// Install downloads the asset from GitLab and returns the output, the found file, and any error encountered.
+func (g *GitLab) Install(d common.InstallData) (output string, found file.File, err error) {
+	d.Header = http.Header{
+		"PRIVATE-TOKEN": []string{g.Token},
+	}
+
 	return common.Download(d)
 }

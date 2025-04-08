@@ -22,27 +22,34 @@ Godyl provides several commands to help you manage your tools. This section prov
 
 These flags are available for all commands:
 
-| Flag                 | Environment Variable     | Default                 | Description                                  |
-| -------------------- | ------------------------ | ----------------------- | -------------------------------------------- |
-| `--help`, `-h`       | `GODYL_HELP`             | `false`                 | Show help message and exit                   |
-| `--version`          | `GODYL_VERSION`          | `false`                 | Show version information and exit            |
-| `--dry`              | `GODYL_DRY`              | `false`                 | Run without making any changes (dry run)     |
-| `--log`              | `GODYL_LOG`              | `info`                  | Log level (debug, info, warn, error, silent) |
-| `--env-file`, `-e`   | `GODYL_ENV_FILE`         | `[".env"]`              | Path to `.env` file(s)                       |
-| `--defaults`, `-d`   | `GODYL_DEFAULTS`         | `defaults.yml`          | Path to defaults file                        |
-| `--github-token`     | `GODYL_GITHUB_TOKEN`     | `${GODYL_GITHUB_TOKEN}` | GitHub token for authentication              |
-| `--gitlab-token`     | `GODYL_GITLAB_TOKEN`     | `${GODYL_GITLAB_TOKEN}` | GitLab token for authentication              |
-| `--url-token`        | `GODYL_URL_TOKEN`        | `${GODYL_URL_TOKEN}`    | URL token for authentication                 |
-| `--url-token-header` | `GODYL_URL_TOKEN_HEADER` | `Authorization`         | URL header for authentication                |
-| `--cache-dir`, `-c`  | `GODYL_CACHE_DIR`        | `${XDG_CACHE_HOME}`     | Path to cache directory                      |
-| `--cache-type`       | `GODYL_CACHE_TYPE`       | `file`                  | Type of cache (file, sqlite)                 |
+| Flag                  | Environment Variable     | Default                              | Description                                  |
+| --------------------- | ------------------------ | ------------------------------------ | -------------------------------------------- |
+| `--help`, `-h`        | `GODYL_HELP`             | `false`                              | Show help message and exit                   |
+| `--version`           | `GODYL_VERSION`          | `false`                              | Show version information and exit            |
+| `--dry`               | `GODYL_DRY`              | `false`                              | Run without making any changes (dry run)     |
+| `--log`               | `GODYL_LOG`              | `info`                               | Log level (debug, info, warn, error, silent) |
+| `--config-file`, `-c` | `GODYL_CONFIG_FILE`      | `${XDG_CONFIG_HOME}/godyl/godyl.yml` | Path to `godyl.yml` file                     |
+| `--env-file`, `-e`    | `GODYL_ENV_FILE`         | `[".env"]`                           | Path to `.env` file(s)                       |
+| `--defaults`, `-d`    | `GODYL_DEFAULTS`         | `defaults.yml`                       | Path to defaults file                        |
+| `--github-token`      | `GODYL_GITHUB_TOKEN`     | `${GODYL_GITHUB_TOKEN}`              | GitHub token for authentication              |
+| `--gitlab-token`      | `GODYL_GITLAB_TOKEN`     | `${GODYL_GITLAB_TOKEN}`              | GitLab token for authentication              |
+| `--url-token`         | `GODYL_URL_TOKEN`        | `${GODYL_URL_TOKEN}`                 | URL token for authentication                 |
+| `--url-token-header`  | `GODYL_URL_TOKEN_HEADER` | `Authorization`                      | URL header for authentication                |
+| `--cache-dir`         | `GODYL_CACHE_DIR`        | `${XDG_CACHE_HOME}`                  | Path to cache directory                      |
+| `--cache-type`        | `GODYL_CACHE_TYPE`       | `file`                               | Type of cache (file, sqlite)                 |
 
-## Command Structure
+For `--env-file` and `--defaults`, the defaults are used only if no issue is encountered while loading them.
 
-All Godyl commands follow a consistent structure:
+In addition, the following environment variables will be read directly from the environment (i.e not the `.env` file(s)):
 
-```sh
-godyl [global flags] [command] [command flags] [arguments]
-```
+- `--github-token` from `GITHUB_TOKEN` or `GH_TOKEN`
+- `--gitlab-token` from `GITLAB_TOKEN`
+- `--url-token` from `URL_TOKEN`
 
-For detailed information about each command, please refer to the individual command pages linked above.
+The value for `--config-file` defaults to `$XDG_CONFIG_HOME/godyl/godyl.yml`. If `XDG_CONFIG_HOME` is empty, it will be set to `$HOME/.config/godyl/godyl.yml`.
+
+If neither are available, it will default to `./godyl.yml`.
+
+The value for `--cache-dir` defaults to `$XDG_CACHE_HOME/godyl`. If `XDG_CACHE_HOME` is empty, it will be set to `$HOME/.cache/godyl`.
+
+If neither are available, it will default to a subdirectory `godyl` in the system temporary directory.

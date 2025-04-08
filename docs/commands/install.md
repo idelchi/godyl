@@ -14,6 +14,11 @@ The `install` command allows you to install tools defined in YAML configuration 
 godyl install [[tools.yml]...|STDIN] [flags]
 ```
 
+## Aliases
+
+- get
+- i
+
 ## Description
 
 The `install` command reads tool definitions from one or more YAML files (or from standard input) and installs them according to the specified configuration. If no file is specified, it defaults to using `tools.yml` in the current directory.

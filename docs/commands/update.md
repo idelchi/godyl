@@ -94,5 +94,5 @@ If you encounter any issues during the update process, you can try the following
 
 ## Related Topics
 
-- [Installation Guide](../installation.html)
-- [Platform Detection](../advanced-features.html#platform-inference)
+- [Installation Guide](../installation)
+- [Platform Detection](../advanced-features#platform-inference)

@@ -5,7 +5,7 @@ url: "https://idelchi.github.io" # Update this with your GitHub username
 
 # Theme settings
 # remote_theme: pages-themes/cayman@v0.2.0
-remote_theme: minimal-mistakes-jekyll
+remote_theme: mmistakes/minimal-mistakes@4.26.2
 
 color_scheme: light
 

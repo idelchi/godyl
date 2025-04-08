@@ -21,6 +21,7 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	// Set up Viper with our environment prefix
 	envPrefix := prefixFromCmdOrPrefixes(cmd, prefix...)
 
+	// Reuse the same instance if already set
 	if cfg.GetViper() == nil {
 		cfg.SetViper(viper.New())
 	}
@@ -35,18 +36,9 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 		return fmt.Errorf("binding flags: %w", err)
 	}
 
-	fmt.Printf("Calling ´bind` for command %q\n", cmd.Name())
-	// viper.SetConfigFile(viper.GetString("config-file"))
-	// if err := viper.ReadInConfig(); err != nil {
-	// 	return fmt.Errorf("reading config file: %w", err)
-	// }
-
 	if err := viper.Unmarshal(cfg); err != nil {
 		return fmt.Errorf("unmarshalling config for %q: %w", cmd.Name(), err)
 	}
-
-	// Set the viper instance on the config struct
-	// cfg.SetViper(viper)
 
 	return nil
 }

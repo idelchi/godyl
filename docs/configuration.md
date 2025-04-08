@@ -17,7 +17,7 @@ All of above will be merged together to form defaults for each tool being proces
 
 ## Commandline flags
 
-See [Command Reference](commands/index) and sub-commands for details on available flags and their default values.
+See [Command Reference](../commands/index) and sub-commands for details on available flags and their default values.
 
 ## Environment variables
 

@@ -19,3 +19,16 @@ func SplitName(name string) (first, second string, err error) {
 
 	return split[0], split[1], nil
 }
+
+// CutName splits a full repository name in the format "X/Y/Z" into its respective components.
+// It returns an error if the input name is not in the correct format.
+func CutName(name string) (first, second string, err error) {
+	// Split the name by the first '/'
+	first, second, found := strings.Cut(name, "/")
+
+	if !found {
+		return first, second, fmt.Errorf("invalid source name: %s", name)
+	}
+
+	return first, second, nil
+}

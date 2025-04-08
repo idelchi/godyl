@@ -53,4 +53,4 @@ See [Default Configuration File](/godyl/configuration/defaults#content-start) fo
 
 ## Related Topics
 
-- [Tool Configuration Format](/godyl/commands/tools#content-start)
+- [Tool Configuration Format](/godyl/configuration/tools#content-start)

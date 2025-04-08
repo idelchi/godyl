@@ -13,11 +13,11 @@ import (
 
 // GitLab represents a GitLab repository with optional authentication token and metadata.
 type GitLab struct {
-	Repo   string
-	Owner  string
-	Token  string `mask:"fixed"`
-	Pre    bool
-	Server string
+	Repo      string
+	Namespace string
+	Token     string `mask:"fixed"`
+	Pre       bool
+	Server    string
 
 	// Data holds additional metadata related to the repository.
 	Data common.Metadata `yaml:"-"`
@@ -37,7 +37,7 @@ func (g *GitLab) LatestVersion() (string, error) {
 		return "", fmt.Errorf("failed to create GitLab client: %w", err)
 	}
 
-	repository := gitlab.NewRepository(g.Owner, g.Repo, client)
+	repository := gitlab.NewRepository(g.Namespace, g.Repo, client)
 
 	var release *gitlab.Release
 
@@ -69,7 +69,7 @@ func (g *GitLab) MatchAssetsToRequirements(
 		return "", fmt.Errorf("failed to create GitLab client: %w", err)
 	}
 
-	repository := gitlab.NewRepository(g.Owner, g.Repo, client)
+	repository := gitlab.NewRepository(g.Namespace, g.Repo, client)
 
 	var release *gitlab.Release
 
@@ -103,20 +103,20 @@ func (g *GitLab) MatchAssetsToRequirements(
 	return assets.FilterByName(matches[0].Asset.Name)[0].URL, err
 }
 
-// PopulateOwnerAndRepo sets the Owner and Repo fields based on the given name.
-// If Owner and Repo are already set, this method does nothing.
-func (g *GitLab) PopulateOwnerAndRepo(name string) (err error) {
+// PopulateNamespaceAndRepo sets the Namespace and Repo fields based on the given name.
+// If Namespace and Repo are already set, this method does nothing.
+func (g *GitLab) PopulateNamespaceAndRepo(name string) (err error) {
 	// If both Owner and Repo are already set, nothing to do
-	if g.Owner != "" && g.Repo != "" {
+	if g.Namespace != "" && g.Repo != "" {
 		return nil
 	}
 
 	// If exactly one of Owner or Repo is set (but not both), that's invalid
-	if (g.Owner == "") != (g.Repo == "") {
-		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
+	if (g.Namespace == "") != (g.Repo == "") {
+		return errors.New("Either both `namespace` and `repo` must be set or `name` must be in the format `namespace/repo`")
 	}
 
-	g.Owner, g.Repo, err = common.SplitName(name)
+	g.Namespace, g.Repo, err = common.CutName(name)
 	if err != nil {
 		return err
 	}
@@ -126,7 +126,7 @@ func (g *GitLab) PopulateOwnerAndRepo(name string) (err error) {
 
 // Initialize populates the GitLab repository's owner and name from the given input.
 func (g *GitLab) Initialize(name string) error {
-	if err := g.PopulateOwnerAndRepo(name); err != nil {
+	if err := g.PopulateNamespaceAndRepo(name); err != nil {
 		return err
 	}
 

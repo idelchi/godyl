@@ -4,7 +4,6 @@ package install
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 
@@ -17,7 +16,6 @@ import (
 	iutils "github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/path/files"
-	"github.com/idelchi/godyl/pkg/pretty"
 )
 
 // Command encapsulates the install cobra command with its associated config and embedded files.
@@ -84,10 +82,6 @@ func NewInstallCommand(cfg *config.Config, embedded config.Embedded) *Command {
 			}
 
 			tags, withoutTags := utils.SplitTags(cfg.Tool.Tags)
-
-			pretty.PrintYAML(toolsList)
-
-			os.Exit(0)
 
 			proc := processor.New(toolsList, defaults, *cfg, log)
 			if err := proc.Process(tags, withoutTags); err != nil {

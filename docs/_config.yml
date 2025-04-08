@@ -58,3 +58,4 @@ heading_anchors: true
 # Enable copy code buttons
 enable_copy_code_button: true
 
+permalink: pretty

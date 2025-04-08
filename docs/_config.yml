@@ -68,3 +68,5 @@ heading_anchors: true
 enable_copy_code_button: true
 
 permalink: pretty
+
+render_with_liquid: false

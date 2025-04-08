@@ -87,7 +87,6 @@ defaults:
     values:
       layout: "default"
       parent: "Commands"
-      render_with_liquid: true
   # 404 page
   - scope:
       path: "404-page.md"

@@ -5,7 +5,7 @@ title: Advanced Features
 
 # Platform Inference
 
-Godyl can infer platform details from asset names. Here's how different platforms are recognized:
+Godyl tries to infer platform details from asset names. Here's how different platforms are recognized:
 
 ### Operating Systems
 
@@ -53,14 +53,6 @@ hints:
   # Prefer .zip files on Windows
   - pattern: zip
     weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
-
-  # Prefer the correct ARM version
-  - pattern: "armv{{.ARCH_VERSION}}"
-    weight: 3
-  - pattern: "armv{{sub .ARCH_VERSION 1}}"
-    weight: 2
-  - pattern: "armv{{sub .ARCH_VERSION 2}}"
-    weight: 1
 ```
 
 Setting `must: true` requires that the pattern matches, otherwise the asset is excluded:
@@ -88,15 +80,6 @@ version: |-
   {{- else -}}
     v0.2.0
   {{- end -}}
-
-# Choose source type based on OS
-source:
-  type: |-
-    {{- if eq .OS "windows" -}}
-      url
-    {{- else -}}
-      github
-    {{- end -}}
 ```
 
 ## Extension Handling
@@ -125,13 +108,19 @@ commands:
 
 ## Alternative Installation Methods
 
-For tools that aren't available as binaries, you can use the `commands` source type:
+For tools that aren't available as binaries, you can use commands:
 
 ```yaml
 source:
-  type: commands
-  commands:
-    - "pip install {{ .Name }}=={{ .Version }}"
+  type: none
+commands:
+  post:
+    - |
+      {{ if eq .OS "linux" }}
+      pip install {{ .Exe }}=={{ .Version }} --user --break-system-packages
+      {{ else }}
+      echo "installation skipped"
+      {{ end }}
 ```
 
 ## YQ Filtering Example

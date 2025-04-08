@@ -25,8 +25,25 @@
   font-size: 0.9rem;
 }
 
+/* Add padding to account for fixed header when using anchor links */
+#content-start {
+  display: block;
+  height: 0;
+  margin-top: -20px;  /* Adjust this value if needed */
+  padding-top: 20px;  /* Should match the negative margin */
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Smooth scrolling for better user experience */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Content enhancements */
 .main-content {
+  padding-top: 2rem; /* Ensure content doesn't start too close to the top */
+
   h1, h2, h3, h4, h5, h6 {
     margin-top: 2rem;
     margin-bottom: 1rem;
@@ -60,7 +77,7 @@
       border: 0;
     }
   }
-  
+
   /* Tables */
   table {
     display: block;
@@ -71,33 +88,33 @@
     -webkit-overflow-scrolling: touch;
     border-collapse: collapse;
     margin: 1rem 0;
-    
+
     th {
       font-weight: bold;
       background-color: #f3f6fa;
     }
-    
+
     th, td {
       padding: 0.5rem 1rem;
       border: 1px solid #e9ebec;
     }
-    
+
     tr:nth-child(even) {
       background-color: #f8f8f8;
     }
   }
-  
+
   /* Callouts */
   blockquote {
     padding: 0 1rem;
     margin-left: 0;
     color: #819198;
     border-left: 0.3rem solid #dce6f0;
-    
+
     > :first-child {
       margin-top: 0;
     }
-    
+
     > :last-child {
       margin-bottom: 0;
     }
@@ -108,7 +125,7 @@
 .back-to-top {
   margin-top: 2rem;
   text-align: right;
-  
+
   a {
     display: inline-block;
     padding: 0.5rem 1rem;
@@ -116,7 +133,7 @@
     border-radius: 0.3rem;
     text-decoration: none;
     color: $section-headings-color;
-    
+
     &:hover {
       background-color: darken(#f3f6fa, 5%);
     }

@@ -28,19 +28,20 @@
         <a href="{{ site.github.zip_url }}" class="btn">Download .zip</a>
         <a href="{{ site.github.tar_url }}" class="btn">Download .tar.gz</a>
       {% endif %}
-      
+
       <!-- Navigation Links -->
       <div class="main-nav">
-        <a href="{{ site.baseurl }}/" class="btn">Home</a>
-        <a href="{{ site.baseurl }}/installation" class="btn">Installation</a>
-        <a href="{{ site.baseurl }}/usage" class="btn">Usage</a>
-        <a href="{{ site.baseurl }}/configuration" class="btn">Configuration</a>
-        <a href="{{ site.baseurl }}/examples" class="btn">Examples</a>
-        <a href="{{ site.baseurl }}/commands" class="btn">Commands</a>
+        <a href="{{ site.baseurl }}/#content-start" class="btn">Home</a>
+        <a href="{{ site.baseurl }}/installation#content-start" class="btn">Installation</a>
+        <a href="{{ site.baseurl }}/usage#content-start" class="btn">Usage</a>
+        <a href="{{ site.baseurl }}/configuration#content-start" class="btn">Configuration</a>
+        <a href="{{ site.baseurl }}/examples#content-start" class="btn">Examples</a>
+        <a href="{{ site.baseurl }}/commands#content-start" class="btn">Commands</a>
       </div>
     </header>
 
     <main id="content" class="main-content" role="main">
+      <span id="content-start"></span>
       {{ content }}
 
       <footer class="site-footer">

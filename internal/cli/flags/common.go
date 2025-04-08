@@ -45,15 +45,23 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	// 	}
 	// }
 	if configFile != nil {
+		fmt.Printf("Config file: %s\n", configFile.(string))
 		config := file.File(configFile.(string))
 		content, err := config.Open()
+		defer content.Close()
+
 		if err != nil {
 			return fmt.Errorf("opening config file: %w", err)
+		} else {
+			fmt.Println("Config file opened successfully")
 		}
-
+		viper.SetConfigType("yaml")
 		if err := viper.ReadConfig(content); err != nil {
 			return fmt.Errorf("reading config file: %w", err)
+		} else {
+			fmt.Println("Config file read successfully")
 		}
+
 	}
 
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {

@@ -29,6 +29,10 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	viper.AutomaticEnv()
 	viper.SetConfigFile("./godyl.yml")
 
+	if err := viper.ReadInConfig(); err != nil {
+		return fmt.Errorf("reading config file: %w", err)
+	}
+
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
 		return fmt.Errorf("binding flags: %w", err)
 	}

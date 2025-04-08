@@ -5,7 +5,7 @@ nav_order: 1
 ---
 
 <p align="center">
-  <img alt="godyl logo" src="assets/images/go.png" height="150" />
+  <img alt="godyl logo" src="assets/images/godyl.png" height="150" />
   <h1 align="center">godyl</h1>
   <p align="center">Asset downloader</p>
 </p>

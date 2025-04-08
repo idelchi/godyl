@@ -6,7 +6,7 @@ parent: Commands
 
 # Download Command
 
-The `download` command allows you to download and install individual tools without requiring a configuration file.
+The `download` command allows you to download and unarchive individual tools without requiring a configuration file.
 
 ## Syntax
 
@@ -23,7 +23,7 @@ godyl [flags] download [tool|URL]... [flags]
 
 ## Description
 
-The `download` command provides a quick way to download tools directly from GitHub repositories or URLs. You can specify tools in the format `owner/repo` for GitHub repositories, or provide a full URL.
+The `download` command provides a quick way to download tools. You can specify tools in the format `owner/repo` for GitHub/GitLab repositories, or provide a full URL.
 
 When using the `download` command, the tool will be downloaded and extracted directly into the output directory.
 
@@ -41,28 +41,16 @@ When using the `download` command, the tool will be downloaded and extracted dir
 
 ## Examples
 
-### Download a tool from GitHub
-
-```sh
-godyl download idelchi/godyl
-```
-
-### Download multiple tools
-
-```sh
-godyl download idelchi/godyl idelchi/tcisd
-```
-
 ### Download a specific version
 
 ```sh
 godyl download idelchi/godyl --version v0.1.0
 ```
 
-### Download for a different platform
+### Download multiple tools
 
 ```sh
-godyl download idelchi/godyl --os linux --arch arm64
+godyl download idelchi/godyl idelchi/tcisd
 ```
 
 ### Download from a direct URL
@@ -73,6 +61,4 @@ godyl download "https://github.com/idelchi/go-next-tag/releases/download/v0.0.1/
 
 ## Related Topics
 
-- [Install Command](install)
-- [URL Templates](../templates#url-templates)
-- [Platform Detection](../advanced-features#platform-inference)
+- [Global Flags](index#global-flags)

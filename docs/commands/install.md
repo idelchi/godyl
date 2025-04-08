@@ -11,7 +11,7 @@ The `install` command allows you to install tools defined in YAML configuration 
 ## Syntax
 
 ```sh
-godyl install [[tools.yml]...|STDIN] [flags]
+godyl [flags] install [tools.yml...|STDIN] [flags]
 ```
 
 ## Aliases
@@ -46,12 +46,6 @@ The `install` command reads tool definitions from one or more YAML files (or fro
 godyl install
 ```
 
-### Install tools from a specific file
-
-```sh
-godyl install my-tools.yml
-```
-
 ### Install tools from multiple files
 
 ```sh
@@ -62,12 +56,6 @@ godyl install tools1.yml tools2.yml
 
 ```sh
 cat tools.yml | godyl install -
-```
-
-### Install tools with custom output directory
-
-```sh
-godyl install tools.yml --output ~/.local/bin
 ```
 
 ### Filter tools by tag
@@ -94,14 +82,7 @@ godyl install tools.yml --strategy force
 godyl install tools.yml --os linux --arch arm64
 ```
 
-### Limit parallel downloads
-
-```sh
-godyl install tools.yml --parallel 4
-```
-
 ## Related Topics
 
-- [Tool Configuration Format](../tools-format)
-- [Installation Strategies](../advanced-features#installation-strategies)
-- [Filtering Tools by Tags](../examples#filter-tools-by-tags)
+- [Global Flags](index#global-flags)
+- [Tool Configuration Format](../configuration/tools)

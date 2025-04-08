@@ -7,6 +7,14 @@ url: "https://idelchi.github.io" # Update this with your GitHub username
 # remote_theme: pages-themes/cayman@v0.2.0
 remote_theme: mmistakes/minimal-mistakes@4.26.2
 
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-feed
+  - jemoji
+  - jekyll-include-cache
+
 color_scheme: light
 
 # Enable search

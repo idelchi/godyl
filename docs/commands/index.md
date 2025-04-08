@@ -47,13 +47,12 @@ In addition, the following environment variables will be read directly from the 
 - `--url-token` from `URL_TOKEN`
 
 The value for `--config-file` defaults to `$XDG_CONFIG_HOME/godyl/godyl.yml`. If `XDG_CONFIG_HOME` is empty, it will be set to `$HOME/.config/godyl/godyl.yml`.
-
 If neither are available, it will default to `./godyl.yml`.
 
 The value for `--cache-dir` defaults to `$XDG_CACHE_HOME/godyl`. If `XDG_CACHE_HOME` is empty, it will be set to `$HOME/.cache/godyl`.
+If neither are available, it will default to the subdirectory `godyl` in the system temporary directory.
 
-If neither are available, it will default to a subdirectory `godyl` in the system temporary directory.
-
-Temporary assets are downloaded by default in `$XDG_RUNTIME_DIR/godyl`. If `XDG_RUNTIME_DIR` is empty, it will be set to `/tmp/${USER}/godyl`. If user is not set, it will be set to `/tmp/godyl`.
+Temporary assets are downloaded by default in `$XDG_RUNTIME_DIR/godyl`. If `XDG_RUNTIME_DIR` is empty, it will be set to `/tmp/${USER}/godyl`.
+If user is not set, it will default to the subdirectory `godyl` in the system temporary directory.
 
 Equivalent fallbacks are made for other platforms such as `Windows` and `macOS`.

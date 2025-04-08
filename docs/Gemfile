@@ -10,6 +10,7 @@ gem "jekyll-feed"
 gem "jemoji"
 gem "jekyll-include-cache"
 gem "jekyll-default-layout"
+gem "kramdown-syntax-coderay"
 
 group :jekyll_plugins do
   gem "jekyll-timeago", "~> 0.13.1"

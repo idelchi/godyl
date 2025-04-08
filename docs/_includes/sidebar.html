@@ -1,0 +1,47 @@
+<nav role="navigation" aria-label="Main navigation">
+    <ul class="navigation-list">
+      <li class="navigation-list-item">
+        <a href="{{ '/index.html' | relative_url }}" class="navigation-list-link{% if page.url == '/' %} active{% endif %}">Home</a>
+      </li>
+      <li class="navigation-list-item">
+        <a href="{{ '/installation.html' | relative_url }}" class="navigation-list-link{% if page.url == '/installation.html' %} active{% endif %}">Installation</a>
+      </li>
+      <li class="navigation-list-item">
+        <a href="{{ '/usage.html' | relative_url }}" class="navigation-list-link{% if page.url == '/usage.html' %} active{% endif %}">Usage</a>
+        <ul class="navigation-list-child-list">
+          <li class="navigation-list-item">
+            <a href="{{ '/usage.html#install-command' | relative_url }}" class="navigation-list-link">Install Command</a>
+          </li>
+          <li class="navigation-list-item">
+            <a href="{{ '/usage.html#download-command' | relative_url }}" class="navigation-list-link">Download Command</a>
+          </li>
+          <li class="navigation-list-item">
+            <a href="{{ '/usage.html#dump-command' | relative_url }}" class="navigation-list-link">Dump Command</a>
+          </li>
+          <li class="navigation-list-item">
+            <a href="{{ '/usage.html#update-command' | relative_url }}" class="navigation-list-link">Update Command</a>
+          </li>
+          <li class="navigation-list-item">
+            <a href="{{ '/usage.html#cache-command' | relative_url }}" class="navigation-list-link">Cache Command</a>
+          </li>
+        </ul>
+      </li>
+      <li class="navigation-list-item">
+        <a href="{{ '/configuration.html' | relative_url }}" class="navigation-list-link{% if page.url == '/configuration.html' %} active{% endif %}">Configuration</a>
+      </li>
+      <li class="navigation-list-item">
+        <a href="{{ '/tools.html' | relative_url }}" class="navigation-list-link{% if page.url == '/tools.html' %} active{% endif %}">Tools Definition</a>
+      </li>
+      <li class="navigation-list-item">
+        <a href="{{ '/advanced.html' | relative_url }}" class="navigation-list-link{% if page.url == '/advanced.html' %} active{% endif %}">Advanced</a>
+        <ul class="navigation-list-child-list">
+          <li class="navigation-list-item">
+            <a href="{{ '/advanced.html#templating' | relative_url }}" class="navigation-list-link">Templating</a>
+          </li>
+          <li class="navigation-list-item">
+            <a href="{{ '/advanced.html#inference' | relative_url }}" class="navigation-list-link">Inference</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>

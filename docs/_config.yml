@@ -85,9 +85,8 @@ defaults:
       path: "404-page.md"
     values:
       render_with_liquid: true
+# markdown: kramdown
 
-markdown: kramdown
-
-kramdown:
-  syntax_highlighter_opts:
-    disable: true
+# kramdown:
+#   syntax_highlighter_opts:
+#     disable: true

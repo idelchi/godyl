@@ -7,20 +7,23 @@ import (
 	"strings"
 
 	"github.com/idelchi/godyl/pkg/path/file"
-	"github.com/idelchi/godyl/pkg/pretty"
 	"gopkg.in/yaml.v3"
 )
 
 // Trim reads a YAML file and returns an io.Reader with only the content
 // under the specified prefix, with the prefix itself removed.
 func Trim(file file.File, prefix string) (io.Reader, error) {
+	fmt.Printf("Trimming file %s with prefix %s\n", file.Path(), prefix)
+
 	// Read the YAML file
 	data, err := file.Read()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read file: %w", err)
 	}
 
-	fmt.Printf("Original content:\n%s\n", string(data))
+	if prefix == "" {
+		return bytes.NewReader(data), nil
+	}
 
 	// Parse the YAML into a map
 	var yamlData map[string]any
@@ -30,7 +33,6 @@ func Trim(file file.File, prefix string) (io.Reader, error) {
 
 	// Navigate through the nested structure based on the prefix
 	prefixParts := strings.Split(prefix, ".")
-	fmt.Println(prefixParts)
 	result, found := extractNestedData(yamlData, prefixParts)
 	if !found {
 		// If not found, return an empty map
@@ -42,9 +44,6 @@ func Trim(file file.File, prefix string) (io.Reader, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal result to YAML: %w", err)
 	}
-	fmt.Println("****")
-	pretty.PrintYAML(resultYAML)
-	fmt.Println("****")
 
 	// Return the result as an io.Reader
 	return bytes.NewReader(resultYAML), nil

@@ -15,6 +15,14 @@ type Viperable interface {
 	GetViper() *viper.Viper
 }
 
+func PrefixToYAML(prefix string, root string) string {
+	prefix = strings.TrimPrefix(prefix, root)
+	prefix = strings.ReplaceAll(prefix, "_", ".")
+	prefix = strings.TrimPrefix(prefix, ".")
+
+	return prefix
+}
+
 // Bind connects cobra flags to viper and unmarshals the configuration into the provided struct.
 // It sets up environment variable handling with the given prefix and handles flag binding.
 // Omit the prefix to use the command hierarchy as the prefix.
@@ -34,7 +42,7 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	viper.AutomaticEnv()
 
 	configFile := cmd.Root().Context().Value("config-file")
-	// isSet := cmd.Root().Context().Value("config-file-set")
+	isSet := cmd.Root().Context().Value("config-file-set")
 	// if configFile != nil {
 	// 	config := file.File(configFile.(string))
 	// 	viper.SetConfigFile(config.Path())
@@ -45,29 +53,16 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	// 	}
 	// }
 	if configFile != nil {
-		fmt.Printf("envPrefix=%q\n", envPrefix)
 		config := file.File(configFile.(string))
-		envPrefix = strings.ReplaceAll(envPrefix, "_", ".")
-		fmt.Printf("envPrefix=%q\n", envPrefix)
-		fmt.Printf("cmd.Root().Name()=%q\n", cmd.Root().Name())
-		envPrefix = strings.TrimPrefix(envPrefix, cmd.Root().Name())
-		fmt.Printf("envPrefix=%q\n", envPrefix)
-
-		content, err := Trim(config, envPrefix)
+		content, err := Trim(config, PrefixToYAML(envPrefix, cmd.Root().Name()))
 		if err != nil {
 			return fmt.Errorf("trimming config file: %w", err)
 		}
 
-		// Write out the final content onto the console for debugging
-		fmt.Printf("Trimmed content:\n%s\n", content)
-
 		viper.SetConfigType("yaml")
-		if err := viper.ReadConfig(content); err != nil {
+		if err := viper.ReadConfig(content); err != nil && isSet != nil && isSet.(bool) {
 			return fmt.Errorf("reading config file: %w", err)
-		} else {
-			fmt.Println("Config file read successfully")
 		}
-
 	}
 
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {

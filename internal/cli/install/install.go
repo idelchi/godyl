@@ -4,7 +4,6 @@ package install
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 
@@ -42,8 +41,6 @@ func NewInstallCommand(cfg *config.Config, embedded config.Embedded) *Command {
 			return flags.ChainPreRun(cmd, &cfg.Tool, cmd.Root().Name(), "tool")
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
-			os.Exit(0)
-
 			lvl, err := logger.LevelString(cfg.Root.Log)
 			if err != nil {
 				return fmt.Errorf("parsing log level: %w", err)

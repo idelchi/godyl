@@ -5,7 +5,6 @@ url: "https://idelchi.github.io"
 
 # Theme settings
 remote_theme: pages-themes/cayman@v0.2.0
-# remote_theme: just-the-docs/just-the-docs
 
 plugins:
   - jekyll-remote-theme
@@ -54,20 +53,23 @@ collections:
     permalink: "/:collection/:path/"
     output: true
   commands:
+    permalink: "/commands/:path/"
     output: true
-    
+
 # Define which collections appear in the navigation
 just_the_docs:
   collections:
     docs:
       name: Documentation
       nav_fold: true
+    commands:
+      name: Commands
+      nav_fold: true
 
 # Heading anchor links
 heading_anchors: true
 
 # Enable copy code buttons
-# Not valid for cayman theme
 enable_copy_code_button: true
 
 permalink: pretty
@@ -78,6 +80,15 @@ defaults:
       type: "pages"
     values:
       render_with_liquid: false
+  # Command pages default
+  - scope:
+      path: "commands"
+      type: "pages"
+    values:
+      layout: "default"
+      parent: "Commands"
+      render_with_liquid: true
+  # 404 page
   - scope:
       path: "404-page.md"
     values:

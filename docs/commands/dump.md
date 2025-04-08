@@ -125,6 +125,6 @@ This creates a new YAML file containing only tools tagged with "docker".
 
 ## Related Topics
 
-- [Install Command](install.html)
-- [Default Configuration](../defaults.html)
-- [Platform Detection](../advanced-features.html#platform-inference)
+- [Install Command](install)
+- [Default Configuration](../defaults)
+- [Platform Detection](../advanced-features#platform-inference)

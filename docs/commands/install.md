@@ -97,6 +97,6 @@ godyl install tools.yml --parallel 4
 
 ## Related Topics
 
-- [Tool Configuration Format](../tools-format.html)
-- [Installation Strategies](../advanced-features.html#installation-strategies)
-- [Filtering Tools by Tags](../examples.html#filter-tools-by-tags)
+- [Tool Configuration Format](../tools-format)
+- [Installation Strategies](../advanced-features#installation-strategies)
+- [Filtering Tools by Tags](../examples#filter-tools-by-tags)

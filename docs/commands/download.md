@@ -11,8 +11,15 @@ The `download` command allows you to download and install individual tools witho
 ## Syntax
 
 ```sh
-godyl download [tool|URL]... [flags]
+godyl [flags] download [tool|URL]... [flags]
 ```
+
+## Aliases
+
+- dl
+- unpack
+- extract
+- x
 
 ## Description
 
@@ -61,35 +68,11 @@ godyl download idelchi/godyl --os linux --arch arm64
 ### Download from a direct URL
 
 ```sh
-godyl download "https://example.com/download/tool_{{ .OS }}_{{ .ARCH }}.tar.gz"
+godyl download "https://github.com/idelchi/go-next-tag/releases/download/v0.0.1/go-next-tag_{{ .OS }}_{{ .ARCH }}.tar.gz"
 ```
-
-### Specify an output directory
-
-```sh
-godyl download idelchi/godyl --output ~/.local/bin
-```
-
-## How It Works
-
-1. The `download` command first determines the source of the tool (GitHub repository or URL).
-2. It then fetches information about available releases (for GitHub sources).
-3. Using platform information and hints, it selects the appropriate release asset to download.
-4. The asset is downloaded and extracted to the specified output directory.
-5. Any executable files are identified and made available in the output directory.
-
-## Differences from the Install Command
-
-The `download` command differs from the `install` command in several ways:
-
-- It operates on individual tools rather than a collection of tools defined in a YAML file.
-- It always uses the `extract` mode, extracting files directly to the output directory.
-- It doesn't support features like tagging, customized aliases, or pre/post commands.
-
-For more complex installation scenarios, consider using the [`install`](install.html) command with a YAML configuration file.
 
 ## Related Topics
 
-- [Install Command](install.html)
-- [URL Templates](../templates.html#url-templates)
-- [Platform Detection](../advanced-features.html#platform-inference)
+- [Install Command](install)
+- [URL Templates](../templates#url-templates)
+- [Platform Detection](../advanced-features#platform-inference)

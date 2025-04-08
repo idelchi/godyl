@@ -5,7 +5,8 @@ url: "https://idelchi.github.io" # Update this with your GitHub username
 
 # Theme settings
 # remote_theme: pages-themes/cayman@v0.2.0
-remote_theme: mmistakes/minimal-mistakes@4.26.2
+# remote_theme: mmistakes/minimal-mistakes
+remote_theme: just-the-docs/just-the-docs
 
 plugins:
   - jekyll-paginate
@@ -14,6 +15,7 @@ plugins:
   - jekyll-feed
   - jemoji
   - jekyll-include-cache
+  - jekyll-default-layout
 
 color_scheme: light
 

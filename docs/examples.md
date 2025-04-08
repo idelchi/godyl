@@ -22,12 +22,9 @@ godyl download idelchi/godyl --output ~/.local/bin
 Create a `tools.yml` file:
 
 ```yaml
-- name: godyl
+- name: idelchi/godyl
   source:
     type: github
-    github:
-      owner: idelchi
-      repo: godyl
 
 - name: kubectl
   source:

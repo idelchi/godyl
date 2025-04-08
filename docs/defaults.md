@@ -91,7 +91,7 @@ output: /usr/local/bin
 
 ```yaml
 env:
-  GH_TOKEN: "{{ .Env.GITHUB_TOKEN }}"
+  GH_TOKEN: $GITHUB_TOKEN
 ```
 
 ### Different Default Source

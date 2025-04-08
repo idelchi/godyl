@@ -18,6 +18,17 @@ A `tools.yml` file contains a list of tools to download:
   # tool2 configuration...
 ```
 
+### Simple form
+
+```yaml
+- idelchi/godyl
+```
+
+Above is the `simple` form to attempt to download the latest release of `godyl` from `idelchi/godyl`.
+
+If it is a URL, it will be considered as a `source.url` type.
+Otherwise, it will be assumed to be a `source.github` type on the form `owner/repo`.
+
 ## Available Fields
 
 Below is a comprehensive list of fields that can be used to configure each tool:
@@ -29,7 +40,7 @@ Below is a comprehensive list of fields that can be used to configure each tool:
 The name of the tool to download. Used as display name and for inferring other fields.
 
 ```yaml
-name: godyl
+name: idelchi/godyl
 ```
 
 ### Description
@@ -46,7 +57,7 @@ description: Asset downloader for GitHub releases, URLs, and Go projects
 
 **Optional**: Yes (will be inferred if not provided)
 
-The version of the tool to download. Can be a simple string or a complex object with commands for version detection.
+The version of the tool to download.
 
 Simple form:
 
@@ -60,24 +71,26 @@ Full form:
 version:
   version: v0.1.0
   commands:
-    - "{{ .Exe }} --version"
+    - "--version"
   patterns:
     - "v\\d+\\.\\d+\\.\\d+"
 ```
 
 - `version.version`: The version to download
 - `version.commands`: Commands to run to get the installed version (for upgrades)
-- `version.patterns`: Regex patterns to extract the version from command output
+- `version.patterns`: Regex patterns to extract the version from command output (for upgrades)
 
 ### Path
 
 **Optional**: Yes (will be inferred if not provided)
 
-The path to the tool to download. Currently only supports URLs.
+The path to the tool to download. Must be a URL to a file.
 
 ```yaml
 path: https://github.com/idelchi/godyl/releases/download/v0.1.0/godyl_linux_amd64.tar.gz
 ```
+
+The most common use-case is to have it inferred from the `source` field configuration.
 
 ### Output
 
@@ -158,12 +171,11 @@ values:
 
 **Optional**: Yes
 
-Fallback strategies if the tool cannot be found.
+Fallback strategies if no matches were made in releases.
 
 ```yaml
 fallbacks:
   - go
-  - python
 ```
 
 ### Hints
@@ -177,7 +189,6 @@ hints:
   - pattern: "{{ .Exe }}"
     weight: 1
   - pattern: "{{ .OS }}"
-    weight: 2
     must: true
 ```
 
@@ -195,7 +206,7 @@ source:
   github:
     repo: godyl
     owner: idelchi
-    token: ${GITHUB_TOKEN}
+    token:
 ```
 
 URL source:
@@ -205,8 +216,9 @@ source:
   type: url
   url:
     token:
-      token: ${URL_TOKEN}
+      token:
       header: Authorization
+      scheme: Bearer
 ```
 
 Go source:
@@ -215,16 +227,7 @@ Go source:
 source:
   type: go
   go:
-    command: ./cmd/godyl
-```
-
-Commands source:
-
-```yaml
-source:
-  type: commands
-  commands:
-    - "pip install godyl=={{ .Version }}"
+    command: cmd/godyl
 ```
 
 ### Commands

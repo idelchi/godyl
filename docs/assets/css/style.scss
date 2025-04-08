@@ -4,11 +4,6 @@
 /* @import "{{ site.theme }}"; */
 @import "jekyll-theme-cayman";
 
-// @charset "utf-8";
-
-// @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
-// @import "minimal-mistakes"; // main partials
-
 /* Logo styling */
 .logo-container {
   text-align: center;
@@ -290,4 +285,8 @@ html {
     width: 100%;
     text-align: center;
   }
+}
+
+.highlight .p, .highlight .o {
+  font-weight: normal !important;
 }

@@ -40,6 +40,9 @@
   version:
     commands: version
   extensions: "{{ .EXTENSION }}"
+  hints:
+    - pattern: "{{ .Exe }}"
+      weight: 1
   tags:
     - kubernetes
 

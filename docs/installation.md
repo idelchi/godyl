@@ -43,3 +43,15 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts
 # Extract specific tools
 curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/scripts/extract.sh | sh -s -- -o ~/.local/bin idelchi/gogen idelchi/tcisd
 ```
+
+## Platform Support
+
+Godyl has been tested on:
+
+- **Linux**: `amd64`, `arm64`
+- **Windows**: `amd64`
+- **MacOS**: `arm64`
+
+For the tools listed in the default `tools.yml` file.
+
+> **Note**: To avoid GitHub API rate limiting when using `github` as a source type, set up a GitHub API token by either using the `--github-token` flag or setting the `GODYL_GITHUB_TOKEN` environment variable.

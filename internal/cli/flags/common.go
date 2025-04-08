@@ -45,16 +45,22 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	// 	}
 	// }
 	if configFile != nil {
-		fmt.Printf("Config file: %s\n", configFile.(string))
+		fmt.Printf("envPrefix=%q\n", envPrefix)
 		config := file.File(configFile.(string))
-		content, err := config.Open()
-		defer content.Close()
+		envPrefix = strings.ReplaceAll(envPrefix, "_", ".")
+		fmt.Printf("envPrefix=%q\n", envPrefix)
+		fmt.Printf("cmd.Root().Name()=%q\n", cmd.Root().Name())
+		envPrefix = strings.TrimPrefix(envPrefix, cmd.Root().Name())
+		fmt.Printf("envPrefix=%q\n", envPrefix)
 
+		content, err := Trim(config, envPrefix)
 		if err != nil {
-			return fmt.Errorf("opening config file: %w", err)
-		} else {
-			fmt.Println("Config file opened successfully")
+			return fmt.Errorf("trimming config file: %w", err)
 		}
+
+		// Write out the final content onto the console for debugging
+		fmt.Printf("Trimmed content:\n%s\n", content)
+
 		viper.SetConfigType("yaml")
 		if err := viper.ReadConfig(content); err != nil {
 			return fmt.Errorf("reading config file: %w", err)

@@ -11,13 +11,14 @@ import (
 
 	"github.com/inconshreveable/go-update"
 
+	"github.com/idelchi/godyl/internal/cache/cache"
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
-	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/folder"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
 // Updater handles tool self-updating functionality.
@@ -26,6 +27,7 @@ type Updater struct {
 	noVerifySSL bool
 	log         *logger.Logger
 	template    []byte // Used for Windows cleanup batch script
+	cache       *cache.Cache
 }
 
 // Versions contains the current and requested versions of the tool.
@@ -36,7 +38,7 @@ type Versions struct {
 }
 
 // New creates a new Updater with the specified configuration.
-func New(defaults tools.Defaults, noVerifySSL bool, template []byte, level logger.Level) *Updater {
+func New(defaults tools.Defaults, noVerifySSL bool, template []byte, level logger.Level, cache *cache.Cache) *Updater {
 	return &Updater{
 		defaults:    defaults,
 		noVerifySSL: noVerifySSL,
@@ -86,7 +88,7 @@ func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error)
 		},
 		Source: sources.Source{
 			Type: sources.GITHUB,
-			Github: github.GitHub{
+			GitHub: github.GitHub{
 				Pre: versions.Pre,
 			},
 		},
@@ -95,7 +97,7 @@ func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error)
 	}
 
 	// Apply defaults and resolve configuration
-	tool.ApplyDefaults(u.defaults)
+	tool.ApplyDefaults(u.defaults, u.cache)
 
 	if err := tool.Resolve(nil, nil); err != nil && !(errors.Is(err, tools.ErrRequiresUpdate) || errors.Is(err, tools.ErrUpToDate)) {
 		return tool, versions.Current, fmt.Errorf("resolving tool: %w", err)

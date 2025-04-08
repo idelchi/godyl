@@ -3,7 +3,7 @@ package config
 import (
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/files"
 )
 
 // Tool holds the configuration options for fetching tools.
@@ -29,7 +29,7 @@ type Tool struct {
 	Arch string
 
 	// Path to tools configuration file
-	Tools file.File // Positional argument
+	Tools files.Files // Positional argument
 
 	// Number of parallel downloads (>= 0)
 	Parallel int `validate:"gte=0"`

@@ -9,10 +9,12 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
+	cachehandler "github.com/idelchi/godyl/internal/cache"
+	"github.com/idelchi/godyl/internal/cache/cache"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/tools"
-	"github.com/idelchi/godyl/pkg/file"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
@@ -34,6 +36,7 @@ type Processor struct {
 	defaults  tools.Defaults
 	config    config.Config
 	log       *logger.Logger
+	cache     *cache.Cache
 	hasErrors bool
 }
 
@@ -49,6 +52,13 @@ func New(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log 
 
 // Process installs and manages tools with the given tags.
 func (p *Processor) Process(tags, withoutTags []string) error {
+	cache, err := cachehandler.New(p.config.Root.Cache.Dir, p.config.Root.Cache.Type)
+	if err != nil {
+		return fmt.Errorf("creating cache: %w", err)
+	}
+
+	p.cache = cache
+
 	// Setup concurrency
 	resultCh := make(chan result)
 
@@ -71,7 +81,7 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 
 	// Process each tool concurrently
 	for i := range p.tools {
-		tool := &p.tools[i]
+		tool := p.tools[i]
 		g.Go(func() error {
 			p.processTool(tool, tags, withoutTags, resultCh)
 			return nil
@@ -96,7 +106,7 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 // processTool processes an individual tool and sends the result to the result channel.
 func (p *Processor) processTool(tool *tools.Tool, tags, withoutTags []string, resultCh chan<- result) {
 	// Apply defaults and resolve tool configuration
-	tool.ApplyDefaults(p.defaults)
+	tool.ApplyDefaults(p.defaults, p.cache)
 
 	if err := tool.Resolve(tags, withoutTags); err != nil {
 		resultCh <- result{Tool: tool, Err: err}
@@ -120,16 +130,6 @@ func (p *Processor) processTool(tool *tools.Tool, tags, withoutTags []string, re
 
 	if err != nil {
 		return
-	}
-
-	// Execute post-installation commands if any exist
-	if len(tool.Post) > 0 {
-		if err := tool.Post.Exe(); err != nil {
-			resultCh <- result{
-				Tool: tool,
-				Err:  fmt.Errorf("executing post-installation commands: %w", err),
-			}
-		}
 	}
 }
 
@@ -165,6 +165,9 @@ func (p *Processor) handleToolError(tool *tools.Tool, err error, msg string) {
 
 	if isExpectedError {
 		p.log.Warn("  %v", err)
+		if err := p.cache.Save(file.New(tool.Output, tool.Exe.Name).Path(), tool.Version.Version); err != nil {
+			p.log.Error("  failed to save cache: %v", err)
+		}
 		return
 	}
 
@@ -197,6 +200,10 @@ func (p *Processor) logToolSuccess(tool *tools.Tool, found file.File) {
 			for _, alias := range tool.Aliases {
 				p.log.Info("    - %q", filepath.Join(tool.Output, alias))
 			}
+		}
+
+		if err := p.cache.Save(file.New(tool.Output, tool.Exe.Name).Path(), tool.Version.Version); err != nil {
+			p.log.Error("  failed to save cache: %v", err)
 		}
 	} else {
 		p.log.Info("  extracted to %q", tool.Output)

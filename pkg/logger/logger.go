@@ -1,4 +1,4 @@
-//go:generate go run github.com/dmarkham/enumer -type=Level -output level_enumer___generated.go
+//go:generate go tool enumer -type=Level -output level_enumer___generated.go
 package logger
 
 import (

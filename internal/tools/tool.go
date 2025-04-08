@@ -1,8 +1,11 @@
 package tools
 
 import (
-	"github.com/fatih/structs"
+	"maps"
+	"slices"
 
+	"github.com/fatih/structs"
+	"github.com/idelchi/godyl/internal/cache/cache"
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
@@ -10,7 +13,6 @@ import (
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/unmarshal"
 	"github.com/idelchi/godyl/pkg/utils"
-
 	"gopkg.in/yaml.v3"
 )
 
@@ -50,10 +52,14 @@ type Tool struct {
 	Extensions Extensions
 	// Skip defines conditions under which certain steps (e.g., downloading, testing) are skipped.
 	Skip Skip
-	// Post defines commands that should be run after the main operation, such as post-installation steps.
-	Post command.Commands
-	// Mode defines the operating mode for the tool, potentially controlling behavior such as silent mode or verbose
-	// mode.
+	// Commands defines a set of commands that can be executed at different stages of the tool's lifecycle.
+	Commands struct {
+		// Pre defines commands that should be run before the main operation.
+		Pre command.Commands
+		// Post defines commands that should be run after the main operation.
+		Post command.Commands
+	}
+	// Mode defines the operating mode for the tool, potentially controlling behavior such as silent mode or verbose mode.
 	Mode Mode
 	// Settings contains custom settings or options that modify the behavior of the tool.
 	Settings Settings
@@ -63,6 +69,9 @@ type Tool struct {
 	Check Checker
 	// NoVerifySSL specifies whether SSL verification should be disabled when fetching the tool.
 	NoVerifySSL bool `yaml:"no_verify_ssl"`
+
+	// Cache can be carried around for various checks
+	cache *cache.Cache
 }
 
 // UnmarshalYAML implements custom unmarshaling for Tool with KnownFields check.
@@ -72,11 +81,6 @@ func (t *Tool) UnmarshalYAML(value *yaml.Node) error {
 	// If it's a scalar (e.g., just the name), handle it directly by assigning it to the Name field.
 	if value.Kind == yaml.ScalarNode {
 		t.Name = value.Value
-
-		if utils.IsURL(t.Name) {
-			t.Path = t.Name
-			t.Source.Type = sources.DIRECT
-		}
 
 		return nil
 	}
@@ -89,25 +93,34 @@ func (t *Tool) UnmarshalYAML(value *yaml.Node) error {
 }
 
 // ApplyDefaults applies default values to the Tool configuration.
-// If a field is empty or nil, it is replaced with the corresponding default from the Defaults struct.
-// TODO(Idelchi): Improve - what if someone wants a value to be ""?
-// TODO(Idelchi): Perhaps SetSliceIfNil should be SetSliceIfZero?
-func (t *Tool) ApplyDefaults(d Defaults) {
-	utils.SetIfZeroValue(&t.Output, d.Output)
-	utils.SetIfZeroValue(&t.Source.Type, d.Source.Type)
-	utils.SetIfZeroValue(&t.Source.Github.Token, d.Source.Github.Token)
-	utils.SetIfZeroValue(&t.Strategy, d.Strategy)
-	utils.SetSliceIfNil(&t.Skip, Condition{Condition: "false"})
-	utils.SetIfZeroValue(&t.Mode, d.Mode)
-	utils.SetSliceIfNil(&t.Exe.Patterns, d.Exe.Patterns...)
-	utils.SetSliceIfNil(&t.Extensions, d.Extensions...)
-	utils.SetSliceIfNil(&t.Version.Commands, d.Version.Commands...)
-	utils.SetSliceIfNil(&t.Version.Patterns, d.Version.Patterns...)
-	utils.SetMapIfNil(&t.Values, d.Values)
+func (t *Tool) ApplyDefaults(d Defaults, cache *cache.Cache) {
 	utils.DeepMergeMapsWithoutOverwrite(t.Values, d.Values)
 	t.Env.Merge(d.Env)
 
 	// Apply platform-specific defaults and hints.
 	t.Platform.Merge(d.Platform)
 	t.Hints.Append(d.Hints)
+
+	t.cache = cache
+}
+
+func NewTool(d Defaults) *Tool {
+	tool := &Tool{
+		Output:     d.Output,
+		Source:     d.Source,
+		Strategy:   d.Strategy,
+		Mode:       d.Mode,
+		Exe:        d.Exe,
+		Extensions: d.Extensions,
+		Version:    d.Version,
+		Values:     d.Values,
+	}
+
+	tool.Exe.Patterns = slices.Clone(d.Exe.Patterns)
+	tool.Extensions = slices.Clone(d.Extensions)
+	tool.Version.Commands = slices.Clone(d.Version.Commands)
+	tool.Version.Patterns = slices.Clone(d.Version.Patterns)
+	tool.Values = maps.Clone(d.Values)
+
+	return tool
 }

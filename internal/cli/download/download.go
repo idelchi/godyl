@@ -4,7 +4,6 @@ package download
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
 
@@ -12,11 +11,14 @@ import (
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/core/defaults"
 	"github.com/idelchi/godyl/internal/core/processor"
+	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	iutils "github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/utils"
+
+	iutils "github.com/idelchi/godyl/internal/utils"
 )
 
 // Command encapsulates the download cobra command with its associated config and embedded files.
@@ -31,7 +33,7 @@ func (cmd *Command) Flags() {
 }
 
 // NewDownloadCommand creates a Command for downloading and unpacking tools.
-func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
+func NewDownloadCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	// Create the download command
 	cmd := &cobra.Command{
 		Use:     "download [tool]",
@@ -51,7 +53,7 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
 			log := logger.New(lvl)
 
 			// Load defaults
-			defaults, err := defaults.Load(cfg.Root.Defaults, files, *cfg)
+			defaults, err := defaults.Load(cfg.Root.Defaults, embedded, *cfg)
 			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
@@ -62,27 +64,49 @@ func NewDownloadCommand(cfg *config.Config, files config.Embedded) *Command {
 				return nil
 			}
 
-			toolsList := []tools.Tool{}
+			tmp, err := tmp.GodylCreateRandomDir()
+			if err != nil {
+				return fmt.Errorf("creating temporary directory: %w", err)
+			}
 
-			var version string
-			utils.SetIfZeroValue(&version, cfg.Tool.Version)
+			type Download struct {
+				Name string
+				Path string
+			}
+
+			var downloads []Download
 
 			for _, name := range args {
-				tool := tools.Tool{
-					Name: name,
-					Mode: tools.Extract,
-					Version: tools.Version{
-						Version: version,
-					},
-				}
 				if utils.IsURL(name) {
-					tool.Name = filepath.Base(name)
-					tool.Path = name
-					tool.Source.Type = sources.DIRECT
-					tool.Version.Version = version
+					downloads = append(downloads, Download{
+						Name: file.New(name).Base(),
+						Path: name,
+					})
+				} else {
+					downloads = append(downloads, Download{
+						Name: name,
+					})
 				}
+			}
 
-				toolsList = append(toolsList, tool)
+			toolsFile := tmp.WithFile("godyl.yaml")
+			defer tmp.Remove()
+
+			if err := toolsFile.WriteYAML(downloads); err != nil {
+				return fmt.Errorf("writing YAML: %w", err)
+			}
+
+			toolsList, err := iutils.LoadTools(toolsFile, defaults)
+			if err != nil {
+				return fmt.Errorf("loading tools: %w", err)
+			}
+
+			for i, tool := range toolsList {
+				toolsList[i].Mode = tools.Extract
+				toolsList[i].Version.Version = cfg.Tool.Version
+				if tool.Path != "" {
+					toolsList[i].Source.Type = sources.URL
+				}
 			}
 
 			// Process tools

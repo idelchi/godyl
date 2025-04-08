@@ -1,1 +1,0 @@
-package goc_test

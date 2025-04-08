@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/core/defaults"
@@ -26,7 +27,7 @@ func (cmd *Command) Flags() {
 }
 
 // NewUpdateCommand creates a Command for updating the application to the latest version.
-func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
+func NewUpdateCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:     "update",
 		Aliases: []string{"upgrade", "up"},
@@ -41,12 +42,16 @@ func NewUpdateCommand(cfg *config.Config, files config.Embedded) *Command {
 				return fmt.Errorf("parsing log level: %w", err)
 			}
 
-			defaults, err := defaults.Load(cfg.Root.Defaults, files, *cfg)
+			defaults, err := defaults.Load(cfg.Root.Defaults, embedded, *cfg)
 			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
+			cache, err := cache.New(cfg.Root.Cache.Dir, cfg.Root.Cache.Type)
+			if err != nil {
+				return fmt.Errorf("creating cache: %w", err)
+			}
 
-			appUpdater := updater.New(defaults, cfg.Update.NoVerifySSL, files.Template, lvl)
+			appUpdater := updater.New(defaults, cfg.Update.NoVerifySSL, embedded.Template, lvl, cache)
 
 			versions := updater.Versions{
 				Current:   cmd.Root().Version,

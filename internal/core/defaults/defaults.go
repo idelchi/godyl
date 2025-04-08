@@ -12,15 +12,53 @@ import (
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools"
-	"github.com/idelchi/godyl/pkg/env"
-	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/utils"
+	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/internal/tools/sources/github"
+	"github.com/idelchi/godyl/internal/tools/sources/gitlab"
+	"github.com/idelchi/godyl/internal/tools/sources/url"
+
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Defaults holds all the configuration options for godyl, including tool-specific defaults.
 type Defaults struct {
 	// Inline tool-specific defaults.
 	defaults tools.Defaults
+}
+
+// New creates a new Defaults instance with the provided configuration settings.
+// Provides defaults from the config struct in case fields are not set in the YAML file.
+// Contains merging of commandline flags and environment variables into the defaults (tools) struct.
+func New(cfg config.Config) *Defaults {
+	defaults := &Defaults{
+		defaults: tools.Defaults{
+			Output: cfg.Tool.Output,
+			Source: sources.Source{
+				Type: cfg.Tool.Source,
+				GitHub: github.GitHub{
+					Token: cfg.Root.Tokens.GitHub,
+				},
+				URL: url.URL{
+					Token: cfg.Root.Tokens.URL,
+				},
+				GitLab: gitlab.GitLab{
+					Token: cfg.Root.Tokens.GitLab,
+				},
+			},
+			Strategy: cfg.Tool.Strategy,
+		},
+	}
+
+	defaults.defaults.Platform.OS.Parse(cfg.Tool.OS)
+	defaults.defaults.Platform.Extension = defaults.defaults.Platform.Extension.Default(defaults.defaults.Platform.OS)
+	defaults.defaults.Platform.Library = defaults.defaults.Platform.Library.Default(
+		defaults.defaults.Platform.OS,
+		defaults.defaults.Platform.Distribution,
+	)
+
+	defaults.defaults.Platform.Architecture.Parse(cfg.Tool.Arch)
+
+	return defaults
 }
 
 // Get returns the Defaults struct.
@@ -63,39 +101,38 @@ func (d *Defaults) Validate() error {
 }
 
 // Merge applies configuration overrides to the defaults.
-//
-// TODO(Idelchi): This is not subcommand-agnostic.
+// Flags and environment variables are merged into the `defaults` struct,
+// which is used to set default values for `tool` entries in `tools`.
 func (d *Defaults) Merge(cfg config.Config) error {
-	if cfg.Tool.IsSet("hints") {
-		for _, hint := range cfg.Tool.Hints {
-			d.defaults.Hints.Add(match.Hint{
-				Pattern: hint,
-				Weight:  "1",
-			})
-		}
-	}
-
-	if cfg.Tool.IsSet("output") || utils.IsZeroValue(d.defaults.Output) {
+	if cfg.Tool.IsSet("output") {
 		d.defaults.Output = cfg.Tool.Output
 	}
 
-	if cfg.Tool.IsSet("source") || utils.IsZeroValue(d.defaults.Source.Type) {
+	if cfg.Tool.IsSet("source") {
 		d.defaults.Source.Type = cfg.Tool.Source
 	}
 
-	if cfg.Tool.IsSet("strategy") || utils.IsZeroValue(d.defaults.Strategy) {
+	if cfg.Tool.IsSet("strategy") {
 		d.defaults.Strategy = cfg.Tool.Strategy
 	}
 
-	switch {
-	case cfg.Root.IsSet("github-token"):
-		d.defaults.Source.Github.Token = cfg.Root.Tokens.GitHub
-	case utils.IsZeroValue(d.defaults.Source.Github.Token):
-		env := env.FromEnv()
-		d.defaults.Source.Github.Token = env.GetAny("GODYL_GITHUB_TOKEN", "GH_TOKEN")
+	if cfg.Root.IsSet("github-token") {
+		d.defaults.Source.GitHub.Token = cfg.Root.Tokens.GitHub
 	}
 
-	if cfg.Tool.IsSet("os") || utils.IsZeroValue(d.defaults.Platform.OS) {
+	if cfg.Root.IsSet("gitlab-token") {
+		d.defaults.Source.GitLab.Token = cfg.Root.Tokens.GitLab
+	}
+
+	if cfg.Root.IsSet("url-token") {
+		d.defaults.Source.URL.Token.Token = cfg.Root.Tokens.URL.Token
+	}
+
+	if cfg.Root.IsSet("url-token-header") {
+		d.defaults.Source.URL.Token.Header = cfg.Root.Tokens.URL.Header
+	}
+
+	if cfg.Tool.IsSet("os") {
 		if err := d.defaults.Platform.OS.Parse(cfg.Tool.OS); err != nil {
 			return fmt.Errorf("parsing OS: %w", err)
 		}
@@ -107,10 +144,17 @@ func (d *Defaults) Merge(cfg config.Config) error {
 		)
 	}
 
-	if cfg.Tool.IsSet("arch") || utils.IsZeroValue(d.defaults.Platform.Architecture) {
+	if cfg.Tool.IsSet("arch") {
 		if err := d.defaults.Platform.Architecture.Parse(cfg.Tool.Arch); err != nil {
 			return fmt.Errorf("parsing architecture: %w", err)
 		}
+	}
+
+	for _, hint := range cfg.Tool.Hints {
+		d.defaults.Hints.Add(match.Hint{
+			Pattern: hint,
+			Weight:  "1",
+		})
 	}
 
 	return nil
@@ -138,7 +182,7 @@ func (d *Defaults) Load(path file.File, defaults []byte, isSet bool) error {
 // Load loads the default configuration.
 func Load(path file.File, embeds config.Embedded, cfg config.Config) (tools.Defaults, error) {
 	// Create a new Defaults instance
-	defaults := &Defaults{}
+	defaults := New(cfg)
 
 	// Load defaults from file or embedded data
 	if err := defaults.Load(path, embeds.Defaults, cfg.Root.IsSet("defaults")); err != nil {

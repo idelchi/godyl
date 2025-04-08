@@ -1,11 +1,14 @@
 package cli
 
 import (
+	"context"
 	"embed"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 
+	"github.com/idelchi/godyl/internal/cli/cache"
 	"github.com/idelchi/godyl/internal/cli/download"
 	"github.com/idelchi/godyl/internal/cli/dump"
 	"github.com/idelchi/godyl/internal/cli/flags"
@@ -45,6 +48,7 @@ func (cmd *Command) Subcommands() {
 		install.NewCommand(cmd.Config, cmd.Files),
 		download.NewCommand(cmd.Config, cmd.Files),
 		update.NewCommand(cmd.Config, cmd.Files),
+		cache.NewCommand(cmd.Config),
 	)
 }
 
@@ -66,17 +70,23 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 				return fmt.Errorf("binding flags: %w", err)
 			}
 
+			cfg.Root.Log = strings.ToUpper(cfg.Root.Log)
+
 			// Validate the root configuration
-			if err := cfg.Root.Validate(); err != nil {
-				return fmt.Errorf("validating config: %w", err)
-			}
+			// if err := cfg.Root.Validate(); err != nil {
+			// 	return fmt.Errorf("validating config: %w", err)
+			// }
+
+			// Store the path in the context
+			ctx := cmd.Context()
+			ctx = context.WithValue(ctx, "config-file", cfg.Root.ConfigFile.Expanded().Path())
+			ctx = context.WithValue(ctx, "config-file-set", cfg.Root.IsSet("config-file"))
+			cmd.SetContext(ctx)
 
 			// Load environment variables from .env files such that it's available for the subcommands
 			for _, file := range cfg.Root.EnvFile {
-				if err := utils.LoadDotEnv(file); err != nil {
-					if cfg.Root.IsSet("env-file") {
-						return fmt.Errorf("loading .env file: %w", err)
-					}
+				if err := utils.LoadDotEnv(file); err != nil && cfg.Root.IsSet("env-file") {
+					return fmt.Errorf("loading .env file: %w", err)
 				}
 			}
 
@@ -84,6 +94,13 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 			// Once more to get the .env file values too
 			if err := flags.Bind(cmd.Root(), &cfg.Root); err != nil {
 				return fmt.Errorf("binding flags: %w", err)
+			}
+
+			cfg.Root.Log = strings.ToUpper(cfg.Root.Log)
+
+			// Validate the root configuration
+			if err := cfg.Root.Validate(); err != nil {
+				return fmt.Errorf("validating config: %w", err)
 			}
 
 			return nil

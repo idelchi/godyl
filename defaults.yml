@@ -29,6 +29,9 @@ extensions:
 mode: find
 source:
   type: github
+  url:
+    token:
+      scheme: Basic
 strategy: none
 env:
   GH_TOKEN: $GODYL_GITHUB_TOKEN

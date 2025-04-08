@@ -29,7 +29,7 @@ func (cmd *Command) Flags() {
 }
 
 // NewToolsCommand creates a Command for displaying tools information.
-func NewToolsCommand(cfg *config.Config, files config.Embedded) *Command {
+func NewToolsCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:   "tools",
 		Short: "Display tools information",
@@ -38,7 +38,7 @@ func NewToolsCommand(cfg *config.Config, files config.Embedded) *Command {
 			return flags.ChainPreRun(cmd, &cfg.Dump.Tools)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			c, err := getTools(files, cfg.Dump.Tools.Full)
+			c, err := getTools(embedded, cfg.Dump.Tools.Full)
 			if err != nil {
 				return err
 			}
@@ -52,7 +52,7 @@ func NewToolsCommand(cfg *config.Config, files config.Embedded) *Command {
 	return &Command{
 		Command: cmd,
 		Config:  cfg,
-		Files:   files,
+		Files:   embedded,
 	}
 }
 
@@ -70,7 +70,7 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 // getTools returns the tools configuration from embedded files.
 func getTools(files config.Embedded, rendered bool) (any, error) {
 	if !rendered {
-		return utils.PrintYAMLBytes(files.Tools), nil
+		return utils.ParseBytes(files.Tools), nil
 	}
 
 	tools := &tools.Tools{}

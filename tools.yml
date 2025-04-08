@@ -40,6 +40,9 @@
   version:
     commands: version
   extensions: "{{ .EXTENSION }}"
+  hints:
+    - pattern: "{{ .Exe }}"
+      weight: 1
   tags:
     - kubernetes
 
@@ -125,7 +128,7 @@
 - name: ldez/traefik-certs-dumper
   description: |
     A tool to dump ACME certs from Traefik
-    Note, does not contain a version stamp and will therefore always reinstall
+    Note, does not contain a version stamp and will therefore always reinstall, unless cache file is used.
   version:
     commands: []
   tags:
@@ -264,7 +267,7 @@
 - name: cespare/reflex
   description: |
     Run a command when files change
-    Note, does not contain a version stamp and will therefore always reinstall
+    Note, does not contain a version stamp and will therefore always reinstall, unless cache file is used.
   version:
     commands: []
   skip:
@@ -278,7 +281,7 @@
 - name: trntv/sshed
   description: |
     SSH client with easy bookmarking and config management
-    Note, does not contain a version stamp and will therefore always reinstall
+    Note, does not contain a version stamp and will therefore always reinstall, unless cache file is used.
   version:
     commands: []
   exe:
@@ -293,6 +296,7 @@
       must: true
   tags:
     - terminal
+
 - name: AlDanial/cloc
   description: Count Lines of Code
   extensions:
@@ -361,9 +365,10 @@
     name: gh
     patterns:
       - bin/gh{{ .EXTENSION }}$
-  post:
-    - "{{ .Output }}/{{ .Exe }} extension install github/gh-copilot || true"
-    - "{{ .Output }}/{{ .Exe }} extension upgrade gh-copilot || true"
+  commands:
+    post:
+      - "{{ .Output }}/{{ .Exe }} extension install github/gh-copilot || true"
+      - "{{ .Output }}/{{ .Exe }} extension upgrade gh-copilot || true"
   tags:
     - terminal
 
@@ -567,8 +572,9 @@
   exe: thefuck
   version: 3.32
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - |
         {{ if eq .OS "linux" }}
         pip install {{ .Exe }}=={{ .Version }} --user --break-system-packages
@@ -582,15 +588,17 @@
 
 - name: facebook/PathPicker
   description: A tool for selecting files from bash output
-  version: 3.32
+  version: 0.9.5
   source:
-    type: command
-    commands:
-      - cd {{ .Output }}
-      - rm -rf PathPicker
-      - git clone https://github.com/facebook/PathPicker.git
-      - cd PathPicker/
-      - ln -sf "$(pwd)/fpp" {{ .Output }}/fpp
+    type: none
+  commands:
+    post:
+      - set -e
+      - rm -rf {{ .Output }} /tmp/PathPicker
+      - mkdir -p {{ .Output }}
+      - git clone --branchss={{ .Version }} https://github.com/facebook/PathPicker.git /tmp/PathPicker
+      - cp /tmp/PathPicker/fpp {{ .Output }}/fpp
+      - rm -rf /tmp/PathPicker
   tags:
     - linux
     - native
@@ -600,8 +608,9 @@
   description: Contextual, dynamic aliases for the bash shell
   version: 0.8.1
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - TMP_DIR=$(mktemp -d)
       - echo curl -L -o ${TMP_DIR}/aliases_{{ .Version }}.deb https://github.com/sebglazebrook/aliases/raw/refs/heads/master/releases/{{ .Version }}/debian/aliases_{{ .Version }}.deb
       - curl -L -o ${TMP_DIR}/aliases_{{ .Version }}.deb https://github.com/sebglazebrook/aliases/raw/refs/heads/master/releases/{{ .Version }}/debian/aliases_{{ .Version }}.deb
@@ -617,8 +626,9 @@
 - name: shannonmoeller/up
   description: Quickly navigate to a parent directory
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - |
         curl --create-dirs -o ~/.config/up/up.sh https://raw.githubusercontent.com/shannonmoeller/up/master/up.sh
         echo 'source ~/.config/up/up.sh' >> ~/.bashrc
@@ -637,8 +647,9 @@
   exe: stress
   version: v0.3.3
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - apt-get update
       - apt-get install -y {{ .Exe }}
   tags:
@@ -652,8 +663,9 @@
   exe: distrobox
   version: 1.7.2.1
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - apt-get update
       - apt-get install -y {{ .Exe }}
   tags:
@@ -666,8 +678,9 @@
   description: Sexy ANSI fonts for the console
   exe: cfonts
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - TMPDIR=$(mktemp -d)
       - export RUSTUP_HOME=${TMPDIR}/home
       - export CARGO_HOME=${TMPDIR}/cargo
@@ -685,8 +698,9 @@
   version: 1.3.0-1
   exe: yank-cli
   source:
-    type: command
-    commands:
+    type: none
+  commands:
+    post:
       - |
         {{ if eq .OS "linux" }}
         apt-get update
@@ -708,11 +722,15 @@
       {{- if eq .OS "windows" -}}
           github
       {{- else -}}
-          command
+          none
       {{- end -}}
-    commands:
-      - apt-get update
-      - apt-get install -y {{ .Exe }}
+  commands:
+    post:
+      - |
+        {{- if neq .OS "windows" -}}
+        apt-get update
+        apt-get install -y {{ .Exe }}
+        {{- end -}}
   extensions: .exe
   tags:
     - elevated
@@ -847,3 +865,11 @@
 - name: idelchi/wslint
   version:
     commands: -v
+
+- name: gitlab-org/cli
+  description: glab is an open source GitLab CLI tool
+  exe: glab
+  source:
+    type: gitlab
+  tags:
+    - terminal

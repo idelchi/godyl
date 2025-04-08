@@ -11,8 +11,8 @@ import (
 
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/download"
-	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/folder"
+	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
 // Binary represents a Go binary, including its associated file, directory, and environment variables.
@@ -101,7 +101,7 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 		}
 	}
 
-	return file.File(""), fmt.Errorf("go binary not found: %w", folder.ErrNotFound)
+	return file.New(""), fmt.Errorf("go binary not found: %w", folder.ErrNotFound)
 }
 
 // Download downloads the Go binary from the provided path and saves it to the directory.
@@ -133,7 +133,7 @@ func (b *Binary) CleanUp() error {
 		return fmt.Errorf("cleaning up: %w", err)
 	}
 
-	b.Dir = ""
+	b.Dir = folder.New("")
 
 	return nil
 }

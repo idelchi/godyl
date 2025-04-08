@@ -7,7 +7,7 @@ import (
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // GitHub represents a GitHub repository with optional authentication token and metadata.
@@ -28,18 +28,6 @@ func (g *GitHub) Get(attribute string) string {
 	return g.Data.Get(attribute)
 }
 
-// Export exports the latest stored release to a file.
-func (g *GitHub) Export() error {
-	client := github.NewClient(g.Token)
-
-	repository := github.NewRepository(g.Owner, g.Repo, client)
-	if err := repository.ExportWithDefaults(g.latestStoredRelease); err != nil {
-		return fmt.Errorf("failed to export release: %w", err)
-	}
-
-	return nil
-}
-
 // LatestVersion fetches the latest release version of the GitHub repository.
 func (g *GitHub) LatestVersion() (string, error) {
 	client := github.NewClient(g.Token)
@@ -55,35 +43,11 @@ func (g *GitHub) LatestVersion() (string, error) {
 	}
 
 	if err != nil {
-		return "", fmt.Errorf("failed to get latest release: %w", err)
+		return "", fmt.Errorf("failed to retrieve latest release: %w", err)
 	}
 
 	// Store the latest release for future use
 	g.latestStoredRelease = release
-
-	// if err := g.Export(); err != nil {
-	// 	return "", err
-	// }
-
-	return release.Tag, nil
-}
-
-// LatestVersionFromExport fetches the latest release version from the exported file.
-func (g *GitHub) LatestVersionFromExport() (string, error) {
-	client := github.NewClient(g.Token)
-	repository := github.NewRepository(g.Owner, g.Repo, client)
-
-	release, err := repository.LatestReleaseFromExportWithDefaults()
-	if err != nil {
-		return "", fmt.Errorf("failed to get latest release from export: %w", err)
-	}
-
-	// Store the latest release for future use
-	g.latestStoredRelease = release
-
-	if err := g.Export(); err != nil {
-		return "", err
-	}
 
 	return release.Tag, nil
 }
@@ -132,23 +96,21 @@ func (g *GitHub) MatchAssetsToRequirements(
 
 // PopulateOwnerAndRepo sets the Owner and Repo fields based on the given name.
 // If Owner and Repo are already set, this method does nothing.
-func (g *GitHub) PopulateOwnerAndRepo(name string) error {
-	switch {
-	case g.Owner != "" && g.Repo != "":
+func (g *GitHub) PopulateOwnerAndRepo(name string) (err error) {
+	// If both Owner and Repo are already set, nothing to do
+	if g.Owner != "" && g.Repo != "" {
 		return nil
-	case g.Owner == "" && g.Repo == "":
-	default:
+	}
+
+	// If exactly one of Owner or Repo is set (but not both), that's invalid
+	if (g.Owner == "") != (g.Repo == "") {
 		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
 	}
 
-	parts, err := SplitName(name)
+	g.Owner, g.Repo, err = common.SplitName(name)
 	if err != nil {
 		return err
 	}
-
-	// Set the owner and repo fields
-	g.Owner = parts[0]
-	g.Repo = parts[1]
 
 	return nil
 }

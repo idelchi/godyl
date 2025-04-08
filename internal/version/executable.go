@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Executable consists of a full path to a file and its version.

@@ -12,8 +12,8 @@ import (
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/env"
-	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/folder"
+	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/folder"
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
@@ -51,9 +51,6 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 		return fmt.Errorf("%w: tool name is empty", ErrFailed)
 	}
 
-	// Normalize values to ensure consistency in the .Values map.
-	t.Values = utils.NormalizeMap(t.Values)
-
 	// Load environment variables from the system.
 	t.Env.Merge(env.FromEnv())
 
@@ -76,6 +73,13 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 
 	if err := t.TemplateFirst(); err != nil {
 		return err
+	}
+
+	// Execute pre-installation commands if any exist
+	if len(t.Commands.Pre.Commands) > 0 {
+		if output, err := t.Commands.Pre.Exe(t.Env); err != nil {
+			return fmt.Errorf("executing pre-installation commands: %w: %s", err, output)
+		}
 	}
 
 	t.Fallbacks = slices.Compact(t.Fallbacks)
@@ -211,7 +215,7 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 	}
 
 	// Attempt to upgrade the tool using the current strategy.
-	if err := t.Strategy.Upgrade(t); err != nil {
+	if err := t.Strategy.Upgrade(t); err != nil && !errors.Is(err, ErrRequiresUpdate) {
 		return err
 	}
 
@@ -255,5 +259,17 @@ func (t *Tool) Download() (string, file.File, error) {
 		NoVerifySSL: t.NoVerifySSL,
 	}
 
-	return installer.Install(data)
+	output, file, err := installer.Install(data)
+	// Execute post-installation commands if any exist
+	if len(t.Commands.Post.Commands) > 0 {
+		if output, err := t.Commands.Post.Exe(t.Env); err != nil {
+			return output, file, fmt.Errorf("executing post-installation commands: %w: %s", err, output)
+		}
+	}
+
+	if err != nil {
+		return output, file, fmt.Errorf("installing tool: %w", err)
+	}
+
+	return output, file, nil
 }

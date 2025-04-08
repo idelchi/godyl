@@ -35,7 +35,7 @@ import (
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/hashicorp/go-getter/v2"
 
-	"github.com/idelchi/godyl/pkg/file"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Downloader manages the configuration for downloading files, including
@@ -67,11 +67,22 @@ func New() *Downloader {
 // Download fetches a file from the given URL and saves it to the specified output path.
 // If the file is an archive, it will be extracted to the output directory.
 // It returns the destination path of the downloaded file (or folder) and any error encountered.
-func (d Downloader) Download(url, output string) (file.File, error) {
+func (d Downloader) Download(url, output string, header ...http.Header) (file.File, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), d.ContextTimeout)
 	defer cancel()
 
 	httpClient := cleanhttp.DefaultClient()
+
+	headers := make(http.Header)
+
+	// Merge all headers from the variadic argument
+	for _, h := range header {
+		for key, values := range h {
+			for _, value := range values {
+				headers.Add(key, value)
+			}
+		}
+	}
 
 	httpGetter := &getter.HttpGetter{
 		Netrc:                 true,
@@ -79,6 +90,7 @@ func (d Downloader) Download(url, output string) (file.File, error) {
 		HeadFirstTimeout:      d.HeadTimeout,
 		ReadTimeout:           d.ReadTimeout,
 		Client:                httpClient,
+		Header:                headers,
 	}
 
 	// Modify the default HTTP client's transport to skip SSL verification if requested

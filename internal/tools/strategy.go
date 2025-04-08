@@ -7,6 +7,7 @@ import (
 	"github.com/Masterminds/semver/v3"
 
 	"github.com/idelchi/godyl/internal/version"
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Strategy represents the strategy for handling tool installation or upgrades.
@@ -35,7 +36,7 @@ func (s Strategy) Check(t *Tool) error {
 // Upgrade checks if the tool should be upgraded based on the strategy and its current version.
 // It compares the existing version with the desired version and returns an error if the tool is already up to date.
 func (s Strategy) Upgrade(t *Tool) error {
-	// If the tool does not exist, no upgrade is necessary.
+	// If the tool does not exist, no upgrade checks are necessary.
 	if !t.Exists() {
 		return nil
 	}
@@ -45,40 +46,52 @@ func (s Strategy) Upgrade(t *Tool) error {
 		// If the strategy is "None" and the tool exists, return an error indicating it already exists.
 		return ErrAlreadyExists
 	case Upgrade:
-		if t.Version.Commands != nil && len(t.Version.Commands) == 0 {
-			// No commands to run, so we can't check the version, forcing an upgrade.
-			return fmt.Errorf("%w: no commands to run, forcing update", ErrRequiresUpdate)
-		}
-
 		// Parse the version of the existing tool.
 		exe := version.NewExecutable(t.Output, t.Exe.Name)
 
-		parser := &version.Version{
-			Patterns: t.Version.Patterns,
-			Commands: t.Version.Commands,
+		// Try to get version - first from cache, then using commands
+		if item, err := t.cache.Get(file.New(t.Output, t.Exe.Name).Path()); err == nil {
+			exe.Version = item.Version
+		} else {
+			// No cache hit, check if we have commands to determine version
+			if t.Version.Commands == nil || len(t.Version.Commands) == 0 {
+				return fmt.Errorf("%w: no commands to run and not found in cache, forcing update", ErrRequiresUpdate)
+			}
+
+			// Parse version using available commands
+			parser := &version.Version{
+				Patterns: t.Version.Patterns,
+				Commands: t.Version.Commands,
+			}
+
+			if err := exe.ParseVersion(parser); err != nil {
+				return fmt.Errorf("%w: failed to parse version", ErrRequiresUpdate)
+			}
 		}
 
-		if err := exe.ParseVersion(parser); err != nil {
-			// Force an upgrade if the version cannot be parsed.
-			return fmt.Errorf("%w: failed to parse version", ErrRequiresUpdate)
-		}
-
+		// Convert versions for comparison
 		source := ToVersion(exe.Version)
-		if source == nil {
-			return fmt.Errorf("%w: converting source version %q: failed: %q -> %q", ErrRequiresUpdate, exe.Version, exe.Version, t.Version.Version)
-		}
-
 		target := ToVersion(t.Version.Version)
+
+		// Check for conversion failures
+		if source == nil {
+			return fmt.Errorf("%w: converting source version %q: failed: %q -> %q",
+				ErrRequiresUpdate, exe.Version, exe.Version, t.Version.Version)
+		}
+
 		if target == nil {
-			return fmt.Errorf("%w: converting target version %q: failed: %q -> %q", ErrRequiresUpdate, t.Version.Version, exe.Version, t.Version.Version)
+			return fmt.Errorf("%w: converting target version %q: failed: %q -> %q",
+				ErrRequiresUpdate, t.Version.Version, exe.Version, t.Version.Version)
 		}
 
-		// If the versions match, return an error indicating the tool is already up to date.
+		// Compare versions and return appropriate error
 		if source.Equal(target) {
-			return fmt.Errorf("%w: current version %q and target version %q match", ErrUpToDate, source, target)
+			return fmt.Errorf("%w: current version %q and target version %q match",
+				ErrUpToDate, source, target)
 		}
 
-		return fmt.Errorf("%w: current version %q and target version %q do not match", ErrRequiresUpdate, source, target)
+		return fmt.Errorf("%w: current version %q and target version %q do not match",
+			ErrRequiresUpdate, source, target)
 	case Force:
 		// If the strategy is "Force", always proceed with the installation or update.
 		return nil

@@ -1,6 +1,8 @@
 package tools
 
 import (
+	"maps"
+
 	"github.com/idelchi/godyl/internal/templates"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/utils"
@@ -17,9 +19,7 @@ func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
 	}
 
 	for _, o := range flatten {
-		for k, v := range o {
-			templateMap[k] = v
-		}
+		maps.Copy(templateMap, o)
 	}
 
 	return templateMap
@@ -59,6 +59,18 @@ func (t *Tool) TemplateFirst() error {
 		return err
 	}
 
+	values = t.ToTemplateMap(t.Platform.ToMap())
+
+	// Apply templating to Pre commands
+	for i, cmd := range t.Commands.Pre.Commands {
+		output, err := templates.Apply(cmd.String(), values)
+		if err != nil {
+			return err
+		}
+
+		t.Commands.Pre.Commands[i].From(output)
+	}
+
 	return nil
 }
 
@@ -83,24 +95,14 @@ func (t *Tool) TemplateLast() error {
 		}
 	}
 
-	// Apply templating to Source.Commands
-	for i, cmd := range t.Source.Commands {
-		output, err := templates.Apply(cmd.String(), values)
-		if err != nil {
-			return err
-		}
-
-		t.Source.Commands[i].From(output)
-	}
-
 	// Apply templating to Post commands
-	for i, cmd := range t.Post {
+	for i, cmd := range t.Commands.Post.Commands {
 		output, err := templates.Apply(cmd.String(), values)
 		if err != nil {
 			return err
 		}
 
-		t.Post[i].From(output)
+		t.Commands.Post.Commands[i].From(output)
 	}
 
 	// Apply templating to Hints patterns and weights

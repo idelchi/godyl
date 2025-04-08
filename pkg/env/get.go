@@ -6,15 +6,6 @@ import (
 	"strings"
 )
 
-// Get retrieves the value associated with the given key or returns an error if the key is not found.
-func (e Env) Get(key string) (string, error) {
-	if v, ok := e[key]; ok {
-		return v, nil
-	}
-
-	return "", fmt.Errorf("%w: %q", ErrEnvVarNotFound, key)
-}
-
 // MustGet retrieves the value associated with the given key or returns an error if the key is not found.
 func (e Env) MustGet(key string) (string, error) {
 	if v, ok := e[key]; ok {
@@ -24,10 +15,17 @@ func (e Env) MustGet(key string) (string, error) {
 	return "", fmt.Errorf("%w: %q", ErrEnvVarNotFound, key)
 }
 
+// Get retrieves the value associated with the given key or "" if the key is not found.
+func (e Env) Get(key string) string {
+	v, _ := e.MustGet(key)
+
+	return v
+}
+
 // GetAny retrieves the value for the first key found in the given list of keys, from left to right.
 func (e Env) GetAny(keys ...string) string {
 	for _, key := range keys {
-		if value, err := e.Get(key); err == nil {
+		if value, err := e.MustGet(key); err == nil {
 			return value
 		}
 	}
@@ -35,9 +33,15 @@ func (e Env) GetAny(keys ...string) string {
 	return ""
 }
 
+// Has checks if the given key exists in the environment variables.
+func (e Env) Has(key string) bool {
+	_, ok := e[key]
+	return ok
+}
+
 // GetOrDefault retrieves the value for the given key, or returns the provided defaultValue if the key is not found.
 func (e Env) GetOrDefault(key, defaultValue string) string {
-	if value, err := e.Get(key); err != nil {
+	if value, err := e.MustGet(key); err != nil {
 		return defaultValue
 	} else {
 		return value

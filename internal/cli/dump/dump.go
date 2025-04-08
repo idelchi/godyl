@@ -3,6 +3,7 @@ package dump
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/idelchi/godyl/internal/cli/dump/cache"
 	"github.com/idelchi/godyl/internal/cli/dump/configuration"
 	"github.com/idelchi/godyl/internal/cli/dump/defaults"
 	"github.com/idelchi/godyl/internal/cli/dump/env"
@@ -30,16 +31,17 @@ func (cmd *Command) Flags() {
 // Subcommands adds all subcommands to the dump command.
 func (cmd *Command) Subcommands() {
 	cmd.Command.AddCommand(
-		configuration.NewCommand(cmd.Config, cmd.Files),
+		configuration.NewCommand(cmd.Config),
 		defaults.NewCommand(cmd.Config, cmd.Files),
-		env.NewCommand(cmd.Config, cmd.Files),
-		platform.NewCommand(cmd.Config, cmd.Files),
+		env.NewCommand(cmd.Config),
+		platform.NewCommand(cmd.Config),
 		tools.NewCommand(cmd.Config, cmd.Files),
+		cache.NewCommand(cmd.Config),
 	)
 }
 
 // NewDumpCommand creates a Command for displaying configuration information.
-func NewDumpCommand(cfg *config.Config, files config.Embedded) *Command {
+func NewDumpCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:     "dump [command]",
 		Aliases: []string{"show"},
@@ -55,7 +57,7 @@ func NewDumpCommand(cfg *config.Config, files config.Embedded) *Command {
 	return &Command{
 		Command: cmd,
 		Config:  cfg,
-		Files:   files,
+		Files:   embedded,
 	}
 }
 

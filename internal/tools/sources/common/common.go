@@ -3,14 +3,15 @@ package common
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"regexp"
 
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/env"
-	"github.com/idelchi/godyl/pkg/file"
-	"github.com/idelchi/godyl/pkg/files"
-	"github.com/idelchi/godyl/pkg/folder"
+	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/files"
+	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
 // InstallData holds the details required for downloading and installing files,
@@ -25,6 +26,7 @@ type InstallData struct {
 	Mode        string   // Mode of operation, such as "find" for locating executables
 	Env         env.Env  // Environment variables for the installation process
 	NoVerifySSL bool     // Skip SSL verification
+	Header      http.Header
 }
 
 // Download handles downloading files based on the InstallData configuration.
@@ -42,16 +44,14 @@ func Download(data InstallData) (string, file.File, error) {
 		}
 
 		defer func() {
-			if err == nil {
-				dir.Remove() //nolint:gosec 		// TODO(Idelchi): Address this later.
-			}
+			dir.Remove() //nolint:gosec 		// TODO(Idelchi): Address this later.
 		}()
 	}
 
 	downloader := download.New()
 	downloader.InsecureSkipVerify = data.NoVerifySSL
 
-	destination, err := downloader.Download(data.Path, dir.Path())
+	destination, err := downloader.Download(data.Path, dir.Path(), data.Header)
 	if err != nil {
 		return "", "", fmt.Errorf("downloading %q: %w", data.Path, err)
 	}

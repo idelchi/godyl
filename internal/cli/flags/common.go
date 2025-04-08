@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -11,6 +12,15 @@ import (
 // Viperable is an interface for types that can hold a viper instance
 type Viperable interface {
 	SetViper(v *viper.Viper)
+	GetViper() *viper.Viper
+}
+
+func PrefixToYAML(prefix string, root string) string {
+	prefix = strings.TrimPrefix(prefix, root)
+	prefix = strings.ReplaceAll(prefix, "_", ".")
+	prefix = strings.TrimPrefix(prefix, ".")
+
+	return prefix
 }
 
 // Bind connects cobra flags to viper and unmarshals the configuration into the provided struct.
@@ -20,11 +30,40 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	// Set up Viper with our environment prefix
 	envPrefix := prefixFromCmdOrPrefixes(cmd, prefix...)
 
-	viper := viper.New()
+	// Reuse the same instance if already set
+	if cfg.GetViper() == nil {
+		cfg.SetViper(viper.New())
+	}
+
+	viper := cfg.GetViper()
 
 	viper.SetEnvPrefix(envPrefix)
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()
+
+	configFile := cmd.Root().Context().Value("config-file")
+	isSet := cmd.Root().Context().Value("config-file-set")
+	// if configFile != nil {
+	// 	config := file.File(configFile.(string))
+	// 	viper.SetConfigFile(config.Path())
+	// 	if err := viper.ReadInConfig(); err != nil {
+	// 		if isSet != nil && isSet.(bool) {
+	// 			return fmt.Errorf("reading config file: %w", err)
+	// 		}
+	// 	}
+	// }
+	if configFile != nil {
+		config := file.File(configFile.(string))
+		content, err := Trim(config, PrefixToYAML(envPrefix, cmd.Root().Name()))
+		if err != nil && isSet != nil && isSet.(bool) {
+			return fmt.Errorf("trimming config file: %w", err)
+		} else if err == nil {
+			viper.SetConfigType("yaml")
+			if err := viper.ReadConfig(content); err != nil && isSet != nil && isSet.(bool) {
+				return fmt.Errorf("reading config file: %w", err)
+			}
+		}
+	}
 
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
 		return fmt.Errorf("binding flags: %w", err)
@@ -33,9 +72,6 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	if err := viper.Unmarshal(cfg); err != nil {
 		return fmt.Errorf("unmarshalling config for %q: %w", cmd.Name(), err)
 	}
-
-	// Set the viper instance on the config struct
-	cfg.SetViper(viper)
 
 	return nil
 }

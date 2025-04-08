@@ -30,11 +30,11 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 		return fmt.Errorf("binding flags: %w", err)
 	}
 
-	viper.SetConfigFile(viper.GetString("config-file"))
-
-	if err := viper.ReadInConfig(); err != nil {
-		return fmt.Errorf("reading config file: %w", err)
-	}
+	fmt.Printf("Calling ´bind` with prefix %q\n", envPrefix)
+	// viper.SetConfigFile(viper.GetString("config-file"))
+	// if err := viper.ReadInConfig(); err != nil {
+	// 	return fmt.Errorf("reading config file: %w", err)
+	// }
 
 	if err := viper.Unmarshal(cfg); err != nil {
 		return fmt.Errorf("unmarshalling config for %q: %w", cmd.Name(), err)

@@ -9,6 +9,16 @@ import (
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
+// ConfigDir returns the config directory for Godyl.
+func ConfigDir() folder.Folder {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return folder.New(".")
+	}
+
+	return folder.New(configDir, "godyl")
+}
+
 // CacheDir returns the cache directory for Godyl.
 func CacheDir() folder.Folder {
 	cacheDir, err := os.UserCacheDir()

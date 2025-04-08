@@ -53,6 +53,8 @@ jobs:
         # Outputs to the './_site' directory by default
         run: |
           bundle exec jekyll --version
+          ls /home/runner/work/godyl/godyl/docs/assets/css
+          cat /home/runner/work/godyl/godyl/docs/assets/css/style.scss
           bundle exec jekyll build --source ./docs --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production

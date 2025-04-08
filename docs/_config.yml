@@ -1,10 +1,13 @@
 title: Godyl
-description: "Asset downloader for GitHub releases, URLs, and Go projects"
+description: "Asset downloader for GitHub & GitLab releases, URLs, and Go projects"
 baseurl: "/godyl" # Update this with your repository name
 url: "https://idelchi.github.io" # Update this with your GitHub username
 
 # Theme settings
-remote_theme: pmarsceill/just-the-docs
+remote_theme: pages-themes/cayman@v0.2.0
+plugins:
+- jekyll-remote-theme
+
 color_scheme: light
 
 # Enable search

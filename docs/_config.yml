@@ -53,7 +53,9 @@ collections:
   docs:
     permalink: "/:collection/:path/"
     output: true
-
+  commands:
+    output: true
+    
 # Define which collections appear in the navigation
 just_the_docs:
   collections:

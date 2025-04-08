@@ -30,7 +30,11 @@ func NewConfigCommand(cfg *config.Config) *Command {
 		Short: "Display root configuration information",
 		Args:  cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return flags.ChainPreRun(cmd, nil)
+			if err := flags.ChainPreRun(cmd, nil); err != nil {
+				return err
+			}
+
+			return nil
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
 			c, err := getConfig(cfg)
@@ -38,7 +42,7 @@ func NewConfigCommand(cfg *config.Config) *Command {
 				return err
 			}
 
-			iutils.Print(cfg.Dump.Format, c)
+			iutils.Print(cfg.Dump.Format, c.Root)
 
 			return nil
 		},

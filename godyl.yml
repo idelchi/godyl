@@ -1,3 +1,9 @@
 tool:
   output: ./bin/{{ .OS }}
   os: macos
+
+cache-type: sqlite
+
+env-file:
+  - .env
+  - gitlab.env

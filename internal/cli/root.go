@@ -70,11 +70,25 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 				return fmt.Errorf("binding flags: %w", err)
 			}
 
+			// Validate the root configuration
+			// if err := cfg.Root.Validate(); err != nil {
+			// 	return fmt.Errorf("validating config: %w", err)
+			// }
+
 			// Store the path in the context
 			ctx := cmd.Context()
 			ctx = context.WithValue(ctx, "config-file", cfg.Root.ConfigFile.Expanded().Path())
 			ctx = context.WithValue(ctx, "config-file-set", cfg.Root.IsSet("config-file"))
 			cmd.SetContext(ctx)
+
+			if err := flags.Bind(cmd.Root(), &cfg.Root); err != nil {
+				return fmt.Errorf("binding flags: %w", err)
+			}
+
+			// Validate the root configuration
+			if err := cfg.Root.Validate(); err != nil {
+				return fmt.Errorf("validating config: %w", err)
+			}
 
 			// Load environment variables from .env files such that it's available for the subcommands
 			for _, file := range cfg.Root.EnvFile {

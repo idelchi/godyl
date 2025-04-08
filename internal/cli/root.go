@@ -3,11 +3,9 @@ package cli
 import (
 	"embed"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/idelchi/godyl/internal/cli/cache"
 	"github.com/idelchi/godyl/internal/cli/download"
@@ -19,7 +17,6 @@ import (
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/cobraext"
-	"github.com/idelchi/godyl/pkg/pretty"
 )
 
 // Command encapsulates a root cobra command with its associated config and embedded files.
@@ -79,8 +76,8 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 				return fmt.Errorf("validating config: %w", err)
 			}
 
-			viper.SetConfigFile(cfg.Root.ConfigFile.Expanded().Path())
-			if err := viper.ReadInConfig(); err != nil && cfg.Root.IsSet("config-file") {
+			cfg.Root.GetViper().SetConfigFile(cfg.Root.ConfigFile.Expanded().Path())
+			if err := cfg.Root.GetViper().ReadInConfig(); err != nil && cfg.Root.IsSet("config-file") {
 				return fmt.Errorf("reading config file: %w", err)
 			}
 
@@ -101,10 +98,6 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 			if err := cfg.Root.Validate(); err != nil {
 				return fmt.Errorf("validating config: %w", err)
 			}
-
-			pretty.PrintYAML(cfg.Root)
-
-			os.Exit(0)
 
 			return nil
 		},

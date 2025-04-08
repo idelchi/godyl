@@ -11,6 +11,7 @@ import (
 // Viperable is an interface for types that can hold a viper instance
 type Viperable interface {
 	SetViper(v *viper.Viper)
+	GetViper() *viper.Viper
 }
 
 // Bind connects cobra flags to viper and unmarshals the configuration into the provided struct.
@@ -20,7 +21,11 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	// Set up Viper with our environment prefix
 	envPrefix := prefixFromCmdOrPrefixes(cmd, prefix...)
 
-	viper := viper.New()
+	if cfg.GetViper() == nil {
+		cfg.SetViper(viper.New())
+	}
+
+	viper := cfg.GetViper()
 
 	viper.SetEnvPrefix(envPrefix)
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
@@ -41,7 +46,7 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	}
 
 	// Set the viper instance on the config struct
-	cfg.SetViper(viper)
+	// cfg.SetViper(viper)
 
 	return nil
 }

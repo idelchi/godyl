@@ -11,9 +11,9 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// GitLab represents a GitLab repository with optional authentication token and metadata.
+// GitLab represents a GitLab project with optional authentication token and metadata.
 type GitLab struct {
-	Repo      string
+	Project   string
 	Namespace string
 	Token     string `mask:"fixed"`
 	Pre       bool
@@ -37,7 +37,7 @@ func (g *GitLab) LatestVersion() (string, error) {
 		return "", fmt.Errorf("failed to create GitLab client: %w", err)
 	}
 
-	repository := gitlab.NewRepository(g.Namespace, g.Repo, client)
+	repository := gitlab.NewRepository(g.Namespace, g.Project, client)
 
 	var release *gitlab.Release
 
@@ -69,7 +69,7 @@ func (g *GitLab) MatchAssetsToRequirements(
 		return "", fmt.Errorf("failed to create GitLab client: %w", err)
 	}
 
-	repository := gitlab.NewRepository(g.Namespace, g.Repo, client)
+	repository := gitlab.NewRepository(g.Namespace, g.Project, client)
 
 	var release *gitlab.Release
 
@@ -107,16 +107,16 @@ func (g *GitLab) MatchAssetsToRequirements(
 // If Namespace and Repo are already set, this method does nothing.
 func (g *GitLab) PopulateNamespaceAndRepo(name string) (err error) {
 	// If both Owner and Repo are already set, nothing to do
-	if g.Namespace != "" && g.Repo != "" {
+	if g.Namespace != "" && g.Project != "" {
 		return nil
 	}
 
 	// If exactly one of Owner or Repo is set (but not both), that's invalid
-	if (g.Namespace == "") != (g.Repo == "") {
+	if (g.Namespace == "") != (g.Project == "") {
 		return errors.New("Either both `namespace` and `repo` must be set or `name` must be in the format `namespace/repo`")
 	}
 
-	g.Namespace, g.Repo, err = common.CutName(name)
+	g.Namespace, g.Project, err = common.CutName(name)
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func (g *GitLab) Initialize(name string) error {
 
 // Exe sets the executable name in the metadata to the repository name.
 func (g *GitLab) Exe() error {
-	g.Data.Set("exe", g.Repo)
+	g.Data.Set("exe", g.Project)
 
 	return nil
 }

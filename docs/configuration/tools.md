@@ -88,9 +88,10 @@ source:
     owner: string
     token: string
   gitlab:
-    repo: string
-    owner: string
+    project: string
+    namespace: string
     token: string
+    server: string
   url:
     token:
       token: string

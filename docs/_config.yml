@@ -4,9 +4,9 @@ baseurl: "/godyl"
 url: "https://idelchi.github.io"
 
 # Theme settings
-# remote_theme: pages-themes/cayman@v0.2.0
+remote_theme: pages-themes/cayman@v0.2.0
 # remote_theme: just-the-docs/just-the-docs
-remote_theme: mmistakes/minimal-mistakes
+# remote_theme: mmistakes/minimal-mistakes
 
 plugins:
   - jekyll-remote-theme

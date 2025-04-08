@@ -1,9 +1,12 @@
 ---
+layout: default
 ---
 
-Welcome to My Home Page
+# Godyl
 
-{% assign date = '2020-04-13T10:20:00Z' %}
+Asset downloader for GitHub releases, URLs, and Go projects.
 
-- Original date - {{ date }}
-- With timeago filter - {{ date | timeago }}
+## Documentation
+
+### Configuration
+- [Configuration Basics](configuration.md)

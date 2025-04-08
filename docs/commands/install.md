@@ -85,4 +85,4 @@ godyl install tools.yml --os linux --arch arm64
 ## Related Topics
 
 - [Global Flags](index#global-flags)
-- [Tool Configuration Format](../configuration/tools)
+- [Tool Configuration Format](../configuration/tools#content-start)

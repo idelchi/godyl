@@ -74,24 +74,24 @@ godyl install tools.yml
 
 ### Getting Started
 
-- [Installation](installation)
-- [Commands](commands/index)
+- [Installation](installation#content-start)
+- [Commands](commands/index#content-start)
 
 ### Configuration
 
-- [Configuration Basics](configuration/configuration)
-- [Default Configuration](configuration/defaults)
-- [Tools Format](configuration/tools)
-- [Templates](configuration/templates)
+- [Configuration Basics](configuration/configuration#content-start)
+- [Default Configuration](configuration/defaults#content-start)
+- [Tools Format](configuration/tools#content-start)
+- [Templates](configuration/templates#content-start)
 
 ### Command Reference
 
-- [Commands Overview](commands/)
-- [Install Command](commands/install)
-- [Download Command](commands/download)
-- [Dump Command](commands/dump)
-- [Update Command](commands/update)
-- [Cache Command](commands/cache)
+- [Commands Overview](commands/index#content-start)
+- [Install Command](commands/install#content-start)
+- [Download Command](commands/download#content-start)
+- [Dump Command](commands/dump#content-start)
+- [Update Command](commands/update#content-start)
+- [Cache Command](commands/cache#content-start)
 
 ## Use Cases
 

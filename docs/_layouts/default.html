@@ -13,7 +13,7 @@
     {% include head-custom.html %}
   </head>
   <body>
-    <a id="skip-to-content" href="#content">Skip to the content.</a>
+    <a id="skip-to-content" href="#content-start">Skip to the content.</a>
 
     <header class="page-header" role="banner">
       <div class="logo-container">
@@ -40,7 +40,7 @@
         <a href="{{ site.baseurl }}/commands/#content-start" class="btn">Commands</a>
         <a href="{{ site.baseurl }}/examples#content-start" class="btn">Examples</a>
       </div>
-      
+
       <!-- Breadcrumbs Navigation -->
       {% if page.parent %}
       <div class="breadcrumbs">
@@ -55,9 +55,9 @@
     </header>
 
     <main id="content" class="main-content" role="main">
-      <span id="content-start"></span>
+      <span id="content-start" tabindex="-1"></span>
       {{ content }}
-      
+
       <!-- Child Pages Links (if this is a parent page) -->
       {% if page.has_children %}
       <div class="child-pages">
@@ -76,16 +76,16 @@
         {% if page.previous %}
           <a href="{{ page.previous.url | relative_url }}" class="prev">← {{ page.previous.title }}</a>
         {% endif %}
-        
+
         {% if page.parent %}
           <a href="{{ site.baseurl }}/{{ page.parent | downcase }}{% if page.parent_path %}/{{ page.parent_path }}{% endif %}" class="up">↑ {{ page.parent }}</a>
         {% endif %}
-        
+
         {% if page.next %}
           <a href="{{ page.next.url | relative_url }}" class="next">{{ page.next.title }} →</a>
         {% endif %}
       </div>
-      
+
       <footer class="site-footer">
         {% if site.github.is_project_page %}
           <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a> is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.</span>

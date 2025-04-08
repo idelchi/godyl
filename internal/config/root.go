@@ -17,6 +17,9 @@ type Root struct {
 	// Log level (DEBUG, INFO, WARN, ERROR, SILENT)
 	Log string `validate:"oneof=DEBUG INFO WARN ERROR SILENT"`
 
+	// Path to config file
+	ConfigFile file.File `mapstructure:"config-file"`
+
 	// Path to .env file
 	EnvFile []file.File `mapstructure:"env-file"`
 

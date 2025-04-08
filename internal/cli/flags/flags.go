@@ -16,13 +16,14 @@ func Root(cmd *cobra.Command) {
 	// Or if additional env variables are to be used.
 	cmd.Flags().Bool("dry", false, "Run without making any changes (dry run)")
 	cmd.Flags().String("log", logger.INFO.String(), "Log level (DEBUG, INFO, WARN, ERROR, SILENT)")
-	cmd.Flags().StringSliceP("env-file", "e", []string{".env"}, "Path to .env file")
+	cmd.Flags().StringP("config-file", "c", tmp.CacheDir().WithFile("godyl.yml").Path(), "Path to config file")
+	cmd.Flags().StringSliceP("env-file", "e", []string{".env"}, "Paths to .env files")
 	cmd.Flags().StringP("defaults", "d", "defaults.yml", "Path to defaults file")
 	cmd.Flags().String("github-token", env.GetAny("GITHUB_TOKEN", "GH_TOKEN"), "GitHub token for authentication")
 	cmd.Flags().String("gitlab-token", env.Get("GITLAB_TOKEN"), "GitLab token for authentication")
 	cmd.Flags().String("url-token", env.Get("URL_TOKEN"), "URL token for authentication")
 	cmd.Flags().String("url-token-header", "Authorization", "URL token for authentication")
-	cmd.Flags().StringP("cache-dir", "c", tmp.CacheDir().Path(), "Path to cache directory")
+	cmd.Flags().StringP("cache-dir", "", tmp.CacheDir().Path(), "Path to cache directory")
 	cmd.Flags().StringP("cache-type", "", "file", "Type of cache (file, sqlite)")
 }
 

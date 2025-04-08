@@ -55,6 +55,10 @@ type Tokens struct {
 
 // Validate checks the configuration for errors.
 func (r *Root) Validate() error {
+	if r.IsSet("config-file") && !r.ConfigFile.Expanded().Exists() {
+		return fmt.Errorf("%w: config file %q does not exist", ErrUsage, r.ConfigFile.Expanded())
+	}
+
 	if r.IsSet("defaults") && !r.Defaults.Expanded().Exists() {
 		return fmt.Errorf("%w: defaults file %q does not exist", ErrUsage, r.Defaults.Expanded())
 	}

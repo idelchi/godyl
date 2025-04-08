@@ -1,2 +1,3 @@
 # output: ~/.local/bin
-gitlab-token: "configuration-file"
+defaults: "arse.yml"
+github-token: shieet

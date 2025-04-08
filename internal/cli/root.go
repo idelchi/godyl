@@ -3,9 +3,11 @@ package cli
 import (
 	"embed"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/idelchi/godyl/internal/cli/cache"
 	"github.com/idelchi/godyl/internal/cli/download"
@@ -17,6 +19,7 @@ import (
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/cobraext"
+	"github.com/idelchi/godyl/pkg/pretty"
 )
 
 // Command encapsulates a root cobra command with its associated config and embedded files.
@@ -76,12 +79,15 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 				return fmt.Errorf("validating config: %w", err)
 			}
 
+			viper.SetConfigFile(cfg.Root.ConfigFile.Expanded().Path())
+			if err := viper.ReadInConfig(); err != nil && cfg.Root.IsSet("config-file") {
+				return fmt.Errorf("reading config file: %w", err)
+			}
+
 			// Load environment variables from .env files such that it's available for the subcommands
 			for _, file := range cfg.Root.EnvFile {
-				if err := utils.LoadDotEnv(file); err != nil {
-					if cfg.Root.IsSet("env-file") {
-						return fmt.Errorf("loading .env file: %w", err)
-					}
+				if err := utils.LoadDotEnv(file); err != nil && cfg.Root.IsSet("env-file") {
+					return fmt.Errorf("loading .env file: %w", err)
 				}
 			}
 
@@ -95,6 +101,10 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 			if err := cfg.Root.Validate(); err != nil {
 				return fmt.Errorf("validating config: %w", err)
 			}
+
+			pretty.PrintYAML(cfg.Root)
+
+			os.Exit(0)
 
 			return nil
 		},

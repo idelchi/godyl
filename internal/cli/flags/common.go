@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -34,13 +35,24 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 
 	configFile := cmd.Root().Context().Value("config-file")
 	// isSet := cmd.Root().Context().Value("config-file-set")
+	// if configFile != nil {
+	// 	config := file.File(configFile.(string))
+	// 	viper.SetConfigFile(config.Path())
+	// 	if err := viper.ReadInConfig(); err != nil {
+	// 		if isSet != nil && isSet.(bool) {
+	// 			return fmt.Errorf("reading config file: %w", err)
+	// 		}
+	// 	}
+	// }
 	if configFile != nil {
-		file := configFile.(string)
-		viper.SetConfigFile(file)
-		if err := viper.ReadInConfig(); err != nil {
-			// if isSet != nil && isSet.(bool) {
+		config := file.File(configFile.(string))
+		content, err := config.Open()
+		if err != nil {
+			return fmt.Errorf("opening config file: %w", err)
+		}
+
+		if err := viper.ReadConfig(content); err != nil {
 			return fmt.Errorf("reading config file: %w", err)
-			// }
 		}
 	}
 

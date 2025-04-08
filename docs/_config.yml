@@ -3,9 +3,6 @@ description: "Asset downloader for GitHub & GitLab releases, URLs, and Go projec
 baseurl: "/godyl" # Update this with your repository name
 url: "https://idelchi.github.io" # Update this with your GitHub username
 
-source: ./docs
-
-
 # Theme settings
 remote_theme: pages-themes/cayman@v0.2.0
 plugins:
@@ -61,6 +58,3 @@ heading_anchors: true
 # Enable copy code buttons
 enable_copy_code_button: true
 
-# Includes
-include:
-  - _site

@@ -1,0 +1,288 @@
+---
+---
+
+/* @import "{{ site.theme }}"; */
+@import "jekyll-theme-cayman";
+
+/* Logo styling */
+.logo-container {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.logo {
+  height: 100px;
+  width: auto;
+  transition: transform 0.2s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+/* Main navigation */
+.main-nav {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.main-nav .btn {
+  margin: 0.3rem;
+  font-size: 0.9rem;
+}
+
+/* Breadcrumbs styling */
+.breadcrumbs {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 0.3rem;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.breadcrumbs a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+/* Child pages section */
+.child-pages {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ebec;
+  border-radius: 0.3rem;
+}
+
+.child-pages h2 {
+  margin-top: 0;
+  font-size: 1.3rem;
+}
+
+.child-pages ul {
+  margin-bottom: 0;
+}
+
+.child-pages li {
+  margin-bottom: 0.5rem;
+}
+
+/* Page navigation (prev/next) */
+.page-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ebec;
+}
+
+.page-navigation a {
+  padding: 0.5rem 0.8rem;
+  background-color: #f3f6fa;
+  border-radius: 0.3rem;
+  text-decoration: none;
+  color: $section-headings-color;
+}
+
+.page-navigation a:hover {
+  background-color: darken(#f3f6fa, 5%);
+}
+
+.page-navigation .prev {
+  margin-right: auto;
+}
+
+.page-navigation .up {
+  margin: 0 1rem;
+}
+
+.page-navigation .next {
+  margin-left: auto;
+}
+
+/* Add padding to account for fixed header when using anchor links */
+#content-start {
+  display: block;
+  height: 0;
+  margin-top: -20px;  /* Adjust this value if needed */
+  padding-top: 20px;  /* Should match the negative margin */
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Smooth scrolling for better user experience */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Content enhancements */
+.main-content {
+  padding-top: 2rem; /* Ensure content doesn't start too close to the top */
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: $section-headings-color;
+  }
+
+  h1 {
+    border-bottom: 1px solid #e9ebec;
+    padding-bottom: 0.5rem;
+  }
+
+  h2 {
+    border-bottom: 1px solid #f3f6fa;
+    padding-bottom: 0.3rem;
+  }
+
+  code {
+    padding: 2px 4px;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    color: #567482;
+    background-color: #f3f6fa;
+    border-radius: 0.3rem;
+  }
+
+  pre {
+    padding: 0.8rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #567482;
+    background-color: #f3f6fa;
+    border: solid 1px #dce6f0;
+    border-radius: 0.3rem;
+
+    > code {
+      padding: 0;
+      margin: 0;
+      color: #567482;
+      word-break: normal;
+      white-space: pre;
+      background: transparent;
+      border: 0;
+    }
+  }
+
+  /* Tables */
+  table {
+    display: block;
+    width: 100%;
+    overflow: auto;
+    word-break: normal;
+    word-break: keep-all;
+    -webkit-overflow-scrolling: touch;
+    border-collapse: collapse;
+    margin: 1rem 0;
+
+    th {
+      font-weight: bold;
+      background-color: #f3f6fa;
+    }
+
+    th, td {
+      padding: 0.5rem 1rem;
+      border: 1px solid #e9ebec;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8f8f8;
+    }
+  }
+
+  /* Callouts */
+  blockquote {
+    padding: 0 1rem;
+    margin-left: 0;
+    color: #819198;
+    border-left: 0.3rem solid #dce6f0;
+
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+/* Sidebar for command pages (visible on larger screens) */
+@media screen and (min-width: 64em) {
+  .command-sidebar {
+    float: right;
+    width: 220px;
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ebec;
+    border-radius: 0.3rem;
+
+    h3 {
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+
+    ul {
+      margin-bottom: 0;
+      padding-left: 1.2rem;
+    }
+  }
+
+  .with-sidebar {
+    margin-right: 240px;
+  }
+}
+
+/* Back to top link */
+.back-to-top {
+  margin-top: 2rem;
+  text-align: right;
+
+  a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #f3f6fa;
+    border-radius: 0.3rem;
+    text-decoration: none;
+    color: $section-headings-color;
+
+    &:hover {
+      background-color: darken(#f3f6fa, 5%);
+    }
+  }
+}
+
+/* Custom element for demonstration content */
+.demo-section {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 42em) {
+  .main-nav .btn {
+    display: block;
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  .page-navigation {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .page-navigation a {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -44,6 +44,10 @@ collections:
   docs:
     permalink: "/:collection/:path/"
     output: true
+    
+relative_links:
+  enabled:     true
+  collections: true
 
 # Define which collections appear in the navigation
 just_the_docs:

@@ -91,6 +91,11 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 				return fmt.Errorf("binding flags: %w", err)
 			}
 
+			// Validate the root configuration
+			if err := cfg.Root.Validate(); err != nil {
+				return fmt.Errorf("validating config: %w", err)
+			}
+
 			return nil
 		},
 		RunE: cobraext.UnknownSubcommandAction,

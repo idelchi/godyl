@@ -1,0 +1,2 @@
+# output: ~/.local/bin
+output: .bin-{{ .OS }}-{{ .ARCH_LONG }}

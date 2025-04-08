@@ -2,8 +2,10 @@ package flags
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
+	"github.com/idelchi/godyl/pkg/pretty"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -25,6 +27,7 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	viper.SetEnvPrefix(envPrefix)
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()
+	viper.SetConfigFile("./godyl.yml")
 
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
 		return fmt.Errorf("binding flags: %w", err)
@@ -36,6 +39,10 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 
 	// Set the viper instance on the config struct
 	cfg.SetViper(viper)
+
+	pretty.PrintYAML(cfg)
+
+	os.Exit(0)
 
 	return nil
 }

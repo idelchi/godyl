@@ -21,7 +21,7 @@ As an alternative to above, custom commands can be used as well.
 
 This uses simple heuristics to select the correct binary to download, and will not work for all projects.
 
-However, most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
+However, most properties can be overridden, with `hints` and `skip` used to help the tool make the correct decision.
 
 Godyl has been tested on:
 
@@ -29,7 +29,7 @@ Godyl has been tested on:
 - **Windows**: `amd64`
 - **MacOS**: `arm64`
 
-for the tools listed in the default [`tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) file.
+for the tools listed in the default [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) file.
 
 > **Note**: To avoid GitHub API rate limiting when using `github` as a source type, set up a GitHub API token by either using the `--github-token` flag or setting the `GODYL_GITHUB_TOKEN` environment variable.
 
@@ -48,7 +48,7 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install
 Download a single tool:
 
 ```sh
-godyl download idelchi/godyl --output ~/.local/bin
+godyl download idelchi/godyl
 ```
 
 Create a `tools.yml` file to define multiple tools:
@@ -67,7 +67,7 @@ Create a `tools.yml` file to define multiple tools:
 Then install them all at once:
 
 ```sh
-godyl install tools.yml --output ~/.local/bin
+godyl install tools.yml
 ```
 
 ## Documentation

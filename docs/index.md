@@ -6,6 +6,8 @@ layout: default
 
 Asset downloader for GitHub releases, URLs, and Go projects.
 
+[Installation](installation.md) | [GitHub Repository](https://github.com/idelchi/godyl)
+
 ## Features
 
 - Download from GitHub releases

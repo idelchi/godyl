@@ -80,13 +80,6 @@ defaults:
       type: "pages"
     values:
       render_with_liquid: false
-  # Command pages default
-  - scope:
-      path: "commands"
-      type: "pages"
-    values:
-      layout: "default"
-      parent: "Commands"
   # 404 page
   - scope:
       path: "404-page.md"

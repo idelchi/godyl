@@ -5,7 +5,6 @@ url: "https://idelchi.github.io"
 
 # Theme settings
 remote_theme: pages-themes/cayman@v0.2.0
-# remote_theme: mmistakes/minimal-mistakes
 # remote_theme: just-the-docs/just-the-docs
 
 plugins:
@@ -65,6 +64,7 @@ just_the_docs:
 heading_anchors: true
 
 # Enable copy code buttons
+# Not valid for cayman theme
 enable_copy_code_button: true
 
 permalink: pretty

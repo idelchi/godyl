@@ -23,20 +23,15 @@ This uses simple heuristics to select the correct binary to download, and will n
 
 However, most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
 
-> [!NOTE]
-> Tested on:
->
-> **Linux**: `amd64`, `arm64`
->
-> **Windows**: `amd64`
->
-> **MacOS**: `arm64`
->
-> for tools listed in [tools.yml](./tools.yml)
+Godyl has been tested on:
 
-> [!NOTE]
-> Set up a GitHub API token to avoid rate limiting when using `github` as a source type.
-> See [configuration](#configuration) for more information, or simply `export GODYL_GITHUB_TOKEN=<token>`
+- **Linux**: `amd64`, `arm64`
+- **Windows**: `amd64`
+- **MacOS**: `arm64`
+
+for the tools listed in the default [`tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) file.
+
+> **Note**: To avoid GitHub API rate limiting when using `github` as a source type, set up a GitHub API token by either using the `--github-token` flag or setting the `GODYL_GITHUB_TOKEN` environment variable.
 
 Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
 
@@ -80,14 +75,14 @@ godyl install tools.yml --output ~/.local/bin
 ### Getting Started
 
 - [Installation](installation)
-- [Usage](usage)
+- [Commands](commands/index)
 
 ### Configuration
 
-- [Configuration Basics](configuration)
-- [Tools Format](tools-format)
-- [Default Configuration](defaults)
-- [Advanced Features](advanced-features)
+- [Configuration Basics](configuration/configuration)
+- [Default Configuration](configuration/defaults)
+- [Tools Format](configuration/tools)
+- [Templates](configuration/templates)
 
 ### Command Reference
 
@@ -97,12 +92,6 @@ godyl install tools.yml --output ~/.local/bin
 - [Dump Command](commands/dump)
 - [Update Command](commands/update)
 - [Cache Command](commands/cache)
-
-### Examples and Templates
-
-- [Simple Examples](examples)
-- [Advanced Examples](advanced-examples)
-- [Template Reference](templates)
 
 ## Use Cases
 
@@ -121,11 +110,14 @@ Include a `tools.yml` file in your project repository to ensure everyone uses th
 ```yaml
 - name: google/go-jsonnet
   version: v0.18.0
-  tags: [go, linter]
+  tags:
+    - json
 
 - name: golangci/golangci-lint
   version: v1.52.2
-  tags: [go, linter]
+  tags:
+    - go
+    - linter
 ```
 
 ## External Links

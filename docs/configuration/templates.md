@@ -13,7 +13,7 @@ The following variables are available in templates:
 
 | Variable              | Description                         | Example Value                                |
 | --------------------- | ----------------------------------- | -------------------------------------------- |
-| `{{ .Name }}`         | The name of the tool                | `godyl`                                      |
+| `{{ .Name }}`         | The name of the tool                | `idelchi/godyl`                              |
 | `{{ .Output }}`       | The output path                     | `~/.local/bin`                               |
 | `{{ .Exe }}`          | The name of the executable          | `godyl`                                      |
 | `{{ .Env.<> }}`       | Any environment variable            | `{{ .Env.HOME }}` -> `/home/user`            |

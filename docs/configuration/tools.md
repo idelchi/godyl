@@ -5,7 +5,11 @@ title: Tools Format
 
 # Tools Format
 
-Tools can be defined in a YAML file (typically `tools.yml`). You can use a simple form or a full form for tool definitions.
+Tools can be defined in a YAML file (typically `tools.yml`).
+
+See [`tools.yml`](https://github.com/idelchi/godyl/blob/main/tools.yml) for getting started.
+
+You can use a simple form or a full form for tool definitions.
 
 ### Simple Form
 
@@ -13,13 +17,13 @@ Tools can be defined in a YAML file (typically `tools.yml`). You can use a simpl
 - idelchi/godyl
 ```
 
-This is the simplest form to download the latest release of `godyl` from the GitHub repository `idelchi/godyl`.
+This is the simplest form to download the latest release of `godyl` from the the default source type (`github`).
 
 If the path is a URL, it will be considered as a `source.url` type. Otherwise, it will be assumed to be a `source.github` type in the form `owner/repo`.
 
 ### Full Form
 
-For more complex configurations, you can use the full form:
+For more complex configurations, you can use the extended form:
 
 ```yaml
 name: godyl
@@ -40,15 +44,85 @@ aliases:
   - gd
 source:
   type: github
-  github:
-    repo: godyl
-    owner: idelchi
-    token: ${GITHUB_TOKEN}
 tags:
   - cli
   - downloader
-strategy: none
+strategy: upgrade
 ```
+
+A complete reference for all fields is available below.
+
+### Full form
+
+```yaml
+name: string
+description: string
+version:
+  version: string
+  commands: list[string]
+  patterns: list[regex]
+path: string
+output: string
+exe:
+  name: string
+  patterns: list[regex]
+platform:
+  os: string
+  architecture:
+    type: string
+    version: string
+  library: string
+  extension: string
+  distribution: string
+aliases: list[string]
+values: dict[string]
+fallbacks: list[string]
+hints:
+  - pattern: regex
+    weight: string
+    must: boolean
+source:
+  type: string
+  github:
+    repo: string
+    owner: string
+    token: string
+  gitlab:
+    repo: string
+    owner: string
+    token: string
+  url:
+    token:
+      token: string
+      header: string
+      scheme: string
+    headers: { string: [strings] }
+  go:
+    command: string
+commands:
+  pre:
+    commands: list[string]
+    allow_failure:
+    exit_on_error: boolean
+  post: list[string]
+    commands: list[string]
+    allow_failure:
+    exit_on_error: boolean
+tags:
+  - string
+strategy: string
+extensions:
+  - string
+skip:
+  - condition: string
+    reason: string
+mode: string
+env:
+  key: string
+no_verify_ssl: boolean
+```
+
+Most of the fields also support simplified forms which will be described below.
 
 ## Templating
 

@@ -3,43 +3,7 @@ layout: default
 title: Advanced Features
 ---
 
-# Advanced Features
-
-This page covers advanced features of Godyl, including templating, platform inference, and special use cases.
-
-## Template Variables
-
-Godyl supports templating in many configuration fields. The following variables are available:
-
-| Variable              | Description                                               |
-| --------------------- | --------------------------------------------------------- |
-| `{{ .Name }}`         | The name of the tool or project                           |
-| `{{ .Output }}`       | The output path template for built artifacts              |
-| `{{ .Exe }}`          | The name of the executable                                |
-| `{{ .Env.<> }}`       | Any environment variable                                  |
-| `{{ .Values.<> }}`    | Custom values for templating                              |
-| `{{ .Version }}`      | The version of the tool or project                        |
-| `{{ .OS }}`           | The operating system (e.g., `linux`, `darwin`, `windows`) |
-| `{{ .ARCH }}`         | The architecture type (e.g., `amd64`, `arm64`)            |
-| `{{ .ARCH_VERSION }}` | The version of the architecture, if applicable            |
-| `{{ .LIBRARY }}`      | The system library (e.g., `gnu`, `musl`)                  |
-| `{{ .EXTENSION }}`    | The file extension specific to the platform               |
-| `{{ .DISTRIBUTION }}` | The distribution name (e.g., `debian`, `alpine`)          |
-
-## Templating Functions
-
-All functions from the [slim-sprig](https://github.com/go-task/slim-sprig) library are available for use in templates. Some common functions include:
-
-- `eq`: Equal comparison
-- `ne`: Not equal comparison
-- `lt`, `le`, `gt`, `ge`: Less than, less than or equal, greater than, greater than or equal
-- `and`, `or`, `not`: Logical operations
-- `contains`, `hasPrefix`, `hasSuffix`: String operations
-- `sub`, `add`, `mul`, `div`: Arithmetic operations
-- `list`: Create a list
-- `has`: Check if a list contains a value
-
-## Platform Inference
+# Platform Inference
 
 Godyl can infer platform details from asset names. Here's how different platforms are recognized:
 

@@ -35,7 +35,7 @@ These flags are available for all commands:
 | `--gitlab-token`      | `GODYL_GITLAB_TOKEN`     | `${GODYL_GITLAB_TOKEN}`              | GitLab token for authentication              |
 | `--url-token`         | `GODYL_URL_TOKEN`        | `${GODYL_URL_TOKEN}`                 | URL token for authentication                 |
 | `--url-token-header`  | `GODYL_URL_TOKEN_HEADER` | `Authorization`                      | URL header for authentication                |
-| `--cache-dir`         | `GODYL_CACHE_DIR`        | `${XDG_CACHE_HOME}`                  | Path to cache directory                      |
+| `--cache-dir`         | `GODYL_CACHE_DIR`        | `${XDG_CACHE_HOME}/godyl`            | Path to cache directory                      |
 | `--cache-type`        | `GODYL_CACHE_TYPE`       | `file`                               | Type of cache (file, sqlite)                 |
 
 For `--env-file` and `--defaults`, the defaults are used only if no issue is encountered while loading them.
@@ -53,3 +53,7 @@ If neither are available, it will default to `./godyl.yml`.
 The value for `--cache-dir` defaults to `$XDG_CACHE_HOME/godyl`. If `XDG_CACHE_HOME` is empty, it will be set to `$HOME/.cache/godyl`.
 
 If neither are available, it will default to a subdirectory `godyl` in the system temporary directory.
+
+Temporary assets are downloaded by default in `$XDG_RUNTIME_DIR/godyl`. If `XDG_RUNTIME_DIR` is empty, it will be set to `/tmp/${USER}/godyl`. If user is not set, it will be set to `/tmp/godyl`.
+
+Equivalent fallbacks are made for other platforms such as `Windows` and `macOS`.

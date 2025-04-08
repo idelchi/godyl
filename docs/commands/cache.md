@@ -11,7 +11,7 @@ The `cache` command allows interaction with Godyl's cache.
 ## Syntax
 
 ```sh
-godyl cache [flags]
+godyl cache \[flags\]
 ```
 
 ## Description

@@ -596,7 +596,7 @@
       - set -e
       - rm -rf {{ .Output }} /tmp/PathPicker
       - mkdir -p {{ .Output }}
-      - gissst clone --branchss={{ .Version }} https://github.com/facebook/PathPicker.git /tmp/PathPicker
+      - git clone --branchss={{ .Version }} https://github.com/facebook/PathPicker.git /tmp/PathPicker
       - cp /tmp/PathPicker/fpp {{ .Output }}/fpp
       - rm -rf /tmp/PathPicker
   tags:

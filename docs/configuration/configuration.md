@@ -49,8 +49,8 @@ The `defaults.yml` file is used to set default values for all tools. It supports
 An example of sane default values are provided in [defaults.yml](https://github.com/idelchi/godyl/blob/main/defaults.yml) which is
 also embedded in the binary.
 
-See [Default Configuration File](defaults#content-start) for more details.
+See [Default Configuration File](/godyl/configuration/defaults#content-start) for more details.
 
 ## Related Topics
 
-- [Tool Configuration Format](tools#content-start)
+- [Tool Configuration Format](/godyl/commands/tools#content-start)

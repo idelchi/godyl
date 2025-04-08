@@ -7,7 +7,7 @@ title: Tools Format
 
 Tools can be defined in a YAML file (typically `tools.yml`).
 
-See [`tools.yml`](https://github.com/idelchi/godyl/blob/main/tools.yml) for getting started.
+See [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) for getting started.
 
 You can use a simple form or a full form for tool definitions.
 

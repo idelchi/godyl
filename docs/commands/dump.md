@@ -11,7 +11,7 @@ The `dump` command displays various configuration settings and information about
 ## Syntax
 
 ```sh
-`godyl [flags] dump [config|defaults|env|platform|tools|cache] [flags]`
+godyl [flags] dump [config|defaults|env|platform|tools|cache] [flags]
 ```
 
 ## Description

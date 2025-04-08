@@ -9,7 +9,7 @@ There are several ways to install `godyl`:
 
 ## From Source
 
-If you have Go installed (1.20+), you can install directly from source:
+If you have Go installed (1.24+), you can install directly from source:
 
 ```sh
 go install github.com/idelchi/godyl@latest
@@ -52,6 +52,6 @@ Godyl has been tested on:
 - **Windows**: `amd64`
 - **MacOS**: `arm64`
 
-For the tools listed in the default `tools.yml` file.
+for the tools listed in the default [`tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) file.
 
 > **Note**: To avoid GitHub API rate limiting when using `github` as a source type, set up a GitHub API token by either using the `--github-token` flag or setting the `GODYL_GITHUB_TOKEN` environment variable.

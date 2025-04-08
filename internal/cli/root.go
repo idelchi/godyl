@@ -73,9 +73,9 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 			cfg.Root.Log = strings.ToUpper(cfg.Root.Log)
 
 			// Validate the root configuration
-			if err := cfg.Root.Validate(); err != nil {
-				return fmt.Errorf("validating config: %w", err)
-			}
+			// if err := cfg.Root.Validate(); err != nil {
+			// 	return fmt.Errorf("validating config: %w", err)
+			// }
 
 			// Store the path in the context
 			ctx := cmd.Context()

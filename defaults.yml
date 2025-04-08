@@ -30,8 +30,6 @@ extensions:
 mode: find
 source:
   type: github
-  github:
-    token: from_default
   url:
     token:
       scheme: Basic

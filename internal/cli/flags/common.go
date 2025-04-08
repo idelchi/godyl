@@ -55,13 +55,13 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	if configFile != nil {
 		config := file.File(configFile.(string))
 		content, err := Trim(config, PrefixToYAML(envPrefix, cmd.Root().Name()))
-		if err != nil {
+		if err != nil && isSet != nil && isSet.(bool) {
 			return fmt.Errorf("trimming config file: %w", err)
-		}
-
-		viper.SetConfigType("yaml")
-		if err := viper.ReadConfig(content); err != nil && isSet != nil && isSet.(bool) {
-			return fmt.Errorf("reading config file: %w", err)
+		} else if err == nil {
+			viper.SetConfigType("yaml")
+			if err := viper.ReadConfig(content); err != nil && isSet != nil && isSet.(bool) {
+				return fmt.Errorf("reading config file: %w", err)
+			}
 		}
 	}
 

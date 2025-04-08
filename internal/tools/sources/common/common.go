@@ -44,9 +44,7 @@ func Download(data InstallData) (string, file.File, error) {
 		}
 
 		defer func() {
-			if err == nil {
-				dir.Remove() //nolint:gosec 		// TODO(Idelchi): Address this later.
-			}
+			dir.Remove() //nolint:gosec 		// TODO(Idelchi): Address this later.
 		}()
 	}
 

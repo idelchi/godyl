@@ -3,31 +3,69 @@ layout: default
 title: Tools Format
 ---
 
-# Tools YAML Format
+# Tools Format
 
-The `tools.yml` file is used to define the tools that Godyl should download and install. This page describes the format of this file in detail.
+Tools can be defined in a YAML file (typically `tools.yml`). You can use a simple form or a full form for tool definitions.
 
-## Basic Structure
-
-A `tools.yml` file contains a list of tools to download:
-
-```yaml
-- name: tool1
-  # tool1 configuration...
-- name: tool2
-  # tool2 configuration...
-```
-
-### Simple form
+### Simple Form
 
 ```yaml
 - idelchi/godyl
 ```
 
-Above is the `simple` form to attempt to download the latest release of `godyl` from `idelchi/godyl`.
+This is the simplest form to download the latest release of `godyl` from the GitHub repository `idelchi/godyl`.
 
-If it is a URL, it will be considered as a `source.url` type.
-Otherwise, it will be assumed to be a `source.github` type on the form `owner/repo`.
+If the path is a URL, it will be considered as a `source.url` type. Otherwise, it will be assumed to be a `source.github` type in the form `owner/repo`.
+
+### Full Form
+
+For more complex configurations, you can use the full form:
+
+```yaml
+name: godyl
+description: Asset downloader
+version:
+  version: v0.1.0
+path: https://github.com/idelchi/godyl/releases/download/v0.1.0/godyl_linux_amd64.tar.gz
+output: ~/.local/bin
+exe:
+  name: godyl
+  patterns:
+    - "{{ .Exe }}{{ .EXTENSION }}$"
+platform:
+  os: linux
+  architecture:
+    type: amd64
+aliases:
+  - gd
+source:
+  type: github
+  github:
+    repo: godyl
+    owner: idelchi
+    token: ${GITHUB_TOKEN}
+tags:
+  - cli
+  - downloader
+strategy: none
+```
+
+## Templating
+
+Many fields in the configuration support templating with variables like:
+
+- `{{ .Name }}` - The name of the tool
+- `{{ .Output }}` - The output path
+- `{{ .Exe }}` - The executable name
+- `{{ .OS }}` - The operating system
+- `{{ .ARCH }}` - The architecture
+- `{{ .EXTENSION }}` - The file extension for the platform
+
+For example, to set a path that adapts to the current platform:
+
+```yaml
+path: https://example.com/download/{{ .Name }}_{{ .OS }}_{{ .ARCH }}.tar.gz
+```
 
 ## Available Fields
 

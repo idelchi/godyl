@@ -8,6 +8,9 @@ remote_theme: pages-themes/cayman@v0.2.0
 plugins:
 - jekyll-remote-theme
 
+gems:
+  - jekyll-relative-links
+
 color_scheme: light
 
 # Enable search

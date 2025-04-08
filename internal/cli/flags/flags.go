@@ -4,6 +4,7 @@ import (
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/path/folder"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +17,9 @@ func Root(cmd *cobra.Command) {
 	// Or if additional env variables are to be used.
 	cmd.Flags().Bool("dry", false, "Run without making any changes (dry run)")
 	cmd.Flags().String("log", logger.INFO.String(), "Log level (DEBUG, INFO, WARN, ERROR, SILENT)")
-	cmd.Flags().StringP("config-file", "c", tmp.ConfigDir().WithFile("godyl.yml").Path(), "Path to config file")
+	// cmd.Flags().StringP("config-file", "c", tmp.ConfigDir().WithFile("godyl.yml").Path(), "Path to config file")
+	cmd.Flags().StringP("config-file", "c", folder.Folder(".").WithFile("godyl.yml").Path(), "Path to config file")
+
 	cmd.Flags().StringSliceP("env-file", "e", []string{".env"}, "Paths to .env files")
 	cmd.Flags().StringP("defaults", "d", "defaults.yml", "Path to defaults file")
 	cmd.Flags().String("github-token", env.GetAny("GITHUB_TOKEN", "GH_TOKEN"), "GitHub token for authentication")

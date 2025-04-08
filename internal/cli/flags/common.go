@@ -32,6 +32,18 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()
 
+	configFile := cmd.Root().Context().Value("config-file")
+	// isSet := cmd.Root().Context().Value("config-file-set")
+	if configFile != nil {
+		file := configFile.(string)
+		viper.SetConfigFile(file)
+		if err := viper.ReadInConfig(); err != nil {
+			// if isSet != nil && isSet.(bool) {
+			return fmt.Errorf("reading config file: %w", err)
+			// }
+		}
+	}
+
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
 		return fmt.Errorf("binding flags: %w", err)
 	}

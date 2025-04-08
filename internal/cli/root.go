@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"embed"
 	"fmt"
 	"strings"
@@ -76,10 +77,11 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 				return fmt.Errorf("validating config: %w", err)
 			}
 
-			cfg.Root.GetViper().SetConfigFile(cfg.Root.ConfigFile.Expanded().Path())
-			if err := cfg.Root.GetViper().ReadInConfig(); err != nil && cfg.Root.IsSet("config-file") {
-				return fmt.Errorf("reading config file: %w", err)
-			}
+			// Store the path in the context
+			ctx := cmd.Context()
+			ctx = context.WithValue(ctx, "config-file", cfg.Root.ConfigFile.Expanded().Path())
+			ctx = context.WithValue(ctx, "config-file-set", cfg.Root.IsSet("config-file"))
+			cmd.SetContext(ctx)
 
 			// Load environment variables from .env files such that it's available for the subcommands
 			for _, file := range cfg.Root.EnvFile {

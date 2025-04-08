@@ -63,4 +63,4 @@ enable_copy_code_button: true
 
 # Includes
 include:
-  - _pages
+  - _site

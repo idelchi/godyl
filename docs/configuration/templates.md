@@ -34,18 +34,18 @@ Godyl includes all functions from the [slim-sprig](https://github.com/go-task/sl
 
 The following fields in the tool configuration support templating:
 
-| Field             | Example                                                                |
-| ----------------- | ---------------------------------------------------------------------- |
-| `output`          | `output: bin/{{ .OS }}-{{ .ARCH }}`                                    |
-| `skip.condition`  | `condition: '{{ eq .OS "windows" }}'`                                  |
-| `version`         | `version: v{{ if eq .OS "windows" }}0.1.0{{ else }}0.2.0{{ end }}`     |
-| `source.type`     | `type: {{ if eq .OS "windows" }}url{{ else }}github{{ end }}`          |
-| `exe.patterns`    | `patterns: ["^{{ .OS }}-{{ .Exe}}"]`                                   |
-| `extensions`      | `extensions: ['{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}']`     |
-| `commands`        | `commands: ["pip install {{ .Exe }}=={{ .Version }}"]`                 |
-| `hints[].pattern` | `pattern: "{{ .OS }}"`                                                 |
-| `hints[].weight`  | `weight: '{{ if eq .ARCH "arm" }}1{{ else }}0{{ end }}'`               |
-| `path`            | `path: "https://example.com/{{ .Name }}_{{ .OS }}_{{ .ARCH }}.tar.gz"` |
+| Field               | Example                                                                |
+| ------------------- | ---------------------------------------------------------------------- |
+| `output`            | `output: bin/{{ .OS }}-{{ .ARCH }}`                                    |
+| `skip.condition`    | `condition: '{{ eq .OS "windows" }}'`                                  |
+| `version`           | `version: v{{ if eq .OS "windows" }}0.1.0{{ else }}0.2.0{{ end }}`     |
+| `source.type`       | `type: {{ if eq .OS "windows" }}url{{ else }}github{{ end }}`          |
+| `exe.patterns`      | `patterns: ["^{{ .OS }}-{{ .Exe}}"]`                                   |
+| `extensions`        | `extensions: ['{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}']`     |
+| `commands.pre/post` | `["pip install {{ .Exe }}=={{ .Version }}"]`                           |
+| `hints[].pattern`   | `pattern: "{{ .OS }}"`                                                 |
+| `hints[].weight`    | `weight: '{{ if eq .ARCH "arm" }}1{{ else }}0{{ end }}'`               |
+| `path`              | `path: "https://example.com/{{ .Name }}_{{ .OS }}_{{ .ARCH }}.tar.gz"` |
 
 ## Conditional Logic
 
@@ -61,8 +61,6 @@ version: |-
     v0.3.0
   {{- end -}}
 ```
-
-The `-` in the delimiters (`{{-` and `-}}`) removes whitespace before or after the template action.
 
 ## Examples
 

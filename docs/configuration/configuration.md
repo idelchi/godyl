@@ -53,4 +53,4 @@ See [Default Configuration File](defaults#content-start) for more details.
 
 ## Related Topics
 
-- [Tool Configuration Format](tools)
+- [Tool Configuration Format](tools#content-start)

@@ -7,7 +7,7 @@ title: Default Configuration
 
 Godyl uses a default configuration to provide sensible defaults for all tools. This can be overridden by providing your own `defaults.yml` file.
 
-Furthermore, many values can be overridden as described in the [Configuration](configuration/configuration) section.
+Furthermore, many values can be overridden as described in the [Configuration](configuration/configuration#content-start) section.
 
 ## Default Configuration File
 

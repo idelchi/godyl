@@ -12,36 +12,52 @@ Godyl uses a default configuration to provide sensible defaults for all tools. T
 The default configuration is embedded in the Godyl binary and looks like this:
 
 ```yaml
-output: ~/.local/bin
-
+output: .bin-{{ .OS }}-{{ .ARCH_LONG }}
 exe:
   patterns:
     - "^{{ .Exe }}{{ .EXTENSION }}$"
     - ".*/{{ .Exe }}{{ .EXTENSION }}$"
-
 hints:
   - pattern: "{{ .Exe }}"
     weight: 1
-  - pattern: zip
-    weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
-  - pattern: "armv{{.ARCH_VERSION}}"
-    weight: 3
+  - pattern: "armv{{ .ARCH_VERSION }}"
+    weight: 4
   - pattern: "armv{{sub .ARCH_VERSION 1}}"
-    weight: 2
+    weight: 3
   - pattern: "armv{{sub .ARCH_VERSION 2}}"
+    weight: 2
+  - pattern: "arm[^v].*"
     weight: 1
-
+  - pattern: "musleabihf"
+    weight: |-
+      {{- if and (eq .DISTRIBUTION "alpine") (eq .ARCH "arm") -}}
+      1
+      {{- else -}}
+      0
+      {{- end -}}
 extensions:
   - '{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}'
-  - '{{ if has .OS (list "windows" "darwin") }}.zip{{ else }}{{ end }}'
+  - '{{ if eq .OS "windows" }}.zip{{ else }}{{ end }}'
+  - '{{ if eq .OS "darwin" }}.zip{{ else }}{{ end }}'
   - .tar.gz
-
 mode: find
 source:
   type: github
+  url:
+    token:
+      scheme: Basic
 strategy: none
 env:
-  GH_TOKEN: "{{ .Env.GODYL_GITHUB_TOKEN }}"
+  GH_TOKEN: $GODYL_GITHUB_TOKEN
+version:
+  commands:
+    - --version
+    - -v
+    - -version
+    - version
+  patterns:
+    - '.*?(\d+\.\d+\.\d+).*'
+    - '.*?(\d+\.\d+).*'
 ```
 
 ## Overriding Defaults

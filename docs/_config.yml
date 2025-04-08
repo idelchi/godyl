@@ -85,3 +85,5 @@ defaults:
       path: "404-page.md"
     values:
       render_with_liquid: true
+
+markdown: kramdown

@@ -17,7 +17,7 @@ All of above will be merged together to form defaults for each tool being proces
 
 ## Commandline flags
 
-See [Command Reference](commands/index) and sub-commands for details on available flags and their default values.
+See [Command Reference](../commands/index#content-start) and sub-commands for details on available flags and their default values.
 
 ## Environment variables
 
@@ -25,7 +25,7 @@ Environment variables are available for all flag arguments and are prefixed with
 
 For the `install` and `download` subcommands, the subcommand prefix is `TOOL_`.
 
-The `.env` files follow the same format.
+The `.env` files follow the same format. It further supports a `YAML`-like syntax, where you can use `:` to separate keys and values.
 
 ## YAML Configuration
 
@@ -49,6 +49,8 @@ The `defaults.yml` file is used to set default values for all tools. It supports
 An example of sane default values are provided in [defaults.yml](https://github.com/idelchi/godyl/blob/main/defaults.yml) which is
 also embedded in the binary.
 
+See [[Default Configuration File](defaults#content-start) for more details.
+
 ## Related Topics
 
-- [Tool Configuration Format](./tools-format)
+- [Tool Configuration Format](tools-format)

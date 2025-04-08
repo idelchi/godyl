@@ -2,7 +2,7 @@
 layout: default
 ---
 
-# Godyl
+# Godyl updated my journal
 
 Asset downloader for GitHub releases, URLs, and Go projects.
 

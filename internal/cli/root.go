@@ -96,6 +96,8 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 				return fmt.Errorf("binding flags: %w", err)
 			}
 
+			cfg.Root.Log = strings.ToUpper(cfg.Root.Log)
+
 			// Validate the root configuration
 			if err := cfg.Root.Validate(); err != nil {
 				return fmt.Errorf("validating config: %w", err)

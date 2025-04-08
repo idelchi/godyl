@@ -13,8 +13,6 @@ import (
 // Trim reads a YAML file and returns an io.Reader with only the content
 // under the specified prefix, with the prefix itself removed.
 func Trim(file file.File, prefix string) (io.Reader, error) {
-	fmt.Printf("Trimming file %s with prefix %s\n", file.Path(), prefix)
-
 	// Read the YAML file
 	data, err := file.Read()
 	if err != nil {

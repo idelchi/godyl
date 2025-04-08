@@ -1,0 +1,142 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* Logo styling */
+.logo-container {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.logo {
+  height: 100px;
+  width: auto;
+}
+
+/* Main navigation */
+.main-nav {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.main-nav .btn {
+  margin: 0.3rem;
+  font-size: 0.9rem;
+}
+
+/* Content enhancements */
+.main-content {
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: $section-headings-color;
+  }
+
+  code {
+    padding: 2px 4px;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    color: #567482;
+    background-color: #f3f6fa;
+    border-radius: 0.3rem;
+  }
+
+  pre {
+    padding: 0.8rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #567482;
+    background-color: #f3f6fa;
+    border: solid 1px #dce6f0;
+    border-radius: 0.3rem;
+
+    > code {
+      padding: 0;
+      margin: 0;
+      color: #567482;
+      word-break: normal;
+      white-space: pre;
+      background: transparent;
+      border: 0;
+    }
+  }
+  
+  /* Tables */
+  table {
+    display: block;
+    width: 100%;
+    overflow: auto;
+    word-break: normal;
+    word-break: keep-all;
+    -webkit-overflow-scrolling: touch;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    
+    th {
+      font-weight: bold;
+      background-color: #f3f6fa;
+    }
+    
+    th, td {
+      padding: 0.5rem 1rem;
+      border: 1px solid #e9ebec;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f8f8f8;
+    }
+  }
+  
+  /* Callouts */
+  blockquote {
+    padding: 0 1rem;
+    margin-left: 0;
+    color: #819198;
+    border-left: 0.3rem solid #dce6f0;
+    
+    > :first-child {
+      margin-top: 0;
+    }
+    
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+/* Back to top link */
+.back-to-top {
+  margin-top: 2rem;
+  text-align: right;
+  
+  a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #f3f6fa;
+    border-radius: 0.3rem;
+    text-decoration: none;
+    color: $section-headings-color;
+    
+    &:hover {
+      background-color: darken(#f3f6fa, 5%);
+    }
+  }
+}
+
+/* Custom element for demonstration content */
+.demo-section {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 42em) {
+  .main-nav .btn {
+    display: block;
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+}

@@ -10,13 +10,13 @@ Godyl provides several commands to help you manage your tools. This section prov
 
 ## Available Commands
 
-| Command | Description |
-| ------- | ----------- |
-| [`install`](install.html) | Install tools from YAML files |
-| [`download`](download.html) | Download and install individual tools |
-| [`dump`](dump.html) | Display configuration information |
-| [`update`](update.html) | Update the godyl application |
-| [`cache`](cache.html) | Manage the godyl cache |
+| Command                | Description                           |
+| ---------------------- | ------------------------------------- |
+| [`install`](install)   | Install tools from YAML files         |
+| [`download`](download) | Download and install individual tools |
+| [`dump`](dump)         | Display configuration information     |
+| [`update`](update)     | Update the godyl application          |
+| [`cache`](cache)       | Manage the godyl cache                |
 
 ## Global Flags
 

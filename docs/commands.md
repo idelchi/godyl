@@ -11,20 +11,20 @@ This page provides detailed information about all Godyl commands and their optio
 
 These flags are available for all commands:
 
-| Flag | Environment Variable | Default | Description |
-|------|---------------------|---------|-------------|
-| `--help`, `-h` | `GODYL_HELP` | `false` | Show help message and exit |
-| `--version` | `GODYL_VERSION` | `false` | Show version information and exit |
-| `--dry` | `GODYL_DRY` | `false` | Run without making any changes (dry run) |
-| `--log` | `GODYL_LOG` | `info` | Log level (debug, info, warn, error, silent) |
-| `--env-file`, `-e` | `GODYL_ENV_FILE` | `[".env"]` | Path to `.env` file(s) |
-| `--defaults`, `-d` | `GODYL_DEFAULTS` | `defaults.yml` | Path to defaults file |
-| `--github-token` | `GODYL_GITHUB_TOKEN` | `${GODYL_GITHUB_TOKEN}` | GitHub token for authentication |
-| `--gitlab-token` | `GODYL_GITLAB_TOKEN` | `${GODYL_GITLAB_TOKEN}` | GitLab token for authentication |
-| `--url-token` | `GODYL_URL_TOKEN` | `${GODYL_URL_TOKEN}` | URL token for authentication |
-| `--url-token-header` | `GODYL_URL_TOKEN_HEADER` | `Authorization` | URL header for authentication |
-| `--cache-dir`, `-c` | `GODYL_CACHE_DIR` | `${XDG_CACHE_HOME}` | Path to cache directory |
-| `--cache-type` | `GODYL_CACHE_TYPE` | `file` | Type of cache (file, sqlite) |
+| Flag                 | Environment Variable     | Default                 | Description                                  |
+| -------------------- | ------------------------ | ----------------------- | -------------------------------------------- |
+| `--help`, `-h`       | `GODYL_HELP`             | `false`                 | Show help message and exit                   |
+| `--version`          | `GODYL_VERSION`          | `false`                 | Show version information and exit            |
+| `--dry`              | `GODYL_DRY`              | `false`                 | Run without making any changes (dry run)     |
+| `--log`              | `GODYL_LOG`              | `info`                  | Log level (debug, info, warn, error, silent) |
+| `--env-file`, `-e`   | `GODYL_ENV_FILE`         | `[".env"]`              | Path to `.env` file(s)                       |
+| `--defaults`, `-d`   | `GODYL_DEFAULTS`         | `defaults.yml`          | Path to defaults file                        |
+| `--github-token`     | `GODYL_GITHUB_TOKEN`     | `${GODYL_GITHUB_TOKEN}` | GitHub token for authentication              |
+| `--gitlab-token`     | `GODYL_GITLAB_TOKEN`     | `${GODYL_GITLAB_TOKEN}` | GitLab token for authentication              |
+| `--url-token`        | `GODYL_URL_TOKEN`        | `${GODYL_URL_TOKEN}`    | URL token for authentication                 |
+| `--url-token-header` | `GODYL_URL_TOKEN_HEADER` | `Authorization`         | URL header for authentication                |
+| `--cache-dir`, `-c`  | `GODYL_CACHE_DIR`        | `${XDG_CACHE_HOME}`     | Path to cache directory                      |
+| `--cache-type`       | `GODYL_CACHE_TYPE`       | `file`                  | Type of cache (file, sqlite)                 |
 
 ## Install Command
 
@@ -36,18 +36,18 @@ godyl install [[tools.yml]...|STDIN] [flags]
 
 ### Flags
 
-| Flag | Environment Variable | Default | Description |
-|------|---------------------|---------|-------------|
-| `--output`, `-o` | `GODYL_TOOL_OUTPUT` | `./bin` | Output path for the downloaded tools |
-| `--tags`, `-t` | `GODYL_TOOL_TAGS` | `["!native"]` | Tags to filter tools by. Use `!` to exclude |
-| `--source` | `GODYL_TOOL_SOURCE` | `github` | Source from which to install the tools |
-| `--strategy` | `GODYL_TOOL_STRATEGY` | `none` | Strategy to use for updating tools |
-| `--os` | `GODYL_TOOL_OS` | `""` | Operating system to use for downloading |
-| `--arch` | `GODYL_TOOL_ARCH` | `""` | Architecture to use for downloading |
-| `--parallel`, `-j` | `GODYL_TOOL_PARALLEL` | `0` | Number of parallel downloads (0 is unlimited) |
-| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL` | `false` | Skip SSL verification |
-| `--hint` | `GODYL_TOOL_HINT` | `[""]` | Add hint patterns with weight 1 |
-| `--show`, `-s` | `GODYL_TOOL_SHOW` | `false` | Show the configuration and exit |
+| Flag                    | Environment Variable       | Default       | Description                                   |
+| ----------------------- | -------------------------- | ------------- | --------------------------------------------- |
+| `--output`, `-o`        | `GODYL_TOOL_OUTPUT`        | `./bin`       | Output path for the downloaded tools          |
+| `--tags`, `-t`          | `GODYL_TOOL_TAGS`          | `["!native"]` | Tags to filter tools by. Use `!` to exclude   |
+| `--source`              | `GODYL_TOOL_SOURCE`        | `github`      | Source from which to install the tools        |
+| `--strategy`            | `GODYL_TOOL_STRATEGY`      | `none`        | Strategy to use for updating tools            |
+| `--os`                  | `GODYL_TOOL_OS`            | `""`          | Operating system to use for downloading       |
+| `--arch`                | `GODYL_TOOL_ARCH`          | `""`          | Architecture to use for downloading           |
+| `--parallel`, `-j`      | `GODYL_TOOL_PARALLEL`      | `0`           | Number of parallel downloads (0 is unlimited) |
+| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL` | `false`       | Skip SSL verification                         |
+| `--hint`                | `GODYL_TOOL_HINT`          | `[""]`        | Add hint patterns with weight 1               |
+| `--show`, `-s`          | `GODYL_TOOL_SHOW`          | `false`       | Show the configuration and exit               |
 
 ### Examples
 
@@ -93,15 +93,15 @@ godyl download [tool|URL]... [flags]
 
 ### Flags
 
-| Flag | Environment Variable | Default | Description |
-|------|---------------------|---------|-------------|
-| `--output`, `-o` | `GODYL_TOOL_OUTPUT` | `./bin` | Output path for the downloaded tools |
-| `--source` | `GODYL_TOOL_SOURCE` | `github` | Source from which to install the tools |
-| `--os` | `GODYL_TOOL_OS` | `""` | Operating system to use for downloading |
-| `--arch` | `GODYL_TOOL_ARCH` | `""` | Architecture to use for downloading |
-| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL` | `false` | Skip SSL verification |
-| `--hint` | `GODYL_TOOL_HINT` | `[""]` | Add hint patterns with weight 1 |
-| `--version`, `-v` | `GODYL_TOOL_VERSION` | `""` | Version to download |
+| Flag                    | Environment Variable       | Default  | Description                             |
+| ----------------------- | -------------------------- | -------- | --------------------------------------- |
+| `--output`, `-o`        | `GODYL_TOOL_OUTPUT`        | `./bin`  | Output path for the downloaded tools    |
+| `--source`              | `GODYL_TOOL_SOURCE`        | `github` | Source from which to install the tools  |
+| `--os`                  | `GODYL_TOOL_OS`            | `""`     | Operating system to use for downloading |
+| `--arch`                | `GODYL_TOOL_ARCH`          | `""`     | Architecture to use for downloading     |
+| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL` | `false`  | Skip SSL verification                   |
+| `--hint`                | `GODYL_TOOL_HINT`          | `[""]`   | Add hint patterns with weight 1         |
+| `--version`, `-v`       | `GODYL_TOOL_VERSION`       | `""`     | Version to download                     |
 
 ### Examples
 
@@ -144,8 +144,8 @@ godyl dump [config|defaults|env|platform|tools|cache] [flags]
 
 ### Flags for `dump tools`
 
-| Flag | Environment Variable | Default | Description |
-|------|---------------------|---------|-------------|
+| Flag           | Environment Variable    | Default | Description                |
+| -------------- | ----------------------- | ------- | -------------------------- |
 | `--full`, `-f` | `GODYL_DUMP_TOOLS_FULL` | `false` | Show full tool information |
 
 ### Examples
@@ -186,11 +186,11 @@ godyl update [flags]
 
 ### Flags
 
-| Flag | Environment Variable | Default | Description |
-|------|---------------------|---------|-------------|
+| Flag                    | Environment Variable         | Default | Description           |
+| ----------------------- | ---------------------------- | ------- | --------------------- |
 | `--no-verify-ssl`, `-k` | `GODYL_UPDATE_NO_VERIFY_SSL` | `false` | Skip SSL verification |
-| `--version`, `-v` | `GODYL_UPDATE_VERSION` | `""` | Version to download |
-| `--pre` | `GODYL_UPDATE_PRE` | `false` | Include pre-releases |
+| `--version`, `-v`       | `GODYL_UPDATE_VERSION`       | `""`    | Version to download   |
+| `--pre`                 | `GODYL_UPDATE_PRE`           | `false` | Include pre-releases  |
 
 ### Examples
 
@@ -215,8 +215,8 @@ godyl cache [flags]
 
 ### Flags
 
-| Flag | Environment Variable | Default | Description |
-|------|---------------------|---------|-------------|
+| Flag             | Environment Variable | Default | Description      |
+| ---------------- | -------------------- | ------- | ---------------- |
 | `--delete`, `-d` | `GODYL_CACHE_DELETE` | `false` | Delete the cache |
 
 ### Examples

@@ -49,11 +49,13 @@ description: Asset downloader for GitHub releases, URLs, and Go projects
 The version of the tool to download. Can be a simple string or a complex object with commands for version detection.
 
 Simple form:
+
 ```yaml
 version: v0.1.0
 ```
 
 Full form:
+
 ```yaml
 version:
   version: v0.1.0
@@ -94,11 +96,13 @@ output: ~/.local/bin
 Information about the executable.
 
 Simple form:
+
 ```yaml
 exe: godyl
 ```
 
 Full form:
+
 ```yaml
 exe:
   name: godyl
@@ -184,6 +188,7 @@ hints:
 Information about the source of the tool.
 
 GitHub source:
+
 ```yaml
 source:
   type: github
@@ -194,6 +199,7 @@ source:
 ```
 
 URL source:
+
 ```yaml
 source:
   type: url
@@ -204,6 +210,7 @@ source:
 ```
 
 Go source:
+
 ```yaml
 source:
   type: go
@@ -212,6 +219,7 @@ source:
 ```
 
 Commands source:
+
 ```yaml
 source:
   type: commands
@@ -256,6 +264,7 @@ strategy: upgrade
 ```
 
 Valid values:
+
 - `none`: Skip if the tool already exists
 - `upgrade`: Upgrade if a newer version is available
 - `force`: Always download and install
@@ -295,5 +304,6 @@ mode: find
 ```
 
 Valid values:
+
 - `find`: Download, extract, and find the executable
 - `extract`: Download and extract directly to the output directory

@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Usage
-render_with_liquid: false
 ---
 
 # Usage

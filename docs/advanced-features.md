@@ -11,20 +11,20 @@ This page covers advanced features of Godyl, including templating, platform infe
 
 Godyl supports templating in many configuration fields. The following variables are available:
 
-| Variable | Description |
-|----------|-------------|
-| `{{ .Name }}` | The name of the tool or project |
-| `{{ .Output }}` | The output path template for built artifacts |
-| `{{ .Exe }}` | The name of the executable |
-| `{{ .Env.<> }}` | Any environment variable |
-| `{{ .Values.<> }}` | Custom values for templating |
-| `{{ .Version }}` | The version of the tool or project |
-| `{{ .OS }}` | The operating system (e.g., `linux`, `darwin`, `windows`) |
-| `{{ .ARCH }}` | The architecture type (e.g., `amd64`, `arm64`) |
-| `{{ .ARCH_VERSION }}` | The version of the architecture, if applicable |
-| `{{ .LIBRARY }}` | The system library (e.g., `gnu`, `musl`) |
-| `{{ .EXTENSION }}` | The file extension specific to the platform |
-| `{{ .DISTRIBUTION }}` | The distribution name (e.g., `debian`, `alpine`) |
+| Variable              | Description                                               |
+| --------------------- | --------------------------------------------------------- |
+| `{{ .Name }}`         | The name of the tool or project                           |
+| `{{ .Output }}`       | The output path template for built artifacts              |
+| `{{ .Exe }}`          | The name of the executable                                |
+| `{{ .Env.<> }}`       | Any environment variable                                  |
+| `{{ .Values.<> }}`    | Custom values for templating                              |
+| `{{ .Version }}`      | The version of the tool or project                        |
+| `{{ .OS }}`           | The operating system (e.g., `linux`, `darwin`, `windows`) |
+| `{{ .ARCH }}`         | The architecture type (e.g., `amd64`, `arm64`)            |
+| `{{ .ARCH_VERSION }}` | The version of the architecture, if applicable            |
+| `{{ .LIBRARY }}`      | The system library (e.g., `gnu`, `musl`)                  |
+| `{{ .EXTENSION }}`    | The file extension specific to the platform               |
+| `{{ .DISTRIBUTION }}` | The distribution name (e.g., `debian`, `alpine`)          |
 
 ## Templating Functions
 
@@ -45,36 +45,36 @@ Godyl can infer platform details from asset names. Here's how different platform
 
 ### Operating Systems
 
-| OS | Inferred from |
-|----|---------------|
-| Linux | linux |
-| Darwin | darwin, macos, mac, osx |
-| Windows | windows, win |
-| FreeBSD | freebsd |
-| Android | android |
-| NetBSD | netbsd |
-| OpenBSD | openbsd |
+| OS      | Inferred from           |
+| ------- | ----------------------- |
+| Linux   | linux                   |
+| Darwin  | darwin, macos, mac, osx |
+| Windows | windows, win            |
+| FreeBSD | freebsd                 |
+| Android | android                 |
+| NetBSD  | netbsd                  |
+| OpenBSD | openbsd                 |
 
 ### Architectures
 
-| Architecture | Inferred from |
-|--------------|---------------|
-| AMD64 | amd64, x86_64, x64, win64 |
-| ARM64 | arm64, aarch64 |
-| AMD32 | amd32, x86, i386, i686, win32, 386, 686 |
-| ARM32 (v7) | armv7, armv7l, armhf |
-| ARM32 (v6) | armv6, armv6l |
-| ARM32 (v5) | armv5, armel |
-| ARM32 (unknown) | arm |
+| Architecture    | Inferred from                           |
+| --------------- | --------------------------------------- |
+| AMD64           | amd64, x86_64, x64, win64               |
+| ARM64           | arm64, aarch64                          |
+| AMD32           | amd32, x86, i386, i686, win32, 386, 686 |
+| ARM32 (v7)      | armv7, armv7l, armhf                    |
+| ARM32 (v6)      | armv6, armv6l                           |
+| ARM32 (v5)      | armv5, armel                            |
+| ARM32 (unknown) | arm                                     |
 
 ### Libraries
 
-| Library | Inferred from |
-|---------|---------------|
-| GNU | gnu |
-| Musl | musl |
-| MSVC | msvc |
-| LibAndroid | android |
+| Library    | Inferred from |
+| ---------- | ------------- |
+| GNU        | gnu           |
+| Musl       | musl          |
+| MSVC       | msvc          |
+| LibAndroid | android       |
 
 ## Using Hints
 
@@ -85,11 +85,11 @@ hints:
   # Prefer the exact executable name
   - pattern: "{{ .Exe }}"
     weight: 1
-  
+
   # Prefer .zip files on Windows
   - pattern: zip
     weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
-  
+
   # Prefer the correct ARM version
   - pattern: "armv{{.ARCH_VERSION}}"
     weight: 3

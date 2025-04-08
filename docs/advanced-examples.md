@@ -188,7 +188,7 @@ This example shows how to handle platform-specific configurations and alternativ
   hints:
     - pattern: '{{ if eq .ARCH "amd64" }}x86_64{{ else }}{{ .ARCH }}{{ end }}'
       weight: 3
-    - pattern: 'musl'
+    - pattern: "musl"
       weight: '{{ if eq .LIBRARY "musl" }}2{{ else }}0{{ end }}'
   tags:
     - cli
@@ -223,3 +223,4 @@ This example shows complex templating techniques.
     - pattern: node-v{{ .Version }}-{{ .OS }}-{{ .ARCH }}
       weight: 10
   tags
+```

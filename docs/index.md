@@ -9,16 +9,19 @@ Asset downloader for GitHub releases, URLs, and Go projects.
 ## Documentation
 
 ### Getting Started
+
 - [Installation](installation)
 - [Usage](usage)
 
 ### Configuration
+
 - [Configuration Basics](configuration)
 - [Tools Format](tools-format)
 - [Default Configuration](defaults)
 - [Advanced Features](advanced-features)
 
 ### External Links
+
 - [GitHub Repository](https://github.com/idelchi/godyl)
 - [Go Package Documentation](https://pkg.go.dev/github.com/idelchi/godyl)
 

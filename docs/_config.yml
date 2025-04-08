@@ -68,3 +68,14 @@ heading_anchors: true
 enable_copy_code_button: true
 
 permalink: pretty
+
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      render_with_liquid: false
+  - scope:
+      path: "404-page.md"
+    values:
+      render_with_liquid: true

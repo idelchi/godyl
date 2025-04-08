@@ -41,7 +41,7 @@ source:
   type: github
 strategy: none
 env:
-  GH_TOKEN: '{{ .Env.GODYL_GITHUB_TOKEN }}'
+  GH_TOKEN: "{{ .Env.GODYL_GITHUB_TOKEN }}"
 ```
 
 ## Overriding Defaults
@@ -66,17 +66,17 @@ GODYL_DEFAULTS=my-defaults.yml godyl install tools.yml
 The following fields can be set in the `defaults.yml` file:
 
 ```yaml
-exe:       # Default executable settings
-output:    # Default output directory
-platform:  # Default platform settings
-values:    # Default values for templating
+exe: # Default executable settings
+output: # Default output directory
+platform: # Default platform settings
+values: # Default values for templating
 fallbacks: # Default fallback strategies
-hints:     # Default hints for matching
-source:    # Default source settings
-tags:      # Default tags
-strategy:  # Default update strategy
-env:       # Default environment variables
-mode:      # Default mode (find or extract)
+hints: # Default hints for matching
+source: # Default source settings
+tags: # Default tags
+strategy: # Default update strategy
+env: # Default environment variables
+mode: # Default mode (find or extract)
 ```
 
 ## Examples
@@ -91,7 +91,7 @@ output: /usr/local/bin
 
 ```yaml
 env:
-  GH_TOKEN: '{{ .Env.GITHUB_TOKEN }}'
+  GH_TOKEN: "{{ .Env.GITHUB_TOKEN }}"
 ```
 
 ### Different Default Source

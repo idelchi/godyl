@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Download Command
-parent: Commands
 ---
 
 # Download Command

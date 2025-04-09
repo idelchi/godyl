@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Update Command
-parent: Commands
 ---
 
 # Update Command

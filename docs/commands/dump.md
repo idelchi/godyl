@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Dump Command
-parent: Commands
 ---
 
 # Dump Command

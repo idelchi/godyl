@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Install Command
-parent: Commands
 ---
 
 # Install Command

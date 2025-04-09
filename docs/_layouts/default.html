@@ -56,19 +56,6 @@
       <span id="content-start" tabindex="-1"></span>
       {{ content }}
 
-      <!-- Child Pages (only show if page has children) -->
-      {% if page.has_children %}
-      <div class="child-pages">
-        <h2>In This Section</h2>
-        <ul>
-          {% assign children_pages = site.pages | where: "parent", page.title | sort: "nav_order" %}
-          {% for child in children_pages %}
-            <li><a href="{{ child.url | relative_url }}">{{ child.title }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-      {% endif %}
-
       <!-- Footer -->
       <footer class="site-footer">
         {% if site.github.is_project_page %}

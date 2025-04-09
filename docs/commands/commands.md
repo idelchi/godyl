@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Commands
-has_children: true
 ---
 
 # Command Reference

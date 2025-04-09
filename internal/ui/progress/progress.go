@@ -6,25 +6,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/jedib0t/go-pretty/v6/progress"
 	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/idelchi/godyl/internal/tools" // Import tools package
 )
-
-// formatBytes converts bytes to a human-readable string (KB, MB, GB, etc.)
-func formatBytes(bytes int64) string {
-	const unit = 1024
-	if bytes < unit {
-		return fmt.Sprintf("%d B", bytes)
-	}
-	div, exp := int64(unit), 0
-	for n := bytes / unit; n >= unit; n /= unit {
-		div *= unit
-		exp++
-	}
-	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
-}
 
 // Global shared progress writer
 var (
@@ -111,7 +98,10 @@ func (t *PrettyProgressTracker) TrackProgress(src string, currentSize, totalSize
 	defer t.mu.Unlock()
 
 	// Format display name using the stored tool info
-	name := t.tool.Exe.Name
+	name := t.tool.Name
+	if t.tool.Exe.Name != "" {
+		name = t.tool.Exe.Name
+	}
 	if t.tool.Version.Version != "" {
 		name = fmt.Sprintf("%s %s", name, t.tool.Version.Version)
 	}
@@ -128,8 +118,8 @@ func (t *PrettyProgressTracker) TrackProgress(src string, currentSize, totalSize
 		// Format message with total size if available
 		var message string
 		if totalSize > 0 {
-			// Format total size in human-readable format
-			totalSizeStr := formatBytes(totalSize)
+			// Format total size in human-readable format using humanize
+			totalSizeStr := humanize.Bytes(uint64(totalSize))
 			message = fmt.Sprintf("%-*.*s [%s]", maxNameLen-len(totalSizeStr)-3, maxNameLen-len(totalSizeStr)-3, name, totalSizeStr)
 		} else {
 			message = fmt.Sprintf("%-*.*s", maxNameLen, maxNameLen, name)

@@ -17,21 +17,23 @@ import (
 var (
 	sharedWriter progress.Writer
 	writerOnce   sync.Once
-	writerMu     sync.Mutex
 	activeCount  int
+	writerMu     sync.Mutex
 )
 
-// getSharedWriter returns the shared progress writer, creating it if necessary
-func getSharedWriter() progress.Writer {
+// initSharedWriter initializes the shared progress writer
+func initSharedWriter() progress.Writer {
 	writerOnce.Do(func() {
 		// Create a new progress writer
 		pw := progress.NewWriter()
 
 		// Configure the progress writer
-		pw.SetUpdateFrequency(250 * time.Millisecond) // Similar to mpb's default
-		pw.SetTrackerLength(40)                       // Set tracker length
-		pw.SetStyle(progress.StyleDefault)            // Use block style for progress bar
-		pw.SetTrackerPosition(progress.PositionRight) // Put tracker after the message
+		pw.SetAutoStop(true)
+		pw.SetMessageLength(35)
+		pw.SetTrackerLength(40)
+		pw.SetStyle(progress.StyleDefault)
+		pw.SetTrackerPosition(progress.PositionRight)
+		pw.SetUpdateFrequency(time.Millisecond * 100)
 
 		// Configure visibility options
 		pw.Style().Visibility.Percentage = true
@@ -68,9 +70,13 @@ type PrettyProgressTracker struct {
 // NewPrettyProgressTracker creates a new tracker associated with a go-pretty Progress container
 // and the specific tool being downloaded.
 func NewPrettyProgressTracker(tool *tools.Tool) *PrettyProgressTracker {
+	// Initialize the shared writer if needed
+	pw := initSharedWriter()
+
 	// Increment active count
 	writerMu.Lock()
 	activeCount++
+	pw.SetNumTrackersExpected(activeCount)
 	writerMu.Unlock()
 
 	return &PrettyProgressTracker{
@@ -123,7 +129,7 @@ func (t *PrettyProgressTracker) TrackProgress(src string, currentSize, totalSize
 		tracker.Start()
 
 		// Add to the shared progress writer
-		getSharedWriter().AppendTracker(tracker)
+		initSharedWriter().AppendTracker(tracker)
 
 		// Store in our map
 		t.trackers[src] = tracker
@@ -172,42 +178,42 @@ func (r *prettyProgressReader) Close() error {
 	// Mark the tracker as done
 	if !r.tracker.IsDone() {
 		if r.initialTotalSize > 0 {
-			// If we know the total size, mark as done
-			r.tracker.MarkAsDone()
+			// If we know the total size, ensure we're at 100%
+			if r.tracker.Value() < r.initialTotalSize {
+				r.tracker.SetValue(r.initialTotalSize)
+			}
 		} else {
-			// If we don't know the total size, set the total to the current value and mark as done
+			// If we don't know the total size, set the total to the current value
 			r.tracker.UpdateTotal(r.tracker.Value())
-			r.tracker.MarkAsDone()
 		}
+
+		// Mark as done
+		r.tracker.MarkAsDone()
 	}
 
 	return r.ReadCloser.Close()
 }
 
-// Wait waits for all trackers to complete and decrements the active count.
-// When the active count reaches zero, it stops the shared progress writer.
+// Wait decrements the active count.
+// The shared writer will auto-stop when all trackers are done.
 func (t *PrettyProgressTracker) Wait() {
 	// Decrement active count
 	writerMu.Lock()
 	activeCount--
-	shouldStop := activeCount == 0
 	writerMu.Unlock()
 
-	// If this is the last tracker, stop the shared writer
-	if shouldStop {
-		getSharedWriter().Stop()
-	}
+	// No need to stop the writer manually, it will auto-stop when all trackers are done
 }
 
 // StopSharedWriter explicitly stops the shared writer.
-// This can be used to ensure the writer is stopped if needed.
+// This should only be used in exceptional cases, as the writer will auto-stop
+// when all trackers are done.
 func StopSharedWriter() {
 	writerMu.Lock()
 	defer writerMu.Unlock()
 
 	if sharedWriter != nil {
 		sharedWriter.Stop()
-		// Reset the active count
 		activeCount = 0
 	}
 }

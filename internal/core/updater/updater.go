@@ -161,6 +161,8 @@ func (u *Updater) downloadTool(tool tools.Tool) (string, error) {
 	// Wait for progress bar to finish rendering
 	progressTracker.Wait()
 
+	// No need to explicitly stop the shared writer, it will auto-stop
+
 	// No extra blank line needed here, bar removal should handle it.
 
 	if err != nil {

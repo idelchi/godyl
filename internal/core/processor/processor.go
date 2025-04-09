@@ -125,6 +125,8 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 		tracker.Wait()
 	}
 
+	// No need to explicitly stop the shared writer, it will auto-stop
+
 	// Now, log all collected results sequentially
 	p.logFinalResults()
 
@@ -189,13 +191,6 @@ func (p *Processor) collectResult(r result) {
 // logFinalResults iterates over collected results and logs them as a table.
 func (p *Processor) logFinalResults() {
 	p.log.Info("") // Add a blank line before the summary
-
-	// Import the table package at the top of your file:
-	// import (
-	//   "github.com/jedib0t/go-pretty/v6/table"
-	//   "github.com/jedib0t/go-pretty/v6/text"
-	//   "os"
-	// )
 
 	t := table.NewWriter()
 	// We'll use our own logging rather than direct output

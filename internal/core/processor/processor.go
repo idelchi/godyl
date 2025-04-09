@@ -182,11 +182,38 @@ func (p *Processor) collectResult(r result) {
 func (p *Processor) logFinalResults() {
 	p.log.Info("") // Add a blank line before the summary
 
+	// Import the table package at the top of your file:
+	// import (
+	//   "github.com/jedib0t/go-pretty/v6/table"
+	//   "github.com/jedib0t/go-pretty/v6/text"
+	//   "os"
+	// )
+
 	t := table.NewWriter()
 	// We'll use our own logging rather than direct output
 
 	t.AppendHeader(table.Row{"Tool", "Version", "Output Path", "Aliases", "Status"})
 
+	// Set up a row painter to colorize rows based on their status
+	t.SetRowPainter(func(row table.Row) text.Colors {
+		status, ok := row[4].(string)
+		if !ok {
+			return nil // default color
+		}
+
+		// Color based on status message
+		if strings.HasPrefix(status, "Error:") {
+			return text.Colors{text.FgRed}
+		} else if strings.HasPrefix(status, "Info:") {
+			return text.Colors{text.FgYellow}
+		} else if status == "Successfully installed" || status == "Success" {
+			return text.Colors{text.FgGreen}
+		}
+
+		return nil // default color
+	})
+
+	// Now add all the rows
 	for _, r := range p.results {
 		p.appendResultToTable(t, r)
 	}
@@ -196,7 +223,15 @@ func (p *Processor) logFinalResults() {
 
 	// Configure colors for different parts if your logger supports colors
 	t.Style().Color.Header = text.Colors{text.FgBlue, text.Bold}
-	t.Style().Color.Row = text.Colors{text.FgWhite}
+
+	// Set column configurations for better formatting
+	t.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, WidthMax: 20},                                 // Tool name column
+		{Number: 2, WidthMax: 15},                                 // Version column
+		{Number: 3, WidthMax: 40},                                 // Output Path column
+		{Number: 4, WidthMax: 30},                                 // Aliases column
+		{Number: 5, WidthMax: 50, Colors: text.Colors{text.Bold}}, // Status column always bold
+	})
 
 	// Render to string and log through the logger
 	p.log.Info("Tool Installation Summary:")

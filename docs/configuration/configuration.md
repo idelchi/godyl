@@ -18,7 +18,7 @@ All of above will be merged for run-time settings and to form defaults for each 
 
 ## Commandline flags
 
-See [Command Reference](/godyl/commands/index#content-start) and sub-commands for details on available flags and their default values.
+See [Command Reference]({{ site.baseurl }}/commands/index#content-start) and sub-commands for details on available flags and their default values.
 
 ## Environment variables
 
@@ -52,8 +52,8 @@ The `defaults.yml` file is used to set default values for all tools. It supports
 An example of sane default values are provided in [defaults.yml](https://github.com/idelchi/godyl/blob/main/defaults.yml) which is
 also embedded in the binary.
 
-See [Default Configuration File](/godyl/configuration/defaults#content-start) for more details.
+See [Default Configuration File](defaults#content-start) for more details.
 
 ## Related Topics
 
-- [Tool Configuration Format](/godyl/configuration/tools#content-start)
+- [Tool Configuration Format](tools#content-start)

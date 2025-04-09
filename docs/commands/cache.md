@@ -50,5 +50,5 @@ Godyl supports different cache backends:
 
 ## Related Topics
 
-- [Global Flags](../commands/index#global-flags)
+- [Global Flags](index#global-flags)
 - [Dump Cache](dump#dump-cache)

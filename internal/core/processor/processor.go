@@ -9,6 +9,8 @@ import (
 	"sync"
 
 	"github.com/hashicorp/go-getter/v2"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/vbauerster/mpb/v8"
 	"golang.org/x/sync/errgroup"
 
@@ -94,8 +96,6 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 			continue
 		}
 		// Log tool name before starting processing/download
-		// p.log.Info("")
-		// p.log.Info("%s", tool.Name) // Log using the pointer
 		g.Go(func() error {
 			// Create the progress tracker here, passing the specific tool for this goroutine
 			progressTracker := progress.NewMpbProgressTracker(prog, tool)
@@ -178,71 +178,62 @@ func (p *Processor) collectResult(r result) {
 	}
 }
 
-// logFinalResults iterates over collected results and logs them.
+// logFinalResults iterates over collected results and logs them as a table.
 func (p *Processor) logFinalResults() {
 	p.log.Info("") // Add a blank line before the summary
+
+	t := table.NewWriter()
+	// We'll use our own logging rather than direct output
+
+	t.AppendHeader(table.Row{"Tool", "Version", "Output Path", "Aliases", "Status"})
+
 	for _, r := range p.results {
-		p.logSingleResult(r)
+		p.appendResultToTable(t, r)
 	}
+
+	// Set some style options
+	t.SetStyle(table.StyleRounded)
+
+	// Configure colors for different parts if your logger supports colors
+	t.Style().Color.Header = text.Colors{text.FgBlue, text.Bold}
+	t.Style().Color.Row = text.Colors{text.FgWhite}
+
+	// Render to string and log through the logger
+	p.log.Info("Tool Installation Summary:")
+	p.log.Info(t.Render())
 }
 
-// logSingleResult logs the outcome of a single tool operation.
-func (p *Processor) logSingleResult(r result) {
+// appendResultToTable adds a single result as a row to the table
+func (p *Processor) appendResultToTable(t table.Writer, r result) {
 	tool := r.Tool
 
-	p.log.Debug("configuration:")
-	p.log.Debug("-------")
-	p.log.Debug("%s", pretty.YAMLMasked(tool))
-	p.log.Debug("-------")
+	// Format aliases as a comma-separated string if present
+	aliases := ""
+	if tool.Aliases != nil && len(tool.Aliases) > 0 {
+		aliases = strings.Join(tool.Aliases, ", ")
+	}
 
+	// Determine status based on error type
+	status := "Success"
 	if r.Err != nil {
-		p.handleToolError(tool, r.Err, r.Msg) // Use existing error handler logic
-	} else {
-		// Log success only if there was no error (handleResult used to check r.Err == nil || IsRequiresUpdate)
-		p.logToolSuccess(tool, r.Found)
-	}
-}
+		if isExpectedError(r.Err) {
+			// For expected errors like "Already up to date"
+			status = fmt.Sprintf("Info: %v", r.Err)
 
-// handleToolError logs errors encountered during tool processing.
-// Note: This function now only handles the logging part, the hasErrors flag is set in collectResult.
-func (p *Processor) handleToolError(tool *tools.Tool, err error, msg string) {
-	if isExpectedError(err) {
-		p.log.Warn("  %v", err)
-		// Attempt to save cache even for expected non-failure errors like UpToDate
-		if cacheErr := p.cache.Save(file.New(tool.Output, tool.Exe.Name).Path(), tool.Version.Version); cacheErr != nil {
-			p.log.Error("  failed to save cache: %v", cacheErr)
+			// Attempt to save cache even for expected non-failure errors
+			if cacheErr := p.cache.Save(file.New(tool.Output, tool.Exe.Name).Path(), tool.Version.Version); cacheErr != nil {
+				p.log.Error("  failed to save cache: %v", cacheErr)
+			}
+		} else {
+			// For unexpected errors
+			status = fmt.Sprintf("Error: %v", r.Err)
+			if r.Msg != "" {
+				status += fmt.Sprintf(" (%s)", r.Msg)
+			}
 		}
-		return
-	}
-
-	// Log unexpected error details
-	p.log.Error("  failed to install")
-	p.log.Debug("configuration:")
-	p.log.Debug("-------")
-	p.log.Debug("%s", pretty.JSONMasked(tool))
-	p.log.Debug("-------")
-	p.log.Error("  %v", err)
-	if msg != "" { // Only log message if it's not empty
-		p.log.Error("  %s", msg)
-	}
-}
-
-// logToolSuccess logs information about successfully processed tools.
-func (p *Processor) logToolSuccess(tool *tools.Tool, found file.File) {
-	var message strings.Builder
-	message.WriteString(tool.Exe.Name)
-
-	if tool.Version.Version != "" {
-		message.WriteString(fmt.Sprintf(" %s", tool.Version.Version))
-	}
-
-	message.WriteString(fmt.Sprintf(" installed to %q", tool.Output))
-
-	if tool.Mode == "find" {
-		// Log aliases if any
-		if tool.Aliases != nil {
-			message.WriteString(fmt.Sprintf(" with aliases: %v", tool.Aliases))
-		}
+	} else if tool.Mode == "find" {
+		// Success case with more details for find mode
+		status = "Successfully installed"
 
 		// Save cache on success
 		if tool.Version.Version != "" {
@@ -252,7 +243,20 @@ func (p *Processor) logToolSuccess(tool *tools.Tool, found file.File) {
 		}
 	}
 
-	p.log.Info(message.String())
+	// Append the row to the table
+	t.AppendRow(table.Row{
+		tool.Exe.Name,
+		tool.Version.Version,
+		tool.Output,
+		aliases,
+		status,
+	})
+
+	// Log detailed configuration at debug level
+	p.log.Debug("configuration:")
+	p.log.Debug("-------")
+	p.log.Debug("%s", pretty.YAMLMasked(tool))
+	p.log.Debug("-------")
 }
 
 // isExpectedError checks if the error is one that doesn't indicate a complete failure.

@@ -13,7 +13,9 @@
 
 - name: jesseduffield/lazydocker
   description: The lazier way to manage everything docker
-  aliases: lazy
+  aliases:
+    - lazy
+    - crazy
   tags:
     - docker
 
@@ -23,104 +25,6 @@
     reason: "ctop is not available for darwin arm64"
     condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
   # [] because none of the binaries have any `proper` extension - the version number clutters it up so it looks like the extension is for example `.7-windows-amd64`
-  extensions: []
+  # extensions: []
   tags:
     - docker
-
-- name: kdash-rs/kdash
-  description: A simple and fast dashboard for Kubernetes
-  hints:
-    - pattern: "{{ .OS }}"
-      weight: -1
-  tags:
-    - kubernetes
-
-- name: kubernetes/minikube
-  description: Run Kubernetes locally
-  version:
-    commands: version
-  extensions: "{{ .EXTENSION }}"
-  hints:
-    - pattern: "{{ .Exe }}"
-      weight: 1
-  tags:
-    - kubernetes
-
-- name: ahmetb/kubectx
-  description: Faster way to switch between clusters and namespaces in kubectl
-  aliases: kbx
-  tags:
-    - kubernetes
-
-- name: ahmetb/kubectx
-  description: Faster way to switch between clusters and namespaces in kubectl
-  exe: kubens
-  aliases: kbn
-  tags:
-    - kubernetes
-
-- name: derailed/k9s
-  description: Kubernetes CLI To Manage Your Clusters In Style!
-  version:
-    commands: version
-  skip:
-    reason: "k9s is not available for armv6"
-    condition: '{{ and (eq .ARCH "arm") (eq .ARCH_VERSION 6) }}'
-  tags:
-    - kubernetes
-
-- name: helm/helm
-  description: The package manager for Kubernetes
-  path: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
-  tags:
-    - kubernetes
-
-- name: kubernetes/kubernetes
-  description: Command-line tool for controlling Kubernetes clusters
-  exe: kubectl
-  path: https://dl.k8s.io/{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}
-  aliases: kc
-  tags:
-    - kubernetes
-
-- name: syncthing/syncthing
-  description: Open Source Continuous File Synchronization
-  tags:
-    - sync
-
-- name: ajeetdsouza/zoxide
-  description: A smarter cd command for your terminal
-  tags:
-    - terminal
-
-- name: junegunn/fzf
-  description: A command-line fuzzy finder
-  tags:
-    - terminal
-
-- name: starship/starship
-  description: The minimal, blazing-fast, and infinitely customizable prompt for any shell
-  tags:
-    - terminal
-
-- name: go-task/task
-  description: A task runner / simpler Make alternative written in Go
-  tags:
-    - automation
-
-- name: sharkdp/fd
-  description: A simple, fast and user-friendly alternative to 'find'
-  tags:
-    - terminal
-
-- name: knqyf263/pet
-  description: Simple command-line snippet manager
-  tags:
-    - terminal
-
-- name: traefik/traefik
-  description: The Cloud Native Application Proxy
-  version:
-    commands: version
-  tags:
-    - automation

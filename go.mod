@@ -16,6 +16,8 @@ require (
 	github.com/idelchi/go-next-tag v0.0.1
 	github.com/idelchi/gogen v0.0.0-20250114054957-4978468f4054
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
+	github.com/jedib0t/go-pretty v4.3.0+incompatible
+	github.com/jedib0t/go-pretty/v6 v6.6.7
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.27
 	github.com/schollz/closestmatch v2.1.0+incompatible
@@ -35,14 +37,18 @@ require (
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d // indirect
+	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/dmarkham/enumer v1.5.11 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.6 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
+	github.com/go-openapi/errors v0.22.0 // indirect
+	github.com/go-openapi/strfmt v0.23.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.7 // indirect
@@ -50,7 +56,6 @@ require (
 	github.com/hashicorp/go-version v1.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/jedib0t/go-pretty/v6 v6.6.7 // indirect
 	github.com/klauspost/compress v1.17.2 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
@@ -61,6 +66,7 @@ require (
 	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
+	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/pascaldekloe/name v1.0.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
@@ -74,6 +80,7 @@ require (
 	github.com/tklauser/numcpus v0.8.0 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
+	go.mongodb.org/mongo-driver v1.14.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.33.0 // indirect
 	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c // indirect

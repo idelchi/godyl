@@ -11,7 +11,6 @@ import (
 	"github.com/hashicorp/go-getter/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
-	"github.com/vbauerster/mpb/v8"
 	"golang.org/x/sync/errgroup"
 
 	cachehandler "github.com/idelchi/godyl/internal/cache"
@@ -69,7 +68,8 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 
 	// Setup concurrency and progress bar container
 	resultCh := make(chan result)
-	prog := mpb.New(mpb.WithWidth(60))
+	var progressTrackers []*progress.PrettyProgressTracker
+	var progressMu sync.Mutex
 
 	// Create error group for concurrent processing
 	g, _ := errgroup.WithContext(context.Background())
@@ -98,7 +98,13 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 		// Log tool name before starting processing/download
 		g.Go(func() error {
 			// Create the progress tracker here, passing the specific tool for this goroutine
-			progressTracker := progress.NewMpbProgressTracker(prog, tool)
+			progressTracker := progress.NewPrettyProgressTracker(tool)
+
+			// Store the tracker for later cleanup
+			progressMu.Lock()
+			progressTrackers = append(progressTrackers, progressTracker)
+			progressMu.Unlock()
+
 			// Pass the tracker to processTool
 			p.processTool(tool, tags, withoutTags, resultCh, progressTracker)
 			return nil
@@ -115,7 +121,9 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 	wg.Wait()
 
 	// Wait for progress bars to finish rendering
-	prog.Wait()
+	for _, tracker := range progressTrackers {
+		tracker.Wait()
+	}
 
 	// Now, log all collected results sequentially
 	p.logFinalResults()

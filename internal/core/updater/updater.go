@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/inconshreveable/go-update"
-	"github.com/vbauerster/mpb/v8"
 
 	"github.com/idelchi/godyl/internal/cache/cache"
 	"github.com/idelchi/godyl/internal/tmp"
@@ -154,15 +153,13 @@ func (u *Updater) downloadTool(tool tools.Tool) (string, error) {
 	tool.Output = dir
 
 	// Setup progress bar for download
-	prog := mpb.New(mpb.WithWidth(60))
-	// Pass the tool pointer directly to the tracker
-	progressTracker := progress.NewMpbProgressTracker(prog, &tool)
+	progressTracker := progress.NewPrettyProgressTracker(&tool)
 
 	// Download the tool, passing the progress tracker
 	_, msg, err := tool.Download(progressTracker)
 
 	// Wait for progress bar to finish rendering
-	prog.Wait()
+	progressTracker.Wait()
 
 	// No extra blank line needed here, bar removal should handle it.
 

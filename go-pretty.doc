@@ -1,0 +1,753 @@
+Progress
+Go Reference
+
+Track the Progress of one or more Tasks (like downloading multiple files in parallel).
+
+Track one or more Tasks at the same time
+Dynamically add one or more Task Trackers while Render() is in progress
+Choose to have the Writer auto-stop the Render when no more Trackers are in queue, or manually stop using Stop()
+Redirect output to an io.Writer object (like os.StdOut)
+Completely customizable styles
+Many ready-to-use styles: style.go
+Colorize various parts of the Tracker using StyleColors
+Customize how Trackers get rendered using StyleOptions
+A demonstration of all the capabilities can be found here: ../cmd/demo-progress
+
+Sample Progress Tracking
+
+TODO
+Optimize CPU and Memory Usage
+Collapse ▴
+ Documentation ¶
+Index ¶
+Variables
+func FormatBytes(value int64) string
+func FormatNumber(value int64) string
+type IndeterminateIndicator
+type IndeterminateIndicatorGenerator
+func IndeterminateIndicatorDominoes(duration time.Duration) IndeterminateIndicatorGenerator
+func IndeterminateIndicatorMovingBackAndForth(indicator string, duration time.Duration) IndeterminateIndicatorGenerator
+func IndeterminateIndicatorMovingLeftToRight(indicator string, duration time.Duration) IndeterminateIndicatorGenerator
+func IndeterminateIndicatorMovingRightToLeft(indicator string, duration time.Duration) IndeterminateIndicatorGenerator
+func IndeterminateIndicatorPacMan(duration time.Duration) IndeterminateIndicatorGenerator
+type Position
+type Progress
+func (p *Progress) AppendTracker(t *Tracker)
+func (p *Progress) AppendTrackers(trackers []*Tracker)
+func (p *Progress) IsRenderInProgress() bool
+func (p *Progress) Length() int
+func (p *Progress) LengthActive() int
+func (p *Progress) LengthDone() int
+func (p *Progress) LengthInQueue() int
+func (p *Progress) Log(msg string, a ...interface{})
+func (p *Progress) Render()
+func (p *Progress) SetAutoStop(autoStop bool)
+func (p *Progress) SetMessageLength(length int)
+func (p *Progress) SetMessageWidth(width int)
+func (p *Progress) SetNumTrackersExpected(numTrackers int)
+func (p *Progress) SetOutputWriter(writer io.Writer)
+func (p *Progress) SetPinnedMessages(messages ...string)
+func (p *Progress) SetSortBy(sortBy SortBy)
+func (p *Progress) SetStyle(style Style)
+func (p *Progress) SetTerminalWidth(width int)
+func (p *Progress) SetTrackerLength(length int)
+func (p *Progress) SetTrackerPosition(position Position)
+func (p *Progress) SetUpdateFrequency(frequency time.Duration)
+func (p *Progress) ShowETA(show bool)
+func (p *Progress) ShowOverallTracker(show bool)
+func (p *Progress) ShowPercentage(show bool)
+func (p *Progress) ShowTime(show bool)
+func (p *Progress) ShowTracker(show bool)
+func (p *Progress) ShowValue(show bool)
+func (p *Progress) Stop()
+func (p *Progress) Style() *Style
+type SortBy
+func (sb SortBy) Sort(trackers []*Tracker)
+type Style
+type StyleChars
+type StyleColors
+type StyleOptions
+type StyleVisibility
+type Tracker
+func (t *Tracker) ETA() time.Duration
+func (t *Tracker) Increment(value int64)
+func (t *Tracker) IncrementWithError(value int64)
+func (t *Tracker) IsDone() bool
+func (t *Tracker) IsErrored() bool
+func (t *Tracker) IsIndeterminate() bool
+func (t *Tracker) IsStarted() bool
+func (t *Tracker) MarkAsDone()
+func (t *Tracker) MarkAsErrored()
+func (t *Tracker) PercentDone() float64
+func (t *Tracker) Reset()
+func (t *Tracker) SetValue(value int64)
+func (t *Tracker) Start()
+func (t *Tracker) UpdateMessage(msg string)
+func (t *Tracker) UpdateTotal(total int64)
+func (t *Tracker) Value() int64
+type Units
+func (tu Units) Sprint(value int64) string
+type UnitsFormatter
+type UnitsNotationPosition
+type Writer
+func NewWriter() Writer
+Constants ¶
+This section is empty.
+
+Variables ¶
+View Source
+var (
+	// DefaultLengthTracker defines a sane value for a Tracker's length.
+	DefaultLengthTracker = 20
+
+	// DefaultUpdateFrequency defines a sane value for the frequency with which
+	// all the Tracker's get updated on the screen.
+	DefaultUpdateFrequency = time.Millisecond * 250
+)
+View Source
+var (
+	// StyleDefault uses ASCII text to render the Trackers.
+	StyleDefault = Style{
+		Name:       "StyleDefault",
+		Chars:      StyleCharsDefault,
+		Colors:     StyleColorsDefault,
+		Options:    StyleOptionsDefault,
+		Visibility: StyleVisibilityDefault,
+	}
+
+	// StyleBlocks uses UNICODE Block Drawing characters to render the Trackers.
+	StyleBlocks = Style{
+		Name:       "StyleBlocks",
+		Chars:      StyleCharsBlocks,
+		Colors:     StyleColorsDefault,
+		Options:    StyleOptionsDefault,
+		Visibility: StyleVisibilityDefault,
+	}
+
+	// StyleCircle uses UNICODE Circle runes to render the Trackers.
+	StyleCircle = Style{
+		Name:       "StyleCircle",
+		Chars:      StyleCharsCircle,
+		Colors:     StyleColorsDefault,
+		Options:    StyleOptionsDefault,
+		Visibility: StyleVisibilityDefault,
+	}
+
+	// StyleRhombus uses UNICODE Rhombus runes to render the Trackers.
+	StyleRhombus = Style{
+		Name:       "StyleRhombus",
+		Chars:      StyleCharsRhombus,
+		Colors:     StyleColorsDefault,
+		Options:    StyleOptionsDefault,
+		Visibility: StyleVisibilityDefault,
+	}
+)
+View Source
+var (
+	// StyleCharsDefault uses simple ASCII characters.
+	StyleCharsDefault = StyleChars{
+		BoxLeft:       "[",
+		BoxRight:      "]",
+		Finished:      "#",
+		Finished25:    ".",
+		Finished50:    ".",
+		Finished75:    ".",
+		Indeterminate: IndeterminateIndicatorMovingBackAndForth("<#>", DefaultUpdateFrequency/2),
+		Unfinished:    ".",
+	}
+
+	// StyleCharsBlocks uses UNICODE Block Drawing characters.
+	StyleCharsBlocks = StyleChars{
+		BoxLeft:       "║",
+		BoxRight:      "║",
+		Finished:      "█",
+		Finished25:    "░",
+		Finished50:    "▒",
+		Finished75:    "▓",
+		Indeterminate: IndeterminateIndicatorMovingBackAndForth("▒█▒", DefaultUpdateFrequency/2),
+		Unfinished:    "░",
+	}
+
+	// StyleCharsCircle uses UNICODE Circle characters.
+	StyleCharsCircle = StyleChars{
+		BoxLeft:       "(",
+		BoxRight:      ")",
+		Finished:      "●",
+		Finished25:    "○",
+		Finished50:    "○",
+		Finished75:    "○",
+		Indeterminate: IndeterminateIndicatorMovingBackAndForth("○●○", DefaultUpdateFrequency/2),
+		Unfinished:    "◌",
+	}
+
+	// StyleCharsRhombus uses UNICODE Rhombus characters.
+	StyleCharsRhombus = StyleChars{
+		BoxLeft:       "<",
+		BoxRight:      ">",
+		Finished:      "◆",
+		Finished25:    "◈",
+		Finished50:    "◈",
+		Finished75:    "◈",
+		Indeterminate: IndeterminateIndicatorMovingBackAndForth("◈◆◈", DefaultUpdateFrequency/2),
+		Unfinished:    "◇",
+	}
+)
+View Source
+var (
+	// StyleColorsDefault defines sane color choices - None.
+	StyleColorsDefault = StyleColors{}
+
+	// StyleColorsExample defines a few choice color options. Use this is just
+	// as an example to customize the Tracker/text colors.
+	StyleColorsExample = StyleColors{
+		Message: text.Colors{text.FgWhite},
+		Error:   text.Colors{text.FgRed},
+		Percent: text.Colors{text.FgHiRed},
+		Pinned:  text.Colors{text.BgHiBlack, text.FgWhite, text.Bold},
+		Stats:   text.Colors{text.FgHiBlack},
+		Time:    text.Colors{text.FgGreen},
+		Tracker: text.Colors{text.FgYellow},
+		Value:   text.Colors{text.FgCyan},
+		Speed:   text.Colors{text.FgMagenta},
+	}
+)
+View Source
+var (
+	// UnitsDefault doesn't define any units. The value will be treated as any
+	// other number.
+	UnitsDefault = Units{
+		Notation:         "",
+		NotationPosition: UnitsNotationPositionBefore,
+		Formatter:        FormatNumber,
+	}
+
+	// UnitsBytes defines the value as a storage unit. Values will be converted
+	// and printed in one of these forms: B, KB, MB, GB, TB, PB
+	UnitsBytes = Units{
+		Notation:         "",
+		NotationPosition: UnitsNotationPositionBefore,
+		Formatter:        FormatBytes,
+	}
+
+	// UnitsCurrencyDollar defines the value as a Dollar amount. Values will be
+	// converted and printed in one of these forms: $x.yz, $x.yzK, $x.yzM,
+	// $x.yzB, $x.yzT
+	UnitsCurrencyDollar = Units{
+		Notation:         "$",
+		NotationPosition: UnitsNotationPositionBefore,
+		Formatter:        FormatNumber,
+	}
+
+	// UnitsCurrencyEuro defines the value as a Euro amount. Values will be
+	// converted and printed in one of these forms: ₠x.yz, ₠x.yzK, ₠x.yzM,
+	// ₠x.yzB, ₠x.yzT
+	UnitsCurrencyEuro = Units{
+		Notation:         "₠",
+		NotationPosition: UnitsNotationPositionBefore,
+		Formatter:        FormatNumber,
+	}
+
+	// UnitsCurrencyPound defines the value as a Pound amount. Values will be
+	// converted and printed in one of these forms: £x.yz, £x.yzK, £x.yzM,
+	// £x.yzB, £x.yzT
+	UnitsCurrencyPound = Units{
+		Notation:         "£",
+		NotationPosition: UnitsNotationPositionBefore,
+		Formatter:        FormatNumber,
+	}
+)
+View Source
+var StyleOptionsDefault = StyleOptions{
+	DoneString:              "done!",
+	ErrorString:             "fail!",
+	ETAPrecision:            time.Second,
+	ETAString:               "~ETA",
+	PercentFormat:           "%5.2f%%",
+	PercentIndeterminate:    " ??? ",
+	Separator:               " ... ",
+	SnipIndicator:           "~",
+	SpeedPosition:           PositionRight,
+	SpeedPrecision:          time.Microsecond,
+	SpeedOverallFormatter:   FormatNumber,
+	SpeedSuffix:             "/s",
+	TimeDonePrecision:       time.Millisecond,
+	TimeInProgressPrecision: time.Microsecond,
+	TimeOverallPrecision:    time.Second,
+}
+StyleOptionsDefault defines sane defaults for the Options. Use this as an example to customize the Tracker rendering.
+
+View Source
+var StyleVisibilityDefault = StyleVisibility{
+	ETA:            false,
+	ETAOverall:     true,
+	Percentage:     true,
+	Pinned:         true,
+	Speed:          false,
+	SpeedOverall:   false,
+	Time:           true,
+	Tracker:        true,
+	TrackerOverall: false,
+	Value:          true,
+}
+StyleVisibilityDefault defines sane defaults for the Visibility.
+
+Functions ¶
+func FormatBytes ¶
+func FormatBytes(value int64) string
+FormatBytes formats the given value as a "Byte".
+
+func FormatNumber ¶
+func FormatNumber(value int64) string
+FormatNumber formats the given value as a "regular number".
+
+Types ¶
+type IndeterminateIndicator ¶
+added in v6.1.0
+type IndeterminateIndicator struct {
+	Position int
+	Text     string
+}
+IndeterminateIndicator defines the structure for the indicator to indicate indeterminate progress. Ex.: {0, <=>}
+
+type IndeterminateIndicatorGenerator ¶
+added in v6.1.0
+type IndeterminateIndicatorGenerator func(maxLen int) IndeterminateIndicator
+IndeterminateIndicatorGenerator is a function that takes the maximum length of the progress bar and returns an IndeterminateIndicator telling the indicator string, and the location of the same in the progress bar.
+
+Technically, this could generate and return the entire progress bar string to override the full display of the same - this is done by the Dominoes and Pac-Man examples below.
+
+func IndeterminateIndicatorDominoes ¶
+added in v6.1.0
+func IndeterminateIndicatorDominoes(duration time.Duration) IndeterminateIndicatorGenerator
+IndeterminateIndicatorDominoes simulates a bunch of dominoes falling back and forth.
+
+func IndeterminateIndicatorMovingBackAndForth ¶
+added in v6.1.0
+func IndeterminateIndicatorMovingBackAndForth(indicator string, duration time.Duration) IndeterminateIndicatorGenerator
+IndeterminateIndicatorMovingBackAndForth incrementally moves from the left to right and back for each specified duration. If duration is 0, then every single invocation moves the indicator.
+
+func IndeterminateIndicatorMovingLeftToRight ¶
+added in v6.1.0
+func IndeterminateIndicatorMovingLeftToRight(indicator string, duration time.Duration) IndeterminateIndicatorGenerator
+IndeterminateIndicatorMovingLeftToRight incrementally moves from the left to right and starts from left again for each specified duration. If duration is 0, then every single invocation moves the indicator.
+
+func IndeterminateIndicatorMovingRightToLeft ¶
+added in v6.1.0
+func IndeterminateIndicatorMovingRightToLeft(indicator string, duration time.Duration) IndeterminateIndicatorGenerator
+IndeterminateIndicatorMovingRightToLeft incrementally moves from the right to left and starts from right again for each specified duration. If duration is 0, then every single invocation moves the indicator.
+
+func IndeterminateIndicatorPacMan ¶
+added in v6.1.0
+func IndeterminateIndicatorPacMan(duration time.Duration) IndeterminateIndicatorGenerator
+IndeterminateIndicatorPacMan simulates a Pac-Man character chomping through the progress bar back and forth.
+
+type Position ¶
+type Position int
+Position defines the position of the Tracker with respect to the Tracker's Message.
+
+const (
+	// PositionLeft will make the Tracker be displayed first before the Message.
+	PositionLeft Position = iota
+
+	// PositionRight will make the Tracker be displayed after the Message.
+	PositionRight
+)
+type Progress ¶
+type Progress struct {
+	// contains filtered or unexported fields
+}
+Progress helps track progress for one or more tasks.
+
+func (*Progress) AppendTracker ¶
+func (p *Progress) AppendTracker(t *Tracker)
+AppendTracker appends a single Tracker for tracking. The Tracker gets added to a queue, which gets picked up by the Render logic in the next rendering cycle.
+
+func (*Progress) AppendTrackers ¶
+func (p *Progress) AppendTrackers(trackers []*Tracker)
+AppendTrackers appends one or more Trackers for tracking.
+
+func (*Progress) IsRenderInProgress ¶
+func (p *Progress) IsRenderInProgress() bool
+IsRenderInProgress returns true if a call to Render() was made, and is still in progress and has not ended yet.
+
+func (*Progress) Length ¶
+func (p *Progress) Length() int
+Length returns the number of Trackers tracked overall.
+
+func (*Progress) LengthActive ¶
+func (p *Progress) LengthActive() int
+LengthActive returns the number of Trackers actively tracked (not done yet).
+
+func (*Progress) LengthDone ¶
+func (p *Progress) LengthDone() int
+LengthDone returns the number of Trackers that are done tracking.
+
+func (*Progress) LengthInQueue ¶
+func (p *Progress) LengthInQueue() int
+LengthInQueue returns the number of Trackers in queue to be actively tracked (not tracking yet).
+
+func (*Progress) Log ¶
+added in v6.3.0
+func (p *Progress) Log(msg string, a ...interface{})
+Log appends a log to display above the active progress bars during the next refresh.
+
+func (*Progress) Render ¶
+func (p *Progress) Render()
+Render renders the Progress tracker and handles all existing trackers and those that are added dynamically while render is in progress.
+
+func (*Progress) SetAutoStop ¶
+func (p *Progress) SetAutoStop(autoStop bool)
+SetAutoStop toggles the auto-stop functionality. Auto-stop set to true would mean that the Render() function will automatically stop once all currently active Trackers reach their final states. When set to false, the client code will have to call Progress.Stop() to stop the Render() logic. Default: false.
+
+func (*Progress) SetMessageLength ¶
+added in v6.5.1
+func (p *Progress) SetMessageLength(length int)
+SetMessageLength sets the (printed) length of the tracker message. Any message longer the specified length will be snipped. Any message shorter than the specified width will be padded with spaces.
+
+func (*Progress) SetMessageWidth ¶
+func (p *Progress) SetMessageWidth(width int)
+SetMessageWidth sets the (printed) length of the tracker message. Any message longer the specified width will be snipped. Any message shorter than the specified width will be padded with spaces. Deprecated: in favor of SetMessageLength(length)
+
+func (*Progress) SetNumTrackersExpected ¶
+func (p *Progress) SetNumTrackersExpected(numTrackers int)
+SetNumTrackersExpected sets the expected number of trackers to be tracked. This helps calculate the overall progress with better accuracy.
+
+func (*Progress) SetOutputWriter ¶
+func (p *Progress) SetOutputWriter(writer io.Writer)
+SetOutputWriter redirects the output of Render to an io.writer object like os.Stdout or os.Stderr or a file. Warning: redirecting the output to a file may not work well as the Render() logic moves the cursor around a lot.
+
+func (*Progress) SetPinnedMessages ¶
+added in v6.4.0
+func (p *Progress) SetPinnedMessages(messages ...string)
+SetPinnedMessages sets message(s) pinned above all the trackers of the progress bar. This method can be used to overwrite all the pinned messages. Call this function without arguments to "clear" the pinned messages.
+
+func (*Progress) SetSortBy ¶
+func (p *Progress) SetSortBy(sortBy SortBy)
+SetSortBy defines the sorting mechanism to use to sort the Active Trackers before rendering. Default: no-sorting == sort-by-insertion-order.
+
+func (*Progress) SetStyle ¶
+func (p *Progress) SetStyle(style Style)
+SetStyle sets the Style to use for rendering.
+
+func (*Progress) SetTerminalWidth ¶
+added in v6.5.1
+func (p *Progress) SetTerminalWidth(width int)
+SetTerminalWidth sets up a sticky terminal width and prevents the Progress Writer from polling for the real width during render.
+
+func (*Progress) SetTrackerLength ¶
+func (p *Progress) SetTrackerLength(length int)
+SetTrackerLength sets the text-length of all the Trackers.
+
+func (*Progress) SetTrackerPosition ¶
+func (p *Progress) SetTrackerPosition(position Position)
+SetTrackerPosition sets the position of the tracker with respect to the Tracker message text.
+
+func (*Progress) SetUpdateFrequency ¶
+func (p *Progress) SetUpdateFrequency(frequency time.Duration)
+SetUpdateFrequency sets the update frequency while rendering the trackers. the lower the value, the more frequently the Trackers get refreshed. A sane value would be 250ms.
+
+func (*Progress) ShowETA ¶
+added in v6.0.6
+func (p *Progress) ShowETA(show bool)
+ShowETA toggles showing the ETA for all individual trackers. Deprecated: in favor of Style().Visibility.ETA
+
+func (*Progress) ShowOverallTracker ¶
+func (p *Progress) ShowOverallTracker(show bool)
+ShowOverallTracker toggles showing the Overall progress tracker with an ETA. Deprecated: in favor of Style().Visibility.TrackerOverall
+
+func (*Progress) ShowPercentage ¶
+func (p *Progress) ShowPercentage(show bool)
+ShowPercentage toggles showing the Percent complete for each Tracker. Deprecated: in favor of Style().Visibility.Percentage
+
+func (*Progress) ShowTime ¶
+func (p *Progress) ShowTime(show bool)
+ShowTime toggles showing the Time taken by each Tracker. Deprecated: in favor of Style().Visibility.Time
+
+func (*Progress) ShowTracker ¶
+func (p *Progress) ShowTracker(show bool)
+ShowTracker toggles showing the Tracker (the progress bar). Deprecated: in favor of Style().Visibility.Tracker
+
+func (*Progress) ShowValue ¶
+func (p *Progress) ShowValue(show bool)
+ShowValue toggles showing the actual Value of the Tracker. Deprecated: in favor of Style().Visibility.Value
+
+func (*Progress) Stop ¶
+func (p *Progress) Stop()
+Stop stops the Render() logic that is in progress.
+
+func (*Progress) Style ¶
+func (p *Progress) Style() *Style
+Style returns the current Style.
+
+type SortBy ¶
+type SortBy int
+SortBy helps sort a list of Trackers by various means.
+
+const (
+	// SortByNone doesn't do any sorting == sort by insertion order.
+	SortByNone SortBy = iota
+
+	// SortByMessage sorts by the Message alphabetically in ascending order.
+	SortByMessage
+
+	// SortByMessageDsc sorts by the Message alphabetically in descending order.
+	SortByMessageDsc
+
+	// SortByPercent sorts by the Percentage complete in ascending order.
+	SortByPercent
+
+	// SortByPercentDsc sorts by the Percentage complete in descending order.
+	SortByPercentDsc
+
+	// SortByValue sorts by the Value in ascending order.
+	SortByValue
+
+	// SortByValueDsc sorts by the Value in descending order.
+	SortByValueDsc
+)
+func (SortBy) Sort ¶
+func (sb SortBy) Sort(trackers []*Tracker)
+Sort applies the sorting method defined by SortBy.
+
+type Style ¶
+type Style struct {
+	Name       string          // name of the Style
+	Chars      StyleChars      // characters to use on the progress bar
+	Colors     StyleColors     // colors to use on the progress bar
+	Options    StyleOptions    // misc. options for the progress bar
+	Visibility StyleVisibility // show/hide components of the progress bar(s)
+}
+Style declares how to render the Progress/Trackers.
+
+type StyleChars ¶
+type StyleChars struct {
+	BoxLeft       string // left-border
+	BoxRight      string // right-border
+	Finished      string // finished block
+	Finished25    string // 25% finished block
+	Finished50    string // 50% finished block
+	Finished75    string // 75% finished block
+	Indeterminate IndeterminateIndicatorGenerator
+	Unfinished    string // 0% finished block
+}
+StyleChars defines the characters/strings to use for rendering the Tracker.
+
+type StyleColors ¶
+type StyleColors struct {
+	Message text.Colors // message text colors
+	Error   text.Colors // error text colors
+	Percent text.Colors // percentage text colors
+	Pinned  text.Colors // color of the pin message
+	Stats   text.Colors // stats text (time, value) colors
+	Time    text.Colors // time text colors (overrides Stats)
+	Tracker text.Colors // tracker text colors
+	Value   text.Colors // value text colors (overrides Stats)
+	Speed   text.Colors // speed text colors
+}
+StyleColors defines what colors to use for various parts of the Progress and Tracker texts.
+
+type StyleOptions ¶
+type StyleOptions struct {
+	DoneString              string         // "done!" string
+	ErrorString             string         // "error!" string
+	ETAPrecision            time.Duration  // precision for ETA
+	ETAString               string         // string for ETA
+	Separator               string         // text between message and tracker
+	SnipIndicator           string         // text denoting message snipping
+	PercentFormat           string         // formatting to use for percentage
+	PercentIndeterminate    string         // when percentage cannot be computed
+	SpeedPosition           Position       // where speed is displayed in stats
+	SpeedPrecision          time.Duration  // precision for speed
+	SpeedOverallFormatter   UnitsFormatter // formatter for the overall tracker speed
+	SpeedSuffix             string         // suffix (/s)
+	TimeDonePrecision       time.Duration  // precision for time when done
+	TimeInProgressPrecision time.Duration  // precision for time when in progress
+	TimeOverallPrecision    time.Duration  // precision for overall time
+}
+StyleOptions defines misc. options to control how the Tracker or its parts gets rendered.
+
+type StyleVisibility ¶
+added in v6.3.1
+type StyleVisibility struct {
+	ETA            bool // ETA for each tracker
+	ETAOverall     bool // ETA for the overall tracker
+	Percentage     bool // tracker progress percentage value
+	Pinned         bool // pin message
+	Speed          bool // tracker speed
+	SpeedOverall   bool // overall tracker speed
+	Time           bool // tracker time taken
+	Tracker        bool // tracker ([===========-----------])
+	TrackerOverall bool // overall tracker
+	Value          bool // tracker value
+}
+StyleVisibility controls what gets shown and what gets hidden.
+
+type Tracker ¶
+type Tracker struct {
+	// Message should contain a short description of the "task"; please note
+	// that this should NOT be updated in the middle of progress - you should
+	// instead use UpdateMessage() to do this safely without hitting any race
+	// conditions
+	Message string
+	// DeferStart prevents the tracker from starting immediately when appended.
+	// It will be rendered but remain dormant until Start, Increment,
+	// IncrementWithError or SetValue is called.
+	DeferStart bool
+	// ExpectedDuration tells how long this task is expected to take; and will
+	// be used in calculation of the ETA value
+	ExpectedDuration time.Duration
+	// RemoveOnCompletion tells the Progress Bar to remove this tracker when
+	// it is done, instead of rendering a "completed" line
+	RemoveOnCompletion bool
+	// Total should be set to the (expected) Total/Final value to be reached
+	Total int64
+	// Units defines the type of the "value" being tracked
+	Units Units
+	// contains filtered or unexported fields
+}
+Tracker helps track the progress of a single task. The way to use it is to instantiate a Tracker with a valid Message, a valid (expected) Total, and Units values. This should then be fed to the Progress Writer with the Writer.AppendTracker() method. When the task that is being done has progress, increment the value using the Tracker.Increment(value) method.
+
+func (*Tracker) ETA ¶
+func (t *Tracker) ETA() time.Duration
+ETA returns the expected time of "arrival" or completion of this tracker. It is an estimate and is not guaranteed.
+
+func (*Tracker) Increment ¶
+func (t *Tracker) Increment(value int64)
+Increment updates the current value of the task being tracked.
+
+func (*Tracker) IncrementWithError ¶
+added in v6.2.0
+func (t *Tracker) IncrementWithError(value int64)
+IncrementWithError updates the current value of the task being tracked and marks that an error occurred.
+
+func (*Tracker) IsDone ¶
+func (t *Tracker) IsDone() bool
+IsDone returns true if the tracker is done (value has reached the expected Total set during initialization).
+
+func (*Tracker) IsErrored ¶
+added in v6.1.1
+func (t *Tracker) IsErrored() bool
+IsErrored true if an error was set with IncrementWithError or MarkAsErrored.
+
+func (*Tracker) IsIndeterminate ¶
+added in v6.1.0
+func (t *Tracker) IsIndeterminate() bool
+IsIndeterminate returns true if the tracker is indeterminate; i.e., the total is unknown and it is impossible to auto-calculate if tracking is done.
+
+func (*Tracker) IsStarted ¶
+added in v6.4.7
+func (t *Tracker) IsStarted() bool
+IsStarted true if the tracker has started, false when using DeferStart prior to Start, Increment, IncrementWithError or SetValue being called.
+
+func (*Tracker) MarkAsDone ¶
+func (t *Tracker) MarkAsDone()
+MarkAsDone forces completion of the tracker by updating the current value as the expected Total value.
+
+func (*Tracker) MarkAsErrored ¶
+added in v6.1.1
+func (t *Tracker) MarkAsErrored()
+MarkAsErrored forces completion of the tracker by updating the current value as the expected Total value, and recording as error.
+
+func (*Tracker) PercentDone ¶
+func (t *Tracker) PercentDone() float64
+PercentDone returns the currently completed percentage value.
+
+func (*Tracker) Reset ¶
+func (t *Tracker) Reset()
+Reset resets the tracker to its initial state.
+
+func (*Tracker) SetValue ¶
+func (t *Tracker) SetValue(value int64)
+SetValue sets the value of the tracker and re-calculates if the tracker is "done".
+
+func (*Tracker) Start ¶
+added in v6.4.7
+func (t *Tracker) Start()
+func (*Tracker) UpdateMessage ¶
+added in v6.2.0
+func (t *Tracker) UpdateMessage(msg string)
+UpdateMessage updates the message string.
+
+func (*Tracker) UpdateTotal ¶
+added in v6.4.3
+func (t *Tracker) UpdateTotal(total int64)
+UpdateTotal updates the total value.
+
+func (*Tracker) Value ¶
+added in v6.1.0
+func (t *Tracker) Value() int64
+Value returns the current value of the tracker.
+
+type Units ¶
+type Units struct {
+	Formatter        UnitsFormatter // default: FormatNumber
+	Notation         string
+	NotationPosition UnitsNotationPosition // default: UnitsNotationPositionBefore
+}
+Units defines the "type" of the value being tracked by the Tracker.
+
+func (Units) Sprint ¶
+func (tu Units) Sprint(value int64) string
+Sprint prints the value as defined by the Units.
+
+type UnitsFormatter ¶
+added in v6.3.8
+type UnitsFormatter func(value int64) string
+UnitsFormatter defines a function that prints a value in a specific style.
+
+type UnitsNotationPosition ¶
+added in v6.2.5
+type UnitsNotationPosition int
+UnitsNotationPosition determines notation position relative to unit value.
+
+const (
+	UnitsNotationPositionBefore UnitsNotationPosition = iota
+	UnitsNotationPositionAfter
+)
+Supported unit positions relative to tracker value; default: UnitsNotationPositionBefore
+
+type Writer ¶
+type Writer interface {
+	AppendTracker(tracker *Tracker)
+	AppendTrackers(trackers []*Tracker)
+	IsRenderInProgress() bool
+	Length() int
+	LengthActive() int
+	LengthDone() int
+	LengthInQueue() int
+	Log(msg string, a ...interface{})
+	SetAutoStop(autoStop bool)
+	SetMessageLength(length int)
+	SetNumTrackersExpected(numTrackers int)
+	SetOutputWriter(output io.Writer)
+	SetPinnedMessages(messages ...string)
+	SetSortBy(sortBy SortBy)
+	SetStyle(style Style)
+	SetTerminalWidth(width int)
+	SetTrackerLength(length int)
+	SetTrackerPosition(position Position)
+	SetUpdateFrequency(frequency time.Duration)
+	Stop()
+	Style() *Style
+	Render()
+
+	// Deprecated: in favor of SetMessageLength(length)
+	SetMessageWidth(width int)
+	// Deprecated: in favor of Style().Visibility.ETA
+	ShowETA(show bool)
+	// Deprecated: in favor of Style().Visibility.TrackerOverall
+	ShowOverallTracker(show bool)
+	// Deprecated: in favor of Style().Visibility.Percentage
+	ShowPercentage(show bool)
+	// Deprecated: in favor of Style().Visibility.Time
+	ShowTime(show bool)
+	// Deprecated: in favor of Style().Visibility.Tracker
+	ShowTracker(show bool)
+	// Deprecated: in favor of Style().Visibility.Value
+	ShowValue(show bool)
+}
+Writer declares the interfaces that can be used to set up and render a Progress tracker with one or more trackers.
+
+func NewWriter ¶
+func NewWriter() Writer
+NewWriter initializes and returns a Writer.

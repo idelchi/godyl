@@ -4,33 +4,83 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 
-	"github.com/vbauerster/mpb/v8"
-	"github.com/vbauerster/mpb/v8/decor"
+	"github.com/hashicorp/go-getter/v2"
+	"github.com/jedib0t/go-pretty/v6/progress"
+	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/idelchi/godyl/internal/tools" // Import tools package
 )
 
-// MpbProgressTracker implements getter.ProgressTracker using mpb for visual feedback.
-type MpbProgressTracker struct {
-	progress *mpb.Progress
-	bars     map[string]*mpb.Bar // Map src URL to bar
+// Global shared progress writer
+var (
+	sharedWriter progress.Writer
+	writerOnce   sync.Once
+	writerMu     sync.Mutex
+	activeCount  int
+)
+
+// getSharedWriter returns the shared progress writer, creating it if necessary
+func getSharedWriter() progress.Writer {
+	writerOnce.Do(func() {
+		// Create a new progress writer
+		pw := progress.NewWriter()
+
+		// Configure the progress writer
+		pw.SetUpdateFrequency(250 * time.Millisecond) // Similar to mpb's default
+		pw.SetTrackerLength(40)                       // Set tracker length
+		pw.SetStyle(progress.StyleDefault)            // Use block style for progress bar
+		pw.SetTrackerPosition(progress.PositionRight) // Put tracker after the message
+
+		// Configure visibility options
+		pw.Style().Visibility.Percentage = true
+		pw.Style().Visibility.Time = true
+		pw.Style().Visibility.Tracker = true
+		pw.Style().Visibility.Value = true
+		pw.Style().Visibility.ETA = true
+		pw.Style().Visibility.Speed = true
+
+		// Configure colors
+		pw.Style().Colors.Message = text.Colors{text.FgWhite}
+		pw.Style().Colors.Tracker = text.Colors{text.FgYellow}
+		pw.Style().Colors.Value = text.Colors{text.FgCyan}
+		pw.Style().Colors.Time = text.Colors{text.FgGreen}
+		pw.Style().Colors.Percent = text.Colors{text.FgHiRed}
+		pw.Style().Colors.Speed = text.Colors{text.FgMagenta}
+
+		// Start rendering in a goroutine
+		go pw.Render()
+
+		sharedWriter = pw
+	})
+
+	return sharedWriter
+}
+
+// PrettyProgressTracker implements getter.ProgressTracker using go-pretty for visual feedback.
+type PrettyProgressTracker struct {
+	trackers map[string]*progress.Tracker // Map src URL to tracker
 	mu       sync.Mutex
 	tool     *tools.Tool // Store the tool being processed
 }
 
-// NewMpbProgressTracker creates a new tracker associated with an mpb.Progress container
+// NewPrettyProgressTracker creates a new tracker associated with a go-pretty Progress container
 // and the specific tool being downloaded.
-func NewMpbProgressTracker(p *mpb.Progress, tool *tools.Tool) *MpbProgressTracker {
-	return &MpbProgressTracker{
-		progress: p,
-		bars:     make(map[string]*mpb.Bar),
+func NewPrettyProgressTracker(tool *tools.Tool) *PrettyProgressTracker {
+	// Increment active count
+	writerMu.Lock()
+	activeCount++
+	writerMu.Unlock()
+
+	return &PrettyProgressTracker{
+		trackers: make(map[string]*progress.Tracker),
 		tool:     tool, // Store the tool pointer
 	}
 }
 
 // TrackProgress is called by go-getter to monitor a download stream.
-func (t *MpbProgressTracker) TrackProgress(src string, currentSize, totalSize int64, stream io.ReadCloser) io.ReadCloser {
+func (t *PrettyProgressTracker) TrackProgress(src string, currentSize, totalSize int64, stream io.ReadCloser) io.ReadCloser {
 	if stream == nil {
 		// Handle cases where the stream might be nil (e.g., getter error before stream starts)
 		return nil
@@ -54,74 +104,116 @@ func (t *MpbProgressTracker) TrackProgress(src string, currentSize, totalSize in
 		name = "..." + name[len(name)-maxNameLen+3:]
 	}
 
-	// Create a new bar or update existing one
-	bar, ok := t.bars[src] // Use original src as key for mapping
-	if !ok || bar == nil {
-		// Only set total size if known (>0)
-		bar = t.progress.AddBar(totalSize,
-			// mpb.BarOptional(mpb.BarRemoveOnComplete(), totalSize <= 0), // Remove if size unknown - let's keep completed bars for now
-			// Removed styling attempts for now
-			mpb.PrependDecorators(
-				decor.Name(fmt.Sprintf("%-*.*s:", maxNameLen, maxNameLen, name), decor.WC{W: maxNameLen + 1}),
-				decor.CountersKibiByte("% .2f / % .2f"), // Display in KiB
-			),
-			mpb.AppendDecorators(
-				decor.NewPercentage("%d%%"),
-				decor.Name(" | "),
-				decor.AverageETA(decor.ET_STYLE_GO, decor.WC{W: 4}),
-				decor.Name(" | "),
-				decor.AverageSpeed(decor.SizeB1024(0), "% .1f", decor.WC{W: 7}), // Use SizeB1024(0) for KiB/s etc.
-			),
-		)
-		t.bars[src] = bar
+	// Create a new tracker or update existing one
+	tracker, ok := t.trackers[src] // Use original src as key for mapping
+	if !ok || tracker == nil {
+		// Create a new tracker
+		tracker = &progress.Tracker{
+			Message: fmt.Sprintf("%-*.*s", maxNameLen, maxNameLen, name),
+			Total:   totalSize,
+			Units:   progress.UnitsBytes, // Use bytes units for file downloads
+		}
+
+		// If total size is unknown, mark as indeterminate
+		if totalSize <= 0 {
+			tracker.Total = 0 // This makes it indeterminate in go-pretty
+		}
+
+		// Start the tracker
+		tracker.Start()
+
+		// Add to the shared progress writer
+		getSharedWriter().AppendTracker(tracker)
+
+		// Store in our map
+		t.trackers[src] = tracker
 	} else {
-		// If bar exists, maybe update total size if it was unknown initially
-		if bar.Current() == 0 && totalSize > 0 {
-			bar.SetTotal(totalSize, false) // Don't trigger completion yet
+		// If tracker exists, maybe update total size if it was unknown initially
+		if tracker.Value() == 0 && totalSize > 0 {
+			tracker.UpdateTotal(totalSize)
 		}
 	}
 
 	// Set initial progress if resuming
 	if currentSize > 0 {
-		bar.SetCurrent(currentSize)
+		tracker.SetValue(currentSize)
 	}
 
-	// Create proxy reader
-	reader := bar.ProxyReader(stream)
-
-	// Wrap the reader's Close method to potentially remove the bar or mark as complete
-	return &progressReader{
-		ReadCloser:       reader,
-		bar:              bar,
-		tracker:          t,
+	// Create a reader that updates the progress
+	return &prettyProgressReader{
+		ReadCloser:       stream,
+		tracker:          tracker,
+		trackerContainer: t,
 		src:              src,
 		initialTotalSize: totalSize, // Store initial total size
 	}
 }
 
-// progressReader wraps the bar's proxy reader to handle Close.
-type progressReader struct {
+// prettyProgressReader wraps a ReadCloser to update progress as data is read.
+type prettyProgressReader struct {
 	io.ReadCloser
-	bar              *mpb.Bar
-	tracker          *MpbProgressTracker
+	tracker          *progress.Tracker
+	trackerContainer *PrettyProgressTracker
 	src              string
 	initialTotalSize int64 // Store the total size known at creation
 }
 
-// Close closes the underlying reader and potentially cleans up the bar.
-func (r *progressReader) Close() error {
-	// Ensure the bar completes if it hasn't already (e.g., due to error before EOF)
-	// This might not be strictly necessary if Wait() handles it, but can be safer.
-	// Check if the bar is already completed to avoid panic
-	if !r.bar.Completed() {
-		// Force completion if total size was known initially
+// Read reads data from the underlying reader and updates the progress.
+func (r *prettyProgressReader) Read(p []byte) (int, error) {
+	n, err := r.ReadCloser.Read(p)
+	if n > 0 {
+		r.tracker.Increment(int64(n))
+	}
+	return n, err
+}
+
+// Close closes the underlying reader and marks the tracker as done.
+func (r *prettyProgressReader) Close() error {
+	// Mark the tracker as done
+	if !r.tracker.IsDone() {
 		if r.initialTotalSize > 0 {
-			r.bar.SetTotal(r.bar.Current(), true) // Mark as complete at current position
+			// If we know the total size, mark as done
+			r.tracker.MarkAsDone()
+		} else {
+			// If we don't know the total size, set the total to the current value and mark as done
+			r.tracker.UpdateTotal(r.tracker.Value())
+			r.tracker.MarkAsDone()
 		}
-		// Abort the bar (true flag attempts removal) regardless of whether total was known.
-		// This should prevent the final redraw after completion/EOF.
-		r.bar.Abort(true)
 	}
 
 	return r.ReadCloser.Close()
+}
+
+// Wait waits for all trackers to complete and decrements the active count.
+// When the active count reaches zero, it stops the shared progress writer.
+func (t *PrettyProgressTracker) Wait() {
+	// Decrement active count
+	writerMu.Lock()
+	activeCount--
+	shouldStop := activeCount == 0
+	writerMu.Unlock()
+
+	// If this is the last tracker, stop the shared writer
+	if shouldStop {
+		getSharedWriter().Stop()
+	}
+}
+
+// StopSharedWriter explicitly stops the shared writer.
+// This can be used to ensure the writer is stopped if needed.
+func StopSharedWriter() {
+	writerMu.Lock()
+	defer writerMu.Unlock()
+
+	if sharedWriter != nil {
+		sharedWriter.Stop()
+		// Reset the active count
+		activeCount = 0
+	}
+}
+
+// NewMpbProgressTracker is a compatibility function that creates a PrettyProgressTracker.
+// It maintains the same function signature for backward compatibility.
+func NewMpbProgressTracker(_ any, tool *tools.Tool) getter.ProgressTracker {
+	return NewPrettyProgressTracker(tool)
 }

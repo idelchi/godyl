@@ -49,5 +49,5 @@ Godyl supports different cache backends:
 
 ## Related Topics
 
-- [Global Flags](index#global-flags)
-- [Dump Cache](dump#dump-cache)
+- [Global Flags]({{ site.baseurl }}/commands/commands#global-flags)
+- [Dump Cache]({{ site.baseurl }}/commands/dump#dump-cache)

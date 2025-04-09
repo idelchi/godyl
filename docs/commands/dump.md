@@ -124,4 +124,4 @@ This creates a new YAML file containing only tools tagged with "docker".
 
 ## Related Topics
 
-- [Global Flags](index#global-flags)
+- [Global Flags]({{ site.baseurl }}/commands/commands#global-flags)

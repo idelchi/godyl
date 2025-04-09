@@ -74,8 +74,8 @@ godyl install tools.yml
 
 ### Getting Started
 
-- [Installation](installation#content-start)
-- [Commands](commands/commands#content-start)
+- [Installation]({{ site.baseurl }}/installation#content-start)
+- [Commands]({{ site.baseurl }}/commands/commands#content-start)
 
 ### Configuration
 

@@ -12,6 +12,20 @@ import (
 	"github.com/idelchi/godyl/internal/tools" // Import tools package
 )
 
+// formatBytes converts bytes to a human-readable string (KB, MB, GB, etc.)
+func formatBytes(bytes int64) string {
+	const unit = 1024
+	if bytes < unit {
+		return fmt.Sprintf("%d B", bytes)
+	}
+	div, exp := int64(unit), 0
+	for n := bytes / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
+}
+
 // Global shared progress writer
 var (
 	sharedWriter progress.Writer
@@ -41,6 +55,8 @@ func initSharedWriter() progress.Writer {
 		pw.Style().Visibility.Value = true
 		pw.Style().Visibility.ETA = true
 		pw.Style().Visibility.Speed = true
+
+		// Note: Total bytes will be shown in the tracker message
 
 		// Configure colors
 		pw.Style().Colors.Message = text.Colors{text.FgWhite}
@@ -109,9 +125,19 @@ func (t *PrettyProgressTracker) TrackProgress(src string, currentSize, totalSize
 	// Create a new tracker or update existing one
 	tracker, ok := t.trackers[src] // Use original src as key for mapping
 	if !ok || tracker == nil {
+		// Format message with total size if available
+		var message string
+		if totalSize > 0 {
+			// Format total size in human-readable format
+			totalSizeStr := formatBytes(totalSize)
+			message = fmt.Sprintf("%-*.*s [%s]", maxNameLen-len(totalSizeStr)-3, maxNameLen-len(totalSizeStr)-3, name, totalSizeStr)
+		} else {
+			message = fmt.Sprintf("%-*.*s", maxNameLen, maxNameLen, name)
+		}
+
 		// Create a new tracker
 		tracker = &progress.Tracker{
-			Message: fmt.Sprintf("%-*.*s", maxNameLen, maxNameLen, name),
+			Message: message,
 			Total:   totalSize,
 			Units:   progress.UnitsBytes, // Use bytes units for file downloads
 		}

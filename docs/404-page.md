@@ -10,22 +10,6 @@ Sorry, the page you were looking for doesn't exist.
 
 It might have been moved or deleted, or you might have mistyped the URL.
 
-## Popular Documentation Pages
-
-- [Installation Guide]({{ site.baseurl }}/installation)
-- [Usage Instructions]({{ site.baseurl }}/usage)
-- [Configuration Options]({{ site.baseurl }}/configuration)
-- [Command Reference]({{ site.baseurl }}/commands/)
-- [Examples]({{ site.baseurl }}/examples)
-
-## Command Documentation
-
-- [Install Command]({{ site.baseurl }}/commands/install)
-- [Download Command]({{ site.baseurl }}/commands/download)
-- [Dump Command]({{ site.baseurl }}/commands/dump)
-- [Update Command]({{ site.baseurl }}/commands/update)
-- [Cache Command]({{ site.baseurl }}/commands/cache)
-
 ## Getting Back on Track
 
 - [Go to the homepage]({{ site.baseurl }}/)

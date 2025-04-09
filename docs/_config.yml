@@ -48,15 +48,6 @@ back_to_top_text: "Back to top"
 # Footer content
 footer_content: "Copyright &copy; 2025 idelchi. Distributed under the MIT License."
 
-# Collections for organizing content
-# collections:
-#   docs:
-#     permalink: "/:collection/:path/"
-#     output: true
-#   commands:
-#     permalink: "/commands/:path/"
-#     output: true
-
 # Define which collections appear in the navigation
 just_the_docs:
   collections:
@@ -73,7 +64,7 @@ heading_anchors: true
 # Enable copy code buttons
 enable_copy_code_button: true
 
-# permalink: pretty
+permalink: pretty
 
 kramdown:
   syntax_highlighter_opts:

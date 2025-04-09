@@ -125,8 +125,6 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 		tracker.Wait()
 	}
 
-	// No need to explicitly stop the shared writer, it will auto-stop
-
 	// Now, log all collected results sequentially
 	p.logFinalResults()
 

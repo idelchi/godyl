@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hashicorp/go-getter/v2"
 	"github.com/jedib0t/go-pretty/v6/progress"
 	"github.com/jedib0t/go-pretty/v6/text"
 
@@ -96,12 +95,9 @@ func (t *PrettyProgressTracker) TrackProgress(src string, currentSize, totalSize
 	defer t.mu.Unlock()
 
 	// Format display name using the stored tool info
-	name := "download" // Default/fallback name
-	if t.tool != nil {
-		name = t.tool.Name
-		if t.tool.Version.Version != "" {
-			name = fmt.Sprintf("%s %s", name, t.tool.Version.Version)
-		}
+	name := t.tool.Exe.Name
+	if t.tool.Version.Version != "" {
+		name = fmt.Sprintf("%s %s", name, t.tool.Version.Version)
 	}
 
 	// Limit name length for display
@@ -216,10 +212,4 @@ func StopSharedWriter() {
 		sharedWriter.Stop()
 		activeCount = 0
 	}
-}
-
-// NewMpbProgressTracker is a compatibility function that creates a PrettyProgressTracker.
-// It maintains the same function signature for backward compatibility.
-func NewMpbProgressTracker(_ any, tool *tools.Tool) getter.ProgressTracker {
-	return NewPrettyProgressTracker(tool)
 }

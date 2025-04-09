@@ -49,13 +49,13 @@ back_to_top_text: "Back to top"
 footer_content: "Copyright &copy; 2025 idelchi. Distributed under the MIT License."
 
 # Collections for organizing content
-collections:
-  docs:
-    permalink: "/:collection/:path/"
-    output: true
-  commands:
-    permalink: "/commands/:path/"
-    output: true
+# collections:
+#   docs:
+#     permalink: "/:collection/:path/"
+#     output: true
+#   commands:
+#     permalink: "/commands/:path/"
+#     output: true
 
 # Define which collections appear in the navigation
 just_the_docs:

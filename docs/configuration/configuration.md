@@ -18,7 +18,7 @@ All of above will be merged for run-time settings and to form defaults for each 
 
 ## Commandline flags
 
-See [Command Reference]({{ site.baseurl }}/commands/index#content-start) and sub-commands for details on available flags and their default values.
+See [Command Reference]({{ site.baseurl }}/commands/commands#content-start) and sub-commands for details on available flags and their default values.
 
 ## Environment variables
 

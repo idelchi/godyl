@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/hashicorp/go-getter/v2"
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
@@ -156,6 +157,8 @@ func (g *GitHub) Path(_ string, extensions []string, version string, requirement
 }
 
 // Install downloads the asset from GitHub and returns the output, the found file, and any error encountered.
-func (g *GitHub) Install(d common.InstallData) (output string, found file.File, err error) {
+func (g *GitHub) Install(d common.InstallData, progressListener getter.ProgressTracker) (output string, found file.File, err error) {
+	// Pass the progress listener down to the common download function
+	d.ProgressListener = progressListener
 	return common.Download(d)
 }

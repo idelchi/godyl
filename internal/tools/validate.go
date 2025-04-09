@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/hashicorp/go-getter/v2"
 
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
@@ -241,7 +242,7 @@ func (t *Tool) Exists() bool {
 }
 
 // Download downloads the tool using its configured source and installer.
-func (t *Tool) Download() (string, file.File, error) {
+func (t *Tool) Download(progressListener getter.ProgressTracker) (string, file.File, error) {
 	installer, err := t.Source.Installer()
 	if err != nil {
 		return "", "", err
@@ -257,9 +258,12 @@ func (t *Tool) Download() (string, file.File, error) {
 		Mode:        t.Mode.String(),
 		Env:         t.Env,
 		NoVerifySSL: t.NoVerifySSL,
+		// ProgressListener is passed through InstallData, but set here for clarity if needed later
+		// ProgressListener: progressListener,
 	}
 
-	output, file, err := installer.Install(data)
+	// Pass the progress listener to the specific source's Install method
+	output, file, err := installer.Install(data, progressListener)
 	// Execute post-installation commands if any exist
 	if len(t.Commands.Post.Commands) > 0 {
 		if output, err := t.Commands.Post.Exe(t.Env); err != nil {

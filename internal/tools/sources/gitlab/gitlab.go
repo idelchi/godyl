@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hashicorp/go-getter/v2"
 	"github.com/idelchi/godyl/internal/gitlab"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
@@ -171,8 +172,9 @@ func (g *GitLab) GetHeaders() http.Header {
 }
 
 // Install downloads the asset from GitLab and returns the output, the found file, and any error encountered.
-func (g *GitLab) Install(d common.InstallData) (output string, found file.File, err error) {
+func (g *GitLab) Install(d common.InstallData, progressListener getter.ProgressTracker) (output string, found file.File, err error) {
 	d.Header = g.GetHeaders()
-
+	// Pass the progress listener down
+	d.ProgressListener = progressListener
 	return common.Download(d)
 }

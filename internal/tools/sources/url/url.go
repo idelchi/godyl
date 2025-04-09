@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hashicorp/go-getter/v2"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/path/file"
@@ -77,8 +78,9 @@ func (u *URL) Path(name string, _ []string, _ string, _ match.Requirements) erro
 
 // Install downloads the file from the URL and processes it based on the provided InstallData.
 // It returns the output, the downloaded file, and any error encountered.
-func (u *URL) Install(d common.InstallData) (output string, found file.File, err error) {
+func (u *URL) Install(d common.InstallData, progressListener getter.ProgressTracker) (output string, found file.File, err error) {
 	d.Header = u.GetHeaders()
-
+	// Pass the progress listener down
+	d.ProgressListener = progressListener
 	return common.Download(d)
 }

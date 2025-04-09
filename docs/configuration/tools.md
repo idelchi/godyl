@@ -62,13 +62,13 @@ Below are all configuration options along with examples
 name: idelchi/godyl
 description: Asset downloader for GitHub releases, URLs, and Go projects
 version:
-  version: v0.1.0
+  version: v0.1.0 # For `github` and `gitlab` sources, leave empty to get the latest release
   commands:
     - --version
     - version
   patterns:
     - '.*?(\d+\.\d+\.\d+).*'
-path: "https://github.com/idelchi/godyl/releases/download/v0.0.1/godyl_{{ .OS }}_{{ .ARCH }}.tar.gz"
+path: "https://github.com/idelchi/godyl/releases/download/v0.0.1/godyl_{{ .OS }}_{{ .ARCH }}.tar.gz" # For `github` and `gitlab` sources, leave empty to get the latest release
 output: ~/.local/bin
 exe:
   name: godyl

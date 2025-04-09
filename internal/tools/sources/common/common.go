@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/hashicorp/go-getter/v2"
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/env"
@@ -17,16 +18,17 @@ import (
 // InstallData holds the details required for downloading and installing files,
 // including the path, executable name, output directory, and environment settings.
 type InstallData struct {
-	Path        string   // The URL or path to download from
-	Name        string   // The name of the file or project
-	Exe         string   // The name of the executable
-	Patterns    []string // Patterns to match files for the executable
-	Output      string   // Output directory for the installation
-	Aliases     []string // Aliases for the executable
-	Mode        string   // Mode of operation, such as "find" for locating executables
-	Env         env.Env  // Environment variables for the installation process
-	NoVerifySSL bool     // Skip SSL verification
-	Header      http.Header
+	Path             string   // The URL or path to download from
+	Name             string   // The name of the file or project
+	Exe              string   // The name of the executable
+	Patterns         []string // Patterns to match files for the executable
+	Output           string   // Output directory for the installation
+	Aliases          []string // Aliases for the executable
+	Mode             string   // Mode of operation, such as "find" for locating executables
+	Env              env.Env  // Environment variables for the installation process
+	NoVerifySSL      bool     // Skip SSL verification
+	Header           http.Header
+	ProgressListener getter.ProgressTracker // Listener for download progress
 }
 
 // Download handles downloading files based on the InstallData configuration.
@@ -50,6 +52,10 @@ func Download(data InstallData) (string, file.File, error) {
 
 	downloader := download.New()
 	downloader.InsecureSkipVerify = data.NoVerifySSL
+	// Pass the progress listener if provided in InstallData
+	if data.ProgressListener != nil {
+		downloader.ProgressListener = data.ProgressListener
+	}
 
 	destination, err := downloader.Download(data.Path, dir.Path(), data.Header)
 	if err != nil {

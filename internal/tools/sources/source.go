@@ -7,6 +7,7 @@ package sources
 import (
 	"fmt"
 
+	"github.com/hashicorp/go-getter/v2"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
@@ -66,7 +67,7 @@ type Populater interface {
 	Exe() error
 	Version(version string) error
 	Path(name string, extensions []string, version string, requirements match.Requirements) error
-	Install(data common.InstallData) (string, file.File, error)
+	Install(data common.InstallData, progressListener getter.ProgressTracker) (string, file.File, error)
 	Get(key string) string
 }
 

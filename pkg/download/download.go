@@ -50,6 +50,8 @@ type Downloader struct {
 	// InsecureSkipVerify controls whether to verify SSL certificates.
 	// WARNING: Setting this to true is insecure and should only be used in testing.
 	InsecureSkipVerify bool
+	// ProgressListener allows tracking download progress.
+	ProgressListener getter.ProgressTracker
 }
 
 // New returns a new Downloader instance with default timeout values set to 5 minutes.
@@ -106,6 +108,11 @@ func (d Downloader) Download(url, output string, header ...http.Header) (file.Fi
 		Src:     url,
 		Dst:     output,
 		GetMode: getter.ModeAny,
+	}
+
+	// Pass the progress listener if provided
+	if d.ProgressListener != nil {
+		req.ProgressListener = d.ProgressListener
 	}
 
 	// TODO(Idelchi): Go-Getter messes up ? queries etc and doesn't seem to follow redirects then,

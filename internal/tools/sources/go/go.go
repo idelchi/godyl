@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/hashicorp/go-getter/v2"
 	"github.com/idelchi/godyl/internal/goi"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tmp"
@@ -61,7 +62,8 @@ var mu sync.Mutex
 
 // Install installs the Go project by downloading and setting up the required files,
 // and returns the output, the found file, and any error encountered during installation.
-func (g *Go) Install(d common.InstallData) (output string, found file.File, err error) {
+// Note: Progress listener is accepted to satisfy the interface but not used as 'go install' doesn't support it directly here.
+func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output string, found file.File, err error) {
 	mu.Lock()
 
 	binary, err := goi.New(d.NoVerifySSL)

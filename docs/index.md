@@ -4,7 +4,7 @@ layout: default
 
 # Godyl
 
-Asset downloader for GitHub releases, GitLab release, URLs, and Go projects.
+Asset downloader for GitHub releases, GitLab releases, URLs, and Go projects.
 
 ## What is Godyl?
 

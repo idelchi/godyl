@@ -32,7 +32,8 @@ source:
   type: github
   url:
     token:
-      scheme: Basic
+      header: Authorization
+      scheme: Bearer
 strategy: none
 env:
   GH_TOKEN: $GODYL_GITHUB_TOKEN

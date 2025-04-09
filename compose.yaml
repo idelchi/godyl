@@ -8,8 +8,8 @@ services:
     image: idelchi/godyl:dev
     container_name: godyl
     hostname: godyl
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     volumes:
       - .:/home/user/ws
     extra_hosts:

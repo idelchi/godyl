@@ -3,7 +3,9 @@ package pretty
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 
+	"github.com/joho/godotenv"
 	"github.com/showa-93/go-mask"
 
 	"gopkg.in/yaml.v3"
@@ -64,4 +66,33 @@ func MaskJSON(obj any) any {
 	}
 
 	return t
+}
+
+// Env returns a env-style representation of the provided object.
+func Env(obj any) string {
+	// Convert to map via JSON
+	jsonData, err := json.Marshal(obj)
+	if err != nil {
+		return err.Error()
+	}
+
+	var data map[string]any
+	if err := json.Unmarshal(jsonData, &data); err != nil {
+		return err.Error()
+	}
+
+	// Convert to string map (godotenv requires map[string]string)
+	stringMap := make(map[string]string)
+	for k, v := range data {
+		// Convert each value to string
+		stringMap[k] = fmt.Sprintf("%v", v)
+	}
+
+	// Use godotenv.Marshal to format in dotenv style
+	result, err := godotenv.Marshal(stringMap)
+	if err != nil {
+		return err.Error()
+	}
+
+	return result
 }

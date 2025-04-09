@@ -39,7 +39,12 @@ func NewEnvCommand(cfg *config.Config) *Command {
 				return err
 			}
 
-			iutils.Print(cfg.Dump.Format, c)
+			format := "env"
+			if cfg.Dump.IsSet("format") {
+				format = cfg.Dump.Format
+			}
+
+			iutils.Print(format, c)
 
 			return nil
 		},

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -289,4 +290,15 @@ func (f File) WriteYAML(v any) error {
 
 	// Use the Write method to write the YAML data
 	return f.Write(data)
+}
+
+// Unescape unescapes the file path by replacing escaped characters with their original representation.
+func (f File) Unescape() File {
+	// Replace escaped characters with their original representation
+	unescapedPath, err := url.QueryUnescape(f.String())
+	if err != nil {
+		return f
+	}
+
+	return File(unescapedPath)
 }

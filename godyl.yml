@@ -1,6 +1,5 @@
 tool:
   output: ./bin/{{ .OS }}
-  os: macos
 
 cache-type: sqlite
 

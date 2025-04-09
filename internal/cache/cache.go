@@ -37,8 +37,5 @@ func New(folder folder.Folder, cacheType string) (*cache.Cache, error) {
 		return nil, fmt.Errorf("failed to create %q backend: %w", cacheType, err)
 	}
 
-	// Create cache with file backend
-	c := cache.New(backendType)
-
-	return c, nil
+	return cache.New(backendType), nil
 }

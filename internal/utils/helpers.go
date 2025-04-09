@@ -17,9 +17,11 @@ func LoadDotEnv(path file.File) error {
 		return fmt.Errorf("loading environment variables from %q: %w", path, err)
 	}
 
-	environment := env.FromEnv().Normalized().Merged(dotEnv.Normalized())
+	if dotEnv.Has("GODYL_CONFIG_FILE") {
+		return fmt.Errorf("GODYL_CONFIG_FILE is not allowed in .env files")
+	}
 
-	if err := environment.ToEnv(); err != nil {
+	if err := env.FromEnv().Normalized().Merged(dotEnv.Normalized()).ToEnv(); err != nil {
 		return fmt.Errorf("setting environment variables: %w", err)
 	}
 

@@ -5,15 +5,16 @@ title: Configuration
 
 # Configuration
 
-Godyl can be configured in several ways (in order of priority):
+Godyl is configured in several ways
+
+Flags are set (in order of priority) by:
 
 1. Command-line flags
 2. Environment variables
 3. `.env` file(s)
 4. `.yml` file
-5. `defaults.yml` file (if not present, the embedded defaults will be used)
 
-All of above will be merged together to form defaults for each tool being processed.
+All of above will be merged for run-time settings and to form defaults for each tool being processed.
 
 ## Commandline flags
 
@@ -26,6 +27,8 @@ Environment variables are available for all flag arguments and are prefixed with
 For the `install` and `download` subcommands, the subcommand prefix is `TOOL_`.
 
 The `.env` files follow the same format. It further supports a `YAML`-like syntax, where you can use `:` to separate keys and values.
+
+For both cases, all environment variables are also loaded into the run-time environment.
 
 ## YAML Configuration
 

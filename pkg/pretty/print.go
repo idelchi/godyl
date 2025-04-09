@@ -26,3 +26,8 @@ func PrintJSONMasked(obj any) {
 func PrintYAMLMasked(obj any) {
 	fmt.Println(YAMLMasked(obj))
 }
+
+// PrintEnv prints the environment variables in a prettified format.
+func PrintEnv(env any) {
+	fmt.Println(Env(env))
+}

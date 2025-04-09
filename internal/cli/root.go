@@ -65,15 +65,10 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 		SilenceErrors:    true,
 		TraverseChildren: true,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			// Bind root-level flags
+			// Bind root-level flags to get the config file
 			if err := flags.Bind(cmd.Root(), &cfg.Root); err != nil {
 				return fmt.Errorf("binding flags: %w", err)
 			}
-
-			// Validate the root configuration
-			// if err := cfg.Root.Validate(); err != nil {
-			// 	return fmt.Errorf("validating config: %w", err)
-			// }
 
 			// Store the path in the context
 			ctx := cmd.Context()
@@ -81,6 +76,7 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 			ctx = context.WithValue(ctx, "config-file-set", cfg.Root.IsSet("config-file"))
 			cmd.SetContext(ctx)
 
+			// Bind once more to use the config file
 			if err := flags.Bind(cmd.Root(), &cfg.Root); err != nil {
 				return fmt.Errorf("binding flags: %w", err)
 			}

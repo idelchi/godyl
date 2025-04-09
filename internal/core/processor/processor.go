@@ -188,7 +188,7 @@ func (p *Processor) logToolSuccess(tool *tools.Tool, found file.File) {
 		p.log.Info("  version: %s", tool.Version.Version)
 	}
 
-	p.log.Info("  picked download %q", filepath.Base(tool.Path))
+	p.log.Info("  picked download %q", file.File(tool.Path).Unescape().Path())
 
 	if tool.Mode == "find" {
 		p.log.Info("  picked file %q", found)

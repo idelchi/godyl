@@ -13,6 +13,8 @@ Furthermore, many values can be overridden as described in the [Configuration](c
 
 The default configuration is embedded in the Godyl binary and looks like this:
 
+{% raw  %}
+
 ```yaml
 output: .bin-{{ .OS }}-{{ .ARCH_LONG }}
 exe:
@@ -61,3 +63,5 @@ version:
     - '.*?(\d+\.\d+\.\d+).*'
     - '.*?(\d+\.\d+).*'
 ```
+
+{% endraw  %}

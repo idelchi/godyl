@@ -11,6 +11,8 @@ Godyl uses Go templates for various configuration fields. This page provides a r
 
 The following variables are available in templates:
 
+{% raw  %}
+
 | Variable              | Description                                | Example Value                                |
 | --------------------- | ------------------------------------------ | -------------------------------------------- |
 | `{{ .Name }}`         | The name of the tool                       | `idelchi/godyl`                              |
@@ -80,3 +82,5 @@ skip:
   condition: '{{ eq .OS "windows" }}'
   reason: "Tool is not available on Windows"
 ```
+
+{% endraw  %}

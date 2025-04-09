@@ -25,6 +25,8 @@ If the path is a URL, it will be considered as a `source.url` type. Otherwise, i
 
 For more complex configurations, you can use the extended form:
 
+{% raw  %}
+
 ```yaml
 name: godyl
 description: Asset downloader
@@ -423,3 +425,5 @@ Valid values:
 
 - `find`: Download, extract, and find the executable
 - `extract`: Download and extract directly to the output directory
+
+{% endraw  %}

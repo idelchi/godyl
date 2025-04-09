@@ -39,16 +39,6 @@
           <a href="{{ site.baseurl }}/configuration/configuration#content-start" class="btn">Configuration</a>
           <a href="{{ site.baseurl }}/commands/commands#content-start" class="btn">Commands</a>
         </nav>
-
-        <!-- Breadcrumbs (only show if page has a parent) -->
-        {% if page.parent %}
-        <div class="breadcrumbs">
-          <a href="{{ site.baseurl }}/">Home</a>
-          {% if page.grand_parent %} / <a href="{{ site.baseurl }}/{{ page.grand_parent | downcase }}">{{ page.grand_parent }}</a>{% endif %}
-          / <a href="{{ site.baseurl }}/{{ page.parent | downcase }}{% if page.parent_path %}/{{ page.parent_path }}{% endif %}">{{ page.parent }}</a>
-          / {{ page.title }}
-        </div>
-        {% endif %}
       </div>
     </header>
 

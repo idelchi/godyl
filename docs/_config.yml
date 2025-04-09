@@ -73,20 +73,7 @@ heading_anchors: true
 # Enable copy code buttons
 enable_copy_code_button: true
 
-permalink: pretty
-
-defaults:
-  - scope:
-      path: ""
-      type: "pages"
-    values:
-      render_with_liquid: false
-  # 404 page
-  - scope:
-      path: "404-page.md"
-    values:
-      render_with_liquid: true
-# markdown: kramdown
+# permalink: pretty
 
 kramdown:
   syntax_highlighter_opts:

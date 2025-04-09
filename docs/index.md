@@ -86,7 +86,7 @@ godyl install tools.yml
 
 ### Command Reference
 
-- [Commands Overview](commands/index#content-start)
+- [Commands Overview]({{ site.baseurl }}/commands/index#content-start)
 - [Install Command](commands/install#content-start)
 - [Download Command](commands/download#content-start)
 - [Dump Command](commands/dump#content-start)

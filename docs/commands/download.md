@@ -65,4 +65,4 @@ godyl download "https://github.com/idelchi/go-next-tag/releases/download/v0.0.1/
 
 ## Related Topics
 
-- [Global Flags](index#global-flags)
+- [Global Flags]({{ site.baseurl }}/commands/index#global-flags)

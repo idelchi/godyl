@@ -55,9 +55,13 @@ godyl download idelchi/godyl idelchi/tcisd
 
 ### Download from a direct URL
 
+{% raw  %}
+
 ```sh
 godyl download "https://github.com/idelchi/go-next-tag/releases/download/v0.0.1/go-next-tag_{{ .OS }}_{{ .ARCH }}.tar.gz"
 ```
+
+{% endraw %}
 
 ## Related Topics
 

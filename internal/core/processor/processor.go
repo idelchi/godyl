@@ -180,7 +180,7 @@ func (p *Processor) collectResult(r result) {
 
 // logFinalResults iterates over collected results and logs them.
 func (p *Processor) logFinalResults() {
-	// p.log.Info("") // Add a blank line before the summary
+	p.log.Info("") // Add a blank line before the summary
 	for _, r := range p.results {
 		p.logSingleResult(r)
 	}
@@ -190,9 +190,6 @@ func (p *Processor) logFinalResults() {
 func (p *Processor) logSingleResult(r result) {
 	tool := r.Tool
 
-	// Log the tool name again before its status details
-	// p.log.Info("")
-	// p.log.Info("%s", tool.Name)
 	p.log.Debug("configuration:")
 	p.log.Debug("-------")
 	p.log.Debug("%s", pretty.YAMLMasked(tool))
@@ -236,40 +233,23 @@ func (p *Processor) logToolSuccess(tool *tools.Tool, found file.File) {
 	message.WriteString(tool.Exe.Name)
 
 	if tool.Version.Version != "" {
-		// p.log.Info("  version: %s", tool.Version.Version)
 		message.WriteString(fmt.Sprintf(" %s", tool.Version.Version))
 	}
-
-	// Only log download path if it's relevant (not dry run, etc.)
-	// if tool.Path != "" && !p.config.Root.Dry {
-	// 	p.log.Info("  picked download %q", file.File(tool.Path).Unescape().Path())
-	// }
 
 	message.WriteString(fmt.Sprintf(" installed to %q", tool.Output))
 
 	if tool.Mode == "find" {
-		// Check if the found file path is not empty
-		// if found.Path() != "" {
-		// 	p.log.Info("  picked file %q", found)
-		// }
-		// p.log.Info("  installed successfully at %q", filepath.Join(tool.Output, tool.Exe.Name))
-
 		// Log aliases if any
 		if tool.Aliases != nil {
 			message.WriteString(fmt.Sprintf(" with aliases: %v", tool.Aliases))
-			// p.log.Info("  symlinks:")
-			// for _, alias := range tool.Aliases {
-			// 	p.log.Info("    - %q", filepath.Join(tool.Output, alias))
-			// }
 		}
 
 		// Save cache on success
-		if err := p.cache.Save(file.New(tool.Output, tool.Exe.Name).Path(), tool.Version.Version); err != nil {
-			p.log.Error("  failed to save cache: %v", err)
+		if tool.Version.Version != "" {
+			if err := p.cache.Save(file.New(tool.Output, tool.Exe.Name).Path(), tool.Version.Version); err != nil {
+				p.log.Error("  failed to save cache: %v", err)
+			}
 		}
-	} else { // Assuming "extract" mode
-		// p.log.Info("  extracted to %q", tool.Output)
-		// Cache saving might not be applicable or needed for extract mode? Depends on requirements.
 	}
 
 	p.log.Info(message.String())

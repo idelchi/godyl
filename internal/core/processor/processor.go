@@ -159,7 +159,7 @@ func (p *Processor) processTool(
 
 	// Handle dry run
 	if dry {
-		resultCh <- result{Tool: tool} // Send result even for dry run for consistent logging order
+		resultCh <- result{Tool: tool, Err: fmt.Errorf("tool can be upgraded to %q", tool.Version.Version)}
 		return
 	}
 

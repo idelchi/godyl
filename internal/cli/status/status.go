@@ -11,7 +11,6 @@ import (
 	"github.com/idelchi/godyl/internal/core/processor"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/utils"
-	iutils "github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/path/files"
 )
@@ -24,7 +23,7 @@ type Command struct {
 
 // Flags adds status-specific flags to the command.
 func (cmd *Command) Flags() {
-	flags.Tool(cmd.Command)
+	// flags.Tool(cmd.Command)
 }
 
 // NewStatusCommand creates a Command for statusing tools from a YAML file.
@@ -32,11 +31,12 @@ func NewStatusCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:     "status [tools.yml]...",
 		Aliases: []string{"diff", "s"},
-		Short:   "Status tools from one of more YAML files",
-		Long:    "Status tools as specified in the YAML file(s).",
+		Short:   "Status of installed tools as specified in the YAML file(s).",
+		Long:    "Status of installed tools as specified in the YAML file(s).",
 		Args:    cobra.ArbitraryArgs,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return flags.ChainPreRun(cmd, &cfg.Tool, cmd.Root().Name(), "tool")
+			// return flags.ChainPreRun(cmd, &cfg.Tool, cmd.Root().Name(), "tool")
+			return flags.ChainPreRun(cmd, nil)
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
 			lvl, err := logger.LevelString(cfg.Root.Log)
@@ -59,11 +59,7 @@ func NewStatusCommand(cfg *config.Config, embedded config.Embedded) *Command {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
 
-			if cfg.Tool.Show {
-				iutils.Print("yaml", cfg.Root, cfg.Tool)
-
-				return nil
-			}
+			defaults.Strategy = tools.Upgrade
 
 			toolsList := tools.Tools{}
 

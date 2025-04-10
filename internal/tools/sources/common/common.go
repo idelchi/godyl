@@ -100,7 +100,7 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 					return false, fmt.Errorf("compiling pattern %q: %w", pattern, err)
 				}
 
-				matched := re.MatchString(file.Normalized().Path())
+				matched := re.MatchString(file.Path())
 
 				if matched {
 					return true, nil

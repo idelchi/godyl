@@ -18,12 +18,21 @@ type File string
 
 // New creates a new File by joining the provided paths.
 func New(paths ...string) File {
-	return File(filepath.Clean(filepath.Join(paths...))) // .Normalized()
+	return File(filepath.Clean(filepath.Join(paths...))).Normalized()
 }
 
 // Normalized converts the file path to use forward slashes.
 func (f File) Normalized() File {
-	return New(filepath.ToSlash(f.String()))
+	return File(filepath.ToSlash(f.String()))
+}
+
+func (f File) RelativeTo(base File) (File, error) {
+	file, err := filepath.Rel(f.String(), base.String())
+	if err != nil {
+		return f, fmt.Errorf("getting relative path: %w", err)
+	}
+
+	return New(file), nil
 }
 
 // Create creates a new file.

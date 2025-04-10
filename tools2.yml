@@ -717,7 +717,7 @@
       {{- end -}}
   commands:
     - |
-      {{- if neq .OS "windows" -}}
+      {{- if ne .OS "windows" -}}
       apt-get update
       apt-get install -y {{ .Exe }}
       {{- end -}}

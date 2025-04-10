@@ -47,10 +47,6 @@ var (
 // Resolve attempts to resolve the tool's source and strategy based on the provided tags.
 // It handles fallbacks and applies templating to the tool's fields as needed.
 func (t *Tool) Resolve(tags IncludeTags) error {
-	if err := t.Validate(); err != nil {
-		return fmt.Errorf("validating tool: %w", err)
-	}
-
 	// Load environment variables from the system.
 	t.Env.Merge(env.FromEnv())
 
@@ -65,6 +61,11 @@ func (t *Tool) Resolve(tags IncludeTags) error {
 
 	if err := t.TemplateFirst(); err != nil {
 		return err
+	}
+
+	// Must atleast after first set of templates.
+	if err := t.Validate(); err != nil {
+		return fmt.Errorf("validating tool: %w", err)
 	}
 
 	var lastErr error

@@ -1,11 +1,11 @@
 package tools
 
 import (
+	"fmt"
 	"maps"
 
 	"github.com/idelchi/godyl/internal/templates"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/pkg/utils"
 )
 
 func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
@@ -25,6 +25,10 @@ func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
 	return templateMap
 }
 
+func TemplateError(err error, name string) error {
+	return fmt.Errorf("applying template to %q: %w", name, err)
+}
+
 // Template applies templating to various fields of the Tool struct, such as version, path, and checksum.
 // It processes these fields using Go templates and updates them with the templated values.
 func (t *Tool) TemplateFirst() error {
@@ -33,7 +37,7 @@ func (t *Tool) TemplateFirst() error {
 	// Apply templating to Source.Type
 	output, err := templates.Apply(t.Source.Type.String(), values)
 	if err != nil {
-		return err
+		return TemplateError(err, "source.type")
 	}
 
 	t.Source.Type = sources.Type(output)
@@ -42,34 +46,15 @@ func (t *Tool) TemplateFirst() error {
 	for i := range t.Skip {
 		err = templates.ApplyAndSet(&t.Skip[i].Condition, values)
 		if err != nil {
-			return err
+			return TemplateError(err, "skip.condition")
 		}
-	}
-
-	// Validate the Skip conditions
-	if _, _, err := t.Skip.True(); err != nil {
-		return err
 	}
 
 	if err := templates.ApplyAndSet(&t.Output, values); err != nil {
-		return err
-	}
-
-	if err := templates.ApplyAndSet(&t.Version.Version, values); err != nil {
-		return err
+		return TemplateError(err, "output")
 	}
 
 	values = t.ToTemplateMap(t.Platform.ToMap())
-
-	// Apply templating to Pre commands
-	for i, cmd := range t.Commands.Pre.Commands {
-		output, err := templates.Apply(cmd.String(), values)
-		if err != nil {
-			return err
-		}
-
-		t.Commands.Pre.Commands[i].From(output)
-	}
 
 	return nil
 }
@@ -96,13 +81,13 @@ func (t *Tool) TemplateLast() error {
 	}
 
 	// Apply templating to Post commands
-	for i, cmd := range t.Commands.Post.Commands {
+	for i, cmd := range t.Commands.Commands {
 		output, err := templates.Apply(cmd.String(), values)
 		if err != nil {
 			return err
 		}
 
-		t.Commands.Post.Commands[i].From(output)
+		t.Commands.Commands[i].From(output)
 	}
 
 	// Apply templating to Hints patterns and weights
@@ -112,12 +97,6 @@ func (t *Tool) TemplateLast() error {
 		}
 
 		if err := templates.ApplyAndSet(&t.Hints[i].Weight, values); err != nil {
-			return err
-		}
-		// Set a default weight of "1" if not specified and convert it to an integer
-		utils.SetIfZeroValue(&t.Hints[i].Weight, "1")
-
-		if err := t.Hints[i].SetWeight(); err != nil {
 			return err
 		}
 	}

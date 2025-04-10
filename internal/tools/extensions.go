@@ -7,18 +7,34 @@ import (
 
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/pkg/unmarshal"
+	"gopkg.in/yaml.v3"
 )
 
 // Extensions represents a collection of file extensions.
-type Extensions = unmarshal.SingleOrSliceType[string]
+type Extensions unmarshal.SingleOrSliceType[string]
+
+func (e *Extensions) UnmarshalYAML(value *yaml.Node) error {
+	result, err := unmarshal.SingleOrSlice[string](value, false)
+	if err != nil {
+		return err
+	}
+
+	*e = result
+
+	return nil
+}
+
+func (e Extensions) Compacted() Extensions {
+	return slices.Compact(e)
+}
 
 // ExtensionsToHint converts a list of extensions into a match.Hint.
-func ExtensionsToHint(exts Extensions) match.Hint {
+func (e Extensions) ToHint() match.Hint {
 	var noExtensionPart string
 
 	var extensionParts []string
 
-	for _, ext := range slices.Compact(exts) {
+	for _, ext := range e.Compacted() {
 		if ext == "" {
 			noExtensionPart = "^[^.]+$"
 		} else {

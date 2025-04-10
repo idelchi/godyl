@@ -12,9 +12,8 @@ import (
 func Root(cmd *cobra.Command) {
 	env := env.FromEnv()
 
-	// Only flags that are not directly translatable to a `defaults``setting should have a default value here.
+	// Only flags that are not directly translatable to a `defaults` setting should have a default value here.
 	// Or if additional env variables are to be used.
-	cmd.Flags().Bool("dry", false, "Run without making any changes (dry run)")
 	cmd.Flags().String("log", logger.INFO.String(), "Log level (DEBUG, INFO, WARN, ERROR, SILENT)")
 	cmd.Flags().StringP("config-file", "c", tmp.ConfigDir().WithFile("godyl.yml").Path(), "Path to config file")
 	cmd.Flags().StringSliceP("env-file", "e", []string{".env"}, "Paths to .env files")
@@ -41,6 +40,7 @@ func Tool(cmd *cobra.Command) {
 	cmd.Flags().IntP("parallel", "j", 0, "Number of parallel downloads. 0 means unlimited.")
 	cmd.Flags().String("version", "", "Version of the tool to install. Empty means latest. Obviously not so useful when downloading multiple tools.")
 	cmd.Flags().BoolP("show", "s", false, "Show the configuration and exit")
+	cmd.Flags().Bool("no-progress", false, "Disable progress bar")
 }
 
 // Update adds update-related command flags to the provided cobra command.

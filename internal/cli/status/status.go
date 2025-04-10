@@ -1,6 +1,4 @@
-// Package install implements the install command for godyl.
-// It provides functionality to install tools from a YAML configuration file.
-package install
+package status
 
 import (
 	"fmt"
@@ -18,24 +16,24 @@ import (
 	"github.com/idelchi/godyl/pkg/path/files"
 )
 
-// Command encapsulates the install cobra command with its associated config and embedded files.
+// Command encapsulates the status cobra command with its associated config and embedded files.
 type Command struct {
-	// Command is the install cobra.Command instance
+	// Command is the status cobra.Command instance
 	Command *cobra.Command
 }
 
-// Flags adds install-specific flags to the command.
+// Flags adds status-specific flags to the command.
 func (cmd *Command) Flags() {
 	flags.Tool(cmd.Command)
 }
 
-// NewInstallCommand creates a Command for installing tools from a YAML file.
-func NewInstallCommand(cfg *config.Config, embedded config.Embedded) *Command {
+// NewStatusCommand creates a Command for statusing tools from a YAML file.
+func NewStatusCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
-		Use:     "install [tools.yml]...",
-		Aliases: []string{"i", "get"},
-		Short:   "Install tools from one of more YAML files",
-		Long:    "Install tools as specified in the YAML file(s).",
+		Use:     "status [tools.yml]...",
+		Aliases: []string{"diff", "s"},
+		Short:   "Status tools from one of more YAML files",
+		Long:    "Status tools as specified in the YAML file(s).",
 		Args:    cobra.ArbitraryArgs,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			return flags.ChainPreRun(cmd, &cfg.Tool, cmd.Root().Name(), "tool")
@@ -86,7 +84,7 @@ func NewInstallCommand(cfg *config.Config, embedded config.Embedded) *Command {
 			tags.Include, tags.Exclude = utils.SplitTags(cfg.Tool.Tags)
 
 			proc := processor.New(toolsList, defaults, *cfg, log)
-			if err := proc.Process(tags, false); err != nil {
+			if err := proc.Process(tags, true); err != nil {
 				return fmt.Errorf("processing tools: %w", err)
 			}
 
@@ -99,10 +97,10 @@ func NewInstallCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	}
 }
 
-// NewCommand creates a cobra.Command instance containing the install command.
+// NewCommand creates a cobra.Command instance containing the status command.
 func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
-	// Create the install command
-	cmd := NewInstallCommand(cfg, files)
+	// Create the status command
+	cmd := NewStatusCommand(cfg, files)
 
 	// Add tool-specific flags
 	cmd.Flags()

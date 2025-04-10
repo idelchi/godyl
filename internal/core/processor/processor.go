@@ -29,10 +29,9 @@ var ErrToolsFailedToInstall = errors.New("tools failed to install")
 // result holds the result of processing a tool.
 // It's used internally to pass information between goroutines.
 type result struct {
-	Tool  *tools.Tool
-	Found file.File
-	Err   error
-	Msg   string
+	Tool *tools.Tool
+	Err  error
+	Msg  string
 }
 
 // Processor handles tool installation and management.
@@ -58,7 +57,7 @@ func New(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log 
 }
 
 // Process installs and manages tools with the given tags.
-func (p *Processor) Process(tags, withoutTags []string) error {
+func (p *Processor) Process(tags tools.IncludeTags, dry bool) error {
 	cache, err := cachehandler.New(p.config.Root.Cache.Dir, p.config.Root.Cache.Type)
 	if err != nil {
 		return fmt.Errorf("creating cache: %w", err)
@@ -75,7 +74,7 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 	g, _ := errgroup.WithContext(context.Background())
 	if p.config.Tool.Parallel > 0 {
 		g.SetLimit(p.config.Tool.Parallel)
-		p.log.Info("running with %d parallel downloads", p.config.Tool.Parallel)
+		p.log.Debug("running with %d parallel downloads", p.config.Tool.Parallel)
 	}
 
 	// Goroutine to collect results from the channel and store them
@@ -106,7 +105,7 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 			progressMu.Unlock()
 
 			// Pass the tracker to processTool
-			p.processTool(tool, tags, withoutTags, resultCh, progressTracker)
+			p.processTool(tool, tags, resultCh, progressTracker, dry)
 			return nil
 		})
 	}
@@ -145,20 +144,21 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 // processTool processes an individual tool and sends the result to the result channel.
 func (p *Processor) processTool(
 	tool *tools.Tool,
-	tags, withoutTags []string,
+	tags tools.IncludeTags,
 	resultCh chan<- result,
 	progressTracker getter.ProgressTracker, // Receive the tracker instance
+	dry bool,
 ) {
 	// Apply defaults and resolve tool configuration
 	tool.ApplyDefaults(p.defaults, p.cache)
 
-	if err := tool.Resolve(tags, withoutTags); err != nil {
+	if err := tool.Resolve(tags); err != nil {
 		resultCh <- result{Tool: tool, Err: err}
 		return
 	}
 
 	// Handle dry run
-	if p.config.Root.Dry {
+	if dry {
 		resultCh <- result{Tool: tool} // Send result even for dry run for consistent logging order
 		return
 	}
@@ -169,8 +169,8 @@ func (p *Processor) processTool(
 	}
 
 	// Download the tool, passing the progress tracker
-	msg, found, err := tool.Download(progressTracker)
-	resultCh <- result{Tool: tool, Found: found, Err: err, Msg: msg}
+	msg, err := tool.Download(progressTracker)
+	resultCh <- result{Tool: tool, Err: err, Msg: msg}
 
 	// Error handling is done via the result channel now
 }

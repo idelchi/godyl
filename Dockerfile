@@ -2,7 +2,7 @@
 # Description : Docker image containing the godyl binary
 #]=======================================================================]
 
-ARG GO_VERSION=1.24.1
+ARG GO_VERSION=1.24.2
 ARG DISTRO=bookworm
 
 #### ---- Build ---- ####
@@ -55,8 +55,6 @@ RUN --mount=type=cache,target=${GOMODCACHE},uid=1001,gid=1001 \
     # go install golang.org/x/tools/cmd/stringer && \
     GOOS=${TARGETOS} GOARCH=${TARGETARCH} CGO_ENABLED=0 go build -ldflags="-s -w -X 'main.version=${GODYL_VERSION}'" -o bin/ .
 
-COPY --chown=${USER}:{USER} .bashrc /home/${USER}/.bashrc
-
 ENV PATH=$PATH:/home/${USER}/.local/bin
 ENV PATH=$PATH:/root/.local/bin
 
@@ -72,7 +70,9 @@ USER ${USER}
 # Timezone
 ENV TZ=Europe/Zurich
 
-FROM debian:bookworm-slim AS final
+ARG GO_VERSION=1.24.2
+
+FROM golang:${GO_VERSION} AS final
 
 RUN apt-get update && apt-get install -y \
     curl \

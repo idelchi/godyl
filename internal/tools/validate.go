@@ -3,7 +3,6 @@ package tools
 import (
 	"errors"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -47,9 +46,9 @@ var (
 
 // Resolve attempts to resolve the tool's source and strategy based on the provided tags.
 // It handles fallbacks and applies templating to the tool's fields as needed.
-func (t *Tool) Resolve(withTags, withoutTags []string) error {
-	if len(t.Name) == 0 {
-		return fmt.Errorf("%w: tool name is empty", ErrFailed)
+func (t *Tool) Resolve(tags IncludeTags) error {
+	if err := t.Validate(); err != nil {
+		return fmt.Errorf("validating tool: %w", err)
 	}
 
 	// Load environment variables from the system.
@@ -58,16 +57,8 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 	// Expand and set the output folder path.
 	t.Output = folder.New(t.Output).Expanded().Path()
 
-	// Set the strategy to Force if the mode is "extract".
-	if t.Mode == "extract" {
-		t.Strategy = Force
-	}
-
 	// Save the path for templating later.
 	path := t.Path
-
-	t.Extensions = slices.Compact(t.Extensions)
-	t.Aliases = slices.Compact(t.Aliases)
 
 	// Expand environment variables.
 	t.Env.Expand()
@@ -76,27 +67,10 @@ func (t *Tool) Resolve(withTags, withoutTags []string) error {
 		return err
 	}
 
-	// Execute pre-installation commands if any exist
-	if len(t.Commands.Pre.Commands) > 0 {
-		if output, err := t.Commands.Pre.Exe(t.Env); err != nil {
-			return fmt.Errorf("executing pre-installation commands: %w: %s", err, output)
-		}
-	}
-
-	t.Fallbacks = slices.Compact(t.Fallbacks)
-
-	// Build the fallback sources from the primary source type and additional fallbacks.
-	fallbacks := append([]sources.Type{t.Source.Type}, t.Fallbacks...)
-
 	var lastErr error
 	// Try resolving with each fallback in order.
-	for _, fallback := range slices.Compact(fallbacks) {
-		if fallback == sources.RUST {
-			// Skip Rust fallback for now.
-			continue
-		}
-
-		if err := t.tryResolveFallback(fallback, path, withTags, withoutTags); ErrCausesEarlyReturn(err) {
+	for _, fallback := range t.Fallbacks.Build(t.Source.Type) {
+		if err := t.tryResolveFallback(fallback, path, tags.Include, tags.Exclude); ErrCausesEarlyReturn(err) {
 			return err
 		} else if err != nil {
 			lastErr = err
@@ -126,8 +100,10 @@ func (t *Tool) CheckSkipConditions(withTags, withoutTags []string) error {
 		return err
 	}
 
-	if skip, msg, _ := t.Skip.True(); skip {
-		return fmt.Errorf("%w: %q", ErrSkipped, msg)
+	if skip, err := t.Skip.Evaluate(); err != nil {
+		return fmt.Errorf("checking skip conditions: %w", err)
+	} else if skip.Has() {
+		return fmt.Errorf("%w: %q", ErrSkipped, skip[0].Condition)
 	}
 
 	return nil
@@ -186,10 +162,17 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 		return err
 	}
 
+	t.Extensions = t.Extensions.Compacted()
+	t.Aliases = t.Aliases.Compacted()
+
 	// Determine the tool's path if not already set.
 	if utils.IsZeroValue(t.Path) {
+		if err := t.Hints.Parse(); err != nil {
+			return err
+		}
+
 		hints := t.Hints
-		hints.Add(ExtensionsToHint(t.Extensions))
+		hints.Add(t.Extensions.ToHint())
 
 		if err := populator.Path(t.Name, nil, t.Version.Version, match.Requirements{
 			Platform: t.Platform,
@@ -242,10 +225,10 @@ func (t *Tool) Exists() bool {
 }
 
 // Download downloads the tool using its configured source and installer.
-func (t *Tool) Download(progressListener getter.ProgressTracker) (string, file.File, error) {
+func (t *Tool) Download(progressListener getter.ProgressTracker) (string, error) {
 	installer, err := t.Source.Installer()
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 
 	data := common.InstallData{
@@ -263,17 +246,17 @@ func (t *Tool) Download(progressListener getter.ProgressTracker) (string, file.F
 	}
 
 	// Pass the progress listener to the specific source's Install method
-	output, file, err := installer.Install(data, progressListener)
+	output, _, err := installer.Install(data, progressListener)
 	// Execute post-installation commands if any exist
-	if len(t.Commands.Post.Commands) > 0 {
-		if output, err := t.Commands.Post.Exe(t.Env); err != nil {
-			return output, file, fmt.Errorf("executing post-installation commands: %w: %s", err, output)
+	if len(t.Commands.Commands) > 0 {
+		if output, err := t.Commands.Exe(t.Env); err != nil {
+			return output, fmt.Errorf("executing post-installation commands: %w: %s", err, output)
 		}
 	}
 
 	if err != nil {
-		return output, file, fmt.Errorf("installing tool: %w", err)
+		return output, fmt.Errorf("installing tool: %w", err)
 	}
 
-	return output, file, nil
+	return output, nil
 }

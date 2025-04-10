@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -20,7 +21,7 @@ import (
 // SingleOrSliceType represents a custom type that can unmarshal from YAML as either
 // a single element or a slice of elements. It is a generic type that works for
 // any type T.
-type SingleOrSliceType[T any] []T
+type SingleOrSliceType[T comparable] []T
 
 // UnmarshalYAML implements the yaml.Unmarshaler interface for SingleOrSlice.
 // It allows the YAML value to be unmarshaled either as a single element or a slice.
@@ -34,6 +35,10 @@ func (ss *SingleOrSliceType[T]) UnmarshalYAML(value *yaml.Node) error {
 	*ss = result
 
 	return nil
+}
+
+func (ss *SingleOrSliceType[T]) Compacted() SingleOrSliceType[T] {
+	return SingleOrSliceType[T](slices.Compact([]T(*ss)))
 }
 
 // SingleOrSlice is a helper function that unmarshals a YAML node into

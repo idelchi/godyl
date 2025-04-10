@@ -111,7 +111,7 @@ func NewDownloadCommand(cfg *config.Config, embedded config.Embedded) *Command {
 
 			// Process tools
 			proc := processor.New(toolsList, defaults, *cfg, log)
-			if err := proc.Process(nil, nil); err != nil {
+			if err := proc.Process(tools.IncludeTags{}, false); err != nil {
 				return fmt.Errorf("processing tools: %w", err)
 			}
 

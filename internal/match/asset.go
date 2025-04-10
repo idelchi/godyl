@@ -58,7 +58,7 @@ func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 
 	if req.Platform.Architecture.IsCompatibleWith(a.Platform.Architecture) {
 		score++
-	} else if !a.Platform.Architecture.IsUnset() && !req.Platform.Architecture.IsUnset() {
+	} else if a.Platform.Architecture.IsSet() && req.Platform.Architecture.IsSet() {
 		qualified = false
 	} else {
 		score--
@@ -70,7 +70,7 @@ func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 
 	if req.Platform.Library.IsCompatibleWith(a.Platform.Library) {
 		score++
-	} else if !a.Platform.Library.IsUnset() && !req.Platform.Library.IsUnset() {
+	} else if a.Platform.Library.IsSet() && req.Platform.Library.IsSet() {
 		qualified = false
 	}
 

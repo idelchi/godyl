@@ -27,9 +27,10 @@ func (cmd *Command) Flags() {
 // NewCacheCommand creates a Command for displaying tools information.
 func NewCacheCommand(cfg *config.Config) *Command {
 	cmd := &cobra.Command{
-		Use:   "cache [name]",
-		Short: "Display cache information",
-		Args:  cobra.MaximumNArgs(1),
+		Use:     "cache [name]",
+		Short:   "Display cache information",
+		Aliases: []string{"c"},
+		Args:    cobra.MaximumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			return flags.ChainPreRun(cmd, nil)
 		},

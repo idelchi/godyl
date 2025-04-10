@@ -44,7 +44,7 @@ func (cmd *Command) Subcommands() {
 func NewDumpCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:     "dump [command]",
-		Aliases: []string{"show"},
+		Aliases: []string{"show", "d"},
 		Short:   "Dump configuration information",
 		Long:    "Display various configuration settings and information about the environment",
 		PreRunE: func(cmd *cobra.Command, _ []string) error {

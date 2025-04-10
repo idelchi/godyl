@@ -6,7 +6,6 @@ exe:
     - ".*/{{ .Exe }}{{ .EXTENSION }}$"
 hints:
   - pattern: "{{ .Exe }}"
-    weight: 1
   - pattern: "armv{{ .ARCH_VERSION }}"
     weight: 4
   - pattern: "armv{{sub .ARCH_VERSION 1}}"
@@ -14,7 +13,6 @@ hints:
   - pattern: "armv{{sub .ARCH_VERSION 2}}"
     weight: 2
   - pattern: "arm[^v].*"
-    weight: 1
   - pattern: "musleabihf"
     weight: |-
       {{- if and (eq .DISTRIBUTION "alpine") (eq .ARCH "arm") -}}

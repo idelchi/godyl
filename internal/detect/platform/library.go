@@ -62,6 +62,11 @@ func (l Library) IsUnset() bool {
 	return l.Type == ""
 }
 
+// IsSet returns true if the library type is set.
+func (l Library) IsSet() bool {
+	return l.Type != ""
+}
+
 // Is checks if this library is exactly the same as another.
 func (l Library) Is(other Library) bool {
 	return other.Raw == l.Raw && !l.IsUnset() && !other.IsUnset()

@@ -11,9 +11,6 @@ import (
 
 // Root holds the root configuration options.
 type Root struct {
-	// Run without making any changes
-	Dry bool
-
 	// Log level (DEBUG, INFO, WARN, ERROR, SILENT)
 	Log string `validate:"oneof=DEBUG INFO WARN ERROR SILENT"`
 

@@ -100,7 +100,7 @@ func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error)
 	// Apply defaults and resolve configuration
 	tool.ApplyDefaults(u.defaults, u.cache)
 
-	if err := tool.Resolve(nil, nil); err != nil && !(errors.Is(err, tools.ErrRequiresUpdate) || errors.Is(err, tools.ErrUpToDate)) {
+	if err := tool.Resolve(tools.IncludeTags{}); err != nil && !(errors.Is(err, tools.ErrRequiresUpdate) || errors.Is(err, tools.ErrUpToDate)) {
 		return tool, versions.Current, fmt.Errorf("resolving tool: %w", err)
 	}
 
@@ -156,7 +156,7 @@ func (u *Updater) downloadTool(tool tools.Tool) (string, error) {
 	progressTracker := progress.NewPrettyProgressTracker(&tool)
 
 	// Download the tool, passing the progress tracker
-	_, msg, err := tool.Download(progressTracker)
+	msg, err := tool.Download(progressTracker)
 
 	// Wait for progress bar to finish rendering
 	progressTracker.Wait()

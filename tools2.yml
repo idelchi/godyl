@@ -366,9 +366,8 @@
     patterns:
       - bin/gh{{ .EXTENSION }}$
   commands:
-    post:
-      - "{{ .Output }}/{{ .Exe }} extension install github/gh-copilot || true"
-      - "{{ .Output }}/{{ .Exe }} extension upgrade gh-copilot || true"
+    - "{{ .Output }}/{{ .Exe }} extension install github/gh-copilot || true"
+    - "{{ .Output }}/{{ .Exe }} extension upgrade gh-copilot || true"
   tags:
     - terminal
 
@@ -574,13 +573,12 @@
   source:
     type: none
   commands:
-    post:
-      - |
-        {{ if eq .OS "linux" }}
-        pip install {{ .Exe }}=={{ .Version }} --user --break-system-packages
-        {{ else }}
-        echo "installation skipped"
-        {{ end }}
+    - |
+      {{ if eq .OS "linux" }}
+      pip install {{ .Exe }}=={{ .Version }} --user --break-system-packages
+      {{ else }}
+      echo "installation skipped"
+      {{ end }}
   tags:
     - python
     - native
@@ -592,13 +590,12 @@
   source:
     type: none
   commands:
-    post:
-      - set -e
-      - rm -rf {{ .Output }} /tmp/PathPicker
-      - mkdir -p {{ .Output }}
-      - gissst clone --branchss={{ .Version }} https://github.com/facebook/PathPicker.git /tmp/PathPicker
-      - cp /tmp/PathPicker/fpp {{ .Output }}/fpp
-      - rm -rf /tmp/PathPicker
+    - set -e
+    - rm -rf {{ .Output }} /tmp/PathPicker
+    - mkdir -p {{ .Output }}
+    - gissst clone --branchss={{ .Version }} https://github.com/facebook/PathPicker.git /tmp/PathPicker
+    - cp /tmp/PathPicker/fpp {{ .Output }}/fpp
+    - rm -rf /tmp/PathPicker
   tags:
     - linux
     - native
@@ -610,13 +607,12 @@
   source:
     type: none
   commands:
-    post:
-      - TMP_DIR=$(mktemp -d)
-      - echo curl -L -o ${TMP_DIR}/aliases_{{ .Version }}.deb https://github.com/sebglazebrook/aliases/raw/refs/heads/master/releases/{{ .Version }}/debian/aliases_{{ .Version }}.deb
-      - curl -L -o ${TMP_DIR}/aliases_{{ .Version }}.deb https://github.com/sebglazebrook/aliases/raw/refs/heads/master/releases/{{ .Version }}/debian/aliases_{{ .Version }}.deb
-      - apt-get install -y ${TMP_DIR}/aliases_{{ .Version }}.deb
-      - rm -rf ${TMP_DIR}
-      - aliases init --global >> ~/.bashrc
+    - TMP_DIR=$(mktemp -d)
+    - echo curl -L -o ${TMP_DIR}/aliases_{{ .Version }}.deb https://github.com/sebglazebrook/aliases/raw/refs/heads/master/releases/{{ .Version }}/debian/aliases_{{ .Version }}.deb
+    - curl -L -o ${TMP_DIR}/aliases_{{ .Version }}.deb https://github.com/sebglazebrook/aliases/raw/refs/heads/master/releases/{{ .Version }}/debian/aliases_{{ .Version }}.deb
+    - apt-get install -y ${TMP_DIR}/aliases_{{ .Version }}.deb
+    - rm -rf ${TMP_DIR}
+    - aliases init --global >> ~/.bashrc
   tags:
     - elevated
     - linux
@@ -628,15 +624,14 @@
   source:
     type: none
   commands:
-    post:
-      - |
-        curl --create-dirs -o ~/.config/up/up.sh https://raw.githubusercontent.com/shannonmoeller/up/master/up.sh
-        echo 'source ~/.config/up/up.sh' >> ~/.bashrc
-      - |
-        fish -c '
-        curl --create-dirs -o ~/.config/up/up.fish https://raw.githubusercontent.com/shannonmoeller/up/master/up.fish
-        source ~/.config/up/up.fish
-        '
+    - |
+      curl --create-dirs -o ~/.config/up/up.sh https://raw.githubusercontent.com/shannonmoeller/up/master/up.sh
+      echo 'source ~/.config/up/up.sh' >> ~/.bashrc
+    - |
+      fish -c '
+      curl --create-dirs -o ~/.config/up/up.fish https://raw.githubusercontent.com/shannonmoeller/up/master/up.fish
+      source ~/.config/up/up.fish
+      '
   tags:
     - linux
     - native
@@ -649,9 +644,8 @@
   source:
     type: none
   commands:
-    post:
-      - apt-get update
-      - apt-get install -y {{ .Exe }}
+    - apt-get update
+    - apt-get install -y {{ .Exe }}
   tags:
     - elevated
     - linux
@@ -665,9 +659,8 @@
   source:
     type: none
   commands:
-    post:
-      - apt-get update
-      - apt-get install -y {{ .Exe }}
+    - apt-get update
+    - apt-get install -y {{ .Exe }}
   tags:
     - elevated
     - linux
@@ -680,14 +673,13 @@
   source:
     type: none
   commands:
-    post:
-      - TMPDIR=$(mktemp -d)
-      - export RUSTUP_HOME=${TMPDIR}/home
-      - export CARGO_HOME=${TMPDIR}/cargo
-      - curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
-      - dir=$(dirname {{ .Output }})
-      - ${TMPDIR}/cargo/bin/cargo install {{ .Exe }} --root ${dir}
-      - rm -rf ${TMPDIR}
+    - TMPDIR=$(mktemp -d)
+    - export RUSTUP_HOME=${TMPDIR}/home
+    - export CARGO_HOME=${TMPDIR}/cargo
+    - curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
+    - dir=$(dirname {{ .Output }})
+    - ${TMPDIR}/cargo/bin/cargo install {{ .Exe }} --root ${dir}
+    - rm -rf ${TMPDIR}
   tags:
     - rust
     - native
@@ -700,14 +692,13 @@
   source:
     type: none
   commands:
-    post:
-      - |
-        {{ if eq .OS "linux" }}
-        apt-get update
-        apt-get install -y {{ .Name }}={{ .Version }}
-        {{ else }}
-        echo "installation skipped"
-        {{ end }}
+    - |
+      {{ if eq .OS "linux" }}
+      apt-get update
+      apt-get install -y {{ .Name }}={{ .Version }}
+      {{ else }}
+      echo "installation skipped"
+      {{ end }}
   tags:
     - elevated
     - linux
@@ -725,12 +716,11 @@
           none
       {{- end -}}
   commands:
-    post:
-      - |
-        {{- if neq .OS "windows" -}}
-        apt-get update
-        apt-get install -y {{ .Exe }}
-        {{- end -}}
+    - |
+      {{- if neq .OS "windows" -}}
+      apt-get update
+      apt-get install -y {{ .Exe }}
+      {{- end -}}
   extensions: .exe
   tags:
     - elevated

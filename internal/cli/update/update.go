@@ -30,7 +30,7 @@ func (cmd *Command) Flags() {
 func NewUpdateCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:     "update",
-		Aliases: []string{"upgrade", "up"},
+		Aliases: []string{"upgrade", "u"},
 		Short:   "Update the application",
 		Long:    "Update the godyl application to the latest version",
 		PreRunE: func(cmd *cobra.Command, _ []string) error {

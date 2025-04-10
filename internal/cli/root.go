@@ -13,6 +13,7 @@ import (
 	"github.com/idelchi/godyl/internal/cli/dump"
 	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/cli/install"
+	"github.com/idelchi/godyl/internal/cli/status"
 	"github.com/idelchi/godyl/internal/cli/update"
 	"github.com/idelchi/godyl/internal/cli/version"
 	"github.com/idelchi/godyl/internal/config"
@@ -49,6 +50,7 @@ func (cmd *Command) Subcommands() {
 		download.NewCommand(cmd.Config, cmd.Files),
 		update.NewCommand(cmd.Config, cmd.Files),
 		cache.NewCommand(cmd.Config),
+		status.NewCommand(cmd.Config, cmd.Files),
 	)
 }
 

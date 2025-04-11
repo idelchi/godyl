@@ -153,7 +153,8 @@ func (u *Updater) downloadTool(tool tools.Tool) (string, error) {
 	tool.Output = dir
 
 	// Setup progress bar for download
-	progressTracker := progress.NewPrettyProgressTracker(&tool)
+	progressMgr := progress.NewProgressManager(progress.DefaultOptions())
+	progressTracker := progressMgr.NewTracker(&tool)
 
 	// Download the tool, passing the progress tracker
 	msg, err := tool.Download(progressTracker)

@@ -1,8 +1,8 @@
-- name: gitlab-org/cli
-  description: glab is an open source GitLab CLI tool
-  # version: v1.54.0
-  exe: glab
-  source:
-    type: gitlab
-  tags:
-    - terminal
+- idelchi/gocry
+- idelchi/gogen
+- idelchi/go-match
+- idelchi/gonca
+- idelchi/go-next-tag
+- name: idelchi/wslint
+  version:
+    commands: -v

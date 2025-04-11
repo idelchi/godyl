@@ -55,6 +55,8 @@ RUN --mount=type=cache,target=${GOMODCACHE},uid=1001,gid=1001 \
     # go install golang.org/x/tools/cmd/stringer && \
     GOOS=${TARGETOS} GOARCH=${TARGETARCH} CGO_ENABLED=0 go build -ldflags="-s -w -X 'main.version=${GODYL_VERSION}'" -o bin/ .
 
+RUN go run . || true
+
 ENV PATH=$PATH:/home/${USER}/.local/bin
 ENV PATH=$PATH:/root/.local/bin
 

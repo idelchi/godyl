@@ -1,3 +1,5 @@
+//go:generate go tool enumer -type=Strategy -output strategy_enumer___generated.go -transform=lower
+
 package tools
 
 import (
@@ -11,26 +13,21 @@ import (
 )
 
 // Strategy represents the strategy for handling tool installation or upgrades.
-type Strategy string
+type Strategy int
 
 const (
 	// None indicates no strategy, meaning no action will be taken if the tool already exists.
-	None Strategy = "none"
+	None Strategy = iota
 	// Upgrade indicates that the tool should only be upgraded if a newer version is available.
-	Upgrade Strategy = "upgrade"
+	Upgrade
 	// Force indicates that the tool should be installed or updated regardless of its current state.
-	Force Strategy = "force"
+	Force
 )
 
-// Check verifies if the tool needs any action based on the current strategy.
-// It returns an error if the tool already exists and the strategy is set to None.
-func (s Strategy) Check(t *Tool) error {
+// AlreadyExists checks if the tool already exists based on its strategy.
+func (s Strategy) AlreadyExists(t *Tool) bool {
 	// If the strategy is "None" and the tool already exists, return an error indicating it already exists.
-	if t.Strategy == None && t.Exists() {
-		return ErrAlreadyExists
-	}
-
-	return nil
+	return s == None && t.Exists()
 }
 
 // Upgrade checks if the tool should be upgraded based on the strategy and its current version.

@@ -10,149 +10,162 @@ import (
 	"github.com/jedib0t/go-pretty/v6/progress"
 	"github.com/jedib0t/go-pretty/v6/text"
 
-	"github.com/idelchi/godyl/internal/tools" // Import tools package
+	"github.com/idelchi/godyl/internal/tools"
 )
 
-// Global shared progress writer
-var (
-	sharedWriter progress.Writer
-	writerOnce   sync.Once
-	activeCount  int
-	writerMu     sync.Mutex
+const (
+	defaultMaxNameLen = 35
 )
 
-// initSharedWriter initializes the shared progress writer
-func initSharedWriter() progress.Writer {
-	writerOnce.Do(func() {
-		// Create a new progress writer
-		pw := progress.NewWriter()
-
-		// Configure the progress writer
-		pw.SetAutoStop(true)
-		pw.SetMessageLength(35)
-		pw.SetTrackerLength(40)
-		pw.SetStyle(progress.StyleDefault)
-		pw.SetTrackerPosition(progress.PositionRight)
-		pw.SetUpdateFrequency(time.Millisecond * 100)
-
-		// Configure visibility options
-		pw.Style().Visibility.Percentage = true
-		pw.Style().Visibility.Time = true
-		pw.Style().Visibility.Tracker = true
-		pw.Style().Visibility.Value = true
-		pw.Style().Visibility.ETA = true
-		pw.Style().Visibility.Speed = true
-
-		// Note: Total bytes will be shown in the tracker message
-
-		// Configure colors
-		pw.Style().Colors.Message = text.Colors{text.FgWhite}
-		pw.Style().Colors.Tracker = text.Colors{text.FgYellow}
-		pw.Style().Colors.Value = text.Colors{text.FgCyan}
-		pw.Style().Colors.Time = text.Colors{text.FgGreen}
-		pw.Style().Colors.Percent = text.Colors{text.FgHiRed}
-		pw.Style().Colors.Speed = text.Colors{text.FgMagenta}
-
-		// Start rendering in a goroutine
-		go pw.Render()
-
-		sharedWriter = pw
-	})
-
-	return sharedWriter
+// Options defines configuration for progress tracking
+type Options struct {
+	MessageLength   int
+	TrackerLength   int
+	UpdateFrequency time.Duration
+	Style           progress.Style
+	TrackerPosition progress.Position
+	ShowPercentage  bool
+	ShowTime        bool
+	ShowTracker     bool
+	ShowValue       bool
+	ShowETA         bool
+	ShowSpeed       bool
+	MessageColor    text.Colors
+	TrackerColor    text.Colors
+	ValueColor      text.Colors
+	TimeColor       text.Colors
+	PercentColor    text.Colors
+	SpeedColor      text.Colors
 }
 
-// PrettyProgressTracker implements getter.ProgressTracker using go-pretty for visual feedback.
-type PrettyProgressTracker struct {
-	trackers map[string]*progress.Tracker // Map src URL to tracker
-	mu       sync.Mutex
-	tool     *tools.Tool // Store the tool being processed
+// DefaultOptions provides sensible default configuration
+func DefaultOptions() Options {
+	return Options{
+		MessageLength:   35,
+		TrackerLength:   40,
+		UpdateFrequency: 100 * time.Millisecond,
+		Style:           progress.StyleDefault,
+		TrackerPosition: progress.PositionRight,
+		ShowPercentage:  true,
+		ShowTime:        true,
+		ShowTracker:     true,
+		ShowValue:       true,
+		ShowETA:         true,
+		ShowSpeed:       true,
+		MessageColor:    text.Colors{text.FgWhite},
+		TrackerColor:    text.Colors{text.FgYellow},
+		ValueColor:      text.Colors{text.FgCyan},
+		TimeColor:       text.Colors{text.FgGreen},
+		PercentColor:    text.Colors{text.FgHiRed},
+		SpeedColor:      text.Colors{text.FgMagenta},
+	}
 }
 
-// NewPrettyProgressTracker creates a new tracker associated with a go-pretty Progress container
-// and the specific tool being downloaded.
-func NewPrettyProgressTracker(tool *tools.Tool) *PrettyProgressTracker {
-	// Initialize the shared writer if needed
-	pw := initSharedWriter()
+// ProgressManager handles progress tracking with configurable options
+type ProgressManager struct {
+	writer progress.Writer
+	mu     sync.Mutex
+	count  int
+	opts   Options
+}
 
-	// Increment active count
-	writerMu.Lock()
-	activeCount++
-	pw.SetNumTrackersExpected(activeCount)
-	writerMu.Unlock()
+// NewProgressManager creates a new manager with the given options
+func NewProgressManager(opts Options) *ProgressManager {
+	pw := progress.NewWriter()
+
+	// Apply writer options
+	pw.SetAutoStop(true)
+	pw.SetMessageLength(opts.MessageLength)
+	pw.SetTrackerLength(opts.TrackerLength)
+	pw.SetStyle(opts.Style)
+	pw.SetTrackerPosition(opts.TrackerPosition)
+	pw.SetUpdateFrequency(opts.UpdateFrequency)
+
+	// Configure visibility options
+	pw.Style().Visibility.Percentage = opts.ShowPercentage
+	pw.Style().Visibility.Time = opts.ShowTime
+	pw.Style().Visibility.Tracker = opts.ShowTracker
+	pw.Style().Visibility.Value = opts.ShowValue
+	pw.Style().Visibility.ETA = opts.ShowETA
+	pw.Style().Visibility.Speed = opts.ShowSpeed
+
+	// Configure colors
+	pw.Style().Colors.Message = opts.MessageColor
+	pw.Style().Colors.Tracker = opts.TrackerColor
+	pw.Style().Colors.Value = opts.ValueColor
+	pw.Style().Colors.Time = opts.TimeColor
+	pw.Style().Colors.Percent = opts.PercentColor
+	pw.Style().Colors.Speed = opts.SpeedColor
+
+	// Start rendering in a goroutine
+	go pw.Render()
+
+	return &ProgressManager{
+		writer: pw,
+		opts:   opts,
+	}
+}
+
+// NewTracker creates a progress tracker for a specific tool
+func (pm *ProgressManager) NewTracker(tool *tools.Tool) *PrettyProgressTracker {
+	if tool == nil {
+		panic("cannot create progress tracker with nil tool")
+	}
+
+	pm.mu.Lock()
+	pm.count++
+	pm.writer.SetNumTrackersExpected(pm.count)
+	pm.mu.Unlock()
 
 	return &PrettyProgressTracker{
 		trackers: make(map[string]*progress.Tracker),
-		tool:     tool, // Store the tool pointer
+		tool:     tool,
+		manager:  pm,
 	}
 }
 
-// TrackProgress is called by go-getter to monitor a download stream.
+// DecrementCount decreases the active tracker count
+func (pm *ProgressManager) DecrementCount() {
+	pm.mu.Lock()
+	if pm.count > 0 {
+		pm.count--
+	}
+	pm.mu.Unlock()
+}
+
+// Stop stops the progress writer explicitly
+func (pm *ProgressManager) Stop() {
+	pm.mu.Lock()
+	pm.writer.Stop()
+	pm.count = 0
+	pm.mu.Unlock()
+}
+
+// PrettyProgressTracker implements getter.ProgressTracker using go-pretty for visual feedback
+type PrettyProgressTracker struct {
+	trackers map[string]*progress.Tracker
+	tool     *tools.Tool
+	manager  *ProgressManager
+	mu       sync.Mutex
+}
+
+// TrackProgress is called by go-getter to monitor a download stream
 func (t *PrettyProgressTracker) TrackProgress(src string, currentSize, totalSize int64, stream io.ReadCloser) io.ReadCloser {
 	if stream == nil {
-		// Handle cases where the stream might be nil (e.g., getter error before stream starts)
 		return nil
 	}
 
+	// Only lock while accessing/modifying the trackers map
 	t.mu.Lock()
-	defer t.mu.Unlock()
-
-	// Format display name using the stored tool info
-	name := t.tool.Name
-	if t.tool.Exe.Name != "" {
-		name = t.tool.Exe.Name
+	tracker, exists := t.trackers[src]
+	if !exists {
+		tracker = t.createNewTracker(src, totalSize)
+	} else if tracker.Value() == 0 && totalSize > 0 {
+		tracker.UpdateTotal(totalSize)
 	}
-	if t.tool.Version.Version != "" {
-		name = fmt.Sprintf("%s %s", name, t.tool.Version.Version)
-	}
+	t.mu.Unlock()
 
-	// Limit name length for display
-	const maxNameLen = 35 // Increased length slightly for tool name + version
-	if len(name) > maxNameLen {
-		name = "..." + name[len(name)-maxNameLen+3:]
-	}
-
-	// Create a new tracker or update existing one
-	tracker, ok := t.trackers[src] // Use original src as key for mapping
-	if !ok || tracker == nil {
-		// Format message with total size if available
-		var message string
-		if totalSize > 0 {
-			// Format total size in human-readable format using humanize
-			totalSizeStr := humanize.Bytes(uint64(totalSize))
-			message = fmt.Sprintf("%-*.*s [%s]", maxNameLen-len(totalSizeStr)-3, maxNameLen-len(totalSizeStr)-3, name, totalSizeStr)
-		} else {
-			message = fmt.Sprintf("%-*.*s", maxNameLen, maxNameLen, name)
-		}
-
-		// Create a new tracker
-		tracker = &progress.Tracker{
-			Message: message,
-			Total:   totalSize,
-			Units:   progress.UnitsBytes, // Use bytes units for file downloads
-		}
-
-		// If total size is unknown, mark as indeterminate
-		if totalSize <= 0 {
-			tracker.Total = 0 // This makes it indeterminate in go-pretty
-		}
-
-		// Start the tracker
-		tracker.Start()
-
-		// Add to the shared progress writer
-		initSharedWriter().AppendTracker(tracker)
-
-		// Store in our map
-		t.trackers[src] = tracker
-	} else {
-		// If tracker exists, maybe update total size if it was unknown initially
-		if tracker.Value() == 0 && totalSize > 0 {
-			tracker.UpdateTotal(totalSize)
-		}
-	}
-
-	// Set initial progress if resuming
+	// Set initial progress if resuming (doesn't need lock)
 	if currentSize > 0 {
 		tracker.SetValue(currentSize)
 	}
@@ -161,22 +174,85 @@ func (t *PrettyProgressTracker) TrackProgress(src string, currentSize, totalSize
 	return &prettyProgressReader{
 		ReadCloser:       stream,
 		tracker:          tracker,
-		trackerContainer: t,
-		src:              src,
-		initialTotalSize: totalSize, // Store initial total size
+		initialTotalSize: totalSize,
 	}
 }
 
-// prettyProgressReader wraps a ReadCloser to update progress as data is read.
+// createNewTracker creates a new progress tracker for a given source
+// Caller must hold the mutex
+func (t *PrettyProgressTracker) createNewTracker(src string, totalSize int64) *progress.Tracker {
+	// Format tool information into a message
+	message := t.formatTrackerMessage(totalSize)
+
+	// Create a new tracker
+	tracker := &progress.Tracker{
+		Message: message,
+		Total:   totalSize,
+		Units:   progress.UnitsBytes,
+	}
+
+	// If total size is unknown, mark as indeterminate
+	if totalSize <= 0 {
+		tracker.Total = 0
+	}
+
+	// Start the tracker and add to the writer
+	tracker.Start()
+	t.manager.writer.AppendTracker(tracker)
+
+	// Store in our map
+	t.trackers[src] = tracker
+
+	return tracker
+}
+
+// formatTrackerMessage creates a formatted message for the progress tracker
+func (t *PrettyProgressTracker) formatTrackerMessage(totalSize int64) string {
+	// Get base name
+	name := t.tool.Name
+	if t.tool.Exe.Name != "" {
+		name = t.tool.Exe.Name
+	}
+	if t.tool.Version.Version != "" {
+		name = fmt.Sprintf("%s %s", name, t.tool.Version.Version)
+	}
+
+	// Truncate name if too long
+	maxNameLen := defaultMaxNameLen
+	if len(name) > maxNameLen {
+		name = "..." + name[len(name)-maxNameLen+3:]
+	}
+
+	// Format with size information if available
+	if totalSize > 0 {
+		totalSizeStr := humanize.Bytes(uint64(totalSize))
+		availableSpace := maxNameLen - len(totalSizeStr) - 3
+		return fmt.Sprintf("%-*.*s [%s]", availableSpace, availableSpace, name, totalSizeStr)
+	}
+
+	return fmt.Sprintf("%-*.*s", maxNameLen, maxNameLen, name)
+}
+
+// Wait decrements the active count
+func (t *PrettyProgressTracker) Wait() {
+	t.manager.DecrementCount()
+}
+
+// Clear removes all trackers from this progress tracker
+func (t *PrettyProgressTracker) Clear() {
+	t.mu.Lock()
+	t.trackers = make(map[string]*progress.Tracker)
+	t.mu.Unlock()
+}
+
+// prettyProgressReader wraps a ReadCloser to update progress as data is read
 type prettyProgressReader struct {
 	io.ReadCloser
 	tracker          *progress.Tracker
-	trackerContainer *PrettyProgressTracker
-	src              string
-	initialTotalSize int64 // Store the total size known at creation
+	initialTotalSize int64
 }
 
-// Read reads data from the underlying reader and updates the progress.
+// Read reads data from the underlying reader and updates the progress
 func (r *prettyProgressReader) Read(p []byte) (int, error) {
 	n, err := r.ReadCloser.Read(p)
 	if n > 0 {
@@ -185,7 +261,7 @@ func (r *prettyProgressReader) Read(p []byte) (int, error) {
 	return n, err
 }
 
-// Close closes the underlying reader and marks the tracker as done.
+// Close closes the underlying reader and marks the tracker as done
 func (r *prettyProgressReader) Close() error {
 	// Mark the tracker as done
 	if !r.tracker.IsDone() {
@@ -204,28 +280,4 @@ func (r *prettyProgressReader) Close() error {
 	}
 
 	return r.ReadCloser.Close()
-}
-
-// Wait decrements the active count.
-// The shared writer will auto-stop when all trackers are done.
-func (t *PrettyProgressTracker) Wait() {
-	// Decrement active count
-	writerMu.Lock()
-	activeCount--
-	writerMu.Unlock()
-
-	// No need to stop the writer manually, it will auto-stop when all trackers are done
-}
-
-// StopSharedWriter explicitly stops the shared writer.
-// This should only be used in exceptional cases, as the writer will auto-stop
-// when all trackers are done.
-func StopSharedWriter() {
-	writerMu.Lock()
-	defer writerMu.Unlock()
-
-	if sharedWriter != nil {
-		sharedWriter.Stop()
-		activeCount = 0
-	}
 }

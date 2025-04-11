@@ -61,12 +61,12 @@ func New(cfg config.Config) *Defaults {
 	return defaults
 }
 
-// Get returns the Defaults struct.
+// Get returns the underlying tools.Defaults struct.
 func (d *Defaults) Get() tools.Defaults {
 	return d.defaults
 }
 
-// Unmarshal parses the provided YAML data into the Defaults struct.
+// Unmarshal parses the provided YAML data into the underlying tools.Defaults struct.
 func (d *Defaults) Unmarshal(data []byte) error {
 	if err := yaml.Unmarshal(data, &d.defaults); err != nil {
 		return fmt.Errorf("unmarshalling defaults: %w", err)

@@ -1,4 +1,4 @@
-//go:generate go tool enumer -type=Extension -output extension_enumer___generated.go
+//go:generate go tool enumer -type=Extension -output extension_enumer___generated.go -transform=lower
 package file
 
 // Extension represents a file extension type.

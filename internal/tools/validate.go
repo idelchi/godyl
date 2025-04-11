@@ -46,7 +46,7 @@ var (
 
 // Resolve attempts to resolve the tool's source and strategy based on the provided tags.
 // It handles fallbacks and applies templating to the tool's fields as needed.
-func (t *Tool) Resolve(tags IncludeTags) error {
+func (t *Tool) Resolve(tags IncludeTags) Result {
 	// Load environment variables from the system.
 	t.Env.Merge(env.FromEnv())
 
@@ -60,54 +60,54 @@ func (t *Tool) Resolve(tags IncludeTags) error {
 	t.Env.Expand()
 
 	if err := t.TemplateFirst(); err != nil {
-		return err
+		return Result{Status: Failed, Message: fmt.Sprintf("templating first: %s", err)}
 	}
 
 	// Must atleast after first set of templates.
 	if err := t.Validate(); err != nil {
-		return fmt.Errorf("validating tool: %w", err)
+		return Result{Status: Failed, Message: fmt.Sprintf("validating config: %s", err)}
 	}
 
 	var lastErr error
 	// Try resolving with each fallback in order.
 	for _, fallback := range t.Fallbacks.Build(t.Source.Type) {
 		if err := t.tryResolveFallback(fallback, path, tags.Include, tags.Exclude); ErrCausesEarlyReturn(err) {
-			return err
+			return Result{Status: Failed, Message: fmt.Sprintf("resolving fallback: %s", err)}
 		} else if err != nil {
 			lastErr = err
 
 			continue // Move on to the next fallback.
 		}
 
-		return nil // Success, no need to try further fallbacks.
+		return Result{Status: Resolved, Message: fmt.Sprintf("resolved tool %q", t.Name)}
 	}
 
 	// If all fallbacks fail, return the last encountered error.
 
-	return lastErr
+	return Result{Status: Failed, Message: fmt.Sprintf("resolving fallback: %s", lastErr)}
 }
 
 // CheckSkipConditions verifies whether the tool should be skipped based on its tags or strategy.
-func (t *Tool) CheckSkipConditions(withTags, withoutTags []string) error {
+func (t *Tool) CheckSkipConditions(withTags, withoutTags []string) Result {
 	if !t.Tags.Has(withTags) {
-		return fmt.Errorf("%w: %v: tool tags: %v", ErrDoesNotHaveTags, withTags, t.Tags)
+		return Result{Status: Skipped, Message: fmt.Sprintf("tool %q does not have required tags: %v", t.Name, withTags)}
 	}
 
 	if !t.Tags.HasNot(withoutTags) {
-		return fmt.Errorf("%w: %v: tool tags: %v", ErrDoesHaveTags, withoutTags, t.Tags)
+		return Result{Status: Skipped, Message: fmt.Sprintf("tool %q has excluded tags: %v", t.Name, withoutTags)}
 	}
 
-	if err := t.Strategy.Check(t); err != nil {
-		return err
+	if t.Strategy == None && t.Exists() {
+		return Result{Status: AlreadyInstalled, Message: fmt.Sprintf("tool %q already exists", t.Name)}
 	}
 
 	if skip, err := t.Skip.Evaluate(); err != nil {
-		return fmt.Errorf("checking skip conditions: %w", err)
+		return Result{Status: Failed, Message: fmt.Sprintf("evaluating skip conditions: %s", err)}
 	} else if skip.Has() {
-		return fmt.Errorf("%w: %q", ErrSkipped, skip[0].Condition)
+		return Result{Status: Skipped, Message: fmt.Sprintf("tool %q skipped due to condition: %q", t.Name, skip[0].Condition)}
 	}
 
-	return nil
+	return Result{Status: Installed, Message: fmt.Sprintf("tool %q passed all conditions", t.Name)}
 }
 
 // tryResolveFallback attempts to resolve a tool using a specific fallback source type.

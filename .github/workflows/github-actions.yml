@@ -1,4 +1,4 @@
-name: Build and Test (including triggering pre-release)
+name: godyl
 
 on:
   workflow_dispatch:

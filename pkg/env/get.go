@@ -6,7 +6,8 @@ import (
 	"strings"
 )
 
-// MustGet retrieves the value associated with the given key or returns an error if the key is not found.
+// MustGet retrieves an environment variable's value by key.
+// Returns an error if the key doesn't exist in the environment.
 func (e Env) MustGet(key string) (string, error) {
 	if v, ok := e[key]; ok {
 		return v, nil
@@ -15,14 +16,17 @@ func (e Env) MustGet(key string) (string, error) {
 	return "", fmt.Errorf("%w: %q", ErrEnvVarNotFound, key)
 }
 
-// Get retrieves the value associated with the given key or "" if the key is not found.
+// Get retrieves an environment variable's value by key.
+// Returns an empty string if the key doesn't exist.
 func (e Env) Get(key string) string {
 	v, _ := e.MustGet(key)
 
 	return v
 }
 
-// GetAny retrieves the value for the first key found in the given list of keys, from left to right.
+// GetAny retrieves the first available environment value.
+// Tries each key in order until a value is found, returning
+// an empty string if none of the keys exist.
 func (e Env) GetAny(keys ...string) string {
 	for _, key := range keys {
 		if value, err := e.MustGet(key); err == nil {
@@ -33,13 +37,16 @@ func (e Env) GetAny(keys ...string) string {
 	return ""
 }
 
-// Has checks if the given key exists in the environment variables.
+// Has checks if a key exists in the environment.
+// Returns true if the key exists, false otherwise.
 func (e Env) Has(key string) bool {
 	_, ok := e[key]
 	return ok
 }
 
-// GetOrDefault retrieves the value for the given key, or returns the provided defaultValue if the key is not found.
+// GetOrDefault retrieves an environment value with fallback.
+// Returns the environment value if the key exists,
+// otherwise returns the provided default value.
 func (e Env) GetOrDefault(key, defaultValue string) string {
 	if value, err := e.MustGet(key); err != nil {
 		return defaultValue
@@ -48,7 +55,9 @@ func (e Env) GetOrDefault(key, defaultValue string) string {
 	}
 }
 
-// GetAll returns a new Env containing all key-value pairs that satisfy the given predicate function.
+// GetAll filters environment variables using a predicate.
+// Returns a new Env containing only the key-value pairs
+// for which the predicate function returns true.
 func (e Env) GetAll(predicate func(key, value string) bool) Env {
 	result := make(Env)
 
@@ -61,22 +70,28 @@ func (e Env) GetAll(predicate func(key, value string) bool) Env {
 	return result
 }
 
-// GetAllWithPrefix returns all environment variables with keys starting with the given prefix.
+// GetAllWithPrefix returns environment variables by prefix.
+// Returns a new Env containing only variables whose keys
+// start with the specified prefix.
 func (e Env) GetAllWithPrefix(prefix string) Env {
 	return e.GetAll(func(key, _ string) bool {
 		return strings.HasPrefix(key, prefix)
 	})
 }
 
-// GetAllWithSuffix returns all environment variables with keys ending with the given suffix.
+// GetAllWithSuffix returns environment variables by suffix.
+// Returns a new Env containing only variables whose keys
+// end with the specified suffix.
 func (e Env) GetAllWithSuffix(suffix string) Env {
 	return e.GetAll(func(key, _ string) bool {
 		return strings.HasSuffix(key, suffix)
 	})
 }
 
-// GetAllMatching returns all environment variables with keys matching the given regex pattern.
-// It returns an error if the provided regex pattern is invalid.
+// GetAllMatching returns environment variables by regex pattern.
+// Returns a new Env containing only variables whose keys match
+// the specified regex pattern. Returns an error if the pattern
+// is invalid.
 func (e Env) GetAllMatching(pattern string) (Env, error) {
 	re, err := regexp.Compile(pattern)
 	if err != nil {
@@ -88,7 +103,9 @@ func (e Env) GetAllMatching(pattern string) (Env, error) {
 	}), nil
 }
 
-// GetAllWithValue returns all environment variables with the exact given value.
+// GetAllWithValue returns environment variables by value.
+// Returns a new Env containing only variables that have
+// the exact specified value.
 func (e Env) GetAllWithValue(value string) Env {
 	return e.GetAll(func(_, v string) bool {
 		return v == value

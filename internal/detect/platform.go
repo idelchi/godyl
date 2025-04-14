@@ -5,17 +5,26 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
-// Platform defines the characteristics of the platform, including OS, architecture, library, extension, and
-// distribution.
+// Platform encapsulates system-specific characteristics and capabilities.
 type Platform struct {
-	OS           platform.OS           // OS represents the operating system (e.g., Linux, Windows, macOS).
-	Architecture platform.Architecture // Architecture defines the platform's CPU architecture and version.
-	Library      platform.Library      // Library specifies the system library (e.g., GNU, Musl, MSVC).
-	Extension    platform.Extension    // Extension represents the default file extension for executables.
-	Distribution platform.Distribution // Distribution refers to the Linux distribution, if applicable.
+	// OS identifies the operating system (e.g., Linux, Windows, macOS).
+	OS platform.OS
+
+	// Architecture defines the CPU architecture and version (e.g., x86_64, arm64).
+	Architecture platform.Architecture
+
+	// Library specifies the system's standard library (e.g., GNU, Musl, MSVC).
+	Library platform.Library
+
+	// Extension defines platform-specific executable file extensions.
+	Extension platform.Extension
+
+	// Distribution identifies the Linux distribution when applicable.
+	Distribution platform.Distribution
 }
 
-// Parse attempts to parse the platform's OS, architecture, and library from a given string.
+// Parse extracts platform information from a string identifier.
+// Attempts to determine OS, architecture, and library details from the input.
 func (p *Platform) Parse(name string) {
 	p.OS.Parse(name)
 	p.Architecture.Parse(name)
@@ -23,7 +32,9 @@ func (p *Platform) Parse(name string) {
 	p.Extension.Default(p.OS)
 }
 
-// Merge combines another Platform's fields into the current Platform, setting fields that are empty.
+// Merge combines two Platform configurations.
+// Copies non-zero values from the other Platform into this one,
+// preserving existing values when they are already set.
 func (p *Platform) Merge(other Platform) {
 	utils.SetIfZeroValue(&p.OS, other.OS)
 	utils.SetIfZeroValue(&p.Architecture.Type, other.Architecture.Type)
@@ -34,7 +45,8 @@ func (p *Platform) Merge(other Platform) {
 	utils.SetIfZeroValue(&p.Distribution, other.Distribution)
 }
 
-// ToMap converts the Platform struct to a map for use in templates.
+// ToMap converts the Platform configuration into a map for templating.
+// Includes derived values like architecture type, version, and capability flags.
 func (p Platform) ToMap() map[string]any {
 	platformMap := make(map[string]any)
 	platformMap["OS"] = p.OS.String()

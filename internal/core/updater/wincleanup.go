@@ -11,15 +11,25 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// cleanupData contains data needed for the cleanup batch script template.
+// CleanupData contains the paths and filenames needed for Windows cleanup.
+// Used to populate the cleanup batch script template with the correct paths.
 type cleanupData struct {
+	// OldBinary is the path to the old executable to be removed.
 	OldBinary string
+
+	// BatchFile is the path to the cleanup batch script.
 	BatchFile string
-	Folder    string
-	LogFile   string
+
+	// Folder is the temporary directory path for cleanup files.
+	Folder string
+
+	// LogFile is the path where cleanup logs will be written.
+	LogFile string
 }
 
-// createAndRunCleanupScript creates and executes a Windows cleanup batch script.
+// CreateAndRunCleanupScript handles Windows-specific cleanup after an update.
+// Creates a batch script from the template, populates it with the necessary paths,
+// and executes it in a minimized window. Returns an error if any step fails.
 func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error {
 	log.Debug("Issuing a delete command for the old godyl binary")
 
@@ -58,7 +68,9 @@ func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error
 	return executeScript(batchFile.Path())
 }
 
-// createBatchFile creates a batch file from the provided template and data.
+// CreateBatchFile generates a cleanup batch script from the template.
+// Takes the template content, output path, and cleanup data as input.
+// Returns an error if the file cannot be created or the template fails.
 func createBatchFile(templateContent []byte, batchFilePath string, data cleanupData) error {
 	// Parse the template
 	tmpl, err := template.New("cleanup").Parse(string(templateContent))
@@ -86,7 +98,8 @@ func createBatchFile(templateContent []byte, batchFilePath string, data cleanupD
 	return nil
 }
 
-// executeScript runs the cleanup script in a minimized window.
+// ExecuteScript runs the cleanup batch script in a minimized window.
+// Uses cmd.exe to start the script with minimal UI visibility.
 func executeScript(scriptPath string) error {
 	cmd := exec.Command("cmd", "/C", "start", "/MIN", scriptPath) //nolint:gosec
 	if err := cmd.Start(); err != nil {

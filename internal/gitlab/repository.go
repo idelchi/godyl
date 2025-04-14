@@ -10,34 +10,26 @@ import (
 // Repository represents a GitLab repository with its owner and name.
 // It contains a GitLab client and context for making API calls.
 type Repository struct {
-	Owner  string          // Owner is the owner of the repository (GitLab username or group).
-	Repo   string          // Repo is the name of the repository.
-	client *gitlab.Client  // client is the GitLab client used to interact with the GitLab API.
-	ctx    context.Context // ctx is the context used for API requests.
+	Namespace string          // Namespace is the namespace of the repository.
+	Repo      string          // Repo is the name of the repository.
+	client    *gitlab.Client  // client is the GitLab client used to interact with the GitLab API.
+	ctx       context.Context // ctx is the context used for API requests.
 }
 
 // NewRepository creates a new instance of Repository.
 // It requires the repository owner, repository name, and a GitLab client.
-func NewRepository(owner, repo string, client *gitlab.Client) *Repository {
+func NewRepository(namespace, repo string, client *gitlab.Client) *Repository {
 	return &Repository{
-		Owner:  owner,
-		Repo:   repo,
-		client: client,
-		ctx:    context.Background(),
+		Namespace: namespace,
+		Repo:      repo,
+		client:    client,
+		ctx:       context.Background(),
 	}
-}
-
-// WithContext returns a copy of the repository with the given context.
-func (g *Repository) WithContext(ctx context.Context) *Repository {
-	repo := *g
-	repo.ctx = ctx
-
-	return &repo
 }
 
 // GetRelease retrieves a specific release for the repository based on the provided tag.
 func (g *Repository) GetRelease(tag string) (*Release, error) {
-	path := fmt.Sprintf("%s/%s", g.Owner, g.Repo)
+	path := fmt.Sprintf("%s/%s", g.Namespace, g.Repo)
 	gitlabRelease, _, err := g.client.Releases.GetRelease(path, tag)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get assets for release tag %q: %w", tag, err)
@@ -53,7 +45,7 @@ func (g *Repository) GetRelease(tag string) (*Release, error) {
 
 // getReleasesWithOptions retrieves releases for the repository using the provided options.
 func (g *Repository) getReleasesWithOptions() ([]*gitlab.Release, error) {
-	path := fmt.Sprintf("%s/%s", g.Owner, g.Repo)
+	path := fmt.Sprintf("%s/%s", g.Namespace, g.Repo)
 
 	releases, _, err := g.client.Releases.ListReleases(path, &gitlab.ListReleasesOptions{})
 	if err != nil {
@@ -61,7 +53,7 @@ func (g *Repository) getReleasesWithOptions() ([]*gitlab.Release, error) {
 	}
 
 	if len(releases) == 0 {
-		return nil, fmt.Errorf("no releases found for %s/%s", g.Owner, g.Repo)
+		return nil, fmt.Errorf("no releases found for %s/%s", g.Namespace, g.Repo)
 	}
 
 	return releases, nil

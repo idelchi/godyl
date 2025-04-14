@@ -2,88 +2,51 @@
 <html lang="{{ site.lang | default: "en-US" }}">
   <head>
     <meta charset="UTF-8">
-
-{% seo %}
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
+    {% seo %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#157878">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
-    {% include head-custom.html %}
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ site.baseurl }}/assets/images/godyl.ico">
+    <!-- Preload main font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
   </head>
   <body>
     <a id="skip-to-content" href="#content-start">Skip to the content.</a>
 
     <header class="page-header" role="banner">
-      <div class="logo-container">
-        <a href="{{ site.baseurl }}/">
-          <img src="{{ site.baseurl }}/assets/images/godyl.png" alt="Godyl Logo" class="logo">
-        </a>
-      </div>
-      <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
-      <h2 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
-      {% if site.github.is_project_page %}
-        <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
-      {% endif %}
-      {% if site.show_downloads %}
-        <a href="{{ site.github.zip_url }}" class="btn">Download .zip</a>
-        <a href="{{ site.github.tar_url }}" class="btn">Download .tar.gz</a>
-      {% endif %}
+      <div class="header-content">
+        <!-- Logo and Title -->
+        <div class="title-section">
+          <a href="{{ site.baseurl }}/">
+            <img src="{{ site.baseurl }}/assets/images/godyl.png" alt="Godyl Logo" class="logo">
+          </a>
+          <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
+          <h2 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
+        </div>
 
-      <!-- Navigation Links -->
-      <div class="main-nav">
-        <a href="{{ site.baseurl }}/#content-start" class="btn">Home</a>
-        <a href="{{ site.baseurl }}/installation#content-start" class="btn">Installation</a>
-        <a href="{{ site.baseurl }}/configuration/configuration#content-start" class="btn">Configuration</a>
-        <a href="{{ site.baseurl }}/commands/#content-start" class="btn">Commands</a>
-      </div>
-
-      <!-- Breadcrumbs Navigation -->
-      {% if page.parent %}
-      <div class="breadcrumbs">
-        <a href="{{ site.baseurl }}/">Home</a>
-        {% if page.grand_parent %}
-          / <a href="{{ site.baseurl }}/{{ page.grand_parent | downcase }}">{{ page.grand_parent }}</a>
+        <!-- Github Button -->
+        {% if site.github.is_project_page %}
+          <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
         {% endif %}
-        / <a href="{{ site.baseurl }}/{{ page.parent | downcase }}{% if page.parent_path %}/{{ page.parent_path }}{% endif %}">{{ page.parent }}</a>
-        / {{ page.title }}
+
+        <!-- Main Navigation -->
+        <nav class="main-nav">
+          <a href="{{ site.baseurl }}/#content-start" class="btn">Home</a>
+          <a href="{{ site.baseurl }}/installation#content-start" class="btn">Installation</a>
+          <a href="{{ site.baseurl }}/configuration/configuration#content-start" class="btn">Configuration</a>
+          <a href="{{ site.baseurl }}/commands/commands#content-start" class="btn">Commands</a>
+        </nav>
       </div>
-      {% endif %}
     </header>
 
     <main id="content" class="main-content" role="main">
       <span id="content-start" tabindex="-1"></span>
       {{ content }}
 
-      <!-- Child Pages Links (if this is a parent page) -->
-      {% if page.has_children %}
-      <div class="child-pages">
-        <h2>In This Section</h2>
-        <ul>
-          {% assign children_pages = site.pages | where: "parent", page.title | sort: "nav_order" %}
-          {% for child in children_pages %}
-            <li><a href="{{ child.url | relative_url }}">{{ child.title }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-      {% endif %}
-
-      <!-- Navigation Footer -->
-      <div class="page-navigation">
-        {% if page.previous %}
-          <a href="{{ page.previous.url | relative_url }}" class="prev">← {{ page.previous.title }}</a>
-        {% endif %}
-
-        {% if page.parent %}
-          <a href="{{ site.baseurl }}/{{ page.parent | downcase }}{% if page.parent_path %}/{{ page.parent_path }}{% endif %}" class="up">↑ {{ page.parent }}</a>
-        {% endif %}
-
-        {% if page.next %}
-          <a href="{{ page.next.url | relative_url }}" class="next">{{ page.next.title }} →</a>
-        {% endif %}
-      </div>
-
+      <!-- Footer -->
       <footer class="site-footer">
         {% if site.github.is_project_page %}
           <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a> is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.</span>

@@ -6,8 +6,9 @@ import (
 	"strings"
 )
 
-// Normalized returns a copy of the Env with all keys normalized to uppercase on Windows.
-// On other operating systems, it returns the Env unchanged.
+// Normalized returns a platform-appropriate normalized environment.
+// On Windows, converts all keys to uppercase for case-insensitive
+// compatibility. On other systems, returns the environment unchanged.
 func (e Env) Normalized() Env {
 	if runtime.GOOS == "windows" {
 		return e.Normalize()
@@ -16,8 +17,10 @@ func (e Env) Normalized() Env {
 	return e
 }
 
-// Normalize returns a copy of the Env with all keys converted to uppercase.
-// This is primarily useful for ensuring consistent key handling on case-insensitive systems like Windows.
+// Normalize creates a new environment with uppercase keys.
+// Returns a copy of the environment with all keys converted to
+// uppercase, which ensures consistent behavior on case-insensitive
+// systems like Windows.
 func (e Env) Normalize() Env {
 	normalized := make(Env, len(e))
 
@@ -28,9 +31,10 @@ func (e Env) Normalize() Env {
 	return normalized
 }
 
-// Expand expands environment variables in the Env values using os.ExpandEnv.
-// Each value in the Env is processed, replacing any occurrences of ${var} or $var with the corresponding value from the
-// environment.
+// Expand processes environment variable references in values.
+// Replaces ${var} or $var patterns in each value with the
+// corresponding environment variable value. Modifies the
+// environment in place.
 func (e *Env) Expand() {
 	for k, v := range *e {
 		(*e)[k] = os.ExpandEnv(v)

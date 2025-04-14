@@ -7,16 +7,18 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// FromEnv returns the current environment variables as an Env.
-// It uses os.Environ to fetch all the environment variables and normalizes them before returning.
+// FromEnv creates an Env from the current process environment.
+// Retrieves all environment variables using os.Environ, normalizes
+// their format, and returns them as an Env map.
 func FromEnv() Env {
 	env, _ := FromSlice(os.Environ()...)
 
 	return env.Normalized()
 }
 
-// FromSlice constructs an Env from a slice of `key=value` strings.
-// It returns an error if any string in the slice is malformed.
+// FromSlice creates an Env from a list of key-value strings.
+// Each string should be in the format "key=value". Returns an error
+// if any string is malformed. Normalizes the resulting environment.
 func FromSlice(slice ...string) (Env, error) {
 	e := make(Env, len(slice))
 
@@ -29,8 +31,10 @@ func FromSlice(slice ...string) (Env, error) {
 	return e.Normalized(), nil
 }
 
-// FromDotEnv loads environment variables from a .env file specified by the path.
-// It returns an error if there is an issue reading the file or processing its contents.
+// FromDotEnv loads environment variables from a .env file.
+// Reads and parses the file at the given path using godotenv.
+// Returns the variables as a normalized Env map or an error if
+// the file cannot be read or parsed.
 func FromDotEnv(path string) (Env, error) {
 	env, err := godotenv.Read(path)
 	if err != nil {

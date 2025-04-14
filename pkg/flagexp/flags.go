@@ -1,6 +1,7 @@
-// Package flagexp provides some experimental features to provide suggestions for typos in flag names.
-// Requires the `pflag` package and is highly sensitive to changes in the package,
-// as it's based on the error messages returned by the package.
+// Package flagexp provides command-line flag typo detection.
+// Extends the pflag package with fuzzy matching to suggest correct
+// flag names when users make typos. Note: This is experimental and
+// depends on pflag's error message format, which may change.
 package flagexp
 
 import (
@@ -13,7 +14,10 @@ import (
 	"github.com/idelchi/godyl/pkg/stringman"
 )
 
-// ParseWithSuggestions parses the command-line arguments and suggests the closest flag name if a typo is detected.
+// ParseWithSuggestions parses args with typo detection.
+// Attempts to parse command-line arguments using pflag. If an
+// unknown flag is encountered, uses fuzzy matching to suggest
+// the closest matching valid flag name.
 func ParseWithSuggestions(args []string) (err error) {
 	// Continue on error so that the error can be parsed
 	pflag.CommandLine.Init("", pflag.ContinueOnError)
@@ -54,9 +58,11 @@ func ParseWithSuggestions(args []string) (err error) {
 	return fmt.Errorf("%w: no suggestions available, see `--help`", err)
 }
 
-// extractFlagValue extracts the flag value from a given error message.
-//
-// TODO(Idelchi): Experimental function, there should be a nicer way of extracting the flag name from the error message.
+// extractFlagValue parses flag names from error messages.
+// Uses regex to extract flag names from pflag error messages.
+// Handles various error formats including bad syntax, unknown
+// flags, and unknown shorthand flags.
+// TODO(Idelchi): Find a more robust way to extract flag names.
 func extractFlagValue(errMsg string) (string, error) {
 	expression := `bad flag syntax: (.+)|unknown flag: --(.+)|unknown flag: -(.+)|unknown shorthand flag: '([^'])' in -.*`
 	// Define regex pattern to match the error messages and extract the dynamic part
@@ -76,7 +82,9 @@ func extractFlagValue(errMsg string) (string, error) {
 	return "", fmt.Errorf("no match found for %q in %q", errMsg, expression)
 }
 
-// All returns all flags defined.
+// All returns all defined flag names.
+// Returns two slices: one containing all long flag names,
+// and another containing all shorthand flag characters.
 func All() ([]string, []string) {
 	var (
 		longFlags  []string

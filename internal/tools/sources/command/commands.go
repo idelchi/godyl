@@ -13,16 +13,19 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Commands represents a slice of shell commands.
+// Commands represents a collection of shell commands that can be executed together.
 type Commands struct {
-	// Commands hold the commands to execute
+	// Commands is the list of shell commands to execute.
 	Commands unmarshal.SingleOrSliceType[Command]
-	// AllowFailure indicates whether the return code of the commands (combined) should be suppressed or not.
+
+	// AllowFailure determines if command execution should continue even if a command fails.
 	AllowFailure bool `yaml:"allow_failure"`
-	// ExitOnError indicates whether to exit on error (injects `set -e -o pipefail` or `set +e` depending on the value).
+
+	// ExitOnError controls shell error handling behavior.
+	// When true, injects 'set -e -o pipefail', when false injects 'set +e'.
 	ExitOnError bool `yaml:"exit_on_error"`
 
-	// Data holds additional metadata related to the repository.
+	// Data contains additional metadata about the command source.
 	Data common.Metadata `yaml:"-"`
 }
 
@@ -52,12 +55,14 @@ func (e *Commands) UnmarshalYAML(value *yaml.Node) error {
 	return unmarshal.DecodeWithOptionalKnownFields(value, (*raw)(e), true, structs.New(e).Name())
 }
 
-// Get retrieves a specific attribute of the commands.
+// Get retrieves a specific attribute of the Commands.
+// Currently returns a placeholder value as this is an interface requirement.
 func (c *Commands) Get(_ string) string {
 	return "N/A"
 }
 
-// Initialize prepares the Commands based on the given string.
+// Initialize prepares the Commands based on the given command string.
+// Currently a no-op as initialization is handled elsewhere.
 func (c *Commands) Initialize(command string) error {
 	return nil
 }
@@ -67,18 +72,21 @@ func (c *Commands) Initialize(command string) error {
 // 	return nil
 // }
 
-// Version just satisfies the interface for the Commands struct.
+// Version satisfies the Populater interface requirement.
+// Currently a no-op as version handling is not needed for Commands.
 func (c *Commands) Version(version string) error {
 	return nil
 }
 
-// Path just satisfies the interface for the Commands struct.
+// Path satisfies the Populater interface requirement.
+// Currently a no-op as path handling is not needed for Commands.
 func (c *Commands) Path(path string, patterns []string, _ string, _ match.Requirements) error {
 	return nil
 }
 
-// Combined returns all commands in the Commands slice as a single Command,
-// with commands joined by semicolons. It prepends "set -e" only if AllowFailure is false.
+// Combined joins all commands into a single Command with proper shell options.
+// Prepends shell error handling options based on ExitOnError setting and
+// joins commands with semicolons.
 func (c *Commands) Combined() Command {
 	stringCommands := make([]string, 0, len(c.Commands)+1)
 
@@ -95,6 +103,8 @@ func (c *Commands) Combined() Command {
 	return Command(strings.Join(stringCommands, "; "))
 }
 
+// Exe executes the combined commands with the provided environment variables.
+// Returns the command output and any execution errors, respecting AllowFailure setting.
 func (c *Commands) Exe(env env.Env) (output string, err error) {
 	cmd := c.Combined()
 

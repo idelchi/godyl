@@ -4,6 +4,7 @@ package version
 import (
 	"fmt"
 
+	"github.com/idelchi/godyl/internal/core/updater"
 	"github.com/spf13/cobra"
 )
 
@@ -23,10 +24,19 @@ func NewVersionCommand() *Command {
 	cmd := &cobra.Command{
 		Use:   "version",
 		Short: "Print the version number of godyl",
-		Long:  `All software has versions. This is godyl's`,
+		Long:  `Print the version number of godyl along with available updates`,
 		Args:  cobra.MaximumNArgs(1),
 		Run: func(cmd *cobra.Command, _ []string) {
-			fmt.Println(cmd.Root().Version)
+			current := cmd.Root().Version
+
+			fmt.Println(current)
+
+			all, err := updater.AllVersions()
+			if err == nil {
+				fmt.Printf("latest versions available: %q\n", all)
+
+				fmt.Printf("Install with\n\n  godyl upgrade --version %s\n", all[0])
+			}
 		},
 	}
 

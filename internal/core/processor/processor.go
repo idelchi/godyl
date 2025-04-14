@@ -2,9 +2,9 @@
 package processor
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"path/filepath"
 	"sync"
 
 	"golang.org/x/sync/errgroup"
@@ -13,31 +13,42 @@ import (
 	"github.com/idelchi/godyl/internal/cache/cache"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/ui/progress"
 	"github.com/idelchi/godyl/pkg/logger"
-	"github.com/idelchi/godyl/pkg/path/file"
-	"github.com/idelchi/godyl/pkg/pretty"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 // ErrToolsFailedToInstall is returned when one or more tools failed to install.
 var ErrToolsFailedToInstall = errors.New("tools failed to install")
 
-// result holds the result of processing a tool.
-// It's used internally to pass information between goroutines.
-type result struct {
-	Tool  *tools.Tool
-	Found file.File
-	Err   error
-	Msg   string
-}
-
 // Processor handles tool installation and management.
 type Processor struct {
-	tools     tools.Tools
-	defaults  tools.Defaults
-	config    config.Config
-	log       *logger.Logger
-	cache     *cache.Cache
+	// Tools is the list of tools to be processed.
+	tools tools.Tools
+
+	// Defaults contains default settings to apply to tools.
+	defaults tools.Defaults
+
+	// Config holds the global configuration settings.
+	config config.Config
+
+	// Log is the logger instance for output.
+	log *logger.Logger
+
+	// Cache manages tool version caching.
+	cache *cache.Cache
+
+	// HasErrors indicates if any tool processing resulted in errors.
 	hasErrors bool
+
+	// Results stores the processing results for all tools.
+	results []result
+
+	// Mu protects concurrent access to the results slice.
+	mu sync.Mutex
+
+	// ProgressMgr manages progress tracking for tool downloads.
+	progressMgr *progress.ProgressManager
 }
 
 // New creates a new Processor.
@@ -47,55 +58,25 @@ func New(toolsList tools.Tools, defaults tools.Defaults, cfg config.Config, log 
 		defaults: defaults,
 		config:   cfg,
 		log:      log,
+		results:  make([]result, 0),
 	}
 }
 
 // Process installs and manages tools with the given tags.
-func (p *Processor) Process(tags, withoutTags []string) error {
-	cache, err := cachehandler.New(p.config.Root.Cache.Dir, p.config.Root.Cache.Type)
-	if err != nil {
-		return fmt.Errorf("creating cache: %w", err)
+func (p *Processor) Process(tags tools.IncludeTags, dry bool) error {
+	if err := p.initializeCache(); err != nil {
+		return err
 	}
 
-	p.cache = cache
+	// Initialize the progress manager
+	p.progressMgr = progress.NewProgressManager(progress.DefaultOptions())
 
-	// Setup concurrency
-	resultCh := make(chan result)
-
-	// Create error group for concurrent processing
-	g := &errgroup.Group{}
-	if p.config.Tool.Parallel > 0 {
-		g.SetLimit(p.config.Tool.Parallel)
-		p.log.Info("running with %d parallel downloads", p.config.Tool.Parallel)
+	if err := p.processTools(tags, dry); err != nil {
+		return err
 	}
 
-	// Start collecting results
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for r := range resultCh {
-			p.handleResult(r)
-		}
-	}()
+	p.logFinalResults()
 
-	// Process each tool concurrently
-	for i := range p.tools {
-		tool := p.tools[i]
-		g.Go(func() error {
-			p.processTool(tool, tags, withoutTags, resultCh)
-			return nil
-		})
-	}
-
-	// Wait for all tool processing to complete
-	g.Wait()
-
-	// Close the result channel and wait for result collection to complete
-	close(resultCh)
-	wg.Wait()
-
-	// Return error if any tools failed to install
 	if p.hasErrors {
 		return fmt.Errorf("one or more %w", ErrToolsFailedToInstall)
 	}
@@ -103,109 +84,148 @@ func (p *Processor) Process(tags, withoutTags []string) error {
 	return nil
 }
 
-// processTool processes an individual tool and sends the result to the result channel.
-func (p *Processor) processTool(tool *tools.Tool, tags, withoutTags []string, resultCh chan<- result) {
-	// Apply defaults and resolve tool configuration
-	tool.ApplyDefaults(p.defaults, p.cache)
-
-	if err := tool.Resolve(tags, withoutTags); err != nil {
-		resultCh <- result{Tool: tool, Err: err}
-		return
-	}
-
-	// Handle dry run
-	if p.config.Root.Dry {
-		resultCh <- result{Tool: tool}
-		return
-	}
-
-	// Apply SSL verification setting
-	if p.config.Tool.NoVerifySSL {
-		tool.NoVerifySSL = true
-	}
-
-	// Download the tool
-	msg, found, err := tool.Download()
-	resultCh <- result{Tool: tool, Found: found, Err: err, Msg: msg}
-
+// initializeCache initializes the cache for the processor.
+func (p *Processor) initializeCache() error {
+	cache, err := cachehandler.New(p.config.Root.Cache.Dir)
 	if err != nil {
-		return
+		return fmt.Errorf("creating cache: %w", err)
+	}
+	p.cache = cache
+	return nil
+}
+
+// processTools handles the concurrent processing of all tools.
+func (p *Processor) processTools(tags tools.IncludeTags, dry bool) error {
+	resultCh := make(chan result)
+	var progressTrackers []*progress.PrettyProgressTracker
+	var progressMu sync.Mutex
+
+	// Create error group for concurrent processing
+	g, _ := errgroup.WithContext(context.Background())
+	if p.config.Tool.Parallel > 0 {
+		g.SetLimit(p.config.Tool.Parallel)
+		p.log.Debug("running with %d parallel downloads", p.config.Tool.Parallel)
+	}
+
+	// Start collector goroutine
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for r := range resultCh {
+			p.collectResult(r)
+		}
+	}()
+
+	// Launch tool processing goroutines
+	for i := range p.tools {
+		tool := p.tools[i]
+		if tool == nil {
+			continue
+		}
+
+		g.Go(func() error {
+			// Create progress tracker using the manager
+			progressTracker := p.progressMgr.NewTracker(tool)
+
+			progressMu.Lock()
+			progressTrackers = append(progressTrackers, progressTracker)
+			progressMu.Unlock()
+
+			p.processOneTool(tool, tags, resultCh, progressTracker, dry)
+			return nil
+		})
+	}
+
+	// Wait for all processing to complete
+	err := g.Wait()
+	close(resultCh)
+	wg.Wait()
+
+	// Wait for progress bars to finish rendering
+	for _, tracker := range progressTrackers {
+		tracker.Wait()
+	}
+
+	// Stop the progress manager when done
+	p.progressMgr.Stop()
+
+	return err
+}
+
+// collectResult stores the result from a tool processing goroutine.
+func (p *Processor) collectResult(r result) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	p.results = append(p.results, r)
+
+	// Set global error flag for non-expected errors
+	if r.Result.Error() != nil {
+		p.hasErrors = true
 	}
 }
 
-// handleResult processes the result of a tool operation.
-func (p *Processor) handleResult(r result) {
-	tool := r.Tool
+// logFinalResults iterates over collected results and logs them as a table.
+func (p *Processor) logFinalResults() {
+	// Initialize result table
+	// TODO(Idelchi): Adjust to fit the new table structure
+	table := NewResultTable(
+		HeaderConfig{Name: "Tool", WidthMax: 100},
+		HeaderConfig{Name: "Version", WidthMax: 100},
+		HeaderConfig{Name: "Output Path", WidthMax: 100},
+		HeaderConfig{Name: "Aliases", WidthMax: 100},
+		HeaderConfig{Name: "Status", WidthMax: 100, Bold: true},
+	)
 
-	p.log.Info("")
-	p.log.Info("%s", tool.Name)
-	p.log.Debug("configuration:")
-	p.log.Debug("-------")
-	p.log.Debug("%s", pretty.YAMLMasked(tool))
-	p.log.Debug("-------")
+	// Add all result rows to the table
+	for _, r := range p.results {
+		p.UpdateCache(r.Tool)
 
-	if r.Err != nil {
-		p.handleToolError(tool, r.Err, r.Msg)
-	}
+		message := r.Result.Message
 
-	if r.Err == nil || errors.Is(r.Err, tools.ErrRequiresUpdate) {
-		p.logToolSuccess(tool, r.Found)
-	}
-}
-
-// handleToolError logs errors encountered during tool processing.
-func (p *Processor) handleToolError(tool *tools.Tool, err error, msg string) {
-	// These errors are expected and don't indicate a failure
-	isExpectedError := errors.Is(err, tools.ErrAlreadyExists) ||
-		errors.Is(err, tools.ErrUpToDate) ||
-		errors.Is(err, tools.ErrRequiresUpdate) ||
-		errors.Is(err, tools.ErrDoesNotHaveTags) ||
-		errors.Is(err, tools.ErrDoesHaveTags) ||
-		errors.Is(err, tools.ErrSkipped)
-
-	if isExpectedError {
-		p.log.Warn("  %v", err)
-		if err := p.cache.Save(file.New(tool.Output, tool.Exe.Name).Path(), tool.Version.Version); err != nil {
-			p.log.Error("  failed to save cache: %v", err)
-		}
-		return
-	}
-
-	// Unexpected error - mark as installation failure
-	p.hasErrors = true
-	p.log.Error("  failed to install")
-	p.log.Debug("configuration:")
-	p.log.Debug("-------")
-	p.log.Debug("%s", pretty.JSONMasked(tool))
-	p.log.Debug("-------")
-	p.log.Error("  %v", err)
-	p.log.Error("  %s", msg)
-}
-
-// logToolSuccess logs information about successfully processed tools.
-func (p *Processor) logToolSuccess(tool *tools.Tool, found file.File) {
-	if tool.Version.Version != "" {
-		p.log.Info("  version: %s", tool.Version.Version)
-	}
-
-	p.log.Info("  picked download %q", filepath.Base(tool.Path))
-
-	if tool.Mode == "find" {
-		p.log.Info("  picked file %q", found)
-		p.log.Info("  installed successfully at %q", filepath.Join(tool.Output, tool.Exe.Name))
-
-		// Log aliases if any
-		if tool.Aliases != nil {
-			p.log.Info("  symlinks:")
-			for _, alias := range tool.Aliases {
-				p.log.Info("    - %q", filepath.Join(tool.Output, alias))
-			}
+		// Determine the appropriate color provider based on the status
+		var color text.Colors
+		switch {
+		case r.Result.Unsuccessful():
+			color = ErrorColors
+			message = "failed, see below for details"
+		case r.Result.Skipped():
+			color = InfoColors
+		case r.Result.Successful():
+			color = SuccessColors
+		default:
+			color = DefaultColors
 		}
 
-		if err := p.cache.Save(file.New(tool.Output, tool.Exe.Name).Path(), tool.Version.Version); err != nil {
-			p.log.Error("  failed to save cache: %v", err)
+		table.AddResult(r.Tool, color, message)
+	}
+
+	// Render the table
+	p.log.Info("") // Add a blank line before the summary
+	p.log.Info("Installation Summary:")
+	p.log.Info(table.Render())
+
+	// Initialize result table
+	// TODO(Idelchi): Adjust to fit the new table structure
+	table = NewResultTable(
+		HeaderConfig{Name: "Tool", WidthMax: 100},
+		HeaderConfig{Name: "Error", WidthMax: 100},
+	)
+
+	// Add all result rows to the table
+	for _, r := range p.results {
+		message := r.Result.Message
+
+		if r.Result.Unsuccessful() {
+			table.AddResult(r.Tool, ErrorColors, message)
 		}
-	} else {
-		p.log.Info("  extracted to %q", tool.Output)
+	}
+
+	if table.writer.Length() > 0 {
+		// Render the table
+		p.log.Info("") // Add a blank line before the summary
+		p.log.Error("Tool Error Summary:")
+		p.log.Info(table.Render())
 	}
 }

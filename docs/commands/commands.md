@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Commands
-has_children: true
 ---
 
 # Command Reference
@@ -10,13 +9,13 @@ Godyl provides several commands to help you manage your tools. This section prov
 
 ## Available Commands
 
-| Command                              | Description                           |
-| ------------------------------------ | ------------------------------------- |
-| [`install`](install#content-start)   | Install tools from YAML files         |
-| [`download`](download#content-start) | Download and install individual tools |
-| [`dump`](dump#content-start)         | Display configuration information     |
-| [`update`](update#content-start)     | Update the godyl application          |
-| [`cache`](cache#content-start)       | Manage the godyl cache                |
+| Command                                                          | Description                           |
+| ---------------------------------------------------------------- | ------------------------------------- |
+| [`install`]({{ site.baseurl }}/commands/install#content-start)   | Install tools from YAML files         |
+| [`download`]({{ site.baseurl }}/commands/download#content-start) | Download and install individual tools |
+| [`dump`]({{ site.baseurl }}/commands/dump#content-start)         | Display configuration information     |
+| [`update`]({{ site.baseurl }}/commands/update#content-start)     | Update the godyl application          |
+| [`cache`]({{ site.baseurl }}/commands/cache#content-start)       | Manage the godyl cache                |
 
 ## Global Flags
 
@@ -36,7 +35,7 @@ These flags are available for all commands:
 | `--url-token`         | `GODYL_URL_TOKEN`        | `${GODYL_URL_TOKEN}`                 | URL token for authentication                 |
 | `--url-token-header`  | `GODYL_URL_TOKEN_HEADER` | `Authorization`                      | URL header for authentication                |
 | `--cache-dir`         | `GODYL_CACHE_DIR`        | `${XDG_CACHE_HOME}/godyl`            | Path to cache directory                      |
-| `--cache-type`        | `GODYL_CACHE_TYPE`       | `file`                               | Type of cache (file, sqlite)                 |
+| `--no-cache`          | `GODYL_NO_CACHE`         | `false`                              | Disable cache usage                          |
 
 For `--env-file` and `--defaults`, the defaults are used only if no issue is encountered while loading them.
 

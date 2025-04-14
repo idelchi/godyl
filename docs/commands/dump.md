@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Dump Command
-parent: Commands
 ---
 
 # Dump Command
@@ -11,7 +10,7 @@ The `dump` command displays various configuration settings and information about
 ## Syntax
 
 ```sh
-godyl dump [config|defaults|env|platform|tools|cache] [flags]
+godyl [flags] dump [config|defaults|env|platform|tools|cache] [flags]
 ```
 
 ## Description
@@ -22,7 +21,7 @@ The `dump` command provides a way to inspect Godyl's configuration, available to
 
 | Subcommand | Description                                               |
 | ---------- | --------------------------------------------------------- |
-| `config`   | Display the current configuration settings                |
+| `config`   | Display the current root level configuration settings     |
 | `defaults` | Display the default configuration settings                |
 | `env`      | Display environment variables that affect the application |
 | `platform` | Display information about the current platform            |
@@ -43,7 +42,7 @@ The `dump` command provides a way to inspect Godyl's configuration, available to
 godyl dump config
 ```
 
-Output will contain the active configuration settings derived from all sources (command-line flags, environment variables, defaults, etc.).
+Output will contain the active root configuration settings derived from all sources (command-line flags, environment variables etc.).
 
 ### Display the default configuration
 
@@ -125,4 +124,4 @@ This creates a new YAML file containing only tools tagged with "docker".
 
 ## Related Topics
 
-- [Global Flags](index#global-flags)
+- [Global Flags]({{ site.baseurl }}/commands/commands#global-flags)

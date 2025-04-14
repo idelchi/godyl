@@ -1,0 +1,6 @@
+tool:
+  output: ./bin/{{ .OS }}
+
+env-file:
+  - .env
+  - gitlab.env

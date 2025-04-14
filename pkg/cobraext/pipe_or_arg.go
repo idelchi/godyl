@@ -6,10 +6,12 @@ import (
 	"github.com/idelchi/gogen/pkg/stdin"
 )
 
-// PipeOrArg reads from either the first argument or stdin.
-// If an argument is provided, it is returned.
-// If no argument is provided but stdin is piped, the stdin content is returned.
-// If neither an argument nor stdin is provided, an empty string is returned.
+// PipeOrArg flexibly reads command input from args or pipe.
+// Implements a common CLI pattern where input can come from either
+// command-line arguments or piped stdin. Priority order:
+// 1. First command-line argument if present
+// 2. Stdin content if piped
+// 3. Empty string if neither source available
 func PipeOrArg(args []string) (string, error) {
 	if len(args) > 0 {
 		// Prioritize argument if it exists, regardless of stdin

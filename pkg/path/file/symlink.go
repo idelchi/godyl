@@ -7,9 +7,10 @@ import (
 	"os"
 )
 
-// Symlink creates symbolic links for the File to each of the provided symlink Files on Linux or Darwin systems.
-// If a symlink already exists, it will skip that symlink and continue without returning an error.
-// Returns an error if any symlink creation fails (excluding existing symlinks).
+// Symlink creates symbolic links to this file on Unix-like systems.
+// Takes multiple target paths and creates a symlink at each location.
+// Skips existing symlinks without error, but returns an error if
+// symlink creation fails for any other reason. Not available on Windows.
 func (f File) Symlink(symlinks ...File) error {
 	for _, symlink := range symlinks {
 		if symlink.Path() == f.Path() {

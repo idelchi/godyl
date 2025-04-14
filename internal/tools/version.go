@@ -8,18 +8,23 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Version represents the version configuration for a tool.
+// Version defines how a tool's version is determined and extracted.
 type Version struct {
-	// Version holds the string representation of the parsed version.
+	// Version is the explicit version string or the parsed result.
 	Version string
-	// Commands contains the list of command strategies used to extract the version.
+
+	// Commands is a list of shell commands that can be used to determine the version.
+	// Each command's output is matched against the version patterns.
 	Commands unmarshal.SingleOrSliceType[string]
-	// Patterns contains the list of regex patterns for parsing the version from output strings.
+
+	// Patterns contains regex patterns for extracting version strings.
+	// Used to parse version information from command output or other sources.
 	Patterns unmarshal.SingleOrSliceType[string]
 }
 
-// UnmarshalYAML implements custom unmarshaling for Exe,
-// allowing the YAML to either provide just the name as a scalar or the full Exe structure.
+// UnmarshalYAML implements custom YAML unmarshaling for Version configuration.
+// Supports both scalar values (treated as explicit version) and map values with
+// additional configuration for version detection and extraction.
 func (v *Version) UnmarshalYAML(value *yaml.Node) error {
 	// If the YAML value is a scalar (e.g., just the version), handle it directly by setting the Version field.
 	if value.Kind == yaml.ScalarNode {

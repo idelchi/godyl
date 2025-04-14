@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Download Command
-parent: Commands
 ---
 
 # Download Command
@@ -16,10 +15,10 @@ godyl [flags] download [tool|URL]... [flags]
 
 ## Aliases
 
-- dl
-- unpack
-- extract
-- x
+- `dl`
+- `unpack`
+- `extract`
+- `x`
 
 ## Description
 
@@ -55,10 +54,14 @@ godyl download idelchi/godyl idelchi/tcisd
 
 ### Download from a direct URL
 
+{% raw  %}
+
 ```sh
 godyl download "https://github.com/idelchi/go-next-tag/releases/download/v0.0.1/go-next-tag_{{ .OS }}_{{ .ARCH }}.tar.gz"
 ```
 
+{% endraw %}
+
 ## Related Topics
 
-- [Global Flags](index#global-flags)
+- [Global Flags]({{ site.baseurl }}/commands/commands#global-flags)

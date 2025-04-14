@@ -15,6 +15,7 @@ plugins:
   - jemoji
   - jekyll-include-cache
   - jekyll-default-layout
+  - kramdown-syntax-coderay
 
 color_scheme: light
 
@@ -47,15 +48,6 @@ back_to_top_text: "Back to top"
 # Footer content
 footer_content: "Copyright &copy; 2025 idelchi. Distributed under the MIT License."
 
-# Collections for organizing content
-collections:
-  docs:
-    permalink: "/:collection/:path/"
-    output: true
-  commands:
-    permalink: "/commands/:path/"
-    output: true
-
 # Define which collections appear in the navigation
 just_the_docs:
   collections:
@@ -74,16 +66,6 @@ enable_copy_code_button: true
 
 permalink: pretty
 
-defaults:
-  - scope:
-      path: ""
-      type: "pages"
-    values:
-      render_with_liquid: false
-  # 404 page
-  - scope:
-      path: "404-page.md"
-    values:
-      render_with_liquid: true
-
-markdown: kramdown
+kramdown:
+  syntax_highlighter_opts:
+    disable: true

@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Cache Command
-parent: Commands
 ---
 
 # Cache Command
@@ -11,7 +10,7 @@ The `cache` command allows interaction with Godyl's cache.
 ## Syntax
 
 ```sh
-godyl cache \[flags\]
+godyl cache [flags]
 ```
 
 ## Description
@@ -50,5 +49,5 @@ Godyl supports different cache backends:
 
 ## Related Topics
 
-- [Global Flags](../commands/index#global-flags)
-- [Dump Cache](dump#dump-cache)
+- [Global Flags]({{ site.baseurl }}/commands/commands#global-flags)
+- [Dump Cache]({{ site.baseurl }}/commands/dump#dump-cache)

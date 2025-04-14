@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Install Command
-parent: Commands
 ---
 
 # Install Command
@@ -16,8 +15,8 @@ godyl [flags] install [tools.yml...|STDIN] [flags]
 
 ## Aliases
 
-- get
-- i
+- `get`
+- `i`
 
 ## Description
 
@@ -84,5 +83,5 @@ godyl install tools.yml --os linux --arch arm64
 
 ## Related Topics
 
-- [Global Flags](index#global-flags)
-- [Tool Configuration Format](../configuration/tools#content-start)
+- [Global Flags]({{ site.baseurl }}/commands/commands#global-flags)
+- [Tool Configuration Format]({{ site.baseurl }}/configuration/tools#content-start)

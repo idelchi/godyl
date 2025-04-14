@@ -46,7 +46,9 @@ func (t *ToolsLoader) Load() error {
 		return fmt.Errorf("unmarshaling tools (to get length) from %q: %w", t.File, err)
 	}
 
-	t.tools = tools.NewTools(t.Defaults, t.Length())
+	if t.tools, err = tools.NewTools(t.Defaults, t.Length()); err != nil {
+		return fmt.Errorf("creating tools (to set defaults) from %q: %w", t.File, err)
+	}
 
 	if err := t.UnmarshalPieceByPiece(data); err != nil {
 		return fmt.Errorf("loading tools (to set defaults) from %q: %w", t.File, err)

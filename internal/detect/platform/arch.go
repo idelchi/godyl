@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// ErrParse is returned when a propery cannot be parsed.
+// ErrParse indicates a failure to parse platform-specific information.
 var ErrParse = errors.New("unable to parse")
 
 // Architecture-related constants.
@@ -21,7 +21,8 @@ const (
 	bit32Value = 32
 )
 
-// Architecture represents a CPU architecture with its type, version, and raw string.
+// Architecture represents a CPU architecture configuration.
+// Tracks architecture type, version, raw string, and user-land bitness.
 type Architecture struct {
 	Type            string
 	Version         int
@@ -29,14 +30,16 @@ type Architecture struct {
 	Is32BitUserLand bool
 }
 
-// ArchInfo holds information about an architecture type, including aliases and a parse function.
+// ArchInfo defines an architecture's characteristics and parsing rules.
+// Includes the canonical type name, known aliases, and version parsing logic.
 type ArchInfo struct {
 	Type    string
 	Aliases []string
 	Parse   func(string) (int, error)
 }
 
-// Supported returns a slice of supported architecture information.
+// Supported returns the list of supported CPU architectures.
+// Includes x86, ARM architectures and their variants with parsing rules.
 func (ArchInfo) Supported() []ArchInfo {
 	return []ArchInfo{
 		{
@@ -74,7 +77,9 @@ func (ArchInfo) Supported() []ArchInfo {
 	}
 }
 
-// Parse attempts to parse the architecture from the given name string.
+// Parse extracts architecture information from a string identifier.
+// Matches against known architecture types and aliases, setting type,
+// version, and raw values. Returns an error if parsing fails.
 func (a *Architecture) Parse(name string) error {
 	name = strings.ToLower(name)
 
@@ -108,17 +113,24 @@ func (a *Architecture) Parse(name string) error {
 	return fmt.Errorf("%w: architecture from name: %s", ErrParse, name)
 }
 
-// IsUnset returns true if the architecture type is not set.
+// IsUnset checks if the architecture type is empty.
 func (a *Architecture) IsUnset() bool {
 	return a.Type == ""
 }
 
-// Is checks if this architecture is exactly the same as another.
+// IsSet checks if the architecture type has been configured.
+func (a *Architecture) IsSet() bool {
+	return a.Type != ""
+}
+
+// Is checks for exact architecture match including raw string.
+// Returns true only if both architectures are set and identical.
 func (a *Architecture) Is(other Architecture) bool {
 	return other.Raw == a.Raw && !a.IsUnset() && !other.IsUnset()
 }
 
-// IsCompatibleWith checks if this architecture is compatible with another.
+// IsCompatibleWith checks if this architecture can run binaries built for another.
+// Considers architecture type and version compatibility (e.g., armv7 can run armv5).
 func (a *Architecture) IsCompatibleWith(other Architecture) bool {
 	if a.IsUnset() || other.IsUnset() {
 		return false
@@ -139,7 +151,8 @@ func (a *Architecture) IsCompatibleWith(other Architecture) bool {
 	return true
 }
 
-// String returns a string representation of the architecture.
+// String returns the canonical string representation of the architecture.
+// Includes version information for ARM architectures (e.g., "armv7").
 func (a Architecture) String() string {
 	if a.Version != 0 {
 		if a.Type == armString {
@@ -152,7 +165,8 @@ func (a Architecture) String() string {
 	return a.Type
 }
 
-// To32BitUserLand converts 64-bit architecture to 32-bit equivalent.
+// To32BitUserLand converts a 64-bit architecture to its 32-bit equivalent.
+// Handles amd64->386 and arm64->armv7 conversions for 32-bit userland support.
 func (a *Architecture) To32BitUserLand() {
 	a.Is32BitUserLand = true
 
@@ -166,22 +180,26 @@ func (a *Architecture) To32BitUserLand() {
 	}
 }
 
-// Is64Bit returns true if the architecture is 64-bit.
+// Is64Bit checks if the architecture is 64-bit capable.
+// Returns true for amd64 and arm64 architectures.
 func (a *Architecture) Is64Bit() bool {
 	return strings.Contains(a.Type, "64")
 }
 
-// IsX86 returns true if the architecture is x86 (both 32-bit and 64-bit).
+// IsX86 checks if the architecture is x86-based.
+// Returns true for both 32-bit (386) and 64-bit (amd64) variants.
 func (a *Architecture) IsX86() bool {
 	return a.Type == "amd64" || a.Type == "386"
 }
 
-// IsARM returns true if the architecture is ARM (both 32-bit and 64-bit).
+// IsARM checks if the architecture is ARM-based.
+// Returns true for both 32-bit (arm) and 64-bit (arm64) variants.
 func (a *Architecture) IsARM() bool {
 	return a.Type == armString || a.Type == "arm64"
 }
 
-// Is32Bit returns true if the system is running in 32-bit mode.
+// Is32Bit detects if the system is running in 32-bit mode.
+// Uses getconf to determine the system's bit width.
 func Is32Bit() (bool, error) {
 	cmd := exec.Command("getconf", "LONG_BIT")
 

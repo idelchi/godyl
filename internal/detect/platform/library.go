@@ -5,19 +5,24 @@ import (
 	"strings"
 )
 
-// Library represents a system library or ABI (Application Binary Interface).
+// Library represents a system's standard library or ABI configuration.
 type Library struct {
+	// Type is the canonical library name (e.g., gnu, musl, msvc).
 	Type string
-	Raw  string // Original parsed library value
+
+	// Raw contains the original string that was parsed.
+	Raw string
 }
 
-// LibraryInfo holds information about a library type, including aliases.
+// LibraryInfo defines a system library's characteristics.
+// Includes the canonical type name and known aliases.
 type LibraryInfo struct {
 	Type    string
 	Aliases []string
 }
 
-// Supported returns a slice of supported library information.
+// Supported returns the list of supported system libraries.
+// Includes major libraries like GNU, Musl, MSVC, and their aliases.
 func (LibraryInfo) Supported() []LibraryInfo {
 	return []LibraryInfo{
 		{
@@ -37,7 +42,9 @@ func (LibraryInfo) Supported() []LibraryInfo {
 	}
 }
 
-// Parse attempts to parse the library from the given name string.
+// Parse extracts library information from a string identifier.
+// Matches against known library types and aliases, setting type
+// and raw values. Returns an error if parsing fails.
 func (l *Library) Parse(name string) error {
 	name = strings.ToLower(name)
 
@@ -57,12 +64,18 @@ func (l *Library) Parse(name string) error {
 	return fmt.Errorf("unable to parse library from name: %q", name)
 }
 
-// IsUnset returns true if the library type is not set.
+// IsUnset checks if the library type is empty.
 func (l Library) IsUnset() bool {
 	return l.Type == ""
 }
 
-// Is checks if this library is exactly the same as another.
+// IsSet checks if the library type has been configured.
+func (l Library) IsSet() bool {
+	return l.Type != ""
+}
+
+// Is checks for exact library match including raw string.
+// Returns true only if both libraries are set and identical.
 func (l Library) Is(other Library) bool {
 	return other.Raw == l.Raw && !l.IsUnset() && !other.IsUnset()
 }
@@ -85,7 +98,9 @@ var compatibilityMatrix = map[string]map[string]bool{
 	},
 }
 
-// IsCompatibleWith checks if this library is compatible with another.
+// IsCompatibleWith checks if binaries built against this library can run
+// with another library. Uses a compatibility matrix to determine binary
+// compatibility between different library implementations.
 func (l Library) IsCompatibleWith(other Library) bool {
 	// Early return if either library is unset
 	if l.IsUnset() || other.IsUnset() {
@@ -105,12 +120,14 @@ func (l Library) IsCompatibleWith(other Library) bool {
 	return false
 }
 
-// String returns a string representation of the library.
+// String returns the canonical name of the library.
 func (l Library) String() string {
 	return l.Type
 }
 
-// Default returns the default Library for a given OS and Distribution.
+// Default determines the standard library for a platform.
+// Uses OS and distribution information to select the appropriate
+// system library (e.g., GNU for Linux, MSVC for Windows).
 func (l *Library) Default(os OS, distro Distribution) Library {
 	switch os.Type {
 	case "windows":

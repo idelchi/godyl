@@ -1,4 +1,4 @@
-//go:generate go tool enumer -type=Level -output level_enumer___generated.go
+//go:generate go tool enumer -type=Level -output level_enumer___generated.go -transform=lower
 package logger
 
 import (

@@ -1,12 +1,11 @@
 package tools
 
 import (
-	"errors"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/hashicorp/go-getter/v2"
 
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources"
@@ -17,132 +16,78 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
-// ErrCausesEarlyReturn checks if the error should cause early return.
-func ErrCausesEarlyReturn(err error) bool {
-	return errors.Is(ErrAlreadyExists, err) ||
-		errors.Is(ErrUpToDate, err) ||
-		errors.Is(ErrDoesHaveTags, err) ||
-		errors.Is(ErrDoesNotHaveTags, err) ||
-		errors.Is(ErrSkipped, err) ||
-		errors.Is(ErrFailed, err)
-}
-
-var (
-	// ErrAlreadyExists indicates that the tool already exists in the system.
-	ErrAlreadyExists = errors.New("tool already exists")
-	// ErrUpToDate indicates that the tool is already up to date.
-	ErrUpToDate = errors.New("tool is up to date")
-	// ErrRequiresUpdate indicates that the tool requires an update.
-	ErrRequiresUpdate = errors.New("tool requires update")
-	// ErrDoesHaveTags indicates that the tool has tags that are in the excluded tags list.
-	ErrDoesHaveTags = errors.New("tool contains excluded tags")
-	// ErrDoesNotHaveTags indicates that the tool does not contain required tags.
-	ErrDoesNotHaveTags = errors.New("tool does not contain included tags")
-	// ErrSkipped indicates that the tool has been skipped due to conditions.
-	ErrSkipped = errors.New("tool skipped")
-	// ErrFailed indicates that the tool has failed to install or resolve.
-	ErrFailed = errors.New("tool failed")
-)
-
 // Resolve attempts to resolve the tool's source and strategy based on the provided tags.
-// It handles fallbacks and applies templating to the tool's fields as needed.
-func (t *Tool) Resolve(withTags, withoutTags []string) error {
-	if len(t.Name) == 0 {
-		return fmt.Errorf("%w: tool name is empty", ErrFailed)
-	}
-
+// It handles environment variables, fallbacks, templating, and validation of the tool's
+// configuration. Returns a Result indicating success or failure with detailed messages.
+func (t *Tool) Resolve(tags IncludeTags) Result {
 	// Load environment variables from the system.
 	t.Env.Merge(env.FromEnv())
 
 	// Expand and set the output folder path.
 	t.Output = folder.New(t.Output).Expanded().Path()
 
-	// Set the strategy to Force if the mode is "extract".
-	if t.Mode == "extract" {
-		t.Strategy = Force
-	}
-
 	// Save the path for templating later.
 	path := t.Path
-
-	t.Extensions = slices.Compact(t.Extensions)
-	t.Aliases = slices.Compact(t.Aliases)
 
 	// Expand environment variables.
 	t.Env.Expand()
 
 	if err := t.TemplateFirst(); err != nil {
-		return err
+		return Result{Status: Failed, Message: fmt.Sprintf("templating first: %s", err)}
 	}
 
-	// Execute pre-installation commands if any exist
-	if len(t.Commands.Pre.Commands) > 0 {
-		if output, err := t.Commands.Pre.Exe(t.Env); err != nil {
-			return fmt.Errorf("executing pre-installation commands: %w: %s", err, output)
-		}
+	// Must atleast after first set of templates.
+	if err := t.Validate(); err != nil {
+		return Result{Status: Failed, Message: fmt.Sprintf("validating config: %s", err)}
 	}
 
-	t.Fallbacks = slices.Compact(t.Fallbacks)
-
-	// Build the fallback sources from the primary source type and additional fallbacks.
-	fallbacks := append([]sources.Type{t.Source.Type}, t.Fallbacks...)
-
-	var lastErr error
+	var result Result
 	// Try resolving with each fallback in order.
-	for _, fallback := range slices.Compact(fallbacks) {
-		if fallback == sources.RUST {
-			// Skip Rust fallback for now.
-			continue
-		}
-
-		if err := t.tryResolveFallback(fallback, path, withTags, withoutTags); ErrCausesEarlyReturn(err) {
-			return err
-		} else if err != nil {
-			lastErr = err
-
+	for _, fallback := range t.Fallbacks.Build(t.Source.Type) {
+		if result = t.resolve(fallback, path, tags.Include, tags.Exclude); !result.Successful() {
 			continue // Move on to the next fallback.
 		}
 
-		return nil // Success, no need to try further fallbacks.
+		break
 	}
 
-	// If all fallbacks fail, return the last encountered error.
-
-	return lastErr
+	return result
 }
 
-// CheckSkipConditions verifies whether the tool should be skipped based on its tags or strategy.
-func (t *Tool) CheckSkipConditions(withTags, withoutTags []string) error {
+// CheckSkipConditions determines if a tool should be skipped based on its tags,
+// strategy, and skip conditions. Returns a Result with the skip status and reason.
+func (t *Tool) CheckSkipConditions(withTags, withoutTags []string) Result {
+	result := Result{Status: Skipped, Message: "skipped due to"}
+
 	if !t.Tags.Has(withTags) {
-		return fmt.Errorf("%w: %v: tool tags: %v", ErrDoesNotHaveTags, withTags, t.Tags)
+		return result.Wrapped(fmt.Sprintf("does not have required tags: %v", withTags))
 	}
 
 	if !t.Tags.HasNot(withoutTags) {
-		return fmt.Errorf("%w: %v: tool tags: %v", ErrDoesHaveTags, withoutTags, t.Tags)
+		return result.Wrapped(fmt.Sprintf("has excluded tags: %v", withoutTags))
 	}
 
-	if err := t.Strategy.Check(t); err != nil {
-		return err
+	if skip, err := t.Skip.Evaluate(); err != nil {
+		return Result{Status: Failed, Message: fmt.Sprintf("evaluating skip conditions: %s", err)}
+	} else if skip.Has() {
+		return result.Wrapped(fmt.Sprintf("condition: %q", skip[0].Reason))
 	}
 
-	if skip, msg, _ := t.Skip.True(); skip {
-		return fmt.Errorf("%w: %q", ErrSkipped, msg)
+	if t.Strategy == None && t.Exists() {
+		return result.Wrapped("already exists")
 	}
 
-	return nil
+	return Result{Status: OK, Message: "passed all conditions"}
 }
 
-// tryResolveFallback attempts to resolve a tool using a specific fallback source type.
+// Resolve attempts to resolve a tool using a specific fallback source type.
+// It handles executable details, version information, path resolution, and
+// platform-specific configurations. Returns a Result indicating success or failure.
 //
 //nolint:cyclop,funlen 	// TODO(Idelchi): Refactor this function to reduce cyclomatic complexity.
-func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, withoutTags []string) error {
+func (t *Tool) resolve(fallback sources.Type, path string, withTags, withoutTags []string) Result {
 	// Append the tool's name as a tag.
 	t.Tags.Append(t.Name)
-
-	// Check if the tool should be skipped based on its conditions.
-	if err := t.CheckSkipConditions(withTags, withoutTags); err != nil {
-		return err
-	}
 
 	// Set the source type to the current fallback.
 	t.Source.Type = fallback
@@ -150,17 +95,17 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 	// Get the installer for the current source type.
 	populator, err := t.Source.Installer()
 	if err != nil {
-		return err
+		return Result{Status: Failed, Message: fmt.Sprintf("getting installer: %s", err)}
 	}
 
 	// Initialize the installer.
 	if err := populator.Initialize(t.Name); err != nil {
-		return err
+		return Result{Status: Failed, Message: fmt.Sprintf("initializing installer: %s", err)}
 	}
 
 	// Retrieve executable details from the installer.
 	if err := populator.Exe(); err != nil {
-		return err
+		return Result{Status: Failed, Message: fmt.Sprintf("getting executable details: %s", err)}
 	}
 
 	// Apply templating to the tool's fields.
@@ -168,33 +113,40 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 	utils.SetIfZeroValue(&t.Exe.Name, t.Name)
 
 	// Re-check skip conditions after applying templates.
-	if err := t.CheckSkipConditions(withTags, withoutTags); err != nil {
-		return err
+	if result := t.CheckSkipConditions(withTags, withoutTags); !result.Successful() {
+		return result
 	}
 
 	// Retrieve the tool's version from the installer if it is not already set.
 	if utils.IsZeroValue(t.Version.Version) {
 		if err := populator.Version(t.Name); err != nil {
-			return err
+			return Result{Status: Failed, Message: fmt.Sprintf("getting version: %s", err)}
 		}
 	}
 
 	utils.SetIfZeroValue(&t.Version.Version, populator.Get("version"))
 
 	if err := t.TemplateLast(); err != nil {
-		return err
+		return Result{Status: Failed, Message: fmt.Sprintf("templating last: %s", err)}
 	}
+
+	t.Extensions = t.Extensions.Compacted()
+	t.Aliases = t.Aliases.Compacted()
 
 	// Determine the tool's path if not already set.
 	if utils.IsZeroValue(t.Path) {
+		if err := t.Hints.Parse(); err != nil {
+			return Result{Status: Failed, Message: fmt.Sprintf("parsing hints: %s", err)}
+		}
+
 		hints := t.Hints
-		hints.Add(ExtensionsToHint(t.Extensions))
+		hints.Add(t.Extensions.ToHint())
 
 		if err := populator.Path(t.Name, nil, t.Version.Version, match.Requirements{
 			Platform: t.Platform,
 			Hints:    hints,
 		}); err != nil {
-			return err
+			return Result{Status: Failed, Message: fmt.Sprintf("getting path: %s", err)}
 		}
 	}
 
@@ -215,15 +167,20 @@ func (t *Tool) tryResolveFallback(fallback sources.Type, path string, withTags, 
 	}
 
 	// Attempt to upgrade the tool using the current strategy.
-	if err := t.Strategy.Upgrade(t); err != nil && !errors.Is(err, ErrRequiresUpdate) {
-		return err
+	if result := t.Strategy.Upgrade(t); !result.Successful() {
+		return result
 	}
 
 	// Validate the tool's configuration.
-	return t.Validate()
+	if err := t.Validate(); err != nil {
+		return Result{Status: Failed, Message: fmt.Sprintf("validating config: %s", err)}
+	}
+
+	return Result{Status: OK, Message: "resolved successfully"}
 }
 
-// Validate validates the Tool's configuration using the validator package.
+// Validate performs structural validation of the Tool's configuration using
+// the validator package. Returns an error if validation fails.
 func (t *Tool) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(t); err != nil {
@@ -233,18 +190,21 @@ func (t *Tool) Validate() error {
 	return nil
 }
 
-// Exists checks if the tool's executable already exists in the output path.
+// Exists checks if the tool's executable exists in the configured output path.
+// Returns true if the file exists and is a regular file.
 func (t *Tool) Exists() bool {
 	f := file.New(t.Output, t.Exe.Name)
 
 	return f.Exists() && f.IsFile()
 }
 
-// Download downloads the tool using its configured source and installer.
-func (t *Tool) Download() (string, file.File, error) {
+// Download retrieves and installs the tool using its configured source and installer.
+// It handles progress tracking and executes any post-installation commands.
+// Returns a Result indicating success or failure with detailed messages.
+func (t *Tool) Download(progressListener getter.ProgressTracker) Result {
 	installer, err := t.Source.Installer()
 	if err != nil {
-		return "", "", err
+		return Result{Status: Failed, Message: fmt.Sprintf("getting installer: %s", err)}
 	}
 
 	data := common.InstallData{
@@ -259,17 +219,18 @@ func (t *Tool) Download() (string, file.File, error) {
 		NoVerifySSL: t.NoVerifySSL,
 	}
 
-	output, file, err := installer.Install(data)
+	// Pass the progress listener to the specific source's Install method
+	output, _, err := installer.Install(data, progressListener)
+	if err != nil {
+		return Result{Status: Failed, Message: fmt.Sprintf("installing tool: %s", err)}.Wrapped(output)
+	}
+
 	// Execute post-installation commands if any exist
-	if len(t.Commands.Post.Commands) > 0 {
-		if output, err := t.Commands.Post.Exe(t.Env); err != nil {
-			return output, file, fmt.Errorf("executing post-installation commands: %w: %s", err, output)
+	if len(t.Commands.Commands) > 0 {
+		if output, err := t.Commands.Exe(t.Env); err != nil {
+			return Result{Status: Failed, Message: fmt.Sprintf("executing post-installation commands: %s", err)}.Wrapped(output)
 		}
 	}
 
-	if err != nil {
-		return output, file, fmt.Errorf("installing tool: %w", err)
-	}
-
-	return output, file, nil
+	return Result{Status: OK, Message: "installed successfully"}
 }

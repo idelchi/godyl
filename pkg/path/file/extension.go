@@ -1,20 +1,27 @@
-//go:generate go tool enumer -type=Extension -output extension_enumer___generated.go
+//go:generate go tool enumer -type=Extension -output extension_enumer___generated.go -transform=lower
 package file
 
-// Extension represents a file extension type.
+// Extension represents common file extension types.
+// Used to categorize files based on their extensions
+// and handle platform-specific behaviors.
 type Extension int
 
 const (
-	// None represents no file extension.
+	// None indicates a file has no extension.
 	None Extension = iota
-	// EXE represents the ".exe" file extension.
+
+	// EXE represents Windows executable files (.exe).
 	EXE
-	// GZ represents the ".gz" file extension.
+
+	// GZ represents gzip compressed files (.gz).
 	GZ
-	// ZIP represents the ".zip" file extension.
+
+	// ZIP represents ZIP archive files (.zip).
 	ZIP
-	// TAR represents the ".tar" file extension.
+
+	// TAR represents tape archive files (.tar).
 	TAR
-	// Other represents any other, unrecognized file extension.
+
+	// Other represents any unrecognized extension.
 	Other
 )

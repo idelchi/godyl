@@ -25,6 +25,8 @@ If the path is a URL, it will be considered as a `source.url` type. Otherwise, i
 
 For more complex configurations, you can use the extended form:
 
+{% raw  %}
+
 ```yaml
 name: godyl
 description: Asset downloader
@@ -54,72 +56,95 @@ A complete reference for all fields is available below.
 
 ### Full form
 
+Below are all configuration options along with examples
+
 ```yaml
-name: string
-description: string
+name: idelchi/godyl
+description: Asset downloader for GitHub releases, URLs, and Go projects
 version:
-  version: string
-  commands: list[string]
-  patterns: list[regex]
-path: string
-output: string
+  version: v0.1.0 # For `github` and `gitlab` sources, leave empty to get the latest release
+  commands:
+    - --version
+    - version
+  patterns:
+    - '.*?(\d+\.\d+\.\d+).*'
+path: "https://github.com/idelchi/godyl/releases/download/v0.0.1/godyl_{{ .OS }}_{{ .ARCH }}.tar.gz" # For `github` and `gitlab` sources, leave empty to get the latest release
+output: ~/.local/bin
 exe:
-  name: string
-  patterns: list[regex]
+  name: godyl
+  patterns: "^{{ .OS }}-{{ .Exe }}-{{ .ARCH }}{{ .EXTENSION }}$"
 platform:
-  os: string
+  os: windows
   architecture:
-    type: string
-    version: string
-  library: string
-  extension: string
-  distribution: string
-aliases: list[string]
-values: dict[string]
-fallbacks: list[string]
+    type: arm
+    version: 7
+  library: gnu
+  extension: exe
+  distribution: windows
+aliases:
+  - gd
+values:
+  customField: customValue
+fallbacks:
+  - go
 hints:
-  - pattern: regex
-    weight: string
-    must: boolean
+  - pattern: amd64
+    weight: |-
+      {{- if eq .ARCH "amd64" -}}
+      1
+      {{- else -}}
+      0
+      {{- end -}}
+  - pattern: "{{ .Exe }}"
+    must: true
 source:
-  type: string
+  type: github|gitlab|url|go|none
   github:
-    repo: string
-    owner: string
-    token: string
+    repo: godyl
+    owner: idelchi
+    token: secret
   gitlab:
-    repo: string
-    owner: string
-    token: string
+    project: godyl
+    namespace: idelchi/go-projects
+    token: secret
+    server: https://gitlab.self-hosted.com
   url:
     token:
-      token: string
-      header: string
-      scheme: string
-    headers: { string: [strings] }
+      token: secret
+      header: Authorization
+      scheme: Bearer
+      headers:
+        Content-Type:
+          - application/json
+          - application/x-www-form-urlencoded
+        Accept:
+          - application/json
+          - application/x-www-form-urlencoded
   go:
-    command: string
+    command: cmd/godyl
 commands:
   pre:
-    commands: list[string]
-    allow_failure:
-    exit_on_error: boolean
-  post: list[string]
-    commands: list[string]
-    allow_failure:
-    exit_on_error: boolean
+    commands:
+      - "mkdir -p {{ .Output }}"
+    allow_failure: true
+    exit_on_error: false
+  post:
+    commands:
+      - "chmod +x {{ .Output }}/{{ .Exe }}"
+    allow_failure: false
+    exit_on_error: true
 tags:
-  - string
-strategy: string
+  - downloader
+strategy: none|upgrade|force
 extensions:
-  - string
+  - .exe
 skip:
-  - condition: string
-    reason: string
-mode: string
+  - reason: "godyl is not available for Darwin"
+    condition: '{{ eq .OS "darwin" }}'
+mode: find|extract
 env:
-  key: string
-no_verify_ssl: boolean
+  GH_TOKEN: $GODYL_GITHUB_TOKEN
+no_verify_ssl: false
 ```
 
 Most of the fields also support simplified forms which will be described below.
@@ -422,3 +447,5 @@ Valid values:
 
 - `find`: Download, extract, and find the executable
 - `extract`: Download and extract directly to the output directory
+
+{% endraw  %}

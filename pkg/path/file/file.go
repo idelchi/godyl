@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,20 +13,36 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// File represents a file path as a string, providing methods for file operations.
+// File represents a filesystem path with associated operations.
+// Provides methods for file manipulation, path operations, and
+// common file system tasks.
 type File string
 
-// New creates a new File by joining the provided paths.
+// New creates a File from one or more path components.
+// Joins the paths using filepath.Join and normalizes the result.
 func New(paths ...string) File {
-	return File(filepath.Clean(filepath.Join(paths...))) // .Normalized()
+	return File(filepath.Clean(filepath.Join(paths...))).Normalized()
 }
 
-// Normalized converts the file path to use forward slashes.
+// Normalized returns the path with forward slashes.
+// Converts backslashes to forward slashes for consistency.
 func (f File) Normalized() File {
-	return New(filepath.ToSlash(f.String()))
+	return File(filepath.ToSlash(f.String()))
 }
 
-// Create creates a new file.
+// RelativeTo computes the relative path from this file to a base path.
+// Returns an error if the relative path cannot be computed.
+func (f File) RelativeTo(base File) (File, error) {
+	file, err := filepath.Rel(f.String(), base.String())
+	if err != nil {
+		return f, fmt.Errorf("getting relative path: %w", err)
+	}
+
+	return New(file), nil
+}
+
+// Create creates a new empty file at this path.
+// Returns an error if the file cannot be created.
 func (f File) Create() error {
 	file, err := os.Create(f.String())
 	if err != nil {
@@ -54,7 +71,8 @@ func (f File) OpenForWriting() (*os.File, error) {
 	return file, nil
 }
 
-// Write writes the provided data to the file.
+// Write stores binary data in the file.
+// Creates or truncates the file before writing.
 func (f File) Write(data []byte) error {
 	file, err := f.OpenForWriting()
 	if err != nil {
@@ -84,7 +102,8 @@ func (f File) OpenForAppend() (*os.File, error) {
 	return file, nil
 }
 
-// Append appends the provided data to the file.
+// Append adds binary data to the end of the file.
+// Creates the file if it doesn't exist.
 func (f File) Append(data []byte) error {
 	file, err := f.OpenForAppend()
 	if err != nil {
@@ -114,7 +133,8 @@ func (f File) Open() (*os.File, error) {
 	return file, nil
 }
 
-// Read reads the contents of the file and returns it as a byte slice.
+// Read retrieves the entire contents of the file.
+// Returns the file contents as a byte slice.
 func (f File) Read() ([]byte, error) {
 	file, err := os.ReadFile(f.String())
 	if err != nil {
@@ -124,7 +144,8 @@ func (f File) Read() ([]byte, error) {
 	return file, nil
 }
 
-// Remove deletes the file from the file system.
+// Remove deletes the file from the filesystem.
+// Returns an error if the file cannot be deleted.
 func (f File) Remove() error {
 	if err := os.Remove(f.String()); err != nil {
 		return fmt.Errorf("removing file %q: %w", f, err)
@@ -133,12 +154,13 @@ func (f File) Remove() error {
 	return nil
 }
 
-// Path returns the path of the File.
+// Path returns the string representation of the file path.
 func (f File) Path() string {
 	return f.String()
 }
 
-// WithoutExtension removes all recognized file extensions from the File.
+// WithoutExtension returns the path without file extensions.
+// Handles compound extensions (e.g., .tar.gz) and unknown extensions.
 func (f File) WithoutExtension() File {
 	result := f
 	for ext := result.Extension(); ext != None && ext != Other; ext = result.Extension() {
@@ -153,28 +175,31 @@ func (f File) WithoutExtension() File {
 	return result
 }
 
-// String returns the string representation of the File.
+// String returns the file path as a string.
 func (f File) String() string {
 	return string(f)
 }
 
-// Base returns the base name of the File.
+// Base returns the last component of the file path.
 func (f File) Base() string {
 	return filepath.Base(f.String())
 }
 
-// Join joins the File with the provided paths and returns a new File.
+// Join combines this path with additional components.
+// Returns a new File with the combined path.
 func (f File) Join(paths ...string) File {
 	return New(append([]string{f.String()}, paths...)...)
 }
 
-// Expanded expands the file path in case of ~ and returns the expanded path.
+// Expanded resolves home directory references.
+// Replaces ~ with the user's home directory path.
 func (f File) Expanded() File {
 	return New(utils.ExpandHome(f.String()))
 }
 
-// Dir returns the directory of the file.
-// If the file is a directory, it returns the path of the directory itself.
+// Dir returns the containing directory path.
+// Returns the path itself if it's a directory,
+// otherwise returns the parent directory path.
 func (f File) Dir() string {
 	if f.IsDir() {
 		return f.String()
@@ -183,7 +208,8 @@ func (f File) Dir() string {
 	return filepath.Dir(f.String())
 }
 
-// IsExecutable checks if the file has executable permissions.
+// IsExecutable checks if the file has execute permissions.
+// Returns true if any execute bit (user/group/other) is set.
 func (f File) IsExecutable() (bool, error) {
 	info, err := os.Stat(f.String())
 	if err != nil {
@@ -193,13 +219,15 @@ func (f File) IsExecutable() (bool, error) {
 	return info.Mode()&0o111 != 0, nil
 }
 
-// Chmod changes the file permissions to the specified fs.FileMode.
+// Chmod modifies the file's permission bits.
+// Takes a fs.FileMode parameter specifying the new permissions.
 func (f *File) Chmod(mode fs.FileMode) error {
 	return os.Chmod(f.String(), mode)
 }
 
-// Copy copies the contents of the current file to the specified destination File.
-// It returns an error if the operation fails.
+// Copy duplicates the file to a new location.
+// Creates the destination file with execute permissions (0755)
+// and copies all content from the source file.
 func (f File) Copy(other File) error {
 	// Open the source file
 	source, err := f.Open()
@@ -231,14 +259,16 @@ func (f File) Copy(other File) error {
 	return nil
 }
 
-// Exists checks if the file exists in the file system.
+// Exists checks if the path exists in the filesystem.
+// Returns true if the path exists, false otherwise.
 func (f File) Exists() bool {
 	_, err := os.Stat(f.String())
 
 	return err == nil
 }
 
-// IsFile checks if the path is a regular file (not a directory or special file).
+// IsFile checks if the path is a regular file.
+// Returns false for directories, symlinks, and special files.
 func (f File) IsFile() bool {
 	info, err := os.Stat(f.String())
 	if err != nil {
@@ -248,7 +278,8 @@ func (f File) IsFile() bool {
 	return info.Mode().IsRegular()
 }
 
-// IsDir checks if the path represents a directory.
+// IsDir checks if the path is a directory.
+// Returns false for regular files and non-existent paths.
 func (f File) IsDir() bool {
 	info, err := os.Stat(f.String())
 	if err != nil {
@@ -258,7 +289,8 @@ func (f File) IsDir() bool {
 	return info.Mode().IsDir()
 }
 
-// Extension returns the file extension of the File, mapped to a predefined Extension constant.
+// Extension returns the file's extension type.
+// Maps the extension to a predefined constant (e.g., EXE, TAR, ZIP).
 func (f File) Extension() Extension {
 	ext := filepath.Ext(f.String())
 
@@ -278,8 +310,8 @@ func (f File) Extension() Extension {
 	}
 }
 
-// WriteYAML marshals the provided value to YAML and writes it to the file.
-// It adds a newline at the end of the YAML content.
+// WriteYAML serializes data to YAML format and writes it.
+// Marshals the provided value to YAML and writes to the file.
 func (f File) WriteYAML(v any) error {
 	// Marshal the struct to YAML
 	data, err := yaml.Marshal(v)
@@ -289,4 +321,16 @@ func (f File) WriteYAML(v any) error {
 
 	// Use the Write method to write the YAML data
 	return f.Write(data)
+}
+
+// Unescape decodes URL-escaped characters in the path.
+// Returns the original path if unescaping fails.
+func (f File) Unescape() File {
+	// Replace escaped characters with their original representation
+	unescapedPath, err := url.QueryUnescape(f.String())
+	if err != nil {
+		return f
+	}
+
+	return File(unescapedPath)
 }

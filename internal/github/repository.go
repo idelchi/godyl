@@ -3,7 +3,6 @@ package github
 import (
 	"context"
 	"fmt"
-	"sort"
 
 	"github.com/google/go-github/v64/github"
 )
@@ -26,14 +25,6 @@ func NewRepository(owner, repo string, client *github.Client) *Repository {
 		client: client,
 		ctx:    context.Background(),
 	}
-}
-
-// WithContext returns a copy of the repository with the given context.
-func (g *Repository) WithContext(ctx context.Context) *Repository {
-	repo := *g
-	repo.ctx = ctx
-
-	return &repo
 }
 
 // LatestRelease retrieves the latest release for the repository.
@@ -64,27 +55,6 @@ func (g *Repository) GetRelease(tag string) (*Release, error) {
 	}
 
 	return release, nil
-}
-
-// Languages retrieves the programming languages used in the repository, sorted by usage in descending order.
-func (g *Repository) Languages() ([]string, error) {
-	languages, _, err := g.client.Repositories.ListLanguages(g.ctx, g.Owner, g.Repo)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get languages: %w", err)
-	}
-
-	// Create a slice of keys to sort
-	keys := make([]string, 0, len(languages))
-	for k := range languages {
-		keys = append(keys, k)
-	}
-
-	// Sort the keys based on the values in descending order
-	sort.Slice(keys, func(i, j int) bool {
-		return languages[keys[i]] > languages[keys[j]]
-	})
-
-	return keys, nil
 }
 
 // GetLatestIncludingPreRelease retrieves the most recently published release for the repository,

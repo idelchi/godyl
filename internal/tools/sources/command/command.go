@@ -10,21 +10,22 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-// Command represents a shell command as a string.
+// Command represents a shell command that can be executed.
 type Command string
 
-// String returns the Command as a string.
+// String returns the string representation of the Command.
 func (c *Command) String() string {
 	return string(*c)
 }
 
-// From assigns a new shell command string to the Command.
+// From sets the Command value from the provided command string.
 func (c *Command) From(command string) {
 	*c = Command(command)
 }
 
-// Shell runs the Command using mvdan/sh, capturing both stdout and stderr output.
-// It accepts optional environment variables and returns the stdout output and any errors encountered.
+// Shell executes the Command using mvdan/sh shell interpreter.
+// It captures both stdout and stderr output, supports environment variables,
+// and returns the stdout output or an error if execution fails.
 func (c *Command) Shell(env ...string) (string, error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 
@@ -61,4 +62,5 @@ func (c *Command) Shell(env ...string) (string, error) {
 	return stdoutBuf.String(), nil
 }
 
+// ErrRun indicates a failure while executing a shell command.
 var ErrRun = fmt.Errorf("running shell command")

@@ -7,6 +7,7 @@ package sources
 import (
 	"fmt"
 
+	"github.com/hashicorp/go-getter/v2"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
@@ -17,15 +18,15 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// Type represents the source type, such as GitHub, URL, Go, or command-based sources.
+// Type represents the installation source type for a tool.
 type Type string
 
-// String returns the string representation of the Type.
+// String returns the string representation of the Type value.
 func (t Type) String() string {
 	return string(t)
 }
 
-// From sets the Type from the provided name.
+// From sets the Type value from the provided name string.
 func (t *Type) From(name string) {
 	*t = Type(name)
 }
@@ -38,40 +39,45 @@ const (
 	URL    Type = "url"    // URL source type
 	NONE   Type = "none"   // No source type
 	GO     Type = "go"     // Go source type
-	RUST   Type = "rust"   // Rust source type
 )
 
-// Source represents a source of installation, which could be GitHub, URL, Go, or command-based.
+// Source represents a tool's installation source configuration.
 //
 // TODO(Idelchi): Add validation
 type Source struct {
-	// Type of the source
-	Type Type `validate:"oneof=github gitlab url none go rust"`
-	// GitHub repository source
+	// Type specifies the kind of installation source.
+	Type Type `validate:"oneof=github gitlab url none go"`
+
+	// GitHub holds configuration for GitHub repository sources.
 	GitHub github.GitHub
-	// GitLab repository source
+
+	// GitLab holds configuration for GitLab repository sources.
 	GitLab gitlab.GitLab
-	// URL source for direct downloads
+
+	// URL holds configuration for direct download sources.
 	URL url.URL
-	// Go project source
+
+	// Go holds configuration for Go project sources.
 	Go goc.Go
-	// None
+
+	// None represents a source that requires no installation.
 	None none.None
 }
 
-// Populater defines the interface that all source types must implement to handle initialization, execution,
-// versioning, path setup, and installation.
+// Populater defines the interface that all source types must implement.
+// It provides methods for managing the complete lifecycle of tool installation,
+// from initialization through execution, versioning, path setup, and installation.
 type Populater interface {
 	Initialize(repo string) error
 	Exe() error
 	Version(version string) error
 	Path(name string, extensions []string, version string, requirements match.Requirements) error
-	Install(data common.InstallData) (string, file.File, error)
+	Install(data common.InstallData, progressListener getter.ProgressTracker) (string, file.File, error)
 	Get(key string) string
 }
 
-// Installer returns the appropriate Populater implementation based on the source Type.
-// It determines the correct handling for GitHub, URL, Go, and command-based sources.
+// Installer returns the appropriate Populater implementation for the source Type.
+// Returns an error if the source type is unknown or unsupported.
 func (s *Source) Installer() (Populater, error) {
 	switch s.Type {
 	case GITHUB:
@@ -86,8 +92,6 @@ func (s *Source) Installer() (Populater, error) {
 		s.Go.SetGitHub(&s.GitHub)
 
 		return &s.Go, nil
-	case RUST:
-		return nil, fmt.Errorf("source type %s is not yet supported", s.Type)
 	default:
 		return nil, fmt.Errorf("unknown source type: %s", s.Type)
 	}

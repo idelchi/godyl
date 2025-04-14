@@ -8,6 +8,13 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type IncludeTags struct {
+	// Include is a list of tags to include.
+	Include Tags
+	// Exclude is a list of tags to exclude.
+	Exclude Tags
+}
+
 // Tags represents a list of tags associated with a tool.
 // Tags can be used to categorize or filter tools based on specific labels or keywords.
 type Tags []string

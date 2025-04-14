@@ -5,19 +5,25 @@ import (
 	"strings"
 )
 
-// OS represents an operating system.
+// OS represents an operating system configuration.
 type OS struct {
+	// Type is the canonical OS name (e.g., linux, windows, darwin).
 	Type string
-	Raw  string // Original parsed OS value
+
+	// Raw contains the original string that was parsed.
+	Raw string
 }
 
-// OSInfo holds information about an OS type, including aliases.
+// OSInfo defines an operating system's characteristics.
+// Includes the canonical type name and known aliases.
 type OSInfo struct {
 	Type    string
 	Aliases []string
 }
 
-// Supported returns a slice of supported operating system information.
+// Supported returns the list of supported operating systems.
+// Includes major operating systems like Linux, macOS, Windows,
+// and various BSD variants with their common aliases.
 func (OSInfo) Supported() []OSInfo {
 	return []OSInfo{
 		{
@@ -46,7 +52,9 @@ func (OSInfo) Supported() []OSInfo {
 	}
 }
 
-// Parse attempts to parse the OS from the given name string.
+// Parse extracts operating system information from a string identifier.
+// Matches against known OS types and aliases, setting type and raw values.
+// Returns an error if parsing fails.
 func (o *OS) Parse(name string) error {
 	name = strings.ToLower(name)
 
@@ -66,17 +74,19 @@ func (o *OS) Parse(name string) error {
 	return fmt.Errorf("%w: OS from name: %s", ErrParse, name)
 }
 
-// IsUnset returns true if the OS type is not set.
+// IsUnset checks if the OS type is empty.
 func (o *OS) IsUnset() bool {
 	return o.Type == ""
 }
 
-// Is checks if this OS is exactly the same as another.
+// Is checks for exact OS match including raw string.
+// Returns true only if both OS configurations are set and identical.
 func (o *OS) Is(other OS) bool {
 	return other.Raw == o.Raw && !o.IsUnset() && !other.IsUnset()
 }
 
-// IsCompatibleWith checks if this OS is compatible with another.
+// IsCompatibleWith checks if binaries built for this OS can run on another.
+// Currently requires exact OS type matches (e.g., linux-linux, windows-windows).
 func (o *OS) IsCompatibleWith(other OS) bool {
 	if o.IsUnset() || other.IsUnset() {
 		return false
@@ -85,7 +95,7 @@ func (o *OS) IsCompatibleWith(other OS) bool {
 	return o.Type == other.Type
 }
 
-// String returns a string representation of the OS.
+// String returns the canonical name of the operating system.
 func (o OS) String() string {
 	return o.Type
 }

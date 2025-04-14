@@ -38,21 +38,32 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// Downloader manages the configuration for downloading files, including
-// timeouts for different stages of the process.
+// Downloader manages file download operations and configuration.
+// Provides configurable timeouts, SSL verification control, and
+// progress tracking for downloading files from various sources.
 type Downloader struct {
-	// ContextTimeout is the maximum duration to wait for the download context.
+	// ContextTimeout limits the total download operation time.
 	ContextTimeout time.Duration
-	// ReadTimeout is the maximum duration to wait for reading data from the URL.
+
+	// ReadTimeout limits time for reading data chunks.
 	ReadTimeout time.Duration
-	// HeadTimeout is the maximum duration to wait for the HTTP HEAD request.
+
+	// HeadTimeout limits time for initial HTTP HEAD request.
 	HeadTimeout time.Duration
-	// InsecureSkipVerify controls whether to verify SSL certificates.
-	// WARNING: Setting this to true is insecure and should only be used in testing.
+
+	// InsecureSkipVerify disables SSL certificate validation.
+	// WARNING: Setting this to true is insecure and should only
+	// be used in testing environments.
 	InsecureSkipVerify bool
+
+	// ProgressListener receives download progress updates.
+	ProgressListener getter.ProgressTracker
 }
 
-// New returns a new Downloader instance with default timeout values set to 5 minutes.
+// New creates a Downloader with default settings.
+// Returns a Downloader configured with 5-minute timeouts for
+// context, read operations, and HEAD requests. SSL verification
+// is enabled by default.
 func New() *Downloader {
 	const defaultTimeout = 5 * time.Minute
 
@@ -64,9 +75,11 @@ func New() *Downloader {
 	}
 }
 
-// Download fetches a file from the given URL and saves it to the specified output path.
-// If the file is an archive, it will be extracted to the output directory.
-// It returns the destination path of the downloaded file (or folder) and any error encountered.
+// Download retrieves and processes a file from a URL.
+// Downloads from the specified URL to the output path, handling
+// various protocols (HTTP, HTTPS, FTP). Automatically extracts
+// archives (zip, tar) to the output directory. Returns the final
+// destination path and any errors encountered.
 func (d Downloader) Download(url, output string, header ...http.Header) (file.File, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), d.ContextTimeout)
 	defer cancel()
@@ -106,6 +119,11 @@ func (d Downloader) Download(url, output string, header ...http.Header) (file.Fi
 		Src:     url,
 		Dst:     output,
 		GetMode: getter.ModeAny,
+	}
+
+	// Pass the progress listener if provided
+	if d.ProgressListener != nil {
+		req.ProgressListener = d.ProgressListener
 	}
 
 	// TODO(Idelchi): Go-Getter messes up ? queries etc and doesn't seem to follow redirects then,

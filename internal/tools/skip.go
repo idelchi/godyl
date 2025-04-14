@@ -19,24 +19,43 @@ type Condition struct {
 	Condition string
 	// Reason provides an optional explanation for why the operation is being skipped.
 	Reason string
+
+	condition bool
 }
 
-// True checks if any condition in the Skip list evaluates to true.
-// It returns a boolean indicating if the skip should occur, the associated reason, and any error encountered while
-// evaluating the condition.
-func (s *Skip) True() (bool, string, error) {
+func (c Condition) True() bool {
+	return c.condition
+}
+
+func (c *Condition) Parse() (err error) {
+	// Parse the condition string into a boolean value.
+	c.condition, err = strconv.ParseBool(c.Condition)
+	if err != nil {
+		return fmt.Errorf("parsing condition %q: %w", c.Condition, err)
+	}
+
+	return
+}
+
+func (s Skip) Has() bool {
+	return len(s) > 0
+}
+
+// Any checks if any condition in the Skip list evaluates to true.
+func (s *Skip) Evaluate() (Skip, error) {
+	skip := Skip{}
+
 	for _, condition := range *s {
-		// Parse the condition string into a boolean value.
-		if val, err := strconv.ParseBool(condition.Condition); err != nil {
-			return false, condition.Reason, fmt.Errorf("parsing condition %q: %w", condition.Condition, err)
-		} else {
-			if val {
-				return true, condition.Reason, nil
-			}
+		if err := condition.Parse(); err != nil {
+			return nil, err
+		}
+
+		if condition.True() {
+			skip = append(skip, condition)
 		}
 	}
 
-	return false, "", nil
+	return skip, nil
 }
 
 // UnmarshalYAML implements custom unmarshaling for Skip,

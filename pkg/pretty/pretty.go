@@ -3,13 +3,17 @@ package pretty
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 
+	"github.com/joho/godotenv"
 	"github.com/showa-93/go-mask"
 
 	"gopkg.in/yaml.v3"
 )
 
-// YAML returns a prettified YAML representation of the provided object.
+// YAML formats data as indented YAML.
+// Converts any value to a formatted YAML string with consistent
+// indentation. Returns error message as string if encoding fails.
 func YAML(obj any) string {
 	buf := bytes.Buffer{}
 	enc := yaml.NewEncoder(&buf)
@@ -25,13 +29,16 @@ func YAML(obj any) string {
 	return buf.String()
 }
 
-// YAMLMasked returns a prettified YAML representation of the provided object
-// with masked sensitive fields. It uses JSONMasked internally to mask the fields.
+// YAMLMasked formats data as YAML with sensitive data masked.
+// Converts any value to YAML, first applying masking rules to
+// hide sensitive fields. Uses JSONMasked internally for masking.
 func YAMLMasked(obj any) string {
 	return YAML(MaskJSON(obj))
 }
 
-// JSON returns a prettified JSON representation of the provided object.
+// JSON formats data as indented JSON.
+// Converts any value to a formatted JSON string with consistent
+// indentation. Returns error message as string if marshaling fails.
 func JSON(obj any) string {
 	bytes, err := json.MarshalIndent(obj, "  ", "    ")
 	if err != nil {
@@ -41,14 +48,17 @@ func JSON(obj any) string {
 	return string(bytes)
 }
 
-// JSONMasked returns a prettified JSON representation of the provided object
-// with masked sensitive fields.
+// JSONMasked formats data as JSON with sensitive data masked.
+// Converts any value to JSON, first applying masking rules to
+// hide sensitive fields like passwords and tokens.
 func JSONMasked(obj any) string {
 	return JSON(MaskJSON(obj))
 }
 
-// MaskJSON masks sensitive fields in the provided object according to predefined masking rules
-// and returns the masked object. The masker replaces sensitive data with a mask character.
+// MaskJSON applies data masking rules to an object.
+// Uses predefined rules to identify and mask sensitive fields,
+// replacing them with "-" characters. Returns the masked object
+// or error message if masking fails.
 func MaskJSON(obj any) any {
 	masker := mask.NewMasker()
 
@@ -64,4 +74,35 @@ func MaskJSON(obj any) any {
 	}
 
 	return t
+}
+
+// Env formats data as environment variables.
+// Converts any value to KEY=VALUE format suitable for .env files.
+// Complex objects are flattened to string representations.
+func Env(obj any) string {
+	// Convert to map via JSON
+	jsonData, err := json.Marshal(obj)
+	if err != nil {
+		return err.Error()
+	}
+
+	var data map[string]any
+	if err := json.Unmarshal(jsonData, &data); err != nil {
+		return err.Error()
+	}
+
+	// Convert to string map (godotenv requires map[string]string)
+	stringMap := make(map[string]string)
+	for k, v := range data {
+		// Convert each value to string
+		stringMap[k] = fmt.Sprintf("%v", v)
+	}
+
+	// Use godotenv.Marshal to format in dotenv style
+	result, err := godotenv.Marshal(stringMap)
+	if err != nil {
+		return err.Error()
+	}
+
+	return result
 }

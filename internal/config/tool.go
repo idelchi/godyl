@@ -46,6 +46,9 @@ type Tool struct {
 	// Show enables output display
 	Show bool
 
+	// NoCache disables cache interaction
+	NoCache bool `mapstructure:"no-cache"`
+
 	// Viper instance
 	viperable `mapstructure:"-" yaml:"-" json:"-"`
 }

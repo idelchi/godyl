@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/hashicorp/go-getter/v2"
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/env"
@@ -14,23 +15,45 @@ import (
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
-// InstallData holds the details required for downloading and installing files,
-// including the path, executable name, output directory, and environment settings.
+// InstallData contains configuration for downloading and installing tools.
 type InstallData struct {
-	Path        string   // The URL or path to download from
-	Name        string   // The name of the file or project
-	Exe         string   // The name of the executable
-	Patterns    []string // Patterns to match files for the executable
-	Output      string   // Output directory for the installation
-	Aliases     []string // Aliases for the executable
-	Mode        string   // Mode of operation, such as "find" for locating executables
-	Env         env.Env  // Environment variables for the installation process
-	NoVerifySSL bool     // Skip SSL verification
-	Header      http.Header
+	// Path is the URL or filesystem path to download from.
+	Path string
+
+	// Name is the identifier of the tool or project.
+	Name string
+
+	// Exe is the name of the executable file.
+	Exe string
+
+	// Patterns contains regex patterns for finding the executable.
+	Patterns []string
+
+	// Output specifies the directory where files will be installed.
+	Output string
+
+	// Aliases are alternative names for the executable.
+	Aliases []string
+
+	// Mode defines the installation behavior (e.g., "find" for locating executables).
+	Mode string
+
+	// Env holds environment variables for the installation process.
+	Env env.Env
+
+	// NoVerifySSL disables SSL certificate verification when downloading.
+	NoVerifySSL bool
+
+	// Header contains HTTP headers for download requests.
+	Header http.Header
+
+	// ProgressListener tracks download progress.
+	ProgressListener getter.ProgressTracker
 }
 
-// Download handles downloading files based on the InstallData configuration.
-// It creates a temporary folder if needed and manages the download process.
+// Download retrieves files according to the InstallData configuration.
+// Creates temporary directories when needed, manages the download process,
+// and returns the download output and file information.
 func Download(data InstallData) (string, file.File, error) {
 	var err error
 
@@ -50,6 +73,10 @@ func Download(data InstallData) (string, file.File, error) {
 
 	downloader := download.New()
 	downloader.InsecureSkipVerify = data.NoVerifySSL
+	// Pass the progress listener if provided in InstallData
+	if data.ProgressListener != nil {
+		downloader.ProgressListener = data.ProgressListener
+	}
 
 	destination, err := downloader.Download(data.Path, dir.Path(), data.Header)
 	if err != nil {
@@ -63,8 +90,9 @@ func Download(data InstallData) (string, file.File, error) {
 	return "", found, err
 }
 
-// FindAndSymlink finds the executable within the downloaded folder and creates symlinks for it
-// based on the provided InstallData. It handles directories and sets up aliases as needed.
+// FindAndSymlink locates an executable in the downloaded content and sets up symlinks.
+// It searches directories recursively using provided patterns, copies the executable
+// to the output location, and creates symlinks for any configured aliases.
 //
 //nolint:gocognit   // TODO(Idelchi): Address this later.
 func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
@@ -94,7 +122,7 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 					return false, fmt.Errorf("compiling pattern %q: %w", pattern, err)
 				}
 
-				matched := re.MatchString(file.Normalized().Path())
+				matched := re.MatchString(file.Path())
 
 				if matched {
 					return true, nil

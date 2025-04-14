@@ -4,7 +4,6 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/idelchi/godyl/internal/cli/dump"
 	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/cli/install"
+	"github.com/idelchi/godyl/internal/cli/status"
 	"github.com/idelchi/godyl/internal/cli/update"
 	"github.com/idelchi/godyl/internal/cli/version"
 	"github.com/idelchi/godyl/internal/config"
@@ -49,6 +49,7 @@ func (cmd *Command) Subcommands() {
 		download.NewCommand(cmd.Config, cmd.Files),
 		update.NewCommand(cmd.Config, cmd.Files),
 		cache.NewCommand(cmd.Config),
+		status.NewCommand(cmd.Config, cmd.Files),
 	)
 }
 
@@ -65,23 +66,26 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 		SilenceErrors:    true,
 		TraverseChildren: true,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			// Bind root-level flags
+			// Bind root-level flags to get the config file
 			if err := flags.Bind(cmd.Root(), &cfg.Root); err != nil {
 				return fmt.Errorf("binding flags: %w", err)
 			}
-
-			cfg.Root.Log = strings.ToUpper(cfg.Root.Log)
-
-			// Validate the root configuration
-			// if err := cfg.Root.Validate(); err != nil {
-			// 	return fmt.Errorf("validating config: %w", err)
-			// }
 
 			// Store the path in the context
 			ctx := cmd.Context()
 			ctx = context.WithValue(ctx, "config-file", cfg.Root.ConfigFile.Expanded().Path())
 			ctx = context.WithValue(ctx, "config-file-set", cfg.Root.IsSet("config-file"))
 			cmd.SetContext(ctx)
+
+			// Bind once more to use the config file
+			if err := flags.Bind(cmd.Root(), &cfg.Root); err != nil {
+				return fmt.Errorf("binding flags: %w", err)
+			}
+
+			// Validate the root configuration
+			if err := cfg.Root.Validate(); err != nil {
+				return fmt.Errorf("validating config: %w", err)
+			}
 
 			// Load environment variables from .env files such that it's available for the subcommands
 			for _, file := range cfg.Root.EnvFile {
@@ -95,8 +99,6 @@ func NewRootCommand(cfg *config.Config, files config.Embedded, version string) *
 			if err := flags.Bind(cmd.Root(), &cfg.Root); err != nil {
 				return fmt.Errorf("binding flags: %w", err)
 			}
-
-			cfg.Root.Log = strings.ToUpper(cfg.Root.Log)
 
 			// Validate the root configuration
 			if err := cfg.Root.Validate(); err != nil {

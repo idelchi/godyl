@@ -5,39 +5,51 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hashicorp/go-getter/v2"
 	"github.com/idelchi/godyl/internal/gitlab"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// GitLab represents a GitLab repository with optional authentication token and metadata.
+// GitLab represents a GitLab project configuration and state.
 type GitLab struct {
-	Repo   string
-	Owner  string
-	Token  string `mask:"fixed"`
-	Pre    bool
+	// Project is the name of the GitLab project.
+	Project string
+
+	// Namespace is the GitLab group or user that owns the project.
+	Namespace string
+
+	// Token is the GitLab authentication token for private repositories.
+	Token string `mask:"fixed"`
+
+	// Pre indicates whether to include pre-releases when fetching versions.
+	Pre bool
+
+	// Server is the GitLab instance URL (defaults to gitlab.com if empty).
 	Server string
 
-	// Data holds additional metadata related to the repository.
+	// Data contains additional metadata about the project.
 	Data common.Metadata `yaml:"-"`
 
+	// LatestStoredRelease caches the most recently fetched release information.
 	latestStoredRelease *gitlab.Release
 }
 
-// Get retrieves a specific attribute from the GitLab repository's metadata.
+// Get retrieves a metadata attribute value by its key.
 func (g *GitLab) Get(attribute string) string {
 	return g.Data.Get(attribute)
 }
 
-// LatestVersion fetches the latest release version of the GitLab repository.
+// LatestVersion fetches the latest release version from GitLab.
+// Returns the tag name of the latest release, respecting the Pre flag setting.
 func (g *GitLab) LatestVersion() (string, error) {
 	client, err := gitlab.NewClient(g.Token, g.Server)
 	if err != nil {
 		return "", fmt.Errorf("failed to create GitLab client: %w", err)
 	}
 
-	repository := gitlab.NewRepository(g.Owner, g.Repo, client)
+	repository := gitlab.NewRepository(g.Namespace, g.Project, client)
 
 	var release *gitlab.Release
 
@@ -57,8 +69,9 @@ func (g *GitLab) LatestVersion() (string, error) {
 	return release.Tag, nil
 }
 
-// MatchAssetsToRequirements matches release assets to specific file extensions and requirements,
-// returning the URL of the matched asset.
+// MatchAssetsToRequirements finds release assets matching the given requirements.
+// Returns the download URL of the best matching asset, considering platform,
+// architecture, and other specified requirements.
 func (g *GitLab) MatchAssetsToRequirements(
 	_ []string,
 	version string,
@@ -69,7 +82,7 @@ func (g *GitLab) MatchAssetsToRequirements(
 		return "", fmt.Errorf("failed to create GitLab client: %w", err)
 	}
 
-	repository := gitlab.NewRepository(g.Owner, g.Repo, client)
+	repository := gitlab.NewRepository(g.Namespace, g.Project, client)
 
 	var release *gitlab.Release
 
@@ -103,20 +116,21 @@ func (g *GitLab) MatchAssetsToRequirements(
 	return assets.FilterByName(matches[0].Asset.Name)[0].URL, err
 }
 
-// PopulateOwnerAndRepo sets the Owner and Repo fields based on the given name.
-// If Owner and Repo are already set, this method does nothing.
-func (g *GitLab) PopulateOwnerAndRepo(name string) (err error) {
+// PopulateNamespaceAndRepo sets the Namespace and Project fields from a name string.
+// Expects name in "namespace/project" format if fields are not already set.
+// Returns an error if the format is invalid or fields are partially set.
+func (g *GitLab) PopulateNamespaceAndRepo(name string) (err error) {
 	// If both Owner and Repo are already set, nothing to do
-	if g.Owner != "" && g.Repo != "" {
+	if g.Namespace != "" && g.Project != "" {
 		return nil
 	}
 
 	// If exactly one of Owner or Repo is set (but not both), that's invalid
-	if (g.Owner == "") != (g.Repo == "") {
-		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
+	if (g.Namespace == "") != (g.Project == "") {
+		return errors.New("Either both `namespace` and `repo` must be set or `name` must be in the format `namespace/repo`")
 	}
 
-	g.Owner, g.Repo, err = common.SplitName(name)
+	g.Namespace, g.Project, err = common.CutName(name)
 	if err != nil {
 		return err
 	}
@@ -124,23 +138,24 @@ func (g *GitLab) PopulateOwnerAndRepo(name string) (err error) {
 	return nil
 }
 
-// Initialize populates the GitLab repository's owner and name from the given input.
+// Initialize sets up the GitLab project configuration from the given name.
+// Returns an error if the project name format is invalid.
 func (g *GitLab) Initialize(name string) error {
-	if err := g.PopulateOwnerAndRepo(name); err != nil {
+	if err := g.PopulateNamespaceAndRepo(name); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// Exe sets the executable name in the metadata to the repository name.
+// Exe stores the project name as the executable name in metadata.
 func (g *GitLab) Exe() error {
-	g.Data.Set("exe", g.Repo)
+	g.Data.Set("exe", g.Project)
 
 	return nil
 }
 
-// Version fetches and sets the latest release version in the metadata.
+// Version fetches the latest release version and stores it in metadata.
 func (g *GitLab) Version(_ string) error {
 	version, err := g.LatestVersion()
 	if err != nil {
@@ -152,7 +167,8 @@ func (g *GitLab) Version(_ string) error {
 	return nil
 }
 
-// Path sets the download URL of the matched asset in the metadata, based on version, file extensions, and requirements.
+// Path finds a matching release asset and stores its URL in metadata.
+// Uses version, extensions, and requirements to find the appropriate asset.
 func (g *GitLab) Path(_ string, extensions []string, version string, requirements match.Requirements) error {
 	url, err := g.MatchAssetsToRequirements(extensions, version, requirements)
 	if err != nil {
@@ -164,15 +180,18 @@ func (g *GitLab) Path(_ string, extensions []string, version string, requirement
 	return nil
 }
 
+// GetHeaders returns the HTTP headers required for GitLab API authentication.
 func (g *GitLab) GetHeaders() http.Header {
 	return http.Header{
 		"PRIVATE-TOKEN": []string{g.Token},
 	}
 }
 
-// Install downloads the asset from GitLab and returns the output, the found file, and any error encountered.
-func (g *GitLab) Install(d common.InstallData) (output string, found file.File, err error) {
+// Install downloads the GitLab release asset using the provided configuration.
+// Returns the operation output, downloaded file information, and any errors.
+func (g *GitLab) Install(d common.InstallData, progressListener getter.ProgressTracker) (output string, found file.File, err error) {
 	d.Header = g.GetHeaders()
-
+	// Pass the progress listener down
+	d.ProgressListener = progressListener
 	return common.Download(d)
 }

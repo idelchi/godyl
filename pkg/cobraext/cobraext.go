@@ -8,9 +8,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-// UnknownSubcommandAction is a cobra.Command.RunE function that prints an error message for unknown subcommands.
-// Necessary when using `TraverseChildren: true`, because it seems to disable suggestions for unknown subcommands.
-// See:
+// UnknownSubcommandAction handles unknown cobra subcommands.
+// Implements cobra.Command.RunE to provide helpful error messages
+// and suggestions when an unknown subcommand is used. Required
+// when TraverseChildren is true, as this disables cobra's built-in
+// suggestion system. See:
 // - https://github.com/spf13/cobra/issues/981
 // - https://github.com/containerd/nerdctl/blob/242e6fc6e861b61b878bd7df8bf25e95674c036d/cmd/nerdctl/main.go#L401-L418
 func UnknownSubcommandAction(cmd *cobra.Command, args []string) error {
@@ -30,8 +32,9 @@ func UnknownSubcommandAction(cmd *cobra.Command, args []string) error {
 	return errors.New(err) //nolint: err113
 }
 
-// IsSet checks if a flag is set in viper,
-// to avoid using it's default values unless explicitly passed.
+// IsSet checks if a flag was explicitly set.
+// Uses viper to determine if a flag was provided by the user,
+// avoiding the use of default values unless specifically passed.
 func IsSet(flag string) bool {
 	return viper.IsSet(flag)
 }

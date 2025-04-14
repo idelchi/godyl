@@ -5,19 +5,24 @@ import (
 	"strings"
 )
 
-// Distribution represents a Linux distribution.
+// Distribution represents a Linux distribution configuration.
 type Distribution struct {
+	// Type is the canonical distribution name (e.g., debian, ubuntu).
 	Type string
-	Raw  string // Original parsed distribution value
+
+	// Raw contains the original string that was parsed.
+	Raw string
 }
 
-// DistroInfo holds information about a distribution type, including aliases.
+// DistroInfo defines a Linux distribution's characteristics.
+// Includes the canonical type name and known aliases.
 type DistroInfo struct {
 	Type    string
 	Aliases []string
 }
 
-// Supported returns a slice of supported distribution information.
+// Supported returns the list of supported Linux distributions.
+// Includes major distributions like Debian, Ubuntu, CentOS, and their aliases.
 func (DistroInfo) Supported() []DistroInfo {
 	return []DistroInfo{
 		{
@@ -46,7 +51,9 @@ func (DistroInfo) Supported() []DistroInfo {
 	}
 }
 
-// Parse attempts to parse the distribution from the given name string.
+// Parse extracts distribution information from a string identifier.
+// Matches against known distribution types and aliases, setting type
+// and raw values. Returns an error if parsing fails.
 func (d *Distribution) Parse(name string) error {
 	name = strings.ToLower(name)
 
@@ -66,17 +73,19 @@ func (d *Distribution) Parse(name string) error {
 	return fmt.Errorf("unable to parse distribution from name: %q", name)
 }
 
-// IsUnset returns true if the distribution type is not set.
+// IsUnset checks if the distribution type is empty.
 func (d Distribution) IsUnset() bool {
 	return d.Type == ""
 }
 
-// Is checks if this distribution is exactly the same as another.
+// Is checks for exact distribution match including raw string.
+// Returns true only if both distributions are set and identical.
 func (d Distribution) Is(other Distribution) bool {
 	return other.Raw == d.Raw && !d.IsUnset() && !other.IsUnset()
 }
 
-// IsCompatibleWith checks if this distribution is compatible with another.
+// IsCompatibleWith checks if this distribution can run binaries built for another.
+// Currently checks only for exact type matches between distributions.
 func (d Distribution) IsCompatibleWith(other Distribution) bool {
 	if d.IsUnset() || other.IsUnset() {
 		return false
@@ -85,12 +94,13 @@ func (d Distribution) IsCompatibleWith(other Distribution) bool {
 	return d.Type == other.Type
 }
 
-// String returns a string representation of the distribution.
+// String returns the canonical name of the distribution.
 func (d Distribution) String() string {
 	return d.Type
 }
 
-// Default returns the default Distribution, which is an empty Distribution.
+// Default returns an empty Distribution configuration.
+// Used as a fallback when distribution detection fails.
 func Default() Distribution {
 	return Distribution{}
 }

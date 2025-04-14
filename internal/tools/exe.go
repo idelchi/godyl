@@ -8,19 +8,21 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Exe represents the configuration for the executable, including
-// the name under which the binary will be stored and the patterns
-// to search for the binary within the downloaded files.
+// Exe defines the configuration for locating and naming tool executables.
 type Exe struct {
-	// Name is the name under which the binary will be stored in the output folder.
+	// Name is the final name for the executable in the output directory.
+	// This will be the name used to run the tool after installation.
 	Name string
-	// Patterns specifies the patterns used to locate the binary in the downloaded folder.
-	// This can either be a single string or a slice of strings.
+
+	// Patterns contains regex patterns for finding the executable.
+	// Used to locate the correct binary file within downloaded content.
+	// Can be a single pattern or multiple patterns in order of preference.
 	Patterns unmarshal.SingleOrSliceType[string]
 }
 
-// UnmarshalYAML implements custom unmarshaling for Exe,
-// allowing the YAML to either provide just the name as a scalar or the full Exe structure.
+// UnmarshalYAML implements custom YAML unmarshaling for Exe configuration.
+// Supports both scalar values (treated as executable name) and map values with
+// additional configuration for executable discovery.
 func (e *Exe) UnmarshalYAML(value *yaml.Node) error {
 	// If the YAML value is a scalar (e.g., just the name), handle it directly by setting the Name field.
 	if value.Kind == yaml.ScalarNode {

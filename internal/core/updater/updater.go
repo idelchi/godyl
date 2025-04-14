@@ -2,7 +2,6 @@
 package updater
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -16,28 +15,40 @@ import (
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
+	"github.com/idelchi/godyl/internal/ui/progress"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
-// Updater handles tool self-updating functionality.
+// Updater manages the self-update process for the godyl tool.
 type Updater struct {
-	defaults    tools.Defaults
+	// Defaults contains default configuration values.
+	defaults tools.Defaults
+
+	// NoVerifySSL disables SSL certificate verification.
 	noVerifySSL bool
-	log         *logger.Logger
-	template    []byte // Used for Windows cleanup batch script
-	cache       *cache.Cache
+
+	// Log is the logger instance for output.
+	log *logger.Logger
+
+	// Template contains the Windows cleanup script template.
+	template []byte
+
+	// Cache manages version caching.
+	cache *cache.Cache
 }
 
-// Versions contains the current and requested versions of the tool.
+// Versions defines the version information for an update operation.
 type Versions struct {
 	Current   string
 	Requested string
 	Pre       bool
 }
 
-// New creates a new Updater with the specified configuration.
+// New creates a new Updater instance with the provided configuration.
+// Takes default settings, SSL verification flag, cleanup script template,
+// logging level, and cache instance.
 func New(defaults tools.Defaults, noVerifySSL bool, template []byte, level logger.Level, cache *cache.Cache) *Updater {
 	return &Updater{
 		defaults:    defaults,
@@ -48,6 +59,8 @@ func New(defaults tools.Defaults, noVerifySSL bool, template []byte, level logge
 }
 
 // Update performs the self-update process for the godyl tool.
+// Downloads the new version, replaces the current binary, and handles
+// platform-specific cleanup. Returns an error if any step fails.
 func (u *Updater) Update(versions Versions) error {
 	tool, currentVersion, err := u.prepareToolInfo(versions)
 	if err != nil {
@@ -67,7 +80,9 @@ func (u *Updater) Update(versions Versions) error {
 	return u.performUpdate(tool)
 }
 
-// prepareToolInfo gathers information about the current binary and prepares the tool configuration.
+// PrepareToolInfo gathers information about the current binary and creates
+// a tool configuration for the update. Returns the tool configuration,
+// current version, and any errors encountered.
 func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error) {
 	// Get path and version from build info
 	path := "idelchi/godyl" // Default
@@ -97,16 +112,17 @@ func (u *Updater) prepareToolInfo(versions Versions) (tools.Tool, string, error)
 	}
 
 	// Apply defaults and resolve configuration
-	tool.ApplyDefaults(u.defaults, u.cache)
+	tool.ApplyDefaults(u.defaults)
 
-	if err := tool.Resolve(nil, nil); err != nil && !(errors.Is(err, tools.ErrRequiresUpdate) || errors.Is(err, tools.ErrUpToDate)) {
-		return tool, versions.Current, fmt.Errorf("resolving tool: %w", err)
+	if result := tool.Resolve(tools.IncludeTags{}); result.Unsuccessful() {
+		return tool, versions.Current, result.Error()
 	}
 
 	return tool, versions.Current, nil
 }
 
-// performUpdate downloads and applies the update.
+// PerformUpdate downloads the new version and applies the update.
+// Handles temporary file management and platform-specific cleanup.
 func (u *Updater) performUpdate(tool tools.Tool) error {
 	// Download the tool to a temporary directory
 	outputDir, err := u.downloadTool(tool)
@@ -140,7 +156,8 @@ func (u *Updater) performUpdate(tool tools.Tool) error {
 	return nil
 }
 
-// downloadTool downloads the tool to a temporary directory.
+// DownloadTool retrieves the new version and stores it in a temporary directory.
+// Sets up progress tracking for the download operation.
 func (u *Updater) downloadTool(tool tools.Tool) (string, error) {
 	// Create a temporary directory based on the platform
 	dir, err := u.createTempDir()
@@ -151,16 +168,25 @@ func (u *Updater) downloadTool(tool tools.Tool) (string, error) {
 	// Configure the tool for download
 	tool.Output = dir
 
-	// Download the tool
-	_, msg, err := tool.Download()
-	if err != nil {
-		return "", fmt.Errorf("downloading tool: %w: %s", err, msg)
+	// Setup progress bar for download
+	progressMgr := progress.NewProgressManager(progress.DefaultOptions())
+	progressTracker := progressMgr.NewTracker(&tool)
+
+	// Download the tool, passing the progress tracker
+	result := tool.Download(progressTracker)
+
+	// Wait for progress bar to finish rendering
+	progressTracker.Wait()
+
+	if err := result.Error(); err != nil {
+		return "", fmt.Errorf("downloading tool: %w", err)
 	}
 
 	return tool.Output, nil
 }
 
-// createTempDir creates an appropriate temporary directory based on the platform.
+// CreateTempDir creates a temporary directory for the update process.
+// Uses platform-specific logic to determine the appropriate location.
 func (u *Updater) createTempDir() (string, error) {
 	if IsWindows() {
 		// On Windows, create temp dir in the same directory as the executable
@@ -186,7 +212,8 @@ func (u *Updater) createTempDir() (string, error) {
 	return dir.Path(), nil
 }
 
-// replaceBinary replaces the current executable with the new binary.
+// ReplaceBinary replaces the current executable with the new version.
+// Uses go-update library to handle the replacement process safely.
 func (u *Updater) replaceBinary(newBinaryPath string) error {
 	file, err := os.Open(filepath.Clean(newBinaryPath))
 	if err != nil {
@@ -202,7 +229,8 @@ func (u *Updater) replaceBinary(newBinaryPath string) error {
 	return nil
 }
 
-// cleanupWindows handles Windows-specific cleanup after an update.
+// CleanupWindows performs Windows-specific post-update cleanup operations.
+// Creates and executes a cleanup script to handle file replacement.
 func (u *Updater) cleanupWindows() error {
 	return createAndRunCleanupScript(u.template, u.log)
 }

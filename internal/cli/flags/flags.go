@@ -2,6 +2,7 @@ package flags
 
 import (
 	"github.com/idelchi/godyl/internal/tmp"
+	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/spf13/cobra"
@@ -12,10 +13,9 @@ import (
 func Root(cmd *cobra.Command) {
 	env := env.FromEnv()
 
-	// Only flags that are not directly translatable to a `defaults``setting should have a default value here.
+	// Only flags that are not directly translatable to a `defaults` setting should have a default value here.
 	// Or if additional env variables are to be used.
-	cmd.Flags().Bool("dry", false, "Run without making any changes (dry run)")
-	cmd.Flags().String("log", logger.INFO.String(), "Log level (DEBUG, INFO, WARN, ERROR, SILENT)")
+	cmd.Flags().String("log", logger.INFO.String(), "Log level (silent, debug, info, warn, error, always)")
 	cmd.Flags().StringP("config-file", "c", tmp.ConfigDir().WithFile("godyl.yml").Path(), "Path to config file")
 	cmd.Flags().StringSliceP("env-file", "e", []string{".env"}, "Paths to .env files")
 	cmd.Flags().StringP("defaults", "d", "defaults.yml", "Path to defaults file")
@@ -24,7 +24,7 @@ func Root(cmd *cobra.Command) {
 	cmd.Flags().String("url-token", env.Get("URL_TOKEN"), "URL token for authentication")
 	cmd.Flags().String("url-token-header", "Authorization", "URL token for authentication")
 	cmd.Flags().StringP("cache-dir", "", tmp.CacheDir().Path(), "Path to cache directory")
-	cmd.Flags().StringP("cache-type", "", "file", "Type of cache (file, sqlite)")
+	cmd.Flags().BoolP("no-cache", "", false, "Disable cache")
 }
 
 // Tool adds tool-related command flags to the provided cobra command.
@@ -33,7 +33,7 @@ func Tool(cmd *cobra.Command) {
 	cmd.Flags().StringP("output", "o", "./bin", "Output path for the downloaded tools")
 	cmd.Flags().StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
 	cmd.Flags().String("source", "github", "Source from which to install the tools (github, url, go, command)")
-	cmd.Flags().String("strategy", "none", "Strategy to use for updating tools (none, upgrade, force)")
+	cmd.Flags().String("strategy", tools.None.String(), "Strategy to use for updating tools (none, upgrade, force)")
 	cmd.Flags().String("os", "", "Operating system to install the tools for")
 	cmd.Flags().String("arch", "", "Architecture to install the tools for")
 	cmd.Flags().StringSlice("hints", []string{""}, "Hints to use for tool resolution")
@@ -41,6 +41,7 @@ func Tool(cmd *cobra.Command) {
 	cmd.Flags().IntP("parallel", "j", 0, "Number of parallel downloads. 0 means unlimited.")
 	cmd.Flags().String("version", "", "Version of the tool to install. Empty means latest. Obviously not so useful when downloading multiple tools.")
 	cmd.Flags().BoolP("show", "s", false, "Show the configuration and exit")
+	cmd.Flags().Bool("no-progress", false, "Disable progress bar")
 }
 
 // Update adds update-related command flags to the provided cobra command.

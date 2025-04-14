@@ -27,9 +27,10 @@ func (cmd *Command) Flags() {
 // NewCacheCommand creates a Command for displaying tools information.
 func NewCacheCommand(cfg *config.Config) *Command {
 	cmd := &cobra.Command{
-		Use:   "cache [name]",
-		Short: "Display cache information",
-		Args:  cobra.MaximumNArgs(1),
+		Use:     "cache [name]",
+		Short:   "Display cache information",
+		Aliases: []string{"c"},
+		Args:    cobra.MaximumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			return flags.ChainPreRun(cmd, nil)
 		},
@@ -39,7 +40,7 @@ func NewCacheCommand(cfg *config.Config) *Command {
 				name = args[0]
 			}
 
-			c, err := getCache(cfg.Root.Cache.Dir, cfg.Root.Cache.Type, name)
+			c, err := getCache(cfg.Root.Cache.Dir, name)
 			if err != nil {
 				return err
 			}
@@ -68,8 +69,8 @@ func NewCommand(cfg *config.Config) *cobra.Command {
 }
 
 // getCache retrieves the cache from the specified folder and cache type and returns the content.
-func getCache(folder folder.Folder, cacheType string, name string) (any, error) {
-	cache, err := cache.New(folder, cacheType)
+func getCache(folder folder.Folder, name string) (any, error) {
+	cache, err := cache.New(folder)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create cache: %w", err)
 	}

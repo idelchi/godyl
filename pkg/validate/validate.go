@@ -1,5 +1,7 @@
-// Package validate provides functionality for validating configuration options.
-// It wraps the `gogen` validator package to provide a more user-friendly interface.
+// Package validate provides configuration validation functionality.
+// Wraps the gogen validator package to provide a user-friendly interface
+// for validating configuration options and presenting validation errors
+// in a clear, formatted manner with helpful error messages.
 package validate
 
 import (
@@ -10,9 +12,14 @@ import (
 	"github.com/idelchi/gogen/pkg/validator"
 )
 
+// ErrValidation indicates one or more validation checks failed.
+// Used as the base error for all validation failures.
 var ErrValidation = errors.New("validation error")
 
-// Validate performs validation checks.
+// Validate performs validation checks on multiple values.
+// Takes a variadic list of values to validate, runs all checks,
+// and returns a formatted error message if any validations fail.
+// The error includes a bulleted list of failures and help text.
 func Validate(validations ...any) error {
 	validator := validator.NewValidator()
 

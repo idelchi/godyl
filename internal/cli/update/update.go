@@ -30,7 +30,7 @@ func (cmd *Command) Flags() {
 func NewUpdateCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:     "update",
-		Aliases: []string{"upgrade", "up"},
+		Aliases: []string{"upgrade", "u"},
 		Short:   "Update the application",
 		Long:    "Update the godyl application to the latest version",
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
@@ -46,7 +46,7 @@ func NewUpdateCommand(cfg *config.Config, embedded config.Embedded) *Command {
 			if err != nil {
 				return fmt.Errorf("loading defaults: %w", err)
 			}
-			cache, err := cache.New(cfg.Root.Cache.Dir, cfg.Root.Cache.Type)
+			cache, err := cache.New(cfg.Root.Cache.Dir)
 			if err != nil {
 				return fmt.Errorf("creating cache: %w", err)
 			}

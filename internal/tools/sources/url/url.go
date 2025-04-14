@@ -8,26 +8,38 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hashicorp/go-getter/v2"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// URL represents a download source with optional headers and tokens for authorization.
+// URL represents a URL-based download source configuration.
 type URL struct {
-	Token   Token
+	// Token contains authentication configuration for the URL.
+	Token Token
+
+	// Headers contains additional HTTP headers for requests.
 	Headers http.Header
 
-	// Data holds additional metadata related to the URL.
+	// Data contains metadata about the URL source.
 	Data common.Metadata `yaml:"-"`
 }
 
+// Token contains authentication configuration for URL requests.
 type Token struct {
-	Token  string `mapstructure:"url-token" mask:"fixed"`
+	// Token is the authentication token value.
+	Token string `mapstructure:"url-token" mask:"fixed"`
+
+	// Header is the HTTP header name for the token.
 	Header string `mapstructure:"url-token-header"`
+
+	// Scheme is the authentication scheme (e.g., "Bearer").
 	Scheme string `mapstructure:"url-token-scheme"`
 }
 
+// GetHeaders returns HTTP headers for URL requests, including authentication.
+// Combines configured headers with token-based authentication if configured.
 func (u *URL) GetHeaders() http.Header {
 	headers := make(http.Header)
 
@@ -48,37 +60,40 @@ func (u *URL) GetHeaders() http.Header {
 	return headers
 }
 
-// Get retrieves a specific attribute from the URL's metadata.
+// Get retrieves a metadata attribute value by its key.
 func (u *URL) Get(attribute string) string {
 	return u.Data.Get(attribute)
 }
 
-// Initialize prepares the URL based on the given name. (Ineffective).
+// Initialize is a no-op implementation of the Populater interface.
 func (u *URL) Initialize(_ string) error {
 	return nil
 }
 
-// Exe executes the URL's associated action. (Ineffective).
+// Exe is a no-op implementation of the Populater interface.
 func (u *URL) Exe() error {
 	return nil
 }
 
-// Version sets the version for the URL. (Ineffective).
+// Version is a no-op implementation of the Populater interface.
 func (u *URL) Version(_ string) error {
 	return nil
 }
 
-// Path sets the path for the URL, storing the provided name in the metadata.
+// Path stores the provided URL in the metadata.
+// The URL will be used as the download source during installation.
 func (u *URL) Path(name string, _ []string, _ string, _ match.Requirements) error {
 	u.Data.Set("path", name)
 
 	return nil
 }
 
-// Install downloads the file from the URL and processes it based on the provided InstallData.
-// It returns the output, the downloaded file, and any error encountered.
-func (u *URL) Install(d common.InstallData) (output string, found file.File, err error) {
+// Install downloads a file from the configured URL.
+// Handles authentication, downloads the file, and processes it according to InstallData.
+// Returns the operation output, downloaded file information, and any errors.
+func (u *URL) Install(d common.InstallData, progressListener getter.ProgressTracker) (output string, found file.File, err error) {
 	d.Header = u.GetHeaders()
-
+	// Pass the progress listener down
+	d.ProgressListener = progressListener
 	return common.Download(d)
 }

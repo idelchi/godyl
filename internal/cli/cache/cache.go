@@ -32,9 +32,7 @@ func NewCacheCommand(cfg *config.Config) *Command {
 			return flags.ChainPreRun(cmd, &cfg.Cache)
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			cacheFile := cache.File(cfg.Root.Cache.Dir, cfg.Root.Cache.Type)
-
-			fmt.Println(cacheFile)
+			cacheFile := cache.File(cfg.Root.Cache.Dir)
 
 			if !cfg.Cache.Delete || !cacheFile.Exists() {
 				return nil
@@ -43,6 +41,8 @@ func NewCacheCommand(cfg *config.Config) *Command {
 			if err := cacheFile.Remove(); err != nil {
 				return fmt.Errorf("removing cache: %w", err)
 			}
+
+			fmt.Println(cacheFile)
 
 			return nil
 		},

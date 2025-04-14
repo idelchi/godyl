@@ -1,5 +1,6 @@
-// Package cobraext provides extensions to the cobra package.
-// It provides an UnknownSubcommandAction function that prints an error message for unknown subcommands.
-// This is necessary when using `TraverseChildren: true`,
-// because it seems to disable suggestions for unknown subcommands.
+// Package cobraext extends the cobra command-line framework.
+// Provides utilities to enhance cobra's functionality, particularly
+// for handling unknown subcommands when TraverseChildren is enabled.
+// Includes functions for error reporting and command suggestions
+// that work alongside cobra's built-in features.
 package cobraext

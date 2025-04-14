@@ -28,3 +28,15 @@ For information on available options, run:
 ```sh
 curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install.sh | sh -s -- -h
 ```
+
+## Docker
+
+You can also run `godyl` using Docker. The following command will run the latest version of `godyl`:
+
+```sh
+export GITHUB_TOKEN=<your_github_token>
+docker run -it --rm --name godyl --env GITHUB_TOKEN docker.io/idelchi/godyl:dev
+
+# Inside the container, run:
+godyl dump tools | godyl install - --output=~/.local/bin
+```

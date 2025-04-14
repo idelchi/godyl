@@ -11,20 +11,25 @@ Godyl uses Go templates for various configuration fields. This page provides a r
 
 The following variables are available in templates:
 
-| Variable              | Description                         | Example Value                                |
-| --------------------- | ----------------------------------- | -------------------------------------------- |
-| `{{ .Name }}`         | The name of the tool                | `idelchi/godyl`                              |
-| `{{ .Output }}`       | The output path                     | `~/.local/bin`                               |
-| `{{ .Exe }}`          | The name of the executable          | `godyl`                                      |
-| `{{ .Env.<> }}`       | Any environment variable            | `{{ .Env.HOME }}` -> `/home/user`            |
-| `{{ .Values.<> }}`    | Custom values for templating        | `{{ .Values.customField }}` -> `customValue` |
-| `{{ .Version }}`      | The version of the tool             | `v0.1.0`                                     |
-| `{{ .OS }}`           | The operating system                | `linux`, `darwin`, `windows`                 |
-| `{{ .ARCH }}`         | The architecture type               | `amd64`, `arm64`                             |
-| `{{ .ARCH_VERSION }}` | The version of the architecture     | `7` (for ARM v7)                             |
-| `{{ .LIBRARY }}`      | The system library                  | `gnu`, `musl`                                |
-| `{{ .EXTENSION }}`    | The file extension for the platform | `.exe` on Windows, empty on Linux/MacOS      |
-| `{{ .DISTRIBUTION }}` | The distribution name               | `debian`, `alpine`                           |
+{% raw  %}
+
+| Variable              | Description                                | Example Value                                |
+| --------------------- | ------------------------------------------ | -------------------------------------------- |
+| `{{ .Name }}`         | The name of the tool                       | `idelchi/godyl`                              |
+| `{{ .Output }}`       | The output path                            | `~/.local/bin`                               |
+| `{{ .Exe }}`          | The name of the executable                 | `godyl`                                      |
+| `{{ .Env.<> }}`       | Any environment variable                   | `{{ .Env.HOME }}` -> `/home/user`            |
+| `{{ .Values.<> }}`    | Custom values for templating               | `{{ .Values.customField }}` -> `customValue` |
+| `{{ .Version }}`      | The version of the tool                    | `v0.1.0`                                     |
+| `{{ .OS }}`           | The operating system                       | `linux`, `darwin`, `windows`                 |
+| `{{ .ARCH }}`         | The architecture type                      | `amd64`, `arm64`                             |
+| `{{ .ARCH_VERSION }}` | The version of the architecture            | `7` (for ARM v7)                             |
+| `{{ .ARCH_LONG }}`    | The long version of the architecture       | `armv7l`                                     |
+| `{{ .IS_ARM }}`       | Whether the architecture is ARM (32 or 64) | `true` or `false`                            |
+| `{{ .IS_X86 }}`       | Whether the architecture is x86 (32 or 64) | `true` or `false`                            |
+| `{{ .LIBRARY }}`      | The system library                         | `gnu`, `musl`                                |
+| `{{ .EXTENSION }}`    | The file extension for the platform        | `.exe` on Windows, empty on Linux/MacOS      |
+| `{{ .DISTRIBUTION }}` | The distribution name                      | `debian`, `alpine`                           |
 
 ## Template Functions
 
@@ -77,3 +82,5 @@ skip:
   condition: '{{ eq .OS "windows" }}'
   reason: "Tool is not available on Windows"
 ```
+
+{% endraw  %}

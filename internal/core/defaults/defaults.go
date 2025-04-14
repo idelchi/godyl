@@ -20,15 +20,18 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// Defaults holds all the configuration options for godyl, including tool-specific defaults.
+// Defaults manages the default configuration settings for the application.
+// It encapsulates tool-specific defaults and provides methods for loading,
+// merging, and validating configuration values.
 type Defaults struct {
 	// Inline tool-specific defaults.
 	defaults tools.Defaults
 }
 
-// New creates a new Defaults instance with the provided configuration settings.
-// Provides defaults from the config struct in case fields are not set in the YAML file.
-// Contains merging of commandline flags and environment variables into the defaults (tools) struct.
+// New creates a new Defaults instance with the provided configuration.
+// Initializes default values from the config struct, handling platform-specific
+// settings and token configurations. Command-line flags and environment
+// variables are merged into the defaults struct.
 func New(cfg config.Config) *Defaults {
 	defaults := &Defaults{
 		defaults: tools.Defaults{
@@ -61,12 +64,13 @@ func New(cfg config.Config) *Defaults {
 	return defaults
 }
 
-// Get returns the Defaults struct.
+// Get returns the underlying tools.Defaults configuration.
 func (d *Defaults) Get() tools.Defaults {
 	return d.defaults
 }
 
-// Unmarshal parses the provided YAML data into the Defaults struct.
+// Unmarshal parses YAML configuration data into the underlying tools.Defaults.
+// Returns an error if the YAML data is invalid or cannot be parsed.
 func (d *Defaults) Unmarshal(data []byte) error {
 	if err := yaml.Unmarshal(data, &d.defaults); err != nil {
 		return fmt.Errorf("unmarshalling defaults: %w", err)
@@ -75,7 +79,8 @@ func (d *Defaults) Unmarshal(data []byte) error {
 	return nil
 }
 
-// FromFile reads and parses a YAML file from the given path into the Defaults struct.
+// FromFile loads and parses a YAML configuration file into Defaults.
+// Returns an error if the file cannot be read or contains invalid YAML.
 func (d *Defaults) FromFile(path string) error {
 	data, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
@@ -85,12 +90,14 @@ func (d *Defaults) FromFile(path string) error {
 	return d.Unmarshal(data)
 }
 
-// Default loads the embedded default YAML configuration.
+// Default loads the embedded default YAML configuration into Defaults.
+// Used when no external configuration file is provided.
 func (d *Defaults) Default(defaults []byte) error {
 	return d.Unmarshal(defaults)
 }
 
-// Validate checks the Defaults struct to ensure all required fields are properly set.
+// Validate performs structural validation of the Defaults configuration.
+// Ensures all required fields are properly set and contain valid values.
 func (d *Defaults) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(d); err != nil {
@@ -100,9 +107,9 @@ func (d *Defaults) Validate() error {
 	return nil
 }
 
-// Merge applies configuration overrides to the defaults.
-// Flags and environment variables are merged into the `defaults` struct,
-// which is used to set default values for `tool` entries in `tools`.
+// Merge applies configuration overrides from flags and environment variables.
+// Updates default values for output paths, source types, tokens, platform settings,
+// and other configurable options. Returns an error if any values are invalid.
 func (d *Defaults) Merge(cfg config.Config) error {
 	if cfg.Tool.IsSet("output") {
 		d.defaults.Output = cfg.Tool.Output
@@ -160,7 +167,9 @@ func (d *Defaults) Merge(cfg config.Config) error {
 	return nil
 }
 
-// Load loads configuration defaults from a file or uses embedded defaults if not specified.
+// Load loads configuration from a file or falls back to embedded defaults.
+// Initializes the configuration after loading. Returns an error if loading
+// or initialization fails.
 func (d *Defaults) Load(path file.File, defaults []byte, isSet bool) error {
 	if err := d.FromFile(path.Path()); err != nil {
 		if isSet {
@@ -179,7 +188,9 @@ func (d *Defaults) Load(path file.File, defaults []byte, isSet bool) error {
 	return nil
 }
 
-// Load loads the default configuration.
+// Load creates and configures a new Defaults instance.
+// Handles loading from files or embedded data, applies configuration
+// overrides, and returns the final tools.Defaults configuration.
 func Load(path file.File, embeds config.Embedded, cfg config.Config) (tools.Defaults, error) {
 	// Create a new Defaults instance
 	defaults := New(cfg)

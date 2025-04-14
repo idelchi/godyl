@@ -6,8 +6,9 @@ import (
 	"strings"
 )
 
-// Add splits a `key=value` string and adds it to the Env map.
-// It returns an error if the input is not properly formatted, expecting exactly one '=' separator.
+// Add parses and adds a key-value pair to the environment.
+// Takes a string in the format "key=value" and adds it to the Env map.
+// Returns an error if the string doesn't contain exactly one '=' separator.
 func (e *Env) Add(kv string) error {
 	const expectedParts = 2
 
@@ -21,8 +22,9 @@ func (e *Env) Add(kv string) error {
 	return nil
 }
 
-// Merge merges another Env into the current Env, without overwriting existing keys in the current Env.
-// If a key in the other Env already exists in the current Env, it is not updated.
+// Merge combines multiple environments into the current one.
+// Copies values from the provided environments into this one,
+// preserving existing values in case of key conflicts.
 func (e *Env) Merge(envs ...Env) {
 	for _, env := range envs {
 		maps.Copy(env, *e)
@@ -30,9 +32,10 @@ func (e *Env) Merge(envs ...Env) {
 	}
 }
 
-// Merged returns a new Env by merging the given Env into the current Env,
-// without overwriting existing keys in the original Env.
-// This method does not mutate the original Env.
+// Merged creates a new environment by combining multiple environments.
+// Returns a new Env containing all values from this environment plus
+// any non-conflicting values from the provided environments.
+// Does not modify the original environment.
 func (e Env) Merged(envs ...Env) Env {
 	merged := maps.Clone(e)
 

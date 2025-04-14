@@ -12,19 +12,20 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"gopkg.in/yaml.v3"
 )
 
-// SingleOrSliceType represents a custom type that can unmarshal from YAML as either
-// a single element or a slice of elements. It is a generic type that works for
-// any type T.
-type SingleOrSliceType[T any] []T
+// SingleOrSliceType represents a flexible YAML unmarshaling target.
+// Implements custom unmarshaling to handle both single values and
+// slices of values in YAML input. Works with any comparable type T.
+type SingleOrSliceType[T comparable] []T
 
-// UnmarshalYAML implements the yaml.Unmarshaler interface for SingleOrSlice.
-// It allows the YAML value to be unmarshaled either as a single element or a slice.
-// The unmarshaled result is assigned to the receiver.
+// UnmarshalYAML implements yaml.Unmarshaler for SingleOrSliceType.
+// Handles both scalar values and sequences in YAML, converting them
+// to a slice of type T. Single values are wrapped in a slice.
 func (ss *SingleOrSliceType[T]) UnmarshalYAML(value *yaml.Node) error {
 	result, err := SingleOrSlice[T](value, true)
 	if err != nil {
@@ -36,10 +37,16 @@ func (ss *SingleOrSliceType[T]) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-// SingleOrSlice is a helper function that unmarshals a YAML node into
-// a slice of type T. It handles cases where the node could represent a single
-// item or a list. If the node is a scalar or a mapping, it wraps it in a sequence node.
-// The useKnownFields parameter controls whether unknown fields trigger an error.
+// Compacted returns a new slice with duplicate elements removed.
+// Preserves order while eliminating repeated values.
+func (ss *SingleOrSliceType[T]) Compacted() SingleOrSliceType[T] {
+	return SingleOrSliceType[T](slices.Compact([]T(*ss)))
+}
+
+// SingleOrSlice unmarshals YAML data into a slice of type T.
+// Handles both single values and sequences by automatically wrapping
+// scalar or mapping nodes in a sequence. The useKnownFields parameter
+// controls validation of unknown YAML fields.
 func SingleOrSlice[T any](node *yaml.Node, useKnownFields bool) ([]T, error) {
 	// If it's a scalar or mapping node, wrap it in a sequence node
 	if node.Kind == yaml.ScalarNode || node.Kind == yaml.MappingNode {
@@ -59,10 +66,10 @@ func SingleOrSlice[T any](node *yaml.Node, useKnownFields bool) ([]T, error) {
 	return result, nil
 }
 
-// DecodeWithOptionalKnownFields is a helper function that decodes a YAML node into
-// the provided output (out) interface. It optionally enforces that all fields in the YAML
-// node are known to the target type if useKnownFields is set to true.
-// The input parameter is used for error message formatting.
+// DecodeWithOptionalKnownFields decodes YAML with field validation.
+// Decodes a YAML node into the provided output interface. When
+// useKnownFields is true, enforces that all YAML fields exist in
+// the target type. The input parameter provides context for errors.
 func DecodeWithOptionalKnownFields(value *yaml.Node, out any, useKnownFields bool, input string) error {
 	// Re-encode the yaml.Node to bytes
 	var buf bytes.Buffer
@@ -88,9 +95,10 @@ func DecodeWithOptionalKnownFields(value *yaml.Node, out any, useKnownFields boo
 	return yamlTypeErrorConversion(err, input)
 }
 
-// yamlTypeErrorConversion converts yaml.TypeError errors into more informative messages
-// by including the actual type of the input. It modifies the error message when it detects
-// a "not found in type" message, appending the input type to the message.
+// yamlTypeErrorConversion enhances YAML type error messages.
+// Improves yaml.TypeError messages by adding input type information
+// to "not found in type" errors. Makes validation errors more
+// descriptive and easier to understand.
 func yamlTypeErrorConversion(err error, input string) error {
 	if err == nil {
 		return nil

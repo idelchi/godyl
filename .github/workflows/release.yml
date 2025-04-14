@@ -1,0 +1,30 @@
+name: Release Tag
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  info:
+    uses: idelchi/devenv/.github/workflows/info.yml@dev
+
+  release:
+    uses: idelchi/devenv/.github/workflows/gorelease.yml@dev
+    needs: info
+    permissions:
+      contents: write
+    with:
+      config: .devenv/.goreleaser.yaml
+
+  docker:
+    uses: ./.github/workflows/docker.yml
+    needs: release
+    permissions:
+      contents: write
+    secrets: inherit
+    with:
+      platforms: linux/amd64,linux/arm64
+      args: |
+        GODYL_VERSION=${{ github.ref_name }}

@@ -1,10 +1,11 @@
 package common
 
-// Metadata represents a map of string key-value pairs used to store metadata information.
+// Metadata stores arbitrary key-value pairs as string attributes.
+// It provides a safe interface for storing and retrieving metadata information.
 type Metadata map[string]string
 
-// Get retrieves the value of a specific attribute from the metadata.
-// If the attribute does not exist, it returns an empty string.
+// Get retrieves a metadata attribute's value by its key.
+// Returns an empty string if the metadata is nil or the key doesn't exist.
 func (m *Metadata) Get(attribute string) string {
 	if m == nil {
 		return ""
@@ -17,8 +18,8 @@ func (m *Metadata) Get(attribute string) string {
 	return ""
 }
 
-// Set assigns a value to a specific attribute in the metadata.
-// If the underlying map is nil, it initializes the map before setting the value.
+// Set stores a key-value pair in the metadata.
+// Initializes the underlying map if it is nil before setting the value.
 func (m *Metadata) Set(attribute, value string) {
 	if *m == nil { // Check if the underlying map is nil
 		*m = make(Metadata) // Initialize the map

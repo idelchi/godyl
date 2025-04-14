@@ -103,6 +103,7 @@ func NewDownloadCommand(cfg *config.Config, embedded config.Embedded) *Command {
 
 			for i, tool := range toolsList {
 				toolsList[i].Mode = tools.Extract
+				toolsList[i].Strategy = tools.Force
 				toolsList[i].Version.Version = cfg.Tool.Version
 				if tool.Path != "" {
 					toolsList[i].Source.Type = sources.URL
@@ -111,7 +112,7 @@ func NewDownloadCommand(cfg *config.Config, embedded config.Embedded) *Command {
 
 			// Process tools
 			proc := processor.New(toolsList, defaults, *cfg, log)
-			if err := proc.Process(nil, nil); err != nil {
+			if err := proc.Process(tools.IncludeTags{}, false); err != nil {
 				return fmt.Errorf("processing tools: %w", err)
 			}
 

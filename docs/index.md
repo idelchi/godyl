@@ -74,24 +74,24 @@ godyl install tools.yml
 
 ### Getting Started
 
-- [Installation](installation#content-start)
-- [Commands](commands/index#content-start)
+- [Installation]({{ site.baseurl }}/installation#content-start)
+- [Commands]({{ site.baseurl }}/commands/commands#content-start)
 
 ### Configuration
 
-- [Configuration Basics](configuration/configuration#content-start)
-- [Default Configuration](configuration/defaults#content-start)
-- [Tools Format](configuration/tools#content-start)
-- [Templates](configuration/templates#content-start)
+- [Configuration Basics]({{ site.baseurl }}/configuration/configuration#content-start)
+- [Default Configuration]({{ site.baseurl }}/configuration/defaults#content-start)
+- [Tools Format]({{ site.baseurl }}/configuration/tools#content-start)
+- [Templates]({{ site.baseurl }}/configuration/templates#content-start)
 
 ### Command Reference
 
-- [Commands Overview](commands/index#content-start)
-- [Install Command](commands/install#content-start)
-- [Download Command](commands/download#content-start)
-- [Dump Command](commands/dump#content-start)
-- [Update Command](commands/update#content-start)
-- [Cache Command](commands/cache#content-start)
+- [Commands Overview]({{ site.baseurl }}/commands/commands#content-start)
+- [Install Command]({{ site.baseurl }}/commands/install#content-start)
+- [Download Command]({{ site.baseurl }}/commands/download#content-start)
+- [Dump Command]({{ site.baseurl }}/commands/dump#content-start)
+- [Update Command]({{ site.baseurl }}/commands/update#content-start)
+- [Cache Command]({{ site.baseurl }}/commands/cache#content-start)
 
 ## Use Cases
 

@@ -11,11 +11,8 @@ import (
 
 // Root holds the root configuration options.
 type Root struct {
-	// Run without making any changes
-	Dry bool
-
-	// Log level (DEBUG, INFO, WARN, ERROR, SILENT)
-	Log string `validate:"oneof=DEBUG INFO WARN ERROR SILENT"`
+	// Log level (silent, debug, info, warn, error, always)
+	Log string `validate:"oneof=silent debug info warn error always"`
 
 	// Path to config file
 	ConfigFile file.File `mapstructure:"config-file"`
@@ -39,8 +36,9 @@ type Root struct {
 type CacheSettings struct {
 	// Path to cache folder
 	Dir folder.Folder `mapstructure:"cache-dir"`
-	// Type of cache (file, sqlite)
-	Type string `mapstructure:"cache-type" validate:"oneof=file sqlite"`
+
+	// NoCache disables cache interaction
+	NoCache bool `mapstructure:"no-cache"`
 }
 
 // Tokens holds the configuration options for authentication tokens.

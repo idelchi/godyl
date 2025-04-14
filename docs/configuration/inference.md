@@ -44,6 +44,8 @@ Godyl tries to infer platform details from asset names. Here's how different pla
 
 Hints help Godyl choose the right asset to download, especially when multiple similar assets are available. For example:
 
+{% raw  %}
+
 ```yaml
 hints:
   # Prefer the exact executable name
@@ -132,3 +134,5 @@ godyl dump tools | yq --yaml-output '[.[] | try (select(.tags != null and (.tags
 ```
 
 This creates a new tools.yml file containing only tools tagged with "docker".
+
+{% endraw %}

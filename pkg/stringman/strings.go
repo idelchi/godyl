@@ -1,4 +1,6 @@
-// Package stringman provides utilities for working with strings.
+// Package stringman provides string manipulation and comparison utilities.
+// Includes functions for string normalization, fuzzy matching using
+// Levenshtein distance, and finding closest matches in a set of strings.
 package stringman
 
 import (
@@ -9,7 +11,9 @@ import (
 	"github.com/schollz/closestmatch"
 )
 
-// TransformString replaces all non-alphanumeric characters with a dash.
+// TransformString normalizes strings to a safe format.
+// Replaces all non-alphanumeric characters with dashes,
+// making strings suitable for use in URLs, filenames, etc.
 func TransformString(input string) string {
 	// Regular expression to match allowed characters
 	reg := regexp.MustCompile("[^a-zA-Z0-9-]+")
@@ -19,7 +23,10 @@ func TransformString(input string) string {
 	return result
 }
 
-// ClosestLevensteinString finds the closest string from a list of possible strings using Levenshtein distance.
+// ClosestLevensteinString finds the best match using edit distance.
+// Uses Levenshtein distance to find the most similar string from
+// a list of candidates. Returns the string with minimum edit
+// distance from the input.
 func ClosestLevensteinString(wrongString string, possibleStrings []string) string {
 	minDistance := math.MaxInt32
 	closest := ""
@@ -35,7 +42,11 @@ func ClosestLevensteinString(wrongString string, possibleStrings []string) strin
 	return closest
 }
 
-// ClosestString returns the closest string from a list of possible strings.
+// ClosestString finds the best match using bag of words.
+// Takes a list of candidate strings and substring sizes to
+// consider when comparing. Uses bag of words algorithm for
+// fuzzy matching, which can be more accurate than pure
+// edit distance for longer strings.
 func ClosestString(input string, candidates []string, sizes []int) string {
 	// Create a closestmatch object with the possible strings and sizes
 	cm := closestmatch.New(candidates, sizes)

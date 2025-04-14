@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Update Command
-parent: Commands
 ---
 
 # Update Command
@@ -60,4 +59,4 @@ On Windows, the update process launches a background process to clean up the old
 
 ## Related Topics
 
-- [Global Flags](index#global-flags)
+- [Global Flags]({{ site.baseurl }}/commands/commands#global-flags)

@@ -5,24 +5,34 @@ import (
 	"fmt"
 )
 
-// PrintJSON prints a prettified JSON representation of the provided object.
+// PrintJSON outputs formatted JSON to stdout.
+// Prints any value as indented JSON with consistent formatting.
 func PrintJSON(obj any) {
 	fmt.Println(JSON(obj))
 }
 
-// PrintYAML prints a prettified YAML representation of the provided object.
+// PrintYAML outputs formatted YAML to stdout.
+// Prints any value as indented YAML with consistent formatting.
 func PrintYAML(obj any) {
 	fmt.Println(YAML(obj))
 }
 
-// PrintJSONMasked prints a prettified JSON representation of the provided object
-// with masked sensitive fields. It uses MaskJSON internally to mask the fields.
+// PrintJSONMasked outputs masked JSON to stdout.
+// Prints any value as JSON with sensitive fields masked for
+// security. Uses MaskJSON internally for field masking.
 func PrintJSONMasked(obj any) {
 	fmt.Println(JSONMasked(obj))
 }
 
-// PrintYAMLMasked prints a prettified YAML representation of the provided object
-// with masked sensitive fields. It uses MaskYAML internally to mask the fields.
+// PrintYAMLMasked outputs masked YAML to stdout.
+// Prints any value as YAML with sensitive fields masked for
+// security. Uses MaskYAML internally for field masking.
 func PrintYAMLMasked(obj any) {
 	fmt.Println(YAMLMasked(obj))
+}
+
+// PrintEnv outputs environment variables to stdout.
+// Prints any value in KEY=VALUE format suitable for .env files.
+func PrintEnv(env any) {
+	fmt.Println(Env(env))
 }

@@ -19,7 +19,7 @@ jobs:
       config: .devenv/.goreleaser.yaml
 
   docker:
-    uses: ./.github/workflows/docker.yml
+    uses: idelchi/devenv/.github/workflows/docker.yml@dev
     if: ${{ ! endsWith(github.ref, '-beta') }}
     needs: release
     permissions:

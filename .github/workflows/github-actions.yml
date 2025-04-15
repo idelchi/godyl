@@ -13,7 +13,7 @@ jobs:
     uses: idelchi/devenv/.github/workflows/info.yml@dev
 
   docker:
-    uses: ./.github/workflows/docker.yml
+    uses: idelchi/devenv/.github/workflows/docker.yml@dev
     needs: info
     permissions:
       contents: write

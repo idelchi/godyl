@@ -33,3 +33,9 @@ However, most properties can be overridden, with `hints` and `skip` used to help
 Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
 
 For full documentation, see [godyl documentation](https://idelchi.github.io/godyl/)
+
+For a quick installation, you can use the provided installation script:
+
+```sh
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin
+```

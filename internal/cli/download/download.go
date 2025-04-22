@@ -72,7 +72,7 @@ func NewDownloadCommand(cfg *config.Config, embedded config.Embedded) *Command {
 
 			type Download struct {
 				Name string
-				Path string
+				URL  string
 			}
 
 			var downloads []Download
@@ -81,7 +81,7 @@ func NewDownloadCommand(cfg *config.Config, embedded config.Embedded) *Command {
 				if utils.IsURL(name) {
 					downloads = append(downloads, Download{
 						Name: file.New(name).Base(),
-						Path: name,
+						URL:  name,
 					})
 				} else {
 					downloads = append(downloads, Download{

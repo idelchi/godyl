@@ -160,6 +160,10 @@ func NewCacheCommand(cfg *config.Config, embedded config.Embedded) *Command {
 				return nil
 			}
 
+			if len(args) > 0 {
+				return fmt.Errorf("unexpected arguments: %s", args)
+			}
+
 			if !cfg.Cache.Delete {
 				fmt.Println(cacheFile)
 

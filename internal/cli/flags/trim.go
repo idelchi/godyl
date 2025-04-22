@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/idelchi/godyl/pkg/path/file"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -31,6 +32,7 @@ func Trim(file file.File, prefix string) (io.Reader, error) {
 
 	// Navigate through the nested structure based on the prefix
 	prefixParts := strings.Split(prefix, ".")
+
 	result, found := extractNestedData(yamlData, prefixParts)
 	if !found {
 		// If not found, return an empty map
@@ -47,7 +49,7 @@ func Trim(file file.File, prefix string) (io.Reader, error) {
 	return bytes.NewReader(resultYAML), nil
 }
 
-// extractNestedData navigates the YAML map to find the data at the specified path
+// extractNestedData navigates the YAML map to find the data at the specified path.
 func extractNestedData(data map[string]any, path []string) (any, bool) {
 	if len(path) == 0 {
 		return nil, false

@@ -7,12 +7,12 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/internal/core/defaults"
-	"github.com/idelchi/godyl/internal/core/updater"
+	"github.com/idelchi/godyl/internal/defaults"
+	"github.com/idelchi/godyl/internal/updater"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/version"
 )
 
 // Command encapsulates the update cobra command with its associated config and embedded files.
@@ -42,16 +42,37 @@ func NewUpdateCommand(cfg *config.Config, embedded config.Embedded) *Command {
 				return fmt.Errorf("parsing log level: %w", err)
 			}
 
-			defaults, err := defaults.Load(cfg.Root.Defaults, embedded, *cfg)
-			if err != nil {
-				return fmt.Errorf("loading defaults: %w", err)
-			}
-			cache, err := cache.New(cfg.Root.Cache.Dir)
-			if err != nil {
-				return fmt.Errorf("creating cache: %w", err)
+			log := logger.New(lvl)
+
+			if cfg.Update.Check {
+				latest := updater.Latest{}
+				if err := latest.Get(cfg.Update.Pre); err != nil {
+					return fmt.Errorf("checking for updates: %w", err)
+				}
+
+				if !version.Compare(cmd.Root().Version, latest.Version) {
+					log.Info("")
+
+					log.Info("A new version %q is available!", latest.Version)
+					log.Info(latest.Changelog)
+					log.Info("")
+					log.Info("You can update with:\n\n  godyl update [--pre]")
+				}
+
+				return nil
 			}
 
-			appUpdater := updater.New(defaults, cfg.Update.NoVerifySSL, embedded.Template, lvl, cache)
+			defaults := defaults.Defaults{}
+
+			if err := defaults.Load("", embedded.Defaults, false); err != nil {
+				return fmt.Errorf("unmarshalling defaults: %w", err)
+			}
+
+			if !cfg.Update.Cleanup {
+				embedded.Template = nil
+			}
+
+			appUpdater := updater.New(defaults.GetDefault("default").ToTool(), cfg.Update.NoVerifySSL, embedded.Template, log)
 
 			versions := updater.Versions{
 				Current:   cmd.Root().Version,

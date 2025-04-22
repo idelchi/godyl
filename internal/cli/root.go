@@ -48,7 +48,7 @@ func (cmd *Command) Subcommands() {
 		install.NewCommand(cmd.Config, cmd.Files),
 		download.NewCommand(cmd.Config, cmd.Files),
 		update.NewCommand(cmd.Config, cmd.Files),
-		cache.NewCommand(cmd.Config),
+		cache.NewCommand(cmd.Config, cmd.Files),
 		status.NewCommand(cmd.Config, cmd.Files),
 	)
 }

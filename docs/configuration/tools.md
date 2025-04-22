@@ -30,18 +30,11 @@ For more complex configurations, you can use the extended form:
 ```yaml
 name: godyl
 description: Asset downloader
-version:
-  version: v0.1.0
-path: https://github.com/idelchi/godyl/releases/download/v0.1.0/godyl_linux_amd64.tar.gz
 output: ~/.local/bin
 exe:
   name: godyl
   patterns:
     - "{{ .Exe }}{{ .EXTENSION }}$"
-platform:
-  os: linux
-  architecture:
-    type: amd64
 aliases:
   - gd
 source:
@@ -49,14 +42,14 @@ source:
 tags:
   - cli
   - downloader
-strategy: upgrade
+strategy: sync
 ```
 
 A complete reference for all fields is available below.
 
 ### Full form
 
-Below are all configuration options along with examples
+Below are all configuration options along with examples.
 
 ```yaml
 name: idelchi/godyl
@@ -68,12 +61,12 @@ version:
     - version
   patterns:
     - '.*?(\d+\.\d+\.\d+).*'
-path: "https://github.com/idelchi/godyl/releases/download/v0.0.1/godyl_{{ .OS }}_{{ .ARCH }}.tar.gz" # For `github` and `gitlab` sources, leave empty to get the latest release
+path: "https://github.com/idelchi/godyl/releases/download/v0.0.1/godyl_{{ .OS }}_{{ .ARCH }}.tar.gz" # For `github` and `gitlab` sources, leave empty to infer the url
 output: ~/.local/bin
 exe:
-  name: godyl
+  name: godyl # Inferred from `name` if not provided
   patterns: "^{{ .OS }}-{{ .Exe }}-{{ .ARCH }}{{ .EXTENSION }}$"
-platform:
+platform: # Leave empty to infer from the system
   os: windows
   architecture:
     type: arm
@@ -100,12 +93,12 @@ hints:
 source:
   type: github|gitlab|url|go|none
   github:
-    repo: godyl
-    owner: idelchi
+    repo: godyl # Inferred from `name` if not provided
+    owner: idelchi # Inferred from `name` if not provided
     token: secret
   gitlab:
-    project: godyl
-    namespace: idelchi/go-projects
+    project: godyl # Inferred from `name` if not provided
+    namespace: idelchi/go-projects # Inferred from `name` if not provided
     token: secret
     server: https://gitlab.self-hosted.com
   url:
@@ -123,19 +116,13 @@ source:
   go:
     command: cmd/godyl
 commands:
-  pre:
-    commands:
-      - "mkdir -p {{ .Output }}"
-    allow_failure: true
-    exit_on_error: false
-  post:
-    commands:
-      - "chmod +x {{ .Output }}/{{ .Exe }}"
-    allow_failure: false
-    exit_on_error: true
+  commands:
+    - "mkdir -p {{ .Output }}"
+  allow_failure: true
+  exit_on_error: false
 tags:
   - downloader
-strategy: none|upgrade|force
+strategy: none|sync|force
 extensions:
   - .exe
 skip:
@@ -145,9 +132,11 @@ mode: find|extract
 env:
   GH_TOKEN: $GODYL_GITHUB_TOKEN
 no_verify_ssl: false
+no_cache: false
+inherit: default
 ```
 
-Most of the fields also support simplified forms which will be described below.
+Most of the fields also support simplified forms which is described below.
 
 ## Templating
 
@@ -179,6 +168,8 @@ The name of the tool to download. Used as display name and for inferring other f
 ```yaml
 name: idelchi/godyl
 ```
+
+Will be used to populate `exe.name`, `source.github.repo`, `source.github.owner`, `source.gitlab.project`, and `source.gitlab.namespace` if not provided.
 
 ### Description
 
@@ -214,8 +205,8 @@ version:
 ```
 
 - `version.version`: The version to download
-- `version.commands`: Commands to run to get the installed version (for upgrades)
-- `version.patterns`: Regex patterns to extract the version from command output (for upgrades)
+- `version.commands`: Commands to run to get the installed version (for syncs)
+- `version.patterns`: Regex patterns to extract the version from command output (for syncs)
 
 ### Path
 
@@ -319,7 +310,7 @@ fallbacks:
 
 **Optional**: Yes
 
-Hints to help Godyl find the correct tool.
+Hints to help `godyl` find the correct tool.
 
 ```yaml
 hints:
@@ -400,13 +391,13 @@ tags:
 Strategy for updating the tool.
 
 ```yaml
-strategy: upgrade
+strategy: sync
 ```
 
 Valid values:
 
 - `none`: Skip if the tool already exists
-- `upgrade`: Upgrade if a newer version is available
+- `sync`: Sync the tool to the desired version
 - `force`: Always download and install
 
 ### Extensions

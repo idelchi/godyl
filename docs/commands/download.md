@@ -16,8 +16,6 @@ godyl [flags] download [tool|URL]... [flags]
 ## Aliases
 
 - `dl`
-- `unpack`
-- `extract`
 - `x`
 
 ## Description

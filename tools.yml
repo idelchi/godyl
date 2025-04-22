@@ -71,14 +71,14 @@
 
 - name: helm/helm
   description: The package manager for Kubernetes
-  path: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
+  url: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
   tags:
     - kubernetes
 
 - name: kubernetes/kubernetes
   description: Command-line tool for controlling Kubernetes clusters
   exe: kubectl
-  path: https://dl.k8s.io/{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}
+  url: https://dl.k8s.io/{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}
   aliases: kc
   tags:
     - kubernetes
@@ -244,9 +244,7 @@
     - processing
 
 - name: so-fancy/diff-so-fancy
-  description: |
-    Good-looking diffs with diff-highlight and more.
-    Will misbehave during upgrade, due to not being compatible with a windows terminal -> always upgrade.
+  description: Good-looking diffs with diff-highlight and more.
   exe:
     name: diff-so-fancy
     patterns: ^diff-so-fancy$
@@ -521,20 +519,20 @@
 
 - name: hashicorp/terraform
   description: Infrastructure as Code tool
-  path: https://releases.hashicorp.com/terraform/{{ .Version | trimPrefix "v" }}/terraform_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
+  url: https://releases.hashicorp.com/terraform/{{ .Version | trimPrefix "v" }}/terraform_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   aliases: tf
   tags:
     - automation
 
 - name: hashicorp/vault
   description: Secure, store, and tightly control access to tokens, passwords, certificates, API keys, and other secrets
-  path: https://releases.hashicorp.com/vault/{{ .Version | trimPrefix "v" }}/vault_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
+  url: https://releases.hashicorp.com/vault/{{ .Version | trimPrefix "v" }}/vault_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   tags:
     - automation
 
 - name: hashicorp/packer
   description: Create identical machine images for multiple platforms from a single source configuration
-  path: https://releases.hashicorp.com/packer/{{ .Version | trimPrefix "v" }}/packer_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
+  url: https://releases.hashicorp.com/packer/{{ .Version | trimPrefix "v" }}/packer_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   tags:
     - automation
 
@@ -581,7 +579,7 @@
     - set -e
     - rm -rf {{ .Output }} /tmp/PathPicker
     - mkdir -p {{ .Output }}
-    - git clone --branchss={{ .Version }} https://github.com/facebook/PathPicker.git /tmp/PathPicker
+    - git clone --branch={{ .Version }} https://github.com/facebook/PathPicker.git /tmp/PathPicker
     - cp /tmp/PathPicker/fpp {{ .Output }}/fpp
     - rm -rf /tmp/PathPicker
   tags:
@@ -615,11 +613,6 @@
     - |
       curl --create-dirs -o ~/.config/up/up.sh https://raw.githubusercontent.com/shannonmoeller/up/master/up.sh
       echo 'source ~/.config/up/up.sh' >> ~/.bashrc
-    - |
-      fish -c '
-      curl --create-dirs -o ~/.config/up/up.fish https://raw.githubusercontent.com/shannonmoeller/up/master/up.fish
-      source ~/.config/up/up.fish
-      '
   tags:
     - linux
     - native
@@ -752,7 +745,7 @@
   description: The Bitwarden command-line interface
   version: 2025.1.0
   exe: bw
-  path: |-
+  url: |-
     {{- if eq .OS "darwin" -}}
     https://github.com/bitwarden/clients/releases/download/cli-v{{ .Version }}/bw-macos-{{ .Version }}.zip
     {{- else -}}
@@ -837,11 +830,32 @@
   tags:
     - processing
 
+- name: jdx/mise
+  description: The front-end to your dev env
+  commands:
+    - exit 0
+    - MISE_PATH=$(which mise)
+    - echo "eval \"\$($MISE_PATH activate bash)\"" >> ~/.bashrc
+    - echo "eval \"\$($MISE_PATH activate zsh)\"" >> ~/.zshrc
+  tags:
+    - terminal
+
+- name: nektos/act
+  description: Run GitHub Actions locally
+  tags:
+    - automation
+
+- name: goreleaser/goreleaser
+  description: Deliver Go binaries as fast and easily as possible
+  tags:
+    - go
+
 - idelchi/gocry
 - idelchi/gogen
 - idelchi/go-match
 - idelchi/gonc
 - idelchi/go-next-tag
+- idelchi/tcisd
 - name: idelchi/wslint
   version:
     commands: -v

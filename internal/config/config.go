@@ -19,6 +19,9 @@ type Config struct {
 	// Cache level configuration, mapping configurations on the `cache` command
 	Cache Cache
 
+	// Status level configuration, mapping configurations on the `status` command
+	Status Status
+
 	// Viper instance
-	viperable `mapstructure:"-" yaml:"-" json:"-"`
+	viperable `json:"-" mapstructure:"-" yaml:"-"`
 }

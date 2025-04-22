@@ -4,18 +4,19 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// Viperable is an interface for types that can hold a viper instance
+// Viperable is an interface for types that can hold a viper instance.
 type Viperable interface {
 	SetViper(v *viper.Viper)
 	GetViper() *viper.Viper
 }
 
-func PrefixToYAML(prefix string, root string) string {
+func PrefixToYAML(prefix, root string) string {
 	prefix = strings.TrimPrefix(prefix, root)
 	prefix = strings.ReplaceAll(prefix, "_", ".")
 	prefix = strings.TrimPrefix(prefix, ".")
@@ -50,11 +51,13 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 
 	if configFile != nil {
 		config := file.File(configFile.(string))
+
 		content, err := Trim(config, PrefixToYAML(envPrefix, cmd.Root().Name()))
 		if isConfigError(err) {
 			return fmt.Errorf("trimming config file: %w", err)
 		} else if err == nil {
 			viper.SetConfigType("yaml")
+
 			if err := viper.ReadConfig(content); isConfigError(err) {
 				return fmt.Errorf("reading config file: %w", err)
 			}
@@ -83,6 +86,7 @@ func prefixFromCmdOrPrefixes(cmd *cobra.Command, prefixes ...string) string {
 
 	// Otherwise build prefix from command hierarchy
 	var commandPathParts []string
+
 	currentCmd := cmd
 
 	// Traverse up the command tree to build the path

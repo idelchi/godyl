@@ -10,10 +10,10 @@ import (
 // Repository represents a GitLab repository with its owner and name.
 // It contains a GitLab client and context for making API calls.
 type Repository struct {
-	Namespace string          // Namespace is the namespace of the repository.
-	Repo      string          // Repo is the name of the repository.
-	client    *gitlab.Client  // client is the GitLab client used to interact with the GitLab API.
-	ctx       context.Context // ctx is the context used for API requests.
+	ctx       context.Context
+	client    *gitlab.Client
+	Namespace string
+	Repo      string
 }
 
 // NewRepository creates a new instance of Repository.
@@ -30,6 +30,7 @@ func NewRepository(namespace, repo string, client *gitlab.Client) *Repository {
 // GetRelease retrieves a specific release for the repository based on the provided tag.
 func (g *Repository) GetRelease(tag string) (*Release, error) {
 	path := fmt.Sprintf("%s/%s", g.Namespace, g.Repo)
+
 	gitlabRelease, _, err := g.client.Releases.GetRelease(path, tag)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get assets for release tag %q: %w", tag, err)

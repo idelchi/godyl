@@ -4,13 +4,15 @@ package tools
 
 import (
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 
 	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/tools"
-	"github.com/idelchi/godyl/internal/utils"
+	"github.com/idelchi/godyl/internal/tools/tags"
 	iutils "github.com/idelchi/godyl/internal/utils"
+	"github.com/idelchi/godyl/pkg/utils"
+
+	"gopkg.in/yaml.v3"
 )
 
 // Command encapsulates the tools dump command with its associated configuration.
@@ -26,6 +28,7 @@ type Command struct {
 // Flags adds tools-specific flags to the command.
 func (cmd *Command) Flags() {
 	cmd.Command.Flags().BoolP("full", "f", false, "Show the tools in full syntax")
+	cmd.Command.Flags().StringSliceP("tags", "t", []string{""}, "Tags to filter tools by. Prefix with '!' to exclude")
 }
 
 // NewToolsCommand creates a Command for displaying tools information.
@@ -38,7 +41,9 @@ func NewToolsCommand(cfg *config.Config, embedded config.Embedded) *Command {
 			return flags.ChainPreRun(cmd, &cfg.Dump.Tools)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			c, err := getTools(embedded, cfg.Dump.Tools.Full)
+			tags := iutils.SplitTags(cfg.Dump.Tools.Tags)
+
+			c, err := getTools(embedded, cfg.Dump.Tools.Full, tags)
 			if err != nil {
 				return err
 			}
@@ -68,17 +73,34 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 }
 
 // getTools returns the tools configuration from embedded files.
-func getTools(files config.Embedded, rendered bool) (any, error) {
-	if !rendered {
-		return utils.ParseBytes(files.Tools), nil
-	}
+func getTools(files config.Embedded, rendered bool, tags tags.IncludeTags) (any, error) {
+	tools := tools.Tools{}
 
-	tools := &tools.Tools{}
-
-	err := yaml.Unmarshal(files.Tools, tools)
+	err := yaml.Unmarshal(files.Tools, &tools)
 	if err != nil {
 		return nil, err
 	}
 
-	return tools, nil
+	var included []int
+
+	for i, tool := range tools {
+		if !tool.Tags.Include(tags.Include) || !tool.Tags.Exclude(tags.Exclude) {
+			continue
+		}
+
+		included = append(included, i)
+	}
+
+	if !rendered {
+		var tools []any
+
+		err := yaml.Unmarshal(files.Tools, &tools)
+		if err != nil {
+			return nil, err
+		}
+
+		return utils.PickByIndices(tools, included), nil
+	}
+
+	return utils.PickByIndices(tools, included), nil
 }

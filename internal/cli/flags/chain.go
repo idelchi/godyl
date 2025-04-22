@@ -1,8 +1,9 @@
 package flags
 
 import (
-	"github.com/idelchi/godyl/pkg/validate"
 	"github.com/spf13/cobra"
+
+	"github.com/idelchi/godyl/pkg/validator"
 )
 
 // ChainPreRun is a helper function to chain the PreRunE functions of a command and its parent.
@@ -19,5 +20,5 @@ func ChainPreRun(cmd *cobra.Command, s Viperable, prefix ...string) error {
 		return err
 	}
 
-	return validate.Validate(s)
+	return validator.Validate(s)
 }

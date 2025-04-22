@@ -2,6 +2,7 @@ package github
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -50,10 +51,12 @@ func (g *Repository) getLatestReleaseInfoFromWeb(ctx context.Context) (*WebRelea
 	}
 
 	client := newHTTPClient()
+
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
+
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusFound {
@@ -62,7 +65,7 @@ func (g *Repository) getLatestReleaseInfoFromWeb(ctx context.Context) (*WebRelea
 
 	loc := res.Header.Get("Location")
 	if loc == "" {
-		return nil, fmt.Errorf("unable to determine release version (empty Location header)")
+		return nil, errors.New("unable to determine release version (empty Location header)")
 	}
 
 	// Extract the tag from the Location header
@@ -71,6 +74,7 @@ func (g *Repository) getLatestReleaseInfoFromWeb(ctx context.Context) (*WebRelea
 	if len(parts) < 2 {
 		return nil, fmt.Errorf("unable to parse release tag from URL: %s", loc)
 	}
+
 	tag := parts[len(parts)-1]
 
 	return &WebReleaseInfo{

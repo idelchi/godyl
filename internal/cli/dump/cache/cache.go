@@ -69,17 +69,14 @@ func NewCommand(cfg *config.Config) *cobra.Command {
 }
 
 // getCache retrieves the cache from the specified folder and cache type and returns the content.
-func getCache(folder folder.Folder, name string) (any, error) {
-	cache, err := cache.New(folder)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create cache: %w", err)
+func getCache(folder folder.Folder, name string) (content any, err error) {
+	cache := cache.New(folder)
+	if err = cache.Load(); err != nil {
+		return nil, fmt.Errorf("failed to load cache: %w", err)
 	}
-	defer cache.Close()
-
-	var content any
 
 	if name != "" {
-		content, err = cache.Get(name)
+		content, err = cache.GetByProperty("name", name)
 	} else {
 		content, err = cache.GetAll()
 	}

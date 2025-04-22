@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/idelchi/godyl/pkg/utils"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -82,9 +83,11 @@ func (f File) Write(data []byte) error {
 	if _, err := file.Write(data); err != nil {
 		return fmt.Errorf("writing to file %q: %w", f, err)
 	}
+
 	if err := file.Close(); err != nil {
 		return fmt.Errorf("closing file %q: %w", f, err)
 	}
+
 	return nil
 }
 
@@ -112,6 +115,7 @@ func (f File) Append(data []byte) error {
 
 	if _, err := file.Write(data); err != nil {
 		file.Close()
+
 		return fmt.Errorf("appending to file %q: %w", f, err)
 	}
 
@@ -206,6 +210,16 @@ func (f File) Dir() string {
 	}
 
 	return filepath.Dir(f.String())
+}
+
+// Absolute returns the absolute path of the file.
+func (f File) Absolute() File {
+	absPath, err := filepath.Abs(f.String())
+	if err != nil {
+		return f
+	}
+
+	return New(absPath)
 }
 
 // IsExecutable checks if the file has execute permissions.

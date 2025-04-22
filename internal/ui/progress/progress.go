@@ -10,35 +10,35 @@ import (
 	"github.com/jedib0t/go-pretty/v6/progress"
 	"github.com/jedib0t/go-pretty/v6/text"
 
-	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/tools/tool"
 )
 
 const (
 	defaultMaxNameLen = 35
 )
 
-// Options defines configuration for progress tracking
+// Options defines configuration for progress tracking.
 type Options struct {
-	MessageLength   int
-	TrackerLength   int
-	UpdateFrequency time.Duration
+	MessageColor    text.Colors
+	SpeedColor      text.Colors
+	PercentColor    text.Colors
+	TimeColor       text.Colors
+	ValueColor      text.Colors
+	TrackerColor    text.Colors
 	Style           progress.Style
 	TrackerPosition progress.Position
-	ShowPercentage  bool
-	ShowTime        bool
-	ShowTracker     bool
+	MessageLength   int
+	UpdateFrequency time.Duration
+	TrackerLength   int
 	ShowValue       bool
 	ShowETA         bool
 	ShowSpeed       bool
-	MessageColor    text.Colors
-	TrackerColor    text.Colors
-	ValueColor      text.Colors
-	TimeColor       text.Colors
-	PercentColor    text.Colors
-	SpeedColor      text.Colors
+	ShowTracker     bool
+	ShowTime        bool
+	ShowPercentage  bool
 }
 
-// DefaultOptions provides sensible default configuration
+// DefaultOptions provides sensible default configuration.
 func DefaultOptions() Options {
 	return Options{
 		MessageLength:   35,
@@ -61,15 +61,15 @@ func DefaultOptions() Options {
 	}
 }
 
-// ProgressManager handles progress tracking with configurable options
+// ProgressManager handles progress tracking with configurable options.
 type ProgressManager struct {
 	writer progress.Writer
-	mu     sync.Mutex
-	count  int
 	opts   Options
+	count  int
+	mu     sync.Mutex
 }
 
-// NewProgressManager creates a new manager with the given options
+// NewProgressManager creates a new manager with the given options.
 func NewProgressManager(opts Options) *ProgressManager {
 	pw := progress.NewWriter()
 
@@ -106,8 +106,8 @@ func NewProgressManager(opts Options) *ProgressManager {
 	}
 }
 
-// NewTracker creates a progress tracker for a specific tool
-func (pm *ProgressManager) NewTracker(tool *tools.Tool) *PrettyProgressTracker {
+// NewTracker creates a progress tracker for a specific tool.
+func (pm *ProgressManager) NewTracker(tool *tool.Tool) *PrettyProgressTracker {
 	if tool == nil {
 		panic("cannot create progress tracker with nil tool")
 	}
@@ -124,7 +124,7 @@ func (pm *ProgressManager) NewTracker(tool *tools.Tool) *PrettyProgressTracker {
 	}
 }
 
-// DecrementCount decreases the active tracker count
+// DecrementCount decreases the active tracker count.
 func (pm *ProgressManager) DecrementCount() {
 	pm.mu.Lock()
 	if pm.count > 0 {
@@ -133,7 +133,7 @@ func (pm *ProgressManager) DecrementCount() {
 	pm.mu.Unlock()
 }
 
-// Stop stops the progress writer explicitly
+// Stop stops the progress writer explicitly.
 func (pm *ProgressManager) Stop() {
 	pm.mu.Lock()
 	pm.writer.Stop()
@@ -141,22 +141,27 @@ func (pm *ProgressManager) Stop() {
 	pm.mu.Unlock()
 }
 
-// PrettyProgressTracker implements getter.ProgressTracker using go-pretty for visual feedback
+// PrettyProgressTracker implements getter.ProgressTracker using go-pretty for visual feedback.
 type PrettyProgressTracker struct {
 	trackers map[string]*progress.Tracker
-	tool     *tools.Tool
+	tool     *tool.Tool
 	manager  *ProgressManager
 	mu       sync.Mutex
 }
 
-// TrackProgress is called by go-getter to monitor a download stream
-func (t *PrettyProgressTracker) TrackProgress(src string, currentSize, totalSize int64, stream io.ReadCloser) io.ReadCloser {
+// TrackProgress is called by go-getter to monitor a download stream.
+func (t *PrettyProgressTracker) TrackProgress(
+	src string,
+	currentSize, totalSize int64,
+	stream io.ReadCloser,
+) io.ReadCloser {
 	if stream == nil {
 		return nil
 	}
 
 	// Only lock while accessing/modifying the trackers map
 	t.mu.Lock()
+
 	tracker, exists := t.trackers[src]
 	if !exists {
 		tracker = t.createNewTracker(src, totalSize)
@@ -178,8 +183,7 @@ func (t *PrettyProgressTracker) TrackProgress(src string, currentSize, totalSize
 	}
 }
 
-// createNewTracker creates a new progress tracker for a given source
-// Caller must hold the mutex
+// Caller must hold the mutex.
 func (t *PrettyProgressTracker) createNewTracker(src string, totalSize int64) *progress.Tracker {
 	// Format tool information into a message
 	message := t.formatTrackerMessage(totalSize)
@@ -206,13 +210,14 @@ func (t *PrettyProgressTracker) createNewTracker(src string, totalSize int64) *p
 	return tracker
 }
 
-// formatTrackerMessage creates a formatted message for the progress tracker
+// formatTrackerMessage creates a formatted message for the progress tracker.
 func (t *PrettyProgressTracker) formatTrackerMessage(totalSize int64) string {
 	// Get base name
 	name := t.tool.Name
 	if t.tool.Exe.Name != "" {
 		name = t.tool.Exe.Name
 	}
+
 	if t.tool.Version.Version != "" {
 		name = fmt.Sprintf("%s %s", name, t.tool.Version.Version)
 	}
@@ -227,41 +232,43 @@ func (t *PrettyProgressTracker) formatTrackerMessage(totalSize int64) string {
 	if totalSize > 0 {
 		totalSizeStr := humanize.Bytes(uint64(totalSize))
 		availableSpace := maxNameLen - len(totalSizeStr) - 3
+
 		return fmt.Sprintf("%-*.*s [%s]", availableSpace, availableSpace, name, totalSizeStr)
 	}
 
 	return fmt.Sprintf("%-*.*s", maxNameLen, maxNameLen, name)
 }
 
-// Wait decrements the active count
+// Wait decrements the active count.
 func (t *PrettyProgressTracker) Wait() {
 	t.manager.DecrementCount()
 }
 
-// Clear removes all trackers from this progress tracker
+// Clear removes all trackers from this progress tracker.
 func (t *PrettyProgressTracker) Clear() {
 	t.mu.Lock()
 	t.trackers = make(map[string]*progress.Tracker)
 	t.mu.Unlock()
 }
 
-// prettyProgressReader wraps a ReadCloser to update progress as data is read
+// prettyProgressReader wraps a ReadCloser to update progress as data is read.
 type prettyProgressReader struct {
 	io.ReadCloser
 	tracker          *progress.Tracker
 	initialTotalSize int64
 }
 
-// Read reads data from the underlying reader and updates the progress
+// Read reads data from the underlying reader and updates the progress.
 func (r *prettyProgressReader) Read(p []byte) (int, error) {
 	n, err := r.ReadCloser.Read(p)
 	if n > 0 {
 		r.tracker.Increment(int64(n))
 	}
+
 	return n, err
 }
 
-// Close closes the underlying reader and marks the tracker as done
+// Close closes the underlying reader and marks the tracker as done.
 func (r *prettyProgressReader) Close() error {
 	// Mark the tracker as done
 	if !r.tracker.IsDone() {

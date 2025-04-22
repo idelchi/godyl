@@ -31,9 +31,9 @@ const (
 // Logger holds the configuration for logging.
 // It includes the current logging level, the output writer, and color mappings for each log level.
 type Logger struct {
-	level  Level                  // level is the current logging level. Messages with lower severity will be ignored.
-	output io.Writer              // output is the writer where log messages will be written (e.g., stdout, a file).
-	colors map[Level]*color.Color // colors holds color settings for each log Level to make log messages more readable.
+	output io.Writer
+	colors map[Level]*color.Color
+	level  Level
 }
 
 // NewCustom creates a new Logger instance with the specified log level and output writer.

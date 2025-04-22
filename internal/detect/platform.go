@@ -7,20 +7,11 @@ import (
 
 // Platform encapsulates system-specific characteristics and capabilities.
 type Platform struct {
-	// OS identifies the operating system (e.g., Linux, Windows, macOS).
-	OS platform.OS
-
-	// Architecture defines the CPU architecture and version (e.g., x86_64, arm64).
-	Architecture platform.Architecture
-
-	// Library specifies the system's standard library (e.g., GNU, Musl, MSVC).
-	Library platform.Library
-
-	// Extension defines platform-specific executable file extensions.
-	Extension platform.Extension
-
-	// Distribution identifies the Linux distribution when applicable.
+	OS           platform.OS
+	Library      platform.Library
 	Distribution platform.Distribution
+	Extension    platform.Extension
+	Architecture platform.Architecture
 }
 
 // Parse extracts platform information from a string identifier.

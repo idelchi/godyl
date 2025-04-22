@@ -1,8 +1,6 @@
 package files
 
 import (
-	"path/filepath"
-
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
@@ -19,31 +17,10 @@ func New(dir string, paths ...string) (fs Files) {
 			continue
 		}
 
-		fs = append(fs, file.File(filepath.Join(dir, path)))
+		fs = append(fs, file.New(dir, path))
 	}
 
-	return
-}
-
-// NewFromFiles creates a Files collection from File objects.
-// Takes a list of existing File objects and combines them into
-// a single Files collection.
-func NewFromFiles(files ...file.File) (fs Files) {
-	for _, file := range files {
-		fs = append(fs, file)
-	}
-
-	return
-}
-
-// Paths converts the Files collection to string paths.
-// Returns a slice containing the string representation of each file.
-func (es Files) Paths() (paths []string) {
-	for _, e := range es {
-		paths = append(paths, e.String())
-	}
-
-	return paths
+	return fs
 }
 
 // SymlinksFor creates symlinks from each file to a target.

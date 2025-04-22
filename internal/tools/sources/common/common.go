@@ -7,6 +7,7 @@ import (
 	"regexp"
 
 	"github.com/hashicorp/go-getter/v2"
+
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/env"
@@ -17,38 +18,17 @@ import (
 
 // InstallData contains configuration for downloading and installing tools.
 type InstallData struct {
-	// Path is the URL or filesystem path to download from.
-	Path string
-
-	// Name is the identifier of the tool or project.
-	Name string
-
-	// Exe is the name of the executable file.
-	Exe string
-
-	// Patterns contains regex patterns for finding the executable.
-	Patterns []string
-
-	// Output specifies the directory where files will be installed.
-	Output string
-
-	// Aliases are alternative names for the executable.
-	Aliases []string
-
-	// Mode defines the installation behavior (e.g., "find" for locating executables).
-	Mode string
-
-	// Env holds environment variables for the installation process.
-	Env env.Env
-
-	// NoVerifySSL disables SSL certificate verification when downloading.
-	NoVerifySSL bool
-
-	// Header contains HTTP headers for download requests.
-	Header http.Header
-
-	// ProgressListener tracks download progress.
 	ProgressListener getter.ProgressTracker
+	Env              env.Env
+	Header           http.Header
+	Path             string
+	Name             string
+	Exe              string
+	Output           string
+	Mode             string
+	Patterns         []string
+	Aliases          []string
+	NoVerifySSL      bool
 }
 
 // Download retrieves files according to the InstallData configuration.

@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/hashicorp/go-getter/v2"
+
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/path/file"
@@ -16,14 +17,9 @@ import (
 
 // URL represents a URL-based download source configuration.
 type URL struct {
-	// Token contains authentication configuration for the URL.
-	Token Token
-
-	// Headers contains additional HTTP headers for requests.
 	Headers http.Header
-
-	// Data contains metadata about the URL source.
-	Data common.Metadata `yaml:"-"`
+	Data    common.Metadata `yaml:"-"`
+	Token   Token
 }
 
 // Token contains authentication configuration for URL requests.
@@ -36,6 +32,43 @@ type Token struct {
 
 	// Scheme is the authentication scheme (e.g., "Bearer").
 	Scheme string `mapstructure:"url-token-scheme"`
+}
+
+// Initialize is a no-op implementation of the Populator interface.
+func (u *URL) Initialize(_ string) error {
+	return nil
+}
+
+// Version is a no-op implementation of the Populator interface.
+func (u *URL) Version(_ string) error {
+	return nil
+}
+
+// Path stores the provided URL in the metadata.
+// The URL will be used as the download source during installation.
+func (u *URL) Path(name string, _ []string, _ string, _ match.Requirements) error {
+	u.Data.Set("path", name)
+
+	return nil
+}
+
+// Install downloads a file from the configured URL.
+// Handles authentication, downloads the file, and processes it according to InstallData.
+// Returns the operation output, downloaded file information, and any errors.
+func (u *URL) Install(
+	d common.InstallData,
+	progressListener getter.ProgressTracker,
+) (output string, found file.File, err error) {
+	d.Header = u.GetHeaders()
+	// Pass the progress listener down
+	d.ProgressListener = progressListener
+
+	return common.Download(d)
+}
+
+// Get retrieves a metadata attribute value by its key.
+func (u *URL) Get(attribute string) string {
+	return u.Data.Get(attribute)
 }
 
 // GetHeaders returns HTTP headers for URL requests, including authentication.
@@ -54,46 +87,9 @@ func (u *URL) GetHeaders() http.Header {
 		if u.Token.Scheme != "" {
 			tokenValue = fmt.Sprintf("%s %s", u.Token.Scheme, u.Token.Token)
 		}
+
 		headers.Set(u.Token.Header, tokenValue)
 	}
 
 	return headers
-}
-
-// Get retrieves a metadata attribute value by its key.
-func (u *URL) Get(attribute string) string {
-	return u.Data.Get(attribute)
-}
-
-// Initialize is a no-op implementation of the Populater interface.
-func (u *URL) Initialize(_ string) error {
-	return nil
-}
-
-// Exe is a no-op implementation of the Populater interface.
-func (u *URL) Exe() error {
-	return nil
-}
-
-// Version is a no-op implementation of the Populater interface.
-func (u *URL) Version(_ string) error {
-	return nil
-}
-
-// Path stores the provided URL in the metadata.
-// The URL will be used as the download source during installation.
-func (u *URL) Path(name string, _ []string, _ string, _ match.Requirements) error {
-	u.Data.Set("path", name)
-
-	return nil
-}
-
-// Install downloads a file from the configured URL.
-// Handles authentication, downloads the file, and processes it according to InstallData.
-// Returns the operation output, downloaded file information, and any errors.
-func (u *URL) Install(d common.InstallData, progressListener getter.ProgressTracker) (output string, found file.File, err error) {
-	d.Header = u.GetHeaders()
-	// Pass the progress listener down
-	d.ProgressListener = progressListener
-	return common.Download(d)
 }

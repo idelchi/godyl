@@ -13,8 +13,8 @@ import (
 
 // Application hold the version string and embedded files.
 type Application struct {
-	version string
 	embeds  embed.FS
+	version string
 }
 
 // New creates a new Application instance.

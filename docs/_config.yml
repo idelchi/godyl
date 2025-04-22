@@ -69,3 +69,9 @@ permalink: pretty
 kramdown:
   syntax_highlighter_opts:
     disable: true
+
+sass:
+  cache: false
+
+include:
+  - _versions

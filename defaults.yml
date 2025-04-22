@@ -1,45 +1,46 @@
-output: .bin-{{ .OS }}-{{ .ARCH_LONG }}
-exe:
-  patterns:
-    - "^{{ .Exe }}{{ .EXTENSION }}$"
-    - ".*/{{ .Exe }}{{ .EXTENSION }}$"
-hints:
-  - pattern: "{{ .Exe }}"
-  - pattern: "armv{{ .ARCH_VERSION }}"
-    weight: 4
-  - pattern: "armv{{sub .ARCH_VERSION 1}}"
-    weight: 3
-  - pattern: "armv{{sub .ARCH_VERSION 2}}"
-    weight: 2
-  - pattern: "arm[^v].*"
-  - pattern: "musleabihf"
-    weight: |-
-      {{- if and (eq .DISTRIBUTION "alpine") (eq .ARCH "arm") -}}
-      1
-      {{- else -}}
-      0
-      {{- end -}}
-extensions:
-  - '{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}'
-  - '{{ if eq .OS "windows" }}.zip{{ else }}{{ end }}'
-  - '{{ if eq .OS "darwin" }}.zip{{ else }}{{ end }}'
-  - .tar.gz
-mode: find
-source:
-  type: github
-  url:
-    token:
-      header: Authorization
-      scheme: Bearer
-strategy: none
-env:
-  GH_TOKEN: $GODYL_GITHUB_TOKEN
-version:
-  commands:
-    - --version
-    - -v
-    - -version
-    - version
-  patterns:
-    - '.*?(\d+\.\d+\.\d+).*'
-    - '.*?(\d+\.\d+).*'
+none: {}
+
+default:
+  output: .bin-{{ .OS }}-{{ .ARCH_LONG }}
+  exe:
+    patterns:
+      - "^{{ .Exe }}{{ .EXTENSION }}$"
+      - ".*/{{ .Exe }}{{ .EXTENSION }}$"
+  hints:
+    - pattern: "{{ .Exe }}"
+    - pattern: "armv{{ .ARCH_VERSION }}"
+      weight: 4
+    - pattern: "armv{{sub .ARCH_VERSION 1}}"
+      weight: 3
+    - pattern: "armv{{sub .ARCH_VERSION 2}}"
+      weight: 2
+    - pattern: "arm[^v].*"
+    - pattern: "musleabihf"
+      weight: |-
+        {{- if and (eq .DISTRIBUTION "alpine") (eq .ARCH "arm") -}}
+        1
+        {{- else -}}
+        0
+        {{- end -}}
+  extensions:
+    - '{{ if eq .OS "windows" }}.exe{{ else }}{{ end }}'
+    - '{{ if eq .OS "windows" }}.zip{{ else }}{{ end }}'
+    - '{{ if eq .OS "darwin" }}.zip{{ else }}{{ end }}'
+    - .tar.gz
+  mode: find
+  source:
+    type: github
+    url:
+      token:
+        header: Authorization
+        scheme: Bearer
+  strategy: none
+  version:
+    commands:
+      - --version
+      - -v
+      - -version
+      - version
+    patterns:
+      - '.*?(v?\d+\.\d+\.\d+).*'
+      - '.*?(v?\d+\.\d+).*'

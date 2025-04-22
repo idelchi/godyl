@@ -5,7 +5,7 @@ title: Advanced Features
 
 # Platform Inference
 
-Godyl tries to infer platform details from asset names. Here's how different platforms are recognized:
+`godyl` tries to infer platform details from asset names. Here's how different platforms are recognized:
 
 ### Operating Systems
 
@@ -42,7 +42,7 @@ Godyl tries to infer platform details from asset names. Here's how different pla
 
 ## Using Hints
 
-Hints help Godyl choose the right asset to download, especially when multiple similar assets are available. For example:
+Hints help `godyl` choose the right asset to download, especially when multiple similar assets are available. For example:
 
 {% raw  %}
 

@@ -41,6 +41,7 @@ func (e Env) GetAny(keys ...string) string {
 // Returns true if the key exists, false otherwise.
 func (e Env) Has(key string) bool {
 	_, ok := e[key]
+
 	return ok
 }
 

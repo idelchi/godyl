@@ -5,7 +5,9 @@ import (
 	"strconv"
 
 	"github.com/fatih/structs"
+
 	"github.com/idelchi/godyl/pkg/unmarshal"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -35,7 +37,7 @@ func (h *Hint) Parse() (err error) {
 		return fmt.Errorf("parsing weight %q: %w", h.Weight, err)
 	}
 
-	return
+	return err
 }
 
 // GetWeight returns the weight of the hint.

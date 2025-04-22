@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     git \
     jq \
     yq \
+    nano \
     && rm -rf /var/lib/apt/lists/*
 
 ARG TASK_VERSION=v3.41.0
@@ -30,8 +31,9 @@ WORKDIR /work
 
 # Create User (Debian/Ubuntu)
 ARG USER=user
-RUN groupadd -r -g 1001 ${USER} && \
-    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
+ARG UID=1001
+RUN groupadd -r -g ${UID} ${USER} && \
+    useradd -r -u ${UID} -g ${UID} -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 
 USER ${USER}
 WORKDIR /tmp/go
@@ -50,8 +52,8 @@ ARG TARGETOS TARGETARCH
 
 COPY . .
 ARG GODYL_VERSION="unofficial & built by unknown"
-RUN --mount=type=cache,target=${GOMODCACHE},uid=1001,gid=1001 \
-    --mount=type=cache,target=${GOCACHE},uid=1001,gid=1001 \
+RUN --mount=type=cache,target=${GOMODCACHE},uid=${UID},gid=${UID},id=gomod-${TARGETARCH} \
+    --mount=type=cache,target=${GOCACHE},uid=${UID},gid=${UID},id=gocache-${TARGETARCH} \
     GOOS=${TARGETOS} GOARCH=${TARGETARCH} CGO_ENABLED=0 go build -ldflags="-s -w -X 'main.version=${GODYL_VERSION}'" -o bin/ .
 
 RUN go run . || true

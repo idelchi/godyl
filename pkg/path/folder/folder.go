@@ -13,9 +13,8 @@ import (
 )
 
 // Folder represents a filesystem directory path.
-// Provides methods for directory operations including creation,
-// removal, path manipulation, and file searching. Handles path
-// normalization and expansion of special characters like ~.
+// Provides methods for directory operations including creation removal, path manipulation, and file searching.
+// Handles pathnormalization and expansion of special characters like ~.
 type Folder string
 
 // New creates a Folder from one or more path components.
@@ -41,7 +40,7 @@ func FromFile(f file.File) Folder {
 // Creates a directory with a random name inside the specified parent.
 // Use empty string for parent to create in system temp directory.
 // Pattern is used as a prefix for the random directory name.
-func CreateRandomInDir(dir string, pattern string) (Folder, error) {
+func CreateRandomInDir(dir, pattern string) (Folder, error) {
 	if err := New(dir).CreateIgnoreExisting(); err != nil {
 		return Folder(""), fmt.Errorf("creating temporary directory in %s: %w", dir, err)
 	}

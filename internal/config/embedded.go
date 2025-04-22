@@ -18,6 +18,7 @@ type Embedded struct {
 // NewEmbeddedFiles loads embedded configuration files and templates.
 func NewEmbeddedFiles(embeds embed.FS) (Embedded, error) {
 	files := Embedded{}
+
 	var err error
 
 	// Read embedded files
@@ -29,7 +30,7 @@ func NewEmbeddedFiles(embeds embed.FS) (Embedded, error) {
 		return files, fmt.Errorf("reading tools file: %w", err)
 	}
 
-	if files.Template, err = embeds.ReadFile("internal/core/updater/scripts/cleanup.bat.template"); err != nil {
+	if files.Template, err = embeds.ReadFile("internal/updater/scripts/cleanup.bat.template"); err != nil {
 		return files, fmt.Errorf("reading cleanup template: %w", err)
 	}
 

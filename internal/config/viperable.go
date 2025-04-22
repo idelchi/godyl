@@ -7,7 +7,7 @@ import (
 // Viperable is a generic struct that holds a viper instance.
 type viperable struct {
 	// Viper instance
-	viper *viper.Viper `mapstructure:"-" yaml:"-" json:"-"`
+	viper *viper.Viper `json:"-" mapstructure:"-" yaml:"-"`
 }
 
 // SetViper sets the viper instance for the configuration.

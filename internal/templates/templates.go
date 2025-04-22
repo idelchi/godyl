@@ -25,5 +25,5 @@ func Apply(field string, values any) (string, error) {
 func ApplyAndSet(field *string, values any) (err error) {
 	*field, err = Apply(*field, values)
 
-	return
+	return err
 }

@@ -10,10 +10,10 @@ import (
 // Repository represents a GitHub repository with its owner and name.
 // It contains a GitHub client and context for making API calls.
 type Repository struct {
-	Owner  string          // Owner is the owner of the repository (GitHub username or organization).
-	Repo   string          // Repo is the name of the repository.
-	client *github.Client  // client is the GitHub client used to interact with the GitHub API.
-	ctx    context.Context // ctx is the context used for API requests.
+	ctx    context.Context
+	client *github.Client
+	Owner  string
+	Repo   string
 }
 
 // NewRepository creates a new instance of Repository.

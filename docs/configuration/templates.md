@@ -5,7 +5,7 @@ title: Template Reference
 
 # Template Reference
 
-Godyl uses Go templates for various configuration fields. This page provides a reference for the templating system in Godyl.
+`godyl` uses Go templates for various configuration fields. This page provides a reference for the templating system in `godyl`.
 
 ## Template Variables
 
@@ -33,7 +33,7 @@ The following variables are available in templates:
 
 ## Template Functions
 
-Godyl includes all functions from the [slim-sprig](https://github.com/go-task/slim-sprig) library.
+`godyl` includes all functions from the [slim-sprig](https://github.com/go-task/slim-sprig) library.
 
 ## Templated Fields
 

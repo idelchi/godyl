@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/internal/tools/strategy"
 	"github.com/idelchi/godyl/pkg/path/files"
 )
 
@@ -10,45 +10,18 @@ import (
 // These are used as flags, environment variables for the corresponding CLI commands,
 // and used to set the tool configuration for each tool requested, unless explicitly set by the tool itself.
 type Tool struct {
-	// Path to output the fetched tools to
-	Output string
-
-	// Tags to filter tools by
-	Tags []string
-
-	// Source from which to install the tools
-	Source sources.Type `validate:"oneof=github url go command"`
-
-	// Strategy to use for updating tools
-	Strategy tools.Strategy `validate:"oneof=none upgrade force"`
-
-	// Operating system to install the tools for
-	OS string
-
-	// Architecture to install the tools for
-	Arch string
-
-	// Path to tools configuration file
-	Tools files.Files // Positional argument
-
-	// Number of parallel downloads (>= 0)
-	Parallel int `validate:"gte=0"`
-
-	// Skip SSL verification
+	viperable   `json:"-" mapstructure:"-" yaml:"-"`
+	Version     string
+	Source      sources.Type      `validate:"oneof=github gitlab url go command"`
+	Strategy    strategy.Strategy `validate:"oneof=none sync force"`
+	OS          string
+	Arch        string
+	Output      string
+	Tools       files.Files
+	Hints       []string
+	Tags        []string
+	Parallel    int  `validate:"gte=0"`
 	NoVerifySSL bool `mapstructure:"no-verify-ssl"`
-
-	// Additional hints to use for tool resolution
-	Hints []string
-
-	// Version of the tool to install
-	Version string
-
-	// Show enables output display
-	Show bool
-
-	// NoCache disables cache interaction
-	NoCache bool `mapstructure:"no-cache"`
-
-	// Viper instance
-	viperable `mapstructure:"-" yaml:"-" json:"-"`
+	Show        bool
+	NoCache     bool `mapstructure:"no-cache"`
 }

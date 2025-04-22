@@ -9,16 +9,17 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/internal/core/defaults"
-	"github.com/idelchi/godyl/internal/core/processor"
+	"github.com/idelchi/godyl/internal/defaults"
+	"github.com/idelchi/godyl/internal/processor"
 	"github.com/idelchi/godyl/internal/tmp"
-	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/tools/mode"
 	"github.com/idelchi/godyl/internal/tools/sources"
+	"github.com/idelchi/godyl/internal/tools/strategy"
+	"github.com/idelchi/godyl/internal/tools/tags"
+	iutils "github.com/idelchi/godyl/internal/utils"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/utils"
-
-	iutils "github.com/idelchi/godyl/internal/utils"
 )
 
 // Command encapsulates the download cobra command with its associated config and embedded files.
@@ -37,7 +38,7 @@ func NewDownloadCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	// Create the download command
 	cmd := &cobra.Command{
 		Use:     "download [tool]",
-		Aliases: []string{"dl", "unpack", "extract", "x"},
+		Aliases: []string{"dl", "x"},
 		Short:   "Download and unpack tools",
 		Long:    "Download and unpack tools from GitHub, URLs, or Go projects",
 		Args:    cobra.MinimumNArgs(1),
@@ -96,23 +97,23 @@ func NewDownloadCommand(cfg *config.Config, embedded config.Embedded) *Command {
 				return fmt.Errorf("writing YAML: %w", err)
 			}
 
-			toolsList, err := iutils.LoadTools(toolsFile, defaults)
+			toolsList, err := iutils.LoadTools(toolsFile, defaults, cfg.Root.Default)
 			if err != nil {
 				return fmt.Errorf("loading tools: %w", err)
 			}
 
 			for i, tool := range toolsList {
-				toolsList[i].Mode = tools.Extract
-				toolsList[i].Strategy = tools.Force
+				toolsList[i].Mode = mode.Extract
+				toolsList[i].Strategy = strategy.Force
 				toolsList[i].Version.Version = cfg.Tool.Version
-				if tool.Path != "" {
+				if tool.URL != "" {
 					toolsList[i].Source.Type = sources.URL
 				}
 			}
 
 			// Process tools
-			proc := processor.New(toolsList, defaults, *cfg, log)
-			if err := proc.Process(tools.IncludeTags{}, false); err != nil {
+			proc := processor.New(toolsList, cfg, log)
+			if err := proc.Process(tags.IncludeTags{}, false); err != nil {
 				return fmt.Errorf("processing tools: %w", err)
 			}
 

@@ -5,7 +5,7 @@ title: Configuration
 
 # Configuration
 
-Godyl is configured in several ways
+`godyl` can be configured in several ways.
 
 Flags are set (in order of priority) by:
 
@@ -22,9 +22,9 @@ See [Command Reference]({{ site.baseurl }}/commands/commands#content-start) and 
 
 ## Environment variables
 
-Environment variables are available for all flag arguments and are prefixed with `GODYL_` and further with `_<subcommand>` for each subcommand.
+Environment variables are available for all flag arguments and are prefixed with `GODYL_` and further with `_<SUBCOMMAND>` for each subcommand.
 
-For the `install` and `download` subcommands, the subcommand prefix is `TOOL_`.
+For the `install`, `download` and `status` subcommands, the subcommand prefix is `TOOL_`.
 
 The `.env` files follow the same format. It further supports a `YAML`-like syntax, where you can use `:` to separate keys and values.
 

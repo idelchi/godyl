@@ -91,5 +91,4 @@ main() {
   install_tools "${args}"
 }
 
-
 main "$@"

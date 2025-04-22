@@ -8,22 +8,18 @@ Asset downloader for GitHub releases, GitLab release, URLs, and Go projects.
 
 ## What is Godyl?
 
-`godyl` helps with batch-downloading and installing statically compiled binaries from:
+`godyl` aims to help with batch-downloading and "installing" statically compiled binaries from:
 
 - GitHub releases
 - GitLab releases
 - URLs
 - Go projects
 
-As an alternative to above, custom commands can be used as well.
+`godyl` uses simple heuristics to select the correct binary to download, matching the current platform and architecture.
 
-`godyl` will infer the platform and architecture from the system it is running on, and will attempt to download the appropriate binary.
+Most properties can be overridden, with `hints` and `skip` used to help the tool make the correct decision.
 
-This uses simple heuristics to select the correct binary to download, and will not work for all projects.
-
-However, most properties can be overridden, with `hints` and `skip` used to help the tool make the correct decision.
-
-Godyl has been tested on:
+`godyl` has been tested on:
 
 - **Linux**: `amd64`, `arm64`
 - **Windows**: `amd64`
@@ -35,6 +31,8 @@ for the tools listed in the default [tools.yml](https://github.com/idelchi/godyl
 
 Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
 
+> **Note**: The code itself is being heavily refactored at the moment, in order to be easier to work with.
+
 ## Getting Started
 
 ### Quick Installation
@@ -45,7 +43,9 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install
 
 ### Basic Usage
 
-Download a single tool:
+{% raw  %}
+
+Download (and extract) a single tool:
 
 ```sh
 godyl download idelchi/godyl
@@ -70,6 +70,8 @@ Then install them all at once:
 godyl install tools.yml
 ```
 
+{% endraw %}
+
 ## Documentation
 
 ### Getting Started
@@ -89,11 +91,17 @@ godyl install tools.yml
 - [Commands Overview]({{ site.baseurl }}/commands/commands#content-start)
 - [Install Command]({{ site.baseurl }}/commands/install#content-start)
 - [Download Command]({{ site.baseurl }}/commands/download#content-start)
+- [Status Command]({{ site.baseurl }}/commands/status#content-start)
 - [Dump Command]({{ site.baseurl }}/commands/dump#content-start)
 - [Update Command]({{ site.baseurl }}/commands/update#content-start)
 - [Cache Command]({{ site.baseurl }}/commands/cache#content-start)
+- [Version Command]({{ site.baseurl }}/commands/version#content-start)
 
 ## Use Cases
+
+`godyl` can be used to set up the same set of tools on machines, and periodically running it to keep them up to date.
+
+For a sample, see [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) or run `godyl dump tools > tools.yml` to inspect the default configuration.
 
 ### Setting Up a Development Environment
 

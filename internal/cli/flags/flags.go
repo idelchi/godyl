@@ -1,11 +1,12 @@
 package flags
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/idelchi/godyl/internal/tmp"
-	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/tools/strategy"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/logger"
-	"github.com/spf13/cobra"
 )
 
 // Root adds the root-level command flags to the provided cobra command.
@@ -25,6 +26,7 @@ func Root(cmd *cobra.Command) {
 	cmd.Flags().String("url-token-header", "Authorization", "URL token for authentication")
 	cmd.Flags().StringP("cache-dir", "", tmp.CacheDir().Path(), "Path to cache directory")
 	cmd.Flags().BoolP("no-cache", "", false, "Disable cache")
+	cmd.Flags().String("default", "default", "Default configuration to use from the defaults file for tools without a specific default inheritance")
 }
 
 // Tool adds tool-related command flags to the provided cobra command.
@@ -32,8 +34,8 @@ func Root(cmd *cobra.Command) {
 func Tool(cmd *cobra.Command) {
 	cmd.Flags().StringP("output", "o", "./bin", "Output path for the downloaded tools")
 	cmd.Flags().StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
-	cmd.Flags().String("source", "github", "Source from which to install the tools (github, url, go, command)")
-	cmd.Flags().String("strategy", tools.None.String(), "Strategy to use for updating tools (none, upgrade, force)")
+	cmd.Flags().String("source", "github", "Source from which to install the tools (github, gitlab, url, go, none)")
+	cmd.Flags().String("strategy", strategy.None.String(), "Strategy to use for updating tools (none, sync, force)")
 	cmd.Flags().String("os", "", "Operating system to install the tools for")
 	cmd.Flags().String("arch", "", "Architecture to install the tools for")
 	cmd.Flags().StringSlice("hints", []string{""}, "Hints to use for tool resolution")
@@ -50,8 +52,18 @@ func Update(cmd *cobra.Command) {
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "Skip SSL verification")
 	cmd.Flags().String("version", "", "Version of the tool to install. Empty means latest.")
 	cmd.Flags().Bool("pre", false, "Enable pre-release versions")
+	cmd.Flags().Bool("check", false, "Check for updates only")
+	cmd.Flags().Bool("cleanup", false, "Cleanup after update (only valid for Windows)")
 }
 
+// Cache adds cache-related command flags to the provided cobra command.
 func Cache(cmd *cobra.Command) {
 	cmd.Flags().BoolP("delete", "d", false, "Delete the cache")
+	cmd.Flags().BoolP("sync", "s", false, "Sync the cache")
+}
+
+// Status adds status-related command flags to the provided cobra command.
+func Status(cmd *cobra.Command) {
+	cmd.Flags().StringSliceP("tags", "t", []string{"!native"}, "Tags to filter tools by. Prefix with '!' to exclude")
+	cmd.Flags().String("source", "github", "Source from which to install the tools (github, gitlab, url, go, none)")
 }

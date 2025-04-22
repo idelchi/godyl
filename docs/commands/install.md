@@ -15,7 +15,6 @@ godyl [flags] install [tools.yml...|STDIN] [flags]
 
 ## Aliases
 
-- `get`
 - `i`
 
 ## Description

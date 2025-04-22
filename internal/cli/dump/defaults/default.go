@@ -9,8 +9,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/internal/core/defaults"
-	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/defaults"
 	iutils "github.com/idelchi/godyl/internal/utils"
 )
 
@@ -69,12 +68,12 @@ func NewCommand(cfg *config.Config, files config.Embedded) *cobra.Command {
 }
 
 // getDefaults loads and returns the application's default settings.
-func getDefaults(files config.Embedded) (tools.Defaults, error) {
-	d := defaults.Defaults{}
+func getDefaults(files config.Embedded) (*defaults.Defaults, error) {
+	d := defaults.NewDefaults()
 
-	if err := d.Default(files.Defaults); err != nil {
-		return d.Get(), fmt.Errorf("setting defaults: %w", err)
+	if err := d.Unmarshal(files.Defaults); err != nil {
+		return d, fmt.Errorf("setting defaults: %w", err)
 	}
 
-	return d.Get(), nil
+	return d, nil
 }

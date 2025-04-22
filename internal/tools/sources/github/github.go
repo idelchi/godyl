@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/go-getter/v2"
+
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
@@ -13,23 +14,61 @@ import (
 
 // GitHub represents a GitHub repository configuration and state.
 type GitHub struct {
-	// Repo is the name of the GitHub repository.
-	Repo string
-
-	// Owner is the GitHub username or organization that owns the repository.
-	Owner string
-
-	// Token is the GitHub authentication token for private repositories.
-	Token string `mask:"fixed"`
-
-	// Pre indicates whether to include pre-releases when fetching versions.
-	Pre bool
-
-	// Data contains additional metadata about the repository.
-	Data common.Metadata `yaml:"-"`
-
-	// LatestStoredRelease caches the most recently fetched release information.
+	Data                common.Metadata `yaml:"-"`
 	latestStoredRelease *github.Release
+	Repo                string
+	Owner               string
+	Token               string `mask:"fixed"`
+	Pre                 bool
+}
+
+// Initialize sets up the GitHub repository configuration from the given name.
+// Returns an error if the repository name format is invalid.
+func (g *GitHub) Initialize(name string) error {
+	if err := g.PopulateOwnerAndRepo(name); err != nil {
+		return err
+	}
+
+	g.Data.Set("exe", g.Repo)
+
+	return nil
+}
+
+// Version fetches the latest release version and stores it in metadata.
+func (g *GitHub) Version(_ string) error {
+	version, err := g.LatestVersion()
+	if err != nil {
+		return err
+	}
+
+	g.Data.Set("version", version)
+
+	return nil
+}
+
+// Path finds a matching release asset and stores its URL in metadata.
+// Uses version, extensions, and requirements to find the appropriate asset.
+func (g *GitHub) Path(_ string, extensions []string, version string, requirements match.Requirements) error {
+	url, err := g.MatchAssetsToRequirements(extensions, version, requirements)
+	if err != nil {
+		return err
+	}
+
+	g.Data.Set("path", url)
+
+	return nil
+}
+
+// Install downloads the GitHub release asset using the provided configuration.
+// Returns the operation output, downloaded file information, and any errors.
+func (g *GitHub) Install(
+	d common.InstallData,
+	progressListener getter.ProgressTracker,
+) (output string, found file.File, err error) {
+	// Pass the progress listener down to the common download function
+	d.ProgressListener = progressListener
+
+	return common.Download(d)
 }
 
 // Get retrieves a metadata attribute value by its key.
@@ -44,6 +83,7 @@ func (g *GitHub) LatestVersion() (string, error) {
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
 	var release *github.Release
+
 	var err error
 
 	if g.Pre {
@@ -129,54 +169,4 @@ func (g *GitHub) PopulateOwnerAndRepo(name string) (err error) {
 	}
 
 	return nil
-}
-
-// Initialize sets up the GitHub repository configuration from the given name.
-// Returns an error if the repository name format is invalid.
-func (g *GitHub) Initialize(name string) error {
-	if err := g.PopulateOwnerAndRepo(name); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Exe stores the repository name as the executable name in metadata.
-func (g *GitHub) Exe() error {
-	g.Data.Set("exe", g.Repo)
-
-	return nil
-}
-
-// Version fetches the latest release version and stores it in metadata.
-func (g *GitHub) Version(_ string) error {
-	version, err := g.LatestVersion()
-	if err != nil {
-		return err
-	}
-
-	g.Data.Set("version", version)
-
-	return nil
-}
-
-// Path finds a matching release asset and stores its URL in metadata.
-// Uses version, extensions, and requirements to find the appropriate asset.
-func (g *GitHub) Path(_ string, extensions []string, version string, requirements match.Requirements) error {
-	url, err := g.MatchAssetsToRequirements(extensions, version, requirements)
-	if err != nil {
-		return err
-	}
-
-	g.Data.Set("path", url)
-
-	return nil
-}
-
-// Install downloads the GitHub release asset using the provided configuration.
-// Returns the operation output, downloaded file information, and any errors.
-func (g *GitHub) Install(d common.InstallData, progressListener getter.ProgressTracker) (output string, found file.File, err error) {
-	// Pass the progress listener down to the common download function
-	d.ProgressListener = progressListener
-	return common.Download(d)
 }

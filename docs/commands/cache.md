@@ -5,7 +5,7 @@ title: Cache Command
 
 # Cache Command
 
-The `cache` command allows interaction with Godyl's cache.
+The `cache` command allows interaction with `godyl`'s cache.
 
 ## Syntax
 
@@ -13,39 +13,27 @@ The `cache` command allows interaction with Godyl's cache.
 godyl cache [flags]
 ```
 
+## Aliases
+
+- `c`
+
 ## Description
 
-Godyl uses a file based cache to keep track of the versions of the tools it has downloaded.
+`godyl` uses a file-based cache to keep track of the versions of the tools it has downloaded.
 
-When running in `upgrade` mode, Godyl attempts to retrieve the version of the current tool by trying various flags and arguments (`--version`, `-v`, etc.).
+When running in `sync` mode, `godyl` attempts to retrieve the version of the current tool by trying various flags and arguments (`--version`, `-v`, etc.).
 Since this might not be so robust, it will first check it's cache to see if a version is recorded there from a previous install.
 
 ## Flags
 
-| Flag             | Environment Variable | Default | Description      |
-| ---------------- | -------------------- | ------- | ---------------- |
-| `--delete`, `-d` | `GODYL_CACHE_DELETE` | `false` | Delete the cache |
+| Flag             | Environment Variable | Default | Description                                                 |
+| ---------------- | -------------------- | ------- | ----------------------------------------------------------- |
+| `--delete`, `-d` | `GODYL_CACHE_DELETE` | `false` | Delete the cache                                            |
+| `--sync`, `-s`   | `GODYL_CACHE_SYNC`   | `false` | Sync the cache to align the versions with the current tools |
 
-## Examples
+Running without any flags will print the cache file path.
 
-### Output cache file path
-
-```sh
-godyl cache
-```
-
-### Delete the cache file
-
-```sh
-godyl cache --delete
-```
-
-## Cache Types
-
-Godyl supports different cache backends:
-
-- **File**: Stores artifacts as files on disk (default)
-- **SQLite**: Stores artifacts in a SQLite database
+`sync` will compare the tools in the cache with the tools installed on the system and update the cache file accordingly.
 
 ## Related Topics
 

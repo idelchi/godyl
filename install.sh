@@ -65,5 +65,4 @@ main() {
   install "${args}"
 }
 
-
 main "$@"

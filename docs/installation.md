@@ -5,16 +5,6 @@ title: Installation
 
 # Installation
 
-There are several ways to install `godyl`:
-
-## From Source
-
-If you have Go installed (1.24+), you can install directly from source:
-
-```sh
-go install github.com/idelchi/godyl@latest
-```
-
 ## From Installation Script
 
 For a quick installation, you can use the provided installation script:
@@ -31,7 +21,7 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install
 
 ## Docker
 
-You can also run `godyl` using Docker. The following command will run the latest version of `godyl`:
+You can test out `godyl` using Docker. The following command will run the latest version of `godyl`:
 
 ```sh
 export GITHUB_TOKEN=<your_github_token>
@@ -39,4 +29,12 @@ docker run -it --rm --name godyl --env GITHUB_TOKEN docker.io/idelchi/godyl:dev
 
 # Inside the container, run:
 godyl dump tools | godyl install - --output=~/.local/bin
+```
+
+## From Source
+
+If you have Go installed (1.24+), you can install directly from source:
+
+```sh
+go install github.com/idelchi/godyl@latest
 ```

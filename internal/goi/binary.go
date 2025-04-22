@@ -17,10 +17,9 @@ import (
 
 // Binary represents a Go binary, including its associated file, directory, and environment variables.
 type Binary struct {
-	File file.File     // File holds the file information for the Go binary.
-	Dir  folder.Folder // Dir refers to the directory where the binary is stored.
-	Env  Env           // Env contains the environment variables for running the binary.
-
+	Env         Env
+	File        file.File
+	Dir         folder.Folder
 	noVerifySSL bool
 }
 
@@ -47,7 +46,6 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 		// 	binary.File = path
 		// 	binary.Env = Env{}
 		// 	binary.Dir = folder.New(binary.File.Dir())
-
 		// 	return binary, nil
 		// Step 3: Else search in the (possibly) previously created directory
 	} else if path, err := binary.Find(tmp.GodylDir("go").Path()); err == nil {

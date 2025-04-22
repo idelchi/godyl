@@ -6,39 +6,28 @@ import (
 	"github.com/idelchi/godyl/internal/tools/sources/url"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
-	"github.com/idelchi/godyl/pkg/validate"
+	"github.com/idelchi/godyl/pkg/validator"
 )
 
 // Root holds the root configuration options.
 type Root struct {
-	// Log level (silent, debug, info, warn, error, always)
-	Log string `validate:"oneof=silent debug info warn error always"`
-
-	// Path to config file
+	Tokens     Tokens    `mapstructure:",squash"`
+	Log        string    `validate:"oneof=silent debug info warn error always"`
 	ConfigFile file.File `mapstructure:"config-file"`
+	Defaults   file.File
+	EnvFile    []file.File   `mapstructure:"env-file"`
+	Cache      CacheSettings `mapstructure:",squash"`
+	Default    string
 
-	// Path to .env file
-	EnvFile []file.File `mapstructure:"env-file"`
-
-	// Path to defaults file
-	Defaults file.File
-
-	// Cache settings
-	Cache CacheSettings `mapstructure:",squash"`
-
-	// Tokens for authentication
-	Tokens Tokens `mapstructure:",squash"`
-
-	// Viper instance
-	viperable `mapstructure:"-" yaml:"-" json:"-"`
+	viperable `json:"-" mapstructure:"-" yaml:"-"`
 }
 
 type CacheSettings struct {
 	// Path to cache folder
 	Dir folder.Folder `mapstructure:"cache-dir"`
 
-	// NoCache disables cache interaction
-	NoCache bool `mapstructure:"no-cache"`
+	// Disabled disables cache interaction
+	Disabled bool `mapstructure:"no-cache"`
 }
 
 // Tokens holds the configuration options for authentication tokens.
@@ -69,5 +58,5 @@ func (r *Root) Validate() error {
 		}
 	}
 
-	return validate.Validate(r)
+	return validator.Validate(r)
 }

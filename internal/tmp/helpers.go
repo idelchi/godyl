@@ -75,6 +75,7 @@ func UserRuntimeDir() (string, error) {
 			if appData == "" {
 				return "", errors.New("%LocalAppData% is not defined")
 			}
+
 			dir = appData + "\\Temp"
 		}
 
@@ -92,6 +93,7 @@ func UserRuntimeDir() (string, error) {
 		if dir == "" {
 			return "", errors.New("$home is not defined")
 		}
+
 		dir += "/tmp"
 
 	default: // Unix

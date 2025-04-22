@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/idelchi/godyl/internal/tools/tags"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/path/file"
 
@@ -18,7 +20,7 @@ func LoadDotEnv(path file.File) error {
 	}
 
 	if dotEnv.Has("GODYL_CONFIG_FILE") {
-		return fmt.Errorf("GODYL_CONFIG_FILE is not allowed in .env files")
+		return errors.New("GODYL_CONFIG_FILE is not allowed in .env files")
 	}
 
 	if err := env.FromEnv().Normalized().Merged(dotEnv.Normalized()).ToEnv(); err != nil {
@@ -29,18 +31,18 @@ func LoadDotEnv(path file.File) error {
 }
 
 // Split splits tags into include and exclude lists.
-func SplitTags(tags []string) ([]string, []string) {
-	var withTags, withoutTags []string
+func SplitTags(tagList []string) tags.IncludeTags {
+	tags := tags.IncludeTags{}
 
-	for _, tag := range tags {
+	for _, tag := range tagList {
 		if strings.HasPrefix(tag, "!") {
-			withoutTags = append(withoutTags, tag[1:])
+			tags.Exclude = append(tags.Exclude, tag[1:])
 		} else {
-			withTags = append(withTags, tag)
+			tags.Include = append(tags.Include, tag)
 		}
 	}
 
-	return withTags, withoutTags
+	return tags
 }
 
 // ParseBytes parses YAML bytes into a generic data structure.

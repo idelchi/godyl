@@ -25,17 +25,17 @@ const (
 // Tracks architecture type, version, raw string, and user-land bitness.
 type Architecture struct {
 	Type            string
+	Raw             string
 	Version         int
-	Raw             string // Original parsed architecture value
 	Is32BitUserLand bool
 }
 
 // ArchInfo defines an architecture's characteristics and parsing rules.
 // Includes the canonical type name, known aliases, and version parsing logic.
 type ArchInfo struct {
+	Parse   func(string) (int, error)
 	Type    string
 	Aliases []string
-	Parse   func(string) (int, error)
 }
 
 // Supported returns the list of supported CPU architectures.

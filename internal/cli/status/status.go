@@ -5,14 +5,12 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/cli/flags"
 	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/internal/core/defaults"
-	"github.com/idelchi/godyl/internal/core/processor"
-	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/processor"
+	"github.com/idelchi/godyl/internal/tools/strategy"
 	"github.com/idelchi/godyl/internal/utils"
-	"github.com/idelchi/godyl/pkg/logger"
-	"github.com/idelchi/godyl/pkg/path/files"
 )
 
 // Command encapsulates the status cobra command with its associated config and embedded files.
@@ -23,7 +21,7 @@ type Command struct {
 
 // Flags adds status-specific flags to the command.
 func (cmd *Command) Flags() {
-	// flags.Tool(cmd.Command)
+	flags.Status(cmd.Command)
 }
 
 // NewStatusCommand creates a Command for statusing tools from a YAML file.
@@ -35,52 +33,20 @@ func NewStatusCommand(cfg *config.Config, embedded config.Embedded) *Command {
 		Long:    "Status of installed tools as specified in the YAML file(s).",
 		Args:    cobra.ArbitraryArgs,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			// return flags.ChainPreRun(cmd, &cfg.Tool, cmd.Root().Name(), "tool")
-			return flags.ChainPreRun(cmd, nil)
+			return flags.ChainPreRun(cmd, &cfg.Status)
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
-			lvl, err := logger.LevelString(cfg.Root.Log)
+			toolsList, log, err := common.Common(cfg, embedded, args)
 			if err != nil {
-				return fmt.Errorf("parsing log level: %w", err)
+				return err
 			}
 
-			// Set the tools file if provided as an argument
-			if len(args) > 0 {
-				cfg.Tool.Tools = files.New("", args...)
-			} else {
-				cfg.Tool.Tools = files.New(".", "tools.yml")
+			for i := range toolsList {
+				toolsList[i].Strategy = strategy.Sync
 			}
 
-			log := logger.New(lvl)
-
-			// Load defaults
-			defaults, err := defaults.Load(cfg.Root.Defaults, embedded, *cfg)
-			if err != nil {
-				return fmt.Errorf("loading defaults: %w", err)
-			}
-
-			defaults.Strategy = tools.Upgrade
-
-			toolsList := tools.Tools{}
-
-			// Load tools
-			for _, file := range cfg.Tool.Tools {
-				tools, err := utils.LoadTools(file, defaults)
-				if err != nil {
-					return fmt.Errorf("loading tools: %w", err)
-				}
-
-				log.Info("loaded %d tools from %q", len(tools), file)
-
-				toolsList = append(toolsList, tools...)
-			}
-
-			tags := tools.IncludeTags{}
-
-			tags.Include, tags.Exclude = utils.SplitTags(cfg.Tool.Tags)
-
-			proc := processor.New(toolsList, defaults, *cfg, log)
-			if err := proc.Process(tags, true); err != nil {
+			proc := processor.New(toolsList, cfg, log)
+			if err := proc.Process(utils.SplitTags(cfg.Tool.Tags), true); err != nil {
 				return fmt.Errorf("processing tools: %w", err)
 			}
 

@@ -865,5 +865,8 @@
   exe: glab
   source:
     type: gitlab
+  extensions:
+    - .zip
+    - .tar.gz
   tags:
     - terminal

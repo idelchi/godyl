@@ -14,8 +14,6 @@ import (
 type Command struct {
 	// Command is the config cobra.Command instance
 	Command *cobra.Command
-	// Config contains application configuration
-	Config *config.Config
 }
 
 // Flags adds config-specific flags to the command.
@@ -50,7 +48,6 @@ func NewConfigCommand(cfg *config.Config) *Command {
 
 	return &Command{
 		Command: cmd,
-		Config:  cfg,
 	}
 }
 

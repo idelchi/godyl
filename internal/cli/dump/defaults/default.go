@@ -17,10 +17,6 @@ import (
 type Command struct {
 	// Command is the defaults cobra.Command instance
 	Command *cobra.Command
-	// Config contains application configuration
-	Config *config.Config
-	// Files contains the embedded configuration files and templates
-	Files config.Embedded
 }
 
 // Flags adds defaults-specific flags to the command.
@@ -51,8 +47,6 @@ func NewDefaultsCommand(cfg *config.Config, embedded config.Embedded) *Command {
 
 	return &Command{
 		Command: cmd,
-		Config:  cfg,
-		Files:   embedded,
 	}
 }
 

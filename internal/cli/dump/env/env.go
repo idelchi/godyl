@@ -15,8 +15,6 @@ import (
 type Command struct {
 	// Command is the env cobra.Command instance
 	Command *cobra.Command
-	// Config contains application configuration
-	Config *config.Config
 }
 
 // Flags adds env-specific flags to the command.
@@ -52,7 +50,6 @@ func NewEnvCommand(cfg *config.Config) *Command {
 
 	return &Command{
 		Command: cmd,
-		Config:  cfg,
 	}
 }
 

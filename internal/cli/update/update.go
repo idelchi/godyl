@@ -57,6 +57,8 @@ func NewUpdateCommand(cfg *config.Config, embedded config.Embedded) *Command {
 					log.Info(latest.Changelog)
 					log.Info("")
 					log.Info("You can update with:\n\n  godyl update [--pre]")
+				} else {
+					log.Info("You are using the latest version %q", cmd.Root().Version)
 				}
 
 				return nil

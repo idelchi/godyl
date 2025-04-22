@@ -1,4 +1,4 @@
-package cache
+package show
 
 import (
 	"fmt"
@@ -16,23 +16,20 @@ import (
 type Command struct {
 	// Command is the tools cobra.Command instance
 	Command *cobra.Command
-	// Config contains application configuration
-	Config *config.Config
 }
 
-// Flags adds defaults-specific flags to the command.
 func (cmd *Command) Flags() {
+	cmd.Command.Flags().StringP("format", "f", "yaml", "Output format (json or yaml)")
 }
 
 // NewCacheCommand creates a Command for displaying tools information.
 func NewCacheCommand(cfg *config.Config) *Command {
 	cmd := &cobra.Command{
-		Use:     "cache [name]",
-		Short:   "Display cache information",
-		Aliases: []string{"c"},
-		Args:    cobra.MaximumNArgs(1),
+		Use:   "show [name]",
+		Short: "Display cache information",
+		Args:  cobra.MaximumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return flags.ChainPreRun(cmd, nil)
+			return flags.ChainPreRun(cmd, &cfg.Cache)
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
 			var name string
@@ -45,7 +42,7 @@ func NewCacheCommand(cfg *config.Config) *Command {
 				return err
 			}
 
-			iutils.Print(cfg.Dump.Format, c)
+			iutils.Print(cfg.Cache.Format, c)
 
 			return nil
 		},
@@ -53,7 +50,6 @@ func NewCacheCommand(cfg *config.Config) *Command {
 
 	return &Command{
 		Command: cmd,
-		Config:  cfg,
 	}
 }
 

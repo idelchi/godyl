@@ -1,6 +1,10 @@
 tool:
   output: ./bin/{{ .OS }}
 
-env-file:
-  - .env
-  - gitlab.env
+godyl:
+  env-file:
+    - .env
+    - gitlab.env
+
+update:
+  cleanup: true

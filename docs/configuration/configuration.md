@@ -34,9 +34,13 @@ For both cases, all environment variables are also loaded into the run-time envi
 
 A `yaml` file can be used to set values for the flags, following the same subcommand convention as environment variables, but without the `GODYL_` prefix.
 
-For example, to set the `output` flag for the `install` subcommand, and the `full` flag for the `dump tools` subcommand, you would use the following format in your YAML file:
+For example, to set the `env-file` flag on the root command, `output` flag for the `install` subcommand, and the `full` flag for the `dump tools` subcommand, you would use the following format in your YAML file:
 
 ```yaml
+godyl:
+  env-file:
+    - .env
+
 tool:
   output: ~/.local/bin
 

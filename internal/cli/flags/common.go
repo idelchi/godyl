@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -52,7 +53,14 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 	if configFile != nil {
 		config := file.File(configFile.(string))
 
-		content, err := Trim(config, PrefixToYAML(envPrefix, cmd.Root().Name()))
+		root := cmd.Root().Name()
+		if root == cmd.Name() {
+			root = ""
+		}
+
+		prefix := PrefixToYAML(envPrefix, root)
+
+		content, err := Trim(config, prefix)
 		if isConfigError(err) {
 			return fmt.Errorf("trimming config file: %w", err)
 		} else if err == nil {
@@ -68,8 +76,18 @@ func Bind(cmd *cobra.Command, cfg Viperable, prefix ...string) error {
 		return fmt.Errorf("binding flags: %w", err)
 	}
 
-	if err := viper.Unmarshal(cfg); err != nil {
+	var md mapstructure.Metadata
+
+	if err := viper.Unmarshal(cfg, func(config *mapstructure.DecoderConfig) {
+		config.Metadata = &md
+	}); err != nil {
 		return fmt.Errorf("unmarshalling config for %q: %w", cmd.Name(), err)
+	}
+
+	for _, val := range md.Unused {
+		if val != "help" {
+			return fmt.Errorf("unrecognized config key %q in %q", val, cmd.Name())
+		}
 	}
 
 	return nil

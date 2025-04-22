@@ -24,13 +24,13 @@ The `update` command allows you to keep your `godyl` installation up to date by 
 
 ## Flags
 
-| Flag                    | Environment Variable         | Default | Description                              |
-| ----------------------- | ---------------------------- | ------- | ---------------------------------------- |
-| `--no-verify-ssl`, `-k` | `GODYL_UPDATE_NO_VERIFY_SSL` | `false` | Skip SSL verification                    |
-| `--version`, `-v`       | `GODYL_UPDATE_VERSION`       | `""`    | Version to download (empty means latest) |
-| `--pre`                 | `GODYL_UPDATE_PRE`           | `false` | Include pre-releases                     |
-| `--check`               | `GODYL_UPDATE_CHECK`         | `false` | Check for updates                        |
-| `--cleanup`             | `GODYL_UPDATE_CLEANUP`       | `false` | Cleanup old versions (Windows only)      |
+| Flag                    | Environment Variable         | Default | Description                                                                                                    |
+| ----------------------- | ---------------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| `--no-verify-ssl`, `-k` | `GODYL_UPDATE_NO_VERIFY_SSL` | `false` | Skip SSL verification                                                                                          |
+| `--version`, `-v`       | `GODYL_UPDATE_VERSION`       | `""`    | Version to download (empty means latest)                                                                       |
+| `--pre`                 | `GODYL_UPDATE_PRE`           | `false` | Include pre-releases                                                                                           |
+| `--check`               | `GODYL_UPDATE_CHECK`         | `false` | Check for updates                                                                                              |
+| `--cleanup`             | `GODYL_UPDATE_CLEANUP`       | `false` | Cleanup old versions (Windows only; see [Platform-Specific Considerations](#platform-specific-considerations)) |
 
 ## Examples
 

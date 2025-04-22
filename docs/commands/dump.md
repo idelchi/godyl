@@ -15,7 +15,6 @@ godyl [flags] dump [config|defaults|env|platform|tools|cache] [flags]
 
 ## Aliases
 
-- `show`
 - `d`
 
 ## Description

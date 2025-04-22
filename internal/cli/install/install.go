@@ -29,10 +29,10 @@ func (cmd *Command) Flags() {
 // NewInstallCommand creates a Command for installing tools from a YAML file.
 func NewInstallCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
-		Use:     "install [tools.yml]...",
+		Use:     "install [tools.yml...|-]",
 		Aliases: []string{"i"},
 		Short:   "Install tools from one of more YAML files",
-		Long:    "Install tools as specified in the YAML file(s).",
+		Long:    "Install tools as specified in the YAML file(s). Use '-' to read from stdin.",
 		Args:    cobra.ArbitraryArgs,
 		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			return flags.ChainPreRun(cmd, &cfg.Tool, cmd.Root().Name(), "tool")

@@ -17,8 +17,6 @@ import (
 type Command struct {
 	// Command is the platform cobra.Command instance
 	Command *cobra.Command
-	// Config contains application configuration
-	Config *config.Config
 }
 
 // Flags adds platform-specific flags to the command.
@@ -49,7 +47,6 @@ func NewPlatformCommand(cfg *config.Config) *Command {
 
 	return &Command{
 		Command: cmd,
-		Config:  cfg,
 	}
 }
 

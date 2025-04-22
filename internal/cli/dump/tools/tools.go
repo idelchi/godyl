@@ -19,10 +19,6 @@ import (
 type Command struct {
 	// Command is the tools cobra.Command instance
 	Command *cobra.Command
-	// Config contains application configuration
-	Config *config.Config
-	// Files contains the embedded configuration files and templates
-	Files config.Embedded
 }
 
 // Flags adds tools-specific flags to the command.
@@ -56,8 +52,6 @@ func NewToolsCommand(cfg *config.Config, embedded config.Embedded) *Command {
 
 	return &Command{
 		Command: cmd,
-		Config:  cfg,
-		Files:   embedded,
 	}
 }
 
@@ -84,6 +78,8 @@ func getTools(files config.Embedded, rendered bool, tags tags.IncludeTags) (any,
 	var included []int
 
 	for i, tool := range tools {
+		tool.Tags.Append(tool.Name)
+
 		if !tool.Tags.Include(tags.Include) || !tool.Tags.Exclude(tags.Exclude) {
 			continue
 		}

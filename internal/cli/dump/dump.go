@@ -3,7 +3,6 @@ package dump
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/idelchi/godyl/internal/cli/dump/cache"
 	"github.com/idelchi/godyl/internal/cli/dump/configuration"
 	"github.com/idelchi/godyl/internal/cli/dump/defaults"
 	"github.com/idelchi/godyl/internal/cli/dump/env"
@@ -36,7 +35,6 @@ func (cmd *Command) Subcommands() {
 		env.NewCommand(cmd.Config),
 		platform.NewCommand(cmd.Config),
 		tools.NewCommand(cmd.Config, cmd.Files),
-		cache.NewCommand(cmd.Config),
 	)
 }
 
@@ -44,7 +42,7 @@ func (cmd *Command) Subcommands() {
 func NewDumpCommand(cfg *config.Config, embedded config.Embedded) *Command {
 	cmd := &cobra.Command{
 		Use:     "dump [command]",
-		Aliases: []string{"show", "d"},
+		Aliases: []string{"d"},
 		Short:   "Dump configuration information",
 		Long:    "Display various configuration settings and information about the environment",
 		PreRunE: func(cmd *cobra.Command, _ []string) error {

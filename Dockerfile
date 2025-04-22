@@ -60,6 +60,9 @@ RUN go run . || true
 
 ENV PATH=$PATH:/home/${USER}/.local/bin
 ENV PATH=$PATH:/root/.local/bin
+ENV XDG_RUNTIME_DIR=/tmp/${UID}
+ENV XDG_CONFIG_HOME=/home/${USER}/.config
+ENV XDG_CACHE_HOME=/home/${USER}/.cache
 
 RUN mkdir -p /home/${USER}/.local/bin
 RUN cp bin/godyl /home/${USER}/.local/bin
@@ -84,8 +87,9 @@ RUN apt-get update && apt-get install -y \
 
 # Create User (Debian/Ubuntu)
 ARG USER=user
-RUN groupadd -r -g 1001 ${USER} && \
-    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
+ARG UID=1001
+RUN groupadd -r -g ${UID} ${USER} && \
+    useradd -r -u ${UID} -g ${UID} -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 
 USER ${USER}
 WORKDIR /home/${USER}
@@ -94,6 +98,9 @@ COPY --from=build --chown=${USER}:{USER} /home/${USER}/.local/bin/godyl /home/${
 
 ENV PATH=$PATH:/home/${USER}/.local/bin
 ENV PATH=$PATH:/root/.local/bin
+ENV XDG_RUNTIME_DIR=/tmp/${UID}
+ENV XDG_CONFIG_HOME=/home/${USER}/.config
+ENV XDG_CACHE_HOME=/home/${USER}/.cache
 
 # Timezone
 ENV TZ=Europe/Zurich

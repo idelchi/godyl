@@ -2,6 +2,6 @@ package config
 
 type Cache struct {
 	viperable `json:"-" mapstructure:"-" yaml:"-"`
-	Delete    bool
-	Sync      bool
+
+	Format string `validate:"oneof=json yaml"`
 }

@@ -45,7 +45,7 @@ func (s Strategy) Sync(t Tool) result.Result {
 	switch t.GetStrategy() {
 	case None:
 		// If the strategy is "None" and the tool exists, return an error indicating it already exists.
-		return result.WithSkipped("already exists (how did we even get here?)")
+		return result.WithSkipped("already exists")
 	case Sync:
 		if currentVersion == "" {
 			return result.WithOK("current version not retrievable, forcing update")

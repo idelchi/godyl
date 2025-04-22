@@ -27,6 +27,7 @@ func Root(cmd *cobra.Command) {
 	cmd.Flags().StringP("cache-dir", "", tmp.CacheDir().Path(), "Path to cache directory")
 	cmd.Flags().BoolP("no-cache", "", false, "Disable cache")
 	cmd.Flags().String("default", "default", "Default configuration to use from the defaults file for tools without a specific default inheritance")
+	// cmd.Flags().Bool("no-progress", false, "Disable progress bar")
 }
 
 // Tool adds tool-related command flags to the provided cobra command.
@@ -43,7 +44,6 @@ func Tool(cmd *cobra.Command) {
 	cmd.Flags().IntP("parallel", "j", 0, "Number of parallel downloads. 0 means unlimited.")
 	cmd.Flags().String("version", "", "Version of the tool to install. Empty means latest. Obviously not so useful when downloading multiple tools.")
 	cmd.Flags().BoolP("show", "s", false, "Show the configuration and exit")
-	cmd.Flags().Bool("no-progress", false, "Disable progress bar")
 }
 
 // Update adds update-related command flags to the provided cobra command.
@@ -54,12 +54,6 @@ func Update(cmd *cobra.Command) {
 	cmd.Flags().Bool("pre", false, "Enable pre-release versions")
 	cmd.Flags().Bool("check", false, "Check for updates only")
 	cmd.Flags().Bool("cleanup", false, "Cleanup after update (only valid for Windows)")
-}
-
-// Cache adds cache-related command flags to the provided cobra command.
-func Cache(cmd *cobra.Command) {
-	cmd.Flags().BoolP("delete", "d", false, "Delete the cache")
-	cmd.Flags().BoolP("sync", "s", false, "Sync the cache")
 }
 
 // Status adds status-related command flags to the provided cobra command.

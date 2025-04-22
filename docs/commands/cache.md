@@ -10,7 +10,7 @@ The `cache` command allows interaction with `godyl`'s cache.
 ## Syntax
 
 ```sh
-godyl cache [flags]
+godyl cache [path|remove|show|sync] [flags]
 ```
 
 ## Aliases
@@ -24,12 +24,14 @@ godyl cache [flags]
 When running in `sync` mode, `godyl` attempts to retrieve the version of the current tool by trying various flags and arguments (`--version`, `-v`, etc.).
 Since this might not be so robust, it will first check it's cache to see if a version is recorded there from a previous install.
 
-## Flags
+## Subcommands
 
-| Flag             | Environment Variable | Default | Description                                                 |
-| ---------------- | -------------------- | ------- | ----------------------------------------------------------- |
-| `--delete`, `-d` | `GODYL_CACHE_DELETE` | `false` | Delete the cache                                            |
-| `--sync`, `-s`   | `GODYL_CACHE_SYNC`   | `false` | Sync the cache to align the versions with the current tools |
+| Subcommand     | Description                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| `path`         | Print the path to the cache file.                                                                            |
+| `remove`, `rm` | Remove the cache file.                                                                                       |
+| `show [name]`  | Show the contents of the cache file. Optionally show a specific item (by name).                              |
+| `sync`         | Compare the tools in the cache with the tools installed on the system and update the cache file accordingly. |
 
 Running without any flags will print the cache file path.
 

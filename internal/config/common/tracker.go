@@ -5,23 +5,23 @@ import (
 	"github.com/idelchi/godyl/pkg/koanfx"
 )
 
-type Trackable struct {
+type Tracker struct {
 	tracker *koanfx.Tracker `json:"-" mapstructure:"-"`
 }
 
-func (t *Trackable) Validate() error {
+func (t *Tracker) Validate() error {
 	return nil
 }
 
-func (t *Trackable) Store(tracker *koanfx.Tracker) {
+func (t *Tracker) Store(tracker *koanfx.Tracker) {
 	t.tracker = tracker
 }
 
-func (t *Trackable) Retrieve() *koanfx.Tracker {
+func (t *Tracker) Retrieve() *koanfx.Tracker {
 	return t.tracker
 }
 
-func (t *Trackable) IsSet(name string) bool {
+func (t *Tracker) IsSet(name string) bool {
 	if t.tracker == nil {
 		panic("tracker is not initialized")
 	}

@@ -7,7 +7,7 @@ import (
 
 // Root holds the root configuration options.
 type Root struct {
-	common.Trackable `json:"-"             mapstructure:"-"`
+	common.Tracker `json:"-"             mapstructure:"-"`
 	Tokens           Tokens      `json:"tokens"        mapstructure:",squash"`
 	Inherit          string      `json:"inherit"       mapstructure:"inherit"`
 	Defaults         file.File   `json:"defaults"      mapstructure:"defaults"`

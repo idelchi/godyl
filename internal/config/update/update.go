@@ -8,7 +8,7 @@ import (
 // Update holds the configuration options for self-updating the tool.
 // These are used as flags, environment variables for the corresponding CLI commands.
 type Update struct {
-	common.Trackable `json:"-"       mapstructure:"-"`
+	common.Tracker `json:"-"       mapstructure:"-"`
 	Version          string `json:"version" mapstructure:"version"`
 	Pre              bool   `json:"pre"     mapstructure:"pre"`
 	Check            bool   `json:"check"   mapstructure:"check"`

@@ -11,11 +11,11 @@ type Dump struct {
 	Config Config        `json:"config" mapstructure:"config"      validate:"-"`
 	Format iutils.Format `json:"format" validate:"oneof=json yaml"`
 
-	common.Trackable `json:"-" mapstructure:"-"`
+	common.Tracker `json:"-" mapstructure:"-"`
 }
 
 type Config struct {
-	common.Trackable `json:"-"   mapstructure:"-"`
+	common.Tracker `json:"-"   mapstructure:"-"`
 	All              bool `json:"all" mapstructure:"all"`
 }
 
@@ -25,5 +25,5 @@ type Tools struct {
 	Tags     []string `json:"tags"     mapstructure:"tags"`
 	Embedded bool     `json:"embedded" mapstructure:"embedded"`
 
-	common.Trackable `json:"-" mapstructure:"-"`
+	common.Tracker `json:"-" mapstructure:"-"`
 }

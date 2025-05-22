@@ -6,7 +6,7 @@ import (
 )
 
 type Install struct {
-	common.Trackable `json:"-"        mapstructure:"-"`
+	common.Tracker `json:"-"        mapstructure:"-"`
 	Strategy         strategy.Strategy `json:"strategy" mapstructure:"strategy" validate:"oneof=none sync force"`
 	OS               string            `json:"os"       mapstructure:"os"`
 	Arch             string            `json:"arch"     mapstructure:"arch"`

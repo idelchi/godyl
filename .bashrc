@@ -13,12 +13,10 @@
 
 # . /home/user/.bash_env
 
-
 alias r='termtosvg'
 alias rr='vhs /home/user/tapes/preview.tape'
 
 export PATH=$PATH:/home/user/.local/bin
-
 
 function all() {
   local tapes_dir="./tapes"

@@ -12,11 +12,11 @@ import (
 
 type Handler struct {
 	logger   *logger.Logger
-	embedded config.Embedded
+	embedded Embedded
 	config   config.Config
 }
 
-func NewHandler(cfg config.Config, embedded config.Embedded) *Handler {
+func NewHandler(cfg config.Config, embedded Embedded) *Handler {
 	return &Handler{
 		config:   cfg,
 		embedded: embedded,

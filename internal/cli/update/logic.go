@@ -10,7 +10,7 @@ import (
 )
 
 // run executes the `cache dump` command.
-func run(cfg config.Config, embedded config.Embedded, version string) error {
+func run(cfg config.Config, embedded common.Embedded, version string) error {
 	// Generate a common configuration for the command
 	cfg.Common = cfg.Update.ToCommon()
 

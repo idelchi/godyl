@@ -3,6 +3,7 @@ package tools
 import (
 	"fmt"
 
+	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/internal/tools"
@@ -11,7 +12,7 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
-func run(cfg config.Config, embedded config.Embedded, args ...string) (err error) {
+func run(cfg config.Config, embedded common.Embedded, args ...string) (err error) {
 	tags := iutils.SplitTags(cfg.Dump.Tools.Tags)
 
 	data := embedded.Tools

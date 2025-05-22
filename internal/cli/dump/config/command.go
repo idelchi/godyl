@@ -7,6 +7,8 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
+	cconfig "github.com/idelchi/godyl/internal/config/dump/config"
+
 	"github.com/idelchi/godyl/pkg/koanfx"
 )
 
@@ -34,7 +36,7 @@ func Command(global *config.Config, local any) *cobra.Command {
 
 	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
 
-	flags(cmd)
+	cconfig.Flags(cmd)
 
 	return cmd
 }

@@ -2,7 +2,7 @@ package download
 
 import "github.com/spf13/cobra"
 
-func flags(cmd *cobra.Command) {
+func Flags(cmd *cobra.Command) {
 	cmd.Flags().StringP("output", "o", "./bin", "output path for the downloaded tools")
 	cmd.Flags().String("os", "", "operating system to install the tools for")
 	cmd.Flags().String("arch", "", "architecture to install the tools for")

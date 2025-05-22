@@ -6,11 +6,12 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/dump"
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
 // Command creates a Command for displaying configuration information.
-func Command(global *config.Config, local any, embedded *config.Embedded) *cobra.Command {
+func Command(global *config.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "dump",
 		Short:   "Dump configuration information",
@@ -34,7 +35,7 @@ func Command(global *config.Config, local any, embedded *config.Embedded) *cobra
 
 	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
 
-	flags(cmd)
+	dump.Flags(cmd)
 
 	subcommands(cmd, global, embedded)
 

@@ -6,7 +6,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/strategy"
 )
 
-func flags(cmd *cobra.Command) {
+func Flags(cmd *cobra.Command) {
 	cmd.Flags().StringP("output", "o", "./bin", "Output path for the downloaded tools")
 	cmd.Flags().String("os", "", "Operating system to install the tools for")
 	cmd.Flags().String("arch", "", "Architecture to install the tools for")

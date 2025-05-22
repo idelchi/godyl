@@ -6,11 +6,12 @@ import (
 )
 
 type Common struct {
-	Trackable `json:"-" mapstructure:"-"`
-	Output    string
-	Strategy  strategy.Strategy
-	Source    sources.Type
-	OS        string
-	Arch      string
-	Hints     []string
+	Output   string
+	Strategy strategy.Strategy
+	Source   sources.Type
+	OS       string
+	Arch     string
+	Hints    []string
+
+	Tracker `json:"-" mapstructure:"-"`
 }

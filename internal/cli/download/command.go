@@ -7,9 +7,10 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/download"
 )
 
-func Command(global *config.Config, local any, embedded *config.Embedded) *cobra.Command {
+func Command(global *config.Config, local any, embedded *common.Embedded) *cobra.Command {
 	// Create the download command
 	cmd := &cobra.Command{
 		Use:     "download [tool]",
@@ -28,7 +29,7 @@ func Command(global *config.Config, local any, embedded *config.Embedded) *cobra
 
 	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
 
-	flags(cmd)
+	download.Flags(cmd)
 
 	return cmd
 }

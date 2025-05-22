@@ -12,7 +12,7 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
-func run(global config.Config, embedded config.Embedded, args ...string) error {
+func run(global config.Config, embedded common.Embedded, args ...string) error {
 	// Load the tools from the source as []byte
 	data, err := iutils.ReadPathsOrDefault("tools.yml", args...)
 	if err != nil {

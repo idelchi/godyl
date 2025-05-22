@@ -1,6 +1,6 @@
 module github.com/idelchi/godyl
 
-go 1.24
+go 1.24.3
 
 require (
 	dario.cat/mergo v1.0.1

@@ -17,7 +17,7 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
-func run(global config.Config, embedded config.Embedded, args ...string) error {
+func run(global config.Config, embedded common.Embedded, args ...string) error {
 	tools := tools.Tools{}
 
 	for _, name := range args {

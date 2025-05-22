@@ -9,11 +9,11 @@ import (
 // These are used as flags, environment variables for the corresponding CLI commands.
 type Update struct {
 	common.Tracker `json:"-"       mapstructure:"-"`
-	Version          string `json:"version" mapstructure:"version"`
-	Pre              bool   `json:"pre"     mapstructure:"pre"`
-	Check            bool   `json:"check"   mapstructure:"check"`
-	Cleanup          bool   `json:"cleanup" mapstructure:"cleanup"`
-	Force            bool   `json:"force"   mapstructure:"force"`
+	Version        string `json:"version" mapstructure:"version"`
+	Pre            bool   `json:"pre"     mapstructure:"pre"`
+	Check          bool   `json:"check"   mapstructure:"check"`
+	Cleanup        bool   `json:"cleanup" mapstructure:"cleanup"`
+	Force          bool   `json:"force"   mapstructure:"force"`
 }
 
 func (u Update) ToCommon() common.Common {
@@ -25,6 +25,6 @@ func (u Update) ToCommon() common.Common {
 	return common.Common{
 		Strategy: s,
 
-		Trackable: u.Trackable,
+		Tracker: u.Tracker,
 	}
 }

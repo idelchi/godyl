@@ -6,10 +6,11 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
-func Command(cfg *config.Config, files *config.Embedded, version string) *cobra.Command {
+func Command(cfg *config.Config, files *common.Embedded, version string) *cobra.Command {
 	cobra.EnableTraverseRunHooks = true
 	cobra.EnableCommandSorting = false
 
@@ -49,7 +50,7 @@ func Command(cfg *config.Config, files *config.Embedded, version string) *cobra.
 	cmd.Flags().SortFlags = false
 	cmd.SetVersionTemplate("{{ .Version }}\n")
 
-	flags(cmd)
+	root.Flags(cmd)
 	subcommands(cmd, cfg, files)
 
 	return cmd

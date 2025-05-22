@@ -29,8 +29,6 @@ func Command(global *config.Config, local any) *cobra.Command {
 
 	common.SetSubcommandDefaults(cmd, nil, global.Root.ShowFunc)
 
-	flags(cmd)
-
 	subcommands(cmd, global)
 
 	return cmd

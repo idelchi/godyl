@@ -8,9 +8,10 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/update"
 )
 
-func Command(global *config.Config, local any, embedded *config.Embedded) *cobra.Command {
+func Command(global *config.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "update",
 		Aliases: []string{"upgrade", "u"},
@@ -36,7 +37,7 @@ func Command(global *config.Config, local any, embedded *config.Embedded) *cobra
 	}
 	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
 
-	flags(cmd)
+	update.Flags(cmd)
 
 	return cmd
 }

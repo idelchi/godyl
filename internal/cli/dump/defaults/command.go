@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/config"
 )
 
-func Command(global *config.Config, local any, embedded *config.Embedded) *cobra.Command {
+func Command(global *config.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "defaults [name...]",
 		Short: "Display default configuration settings",

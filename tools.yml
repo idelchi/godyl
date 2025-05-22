@@ -891,6 +891,13 @@
   tags:
     - terminal
 
+- name: ofabry/go-callvis
+  description: A development tool to help visualize call graph of a Go program using interactive view.
+  source:
+    type: go
+  tags:
+    - go
+
 - idelchi/gocry
 - idelchi/gogen
 - idelchi/go-match

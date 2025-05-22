@@ -10,10 +10,11 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/dump/tools"
 	"github.com/idelchi/godyl/internal/ierrors"
 )
 
-func Command(global *config.Config, local any, embedded *config.Embedded) *cobra.Command {
+func Command(global *config.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "tools [tools.yml...|-]",
 		Short: "Display tools information",
@@ -65,7 +66,7 @@ func Command(global *config.Config, local any, embedded *config.Embedded) *cobra
 
 	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
 
-	flags(cmd)
+	tools.Flags(cmd)
 
 	return cmd
 }

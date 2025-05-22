@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/cache"
+	"github.com/idelchi/godyl/internal/cli/common"
 	cconfig "github.com/idelchi/godyl/internal/cli/config"
 	"github.com/idelchi/godyl/internal/cli/download"
 	"github.com/idelchi/godyl/internal/cli/dump"
@@ -16,7 +17,7 @@ import (
 )
 
 // Subcommands adds all subcommands to the root command.
-func subcommands(cmd *cobra.Command, global *config.Config, embedded *config.Embedded) {
+func subcommands(cmd *cobra.Command, global *config.Config, embedded *common.Embedded) {
 	cmd.AddCommand(
 		install.Command(global, &global.Install, embedded),
 		download.Command(global, &global.Download, embedded),

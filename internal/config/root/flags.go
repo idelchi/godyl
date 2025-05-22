@@ -1,4 +1,4 @@
-package cli
+package root
 
 import (
 	"github.com/spf13/cobra"
@@ -8,7 +8,7 @@ import (
 	"github.com/idelchi/godyl/pkg/logger"
 )
 
-func flags(cmd *cobra.Command) {
+func Flags(cmd *cobra.Command) {
 	env := env.FromEnv()
 
 	cmd.Flags().

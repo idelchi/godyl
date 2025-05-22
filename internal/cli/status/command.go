@@ -5,9 +5,10 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/status"
 )
 
-func Command(global *config.Config, local any, embedded *config.Embedded) *cobra.Command {
+func Command(global *config.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "status [tools.yml]...",
 		Aliases: []string{"diff", "s"},
@@ -26,7 +27,7 @@ func Command(global *config.Config, local any, embedded *config.Embedded) *cobra
 
 	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
 
-	flags(cmd)
+	status.Flags(cmd)
 
 	return cmd
 }

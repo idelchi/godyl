@@ -105,14 +105,12 @@ Code Style Rules:
 Package Names: Keep them short and clear (runner, not toolrunner)
 Method Names: Verbs for actions (Run, Process), nouns for getters (Summary, Results)
 Concurrency: Use errgroup for concurrent operations, channels only when necessary
-Testing: Each new package should be independently testable
 Comments: Document WHY, not WHAT - explain the business logic
 
 Migration Strategy:
 
 Start with new packages - Don't modify existing code initially
 Build interfaces first - Define contracts before implementations
-Test in isolation - Write tests for new components before integration
 Incremental replacement - Replace processor methods one at a time
 Keep backward compatibility - Don't break existing CLI commands
 
@@ -127,3 +125,5 @@ Remove all UI concerns from core processing logic
 Create clear error types instead of string formatting everywhere
 
 The end goal is a clean architecture where data flows in one direction: Tools → Runner → Results → Presentation, with clear interfaces between each layer.
+
+Do not write any tests yet.

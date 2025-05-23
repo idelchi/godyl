@@ -1,0 +1,129 @@
+Current Problems
+
+God Object Anti-pattern: The Processor struct is doing everything - downloading, caching, progress tracking, result formatting, and error handling
+Mixed Abstraction Levels: Low-level operations (mutex locks, channel management) mixed with high-level business logic
+Poor Separation of Concerns: UI/presentation logic (tables, colors) mixed with core processing logic
+Unclear Data Flow: Results flow through channels, then get mutated, then formatted - hard to follow
+Inconsistent Error Handling: Some errors stop processing, others get collected, some get formatted differently
+
+Refactoring Plan
+Phase 1: Extract Core Concepts
+Create these new packages/types:
+
+internal/runner - Handles the actual execution of tool operations
+
+Runner interface with methods like Run(tool *tool.Tool) Result
+Separate implementations for different operations (download, status check, etc.)
+
+
+internal/results - Manages result collection and aggregation
+
+Collector type that safely collects results from concurrent operations
+Summary type that provides aggregated view of all results
+
+
+internal/presentation - All UI/formatting logic
+
+TableFormatter for table rendering
+ErrorFormatter for error message formatting
+Keep all color/styling decisions here
+
+
+
+Phase 2: Refactor the Processor
+Transform Processor into a thin orchestrator:
+gotype Processor struct {
+    runner   runner.Runner
+    results  results.Collector
+    cache    cache.Manager  // Extract cache operations to interface
+    progress progress.Manager
+}
+
+func (p *Processor) Process(tools tools.Tools, tags tags.IncludeTags) error {
+    // 1. Setup
+    ctx := context.Background()
+
+    // 2. Process tools concurrently
+    g, ctx := errgroup.WithContext(ctx)
+    g.SetLimit(p.config.Parallel)
+
+    for _, tool := range tools {
+        tool := tool // capture
+        g.Go(func() error {
+            result := p.runner.Run(ctx, tool)
+            p.results.Add(result)
+            return nil
+        })
+    }
+
+    // 3. Wait and collect
+    g.Wait()
+
+    // 4. Return summary
+    summary := p.results.Summary()
+    if summary.HasErrors() {
+        return summary.Error()
+    }
+    return nil
+}
+Phase 3: Clean Result Flow
+
+Make Result immutable - no more SetResult() on tools
+Create clear result types:
+gotype Result struct {
+    Tool      *tool.Tool
+    Status    Status
+    Message   string
+    Error     error
+    Metadata  map[string]any // for things like download paths
+}
+
+Remove the currentResult field from Tool struct
+
+Phase 4: Simplify Table Creation
+Move all table logic to presentation layer:
+go// In presentation package
+func RenderResults(results []Result, config Config) string {
+    table := NewTable(config)
+    for _, r := range results {
+        table.AddRow(formatResult(r))
+    }
+    return table.Render()
+}
+Rules for the AI Agent
+MUST Follow:
+
+One Responsibility Per Type: Each struct/interface should have ONE clear job
+No Circular Dependencies: Enforce strict layering - presentation depends on business logic, never the reverse
+Immutable Results: Once created, results should never be modified
+Interface Boundaries: Use interfaces between layers (e.g., cache.Manager not *cache.Cache)
+Context Propagation: Pass context.Context through all concurrent operations
+Error Wrapping: Always wrap errors with context using fmt.Errorf("doing X: %w", err)
+
+Code Style Rules:
+
+Package Names: Keep them short and clear (runner, not toolrunner)
+Method Names: Verbs for actions (Run, Process), nouns for getters (Summary, Results)
+Concurrency: Use errgroup for concurrent operations, channels only when necessary
+Testing: Each new package should be independently testable
+Comments: Document WHY, not WHAT - explain the business logic
+
+Migration Strategy:
+
+Start with new packages - Don't modify existing code initially
+Build interfaces first - Define contracts before implementations
+Test in isolation - Write tests for new components before integration
+Incremental replacement - Replace processor methods one at a time
+Keep backward compatibility - Don't break existing CLI commands
+
+Specific Refactoring Tasks:
+
+Extract processOneTool logic into runner.DefaultRunner
+Move logFinalResults to presentation.ConsolePresenter
+Extract progress tracking to progress.Manager interface
+Create cache.Manager interface and move cache operations there
+Replace channel-based result collection with results.Collector
+Remove all UI concerns from core processing logic
+Create clear error types instead of string formatting everywhere
+
+The end goal is a clean architecture where data flows in one direction: Tools → Runner → Results → Presentation, with clear interfaces between each layer.

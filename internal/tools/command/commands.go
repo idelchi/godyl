@@ -5,48 +5,45 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/fatih/structs"
+	"github.com/goccy/go-yaml/ast"
 
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/unmarshal"
-
-	"gopkg.in/yaml.v3"
 )
 
 // Commands represents a collection of shell commands that can be executed together.
 type Commands struct {
-	Data         common.Metadata `yaml:"-"`
-	Commands     unmarshal.SingleOrSliceType[Command]
-	AllowFailure bool `yaml:"allow_failure"`
-	ExitOnError  bool `yaml:"exit_on_error"`
+	Data         common.Metadata                      `json:"-"`
+	Commands     unmarshal.SingleOrSliceType[Command] `json:"commands"`
+	AllowFailure bool                                 `json:"allow-failure"`
+	ExitOnError  bool                                 `json:"exit-on-error"`
 }
 
-func (e *Commands) UnmarshalYAML(value *yaml.Node) error {
+func (e *Commands) UnmarshalYAML(node ast.Node) error {
 	e.ExitOnError = true
 
-	if value.Kind == yaml.ScalarNode {
-		e.Commands = []Command{Command(value.Value)}
-
-		return nil
-	}
-
-	// Handle sequence node directly (list of commands)
-	if value.Kind == yaml.SequenceNode {
-		var commands []Command
-		if err := value.Decode(&commands); err != nil {
-			return err
+	switch node.(type) {
+	// When given on the style
+	// commands: "echo hello world"
+	// or
+	// commands:
+	//   - echo "hello"
+	//   - echo "world"
+	case *ast.StringNode, *ast.SequenceNode:
+		result, err := unmarshal.SingleOrSlice[Command](node)
+		if err != nil {
+			return fmt.Errorf("unmarshaling commands: %w", err)
 		}
 
-		e.Commands = commands
+		e.Commands = result
 
 		return nil
 	}
 
-	// Perform custom unmarshaling with field validation, allowing only known fields.
 	type raw Commands
 
-	return unmarshal.DecodeWithOptionalKnownFields(value, (*raw)(e), true, structs.New(e).Name())
+	return unmarshal.Decode(node, (*raw)(e))
 }
 
 // Combined joins all commands into a single Command with proper shell options.
@@ -74,8 +71,8 @@ func (c *Commands) Run(env env.Env) (output string, err error) {
 	cmd := c.Combined()
 
 	// Execute the combined command
-	output, err = cmd.Shell(env.ToSlice()...)
-	if err != nil && !(c.AllowFailure && errors.Is(err, ErrRun)) {
+	output, err = cmd.Shell(env.AsSlice()...)
+	if err != nil && (!c.AllowFailure || !errors.Is(err, ErrRun)) {
 		return output, fmt.Errorf("running combined commands: %w", err)
 	}
 

@@ -5,7 +5,6 @@
 package url
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/hashicorp/go-getter/v2"
@@ -17,21 +16,9 @@ import (
 
 // URL represents a URL-based download source configuration.
 type URL struct {
-	Headers http.Header
-	Data    common.Metadata `yaml:"-"`
-	Token   Token
-}
-
-// Token contains authentication configuration for URL requests.
-type Token struct {
-	// Token is the authentication token value.
-	Token string `mapstructure:"url-token" mask:"fixed"`
-
-	// Header is the HTTP header name for the token.
-	Header string `mapstructure:"url-token-header"`
-
-	// Scheme is the authentication scheme (e.g., "Bearer").
-	Scheme string `mapstructure:"url-token-scheme"`
+	Headers http.Header     `json:"headers" mapstructure:"headers"`
+	Data    common.Metadata `json:"-"       mapstructure:"-"`
+	Token   string          `json:"token"   mapstructure:"token"   mask:"fixed"`
 }
 
 // Initialize is a no-op implementation of the Populator interface.
@@ -46,8 +33,8 @@ func (u *URL) Version(_ string) error {
 
 // Path stores the provided URL in the metadata.
 // The URL will be used as the download source during installation.
-func (u *URL) Path(name string, _ []string, _ string, _ match.Requirements) error {
-	u.Data.Set("path", name)
+func (u *URL) URL(name string, _ []string, _ string, _ match.Requirements) error {
+	u.Data.Set("url", name)
 
 	return nil
 }
@@ -59,37 +46,16 @@ func (u *URL) Install(
 	d common.InstallData,
 	progressListener getter.ProgressTracker,
 ) (output string, found file.File, err error) {
-	d.Header = u.GetHeaders()
+	d.Header = u.Headers
 	// Pass the progress listener down
 	d.ProgressListener = progressListener
 
-	return common.Download(d)
+	found, err = common.Download(d)
+
+	return "", found, err
 }
 
 // Get retrieves a metadata attribute value by its key.
 func (u *URL) Get(attribute string) string {
 	return u.Data.Get(attribute)
-}
-
-// GetHeaders returns HTTP headers for URL requests, including authentication.
-// Combines configured headers with token-based authentication if configured.
-func (u *URL) GetHeaders() http.Header {
-	headers := make(http.Header)
-
-	// Clone existing headers if any
-	if u.Headers != nil {
-		headers = u.Headers.Clone()
-	}
-
-	// Add token to headers if both token and header are specified
-	if u.Token.Token != "" && u.Token.Header != "" {
-		tokenValue := u.Token.Token
-		if u.Token.Scheme != "" {
-			tokenValue = fmt.Sprintf("%s %s", u.Token.Scheme, u.Token.Token)
-		}
-
-		headers.Set(u.Token.Header, tokenValue)
-	}
-
-	return headers
 }

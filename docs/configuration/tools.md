@@ -1,31 +1,29 @@
 ---
 layout: default
 title: Tools Format
+parent: Configuration
+nav_order: 2
 ---
+
+{% raw %}
 
 # Tools Format
 
-Tools can be defined in a YAML file (typically `tools.yml`).
+Tools can be defined in a YAML file. `godyl` will look for a file named `tools.yml` in the current directory, if not specified.
 
-See [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) for getting started.
+See [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) for a sample configuration.
 
-You can use a simple form or a full form for tool definitions.
+You can use a full or simple form for the tool definitions. Most fields follow the same format, with a full and simple form.
 
-### Simple Form
+## Configuration
 
 ```yaml
 - idelchi/godyl
 ```
 
-This is the simplest form to download the latest release of `godyl` from the the default source type (`github`).
-
-If the path is a URL, it will be considered as a `source.url` type. Otherwise, it will be assumed to be a `source.github` type in the form `owner/repo`.
-
-### Full Form
+This is the simplest form to download the latest release of `godyl` from the the default source type (for example, `github` or `gitlab`).
 
 For more complex configurations, you can use the extended form:
-
-{% raw  %}
 
 ```yaml
 name: godyl
@@ -34,7 +32,7 @@ output: ~/.local/bin
 exe:
   name: godyl
   patterns:
-    - "{{ .Exe }}{{ .EXTENSION }}$"
+    - "**/{{ .Exe }}{{ .EXTENSION }}"
 aliases:
   - gd
 source:
@@ -49,91 +47,137 @@ A complete reference for all fields is available below.
 
 ### Full form
 
-Below are all configuration options along with examples.
-
 ```yaml
+# Name of the tool to download. Used as display name and for inferring other fields.
 name: idelchi/godyl
+# Optional description of the tool, for documentation purposes.
 description: Asset downloader for GitHub releases, URLs, and Go projects
+# Version tracking of the tool. Specifies the target version, as well as how to parse the current version.
 version:
-  version: v0.1.0 # For `github` and `gitlab` sources, leave empty to get the latest release
+  # For `github` and `gitlab` sources, leave empty to fetch the latest release from the API.
+  # The version is always available as {{ .Version }}, expect when not set.
+  # It is then only available after the API call has been made.
+  version: v0.1.0
+  # Commands to run to get the current installed version (for syncs),
+  # whenever not available in the cache.
   commands:
     - --version
     - version
+  # Regex patterns to extract the version from command output (for syncs),
+  # whenever not available in the cache.
   patterns:
     - '.*?(\d+\.\d+\.\d+).*'
-path: "https://github.com/idelchi/godyl/releases/download/v0.0.1/godyl_{{ .OS }}_{{ .ARCH }}.tar.gz" # For `github` and `gitlab` sources, leave empty to infer the url
-output: ~/.local/bin
+# The download url. For `github` and `gitlab` sources,
+# leave empty to populate from the API.
+url: "https://github.com/idelchi/godyl/releases/download/v0.0.1/godyl_{{ .OS }}_{{ .ARCH }}.tar.gz"
+# The output directory where the tool will be placed.
+output: ~/.local/bin # [`--output`]
+# The executable name. Specifies the desired output name of the executable,
+# as well as the patterns to find it in the downloads.
 exe:
-  name: godyl # Inferred from `name` if not provided
-  patterns: "^{{ .OS }}-{{ .Exe }}-{{ .ARCH }}{{ .EXTENSION }}$"
-platform: # Leave empty to infer from the system
-  os: windows
-  architecture:
-    type: arm
-    version: 7
-  library: gnu
-  extension: exe
-  distribution: windows
+  # The name to use for the executable.
+  # Will be inferred from `name` using source-specific rules if not provided.
+  # If no suffix is provided, the platform-specific suffix will be added.
+  name: godyl
+  # Glob patterns to find the executable in the downloads.
+  # Uses globstar, so you can use `**` to match any number of directories.
+  patterns:
+    - "**/{{ .OS }}-{{ .Exe }}*{{ .EXTENSION }}"
+# A list of aliases for the tool. Will create symlinks (or copies on Windows).
+# If no suffix is provided, the platform-specific suffix will be added.
 aliases:
   - gd
-values:
-  customField: customValue
+# A list of fallback strategies to try if the main source strategy fails.
+# Will be used in the order they are defined.
 fallbacks:
   - go
+# Hints to find the correct asset to download.
 hints:
-  - pattern: amd64
+  # Pattern to match the asset name. See `type` for allowed syntax.
+  - pattern: "*amd64*"
+    # Weight of the hint. Defaults to 1 if not provided.
     weight: |-
       {{- if eq .ARCH "amd64" -}}
       1
       {{- else -}}
       0
       {{- end -}}
-  - pattern: "{{ .Exe }}"
-    must: true
+
+    # Method to use for matching the pattern.
+    type: glob|regex|globstar|startswith|endswith|contains
+    # Whether to use the weight for matches, require the match, or exclude the match.
+    match: weighted|required|excluded
 source:
-  type: github|gitlab|url|go|none
+  type: github|gitlab|url|go|none # [`--source`]
   github:
-    repo: godyl # Inferred from `name` if not provided
-    owner: idelchi # Inferred from `name` if not provided
-    token: secret
+    # Inferred from first part of `name` if not provided
+    owner: idelchi
+    # Inferred from last part of `name` if not provided
+    repo: godyl
+    token: secret # [`--github-token`]
   gitlab:
-    project: godyl # Inferred from `name` if not provided
-    namespace: idelchi/go-projects # Inferred from `name` if not provided
-    token: secret
+    # Inferred from first part of `name` if not provided
+    namespace: idelchi/go-projects
+    # Inferred from last part of `name` if not provided
+    project: godyl
+    token: secret # [`--gitlab-token`]
     server: https://gitlab.self-hosted.com
+    no-token: false # Suppress usage of token
   url:
-    token:
-      token: secret
-      header: Authorization
-      scheme: Bearer
-      headers:
-        Content-Type:
-          - application/json
-          - application/x-www-form-urlencoded
-        Accept:
-          - application/json
-          - application/x-www-form-urlencoded
+    token: secret # [`--url-token`]
+    headers:
+      Authorization:
+        - "Bearer {{ .Tokens.URL }}"
+      Content-Type:
+        - application/json
+        - application/x-www-form-urlencoded
   go:
+    # Specifies the path for the `go install` command.
+    # Useful when the installable is not in the default path (e.g `cmd/<tool>` or `.`).
     command: cmd/godyl
+# Run custom commands after the installation (or only commands if `source.type` is `none`).
 commands:
+  # The list of commands to run.
   commands:
     - "mkdir -p {{ .Output }}"
+  # Whether to suppress failures in the commands.
   allow_failure: true
+  # Whether to exit immediately on error.
   exit_on_error: false
+# List of tags to filter tools.
 tags:
   - downloader
+# Strategy for updating existing tools.
 strategy: none|sync|force
-extensions:
-  - .exe
+# Skip the tool if the condition is met.
 skip:
   - reason: "godyl is not available for Darwin"
     condition: '{{ eq .OS "darwin" }}'
+# The mode for downloading and installing the tool.
+# `find` will download, extract, and find the executable.
+# `extract` will download and extract directly to the output directory.
 mode: find|extract
+# A collection of arbitrary values.
+# Will be available as `{{ .Values.<name> }}` anywhere templating is supported.
+values:
+  customScalar: scalarValue
+  customMap:
+    key1: value1
+    key2: value2
+  customList:
+    - item1
+    - item2
+# A collection of environment variables.
+# Will be accessible as `{{ .Env.<ENV_VAR> }}` anywhere templating is supported.
 env:
   GH_TOKEN: $GODYL_GITHUB_TOKEN
+# Disable SSL verification.
 no_verify_ssl: false
+# Disable cache usage
 no_cache: false
-inherit: default
+# A list of defaults to inherit from.
+inherit:
+  - default
 ```
 
 Most of the fields also support simplified forms which is described below.
@@ -142,26 +186,45 @@ Most of the fields also support simplified forms which is described below.
 
 Many fields in the configuration support templating with variables like:
 
-- `{{ .Name }}` - The name of the tool
-- `{{ .Output }}` - The output path
-- `{{ .Exe }}` - The executable name
+- `{{ .Name }}` - The name of the tool (`name`)
+- `{{ .Env }}` - The environment variables (`env`), accessed with `{{ .Env.<ENV_VAR> }}`
+- `{{ .Values }}` - The custom values (`values`), accessed with `{{ .Values.<name> }}`
+- `{{ .Exe }}` - The executable name (`exe.name`)
+- `{{ .Source }}` - The source type (`source.type`)
+- `{{ .Output }}` - The output path (`output`)
+- `{{ .Tokens }}` - The tokens for the source type (`source.tokens`), accessed with `{{ .Tokens.<source> }}`
+- `{{ .Version }}` - The version to fetch (`version.version`).
+
+> **Note:** If the `version.version` field is unset, the template variable will only be available after the API call has been made.
+
+Platform-specific variables are upper-cased and available as:
+
 - `{{ .OS }}` - The operating system
 - `{{ .ARCH }}` - The architecture
+- `{{ .ARCH_VERSION }}` - The architecture version
+- `{{ .ARCH_LONG }}` - The architecture with version
+- `{{ .IS_ARM }}` - Whether the architecture is ARM
+- `{{ .IS_X86 }}` - Whether the architecture is x86
+- `{{ .LIBRARY }}` - The library used for the platform
+- `{{ .DISTRIBUTION }}` - The distribution used for the platform
 - `{{ .EXTENSION }}` - The file extension for the platform
 
-For example, to set a path that adapts to the current platform:
+Examples:
 
 ```yaml
-path: https://example.com/download/{{ .Name }}_{{ .OS }}_{{ .ARCH }}.tar.gz
+url: https://example.com/download/{{ .Name }}_{{ .OS }}_{{ .ARCH }}.tar.gz
+url: https://releases.hashicorp.com/terraform/{{ .Version | trimPrefix "v" }}/terraform_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
 ```
 
 ## Available Fields
 
-Below is a comprehensive list of fields that can be used to configure each tool:
+Below is a comprehensive list of fields that can be used to configure each tool.
 
-### Name
+For each tool, you can see whether it is required, supports templating, and whether it is exported as a template variable.
 
-**Required**: Yes
+### `name`
+
+🔴 Required • 🧩 Templated • 📤 Exports as: `{{ .Name }}`
 
 The name of the tool to download. Used as display name and for inferring other fields.
 
@@ -169,11 +232,9 @@ The name of the tool to download. Used as display name and for inferring other f
 name: idelchi/godyl
 ```
 
-Will be used to populate `exe.name`, `source.github.repo`, `source.github.owner`, `source.gitlab.project`, and `source.gitlab.namespace` if not provided.
+Used for inferrence in [`exe`](#exe) and [`source`](#source)
 
-### Description
-
-**Optional**: Yes
+### `description`
 
 A description of the tool, for documentation purposes.
 
@@ -181,11 +242,11 @@ A description of the tool, for documentation purposes.
 description: Asset downloader for GitHub releases, URLs, and Go projects
 ```
 
-### Version
+### `version`
 
-**Optional**: Yes (will be inferred if not provided)
+📤 Exports as: `{{ .Version }}`
 
-The version of the tool to download.
+The version of the tool to download. Will be inferred by the source type if not provided.
 
 Simple form:
 
@@ -199,42 +260,39 @@ Full form:
 version:
   version: v0.1.0
   commands:
-    - "--version"
+    - --version
   patterns:
-    - "v\\d+\\.\\d+\\.\\d+"
+    # Match "anything-v0.1.0" or "anything-0.1.0"
+    - '.*?(v?\d+\.\d+).*'
 ```
 
-- `version.version`: The version to download
-- `version.commands`: Commands to run to get the installed version (for syncs)
-- `version.patterns`: Regex patterns to extract the version from command output (for syncs)
+### `url`
 
-### Path
+🧩 Templated • 📤 Exports as: `{{ .URL }}`
 
-**Optional**: Yes (will be inferred if not provided)
-
-The path to the tool to download. Must be a URL to a file.
+The url of the tool to download. Must be a URL to a file. Will be inferred by the source type if not provided.
 
 ```yaml
-path: https://github.com/idelchi/godyl/releases/download/v0.1.0/godyl_linux_amd64.tar.gz
+url: https://github.com/idelchi/godyl/releases/download/v0.1.0/godyl_linux_amd64.tar.gz
 ```
 
-The most common use-case is to have it inferred from the `source` field configuration.
+The most common use-case is to have it inferred from the `source` field configuration for the `github` and `gitlab` sources.
 
-### Output
+### `output`
 
-**Required** (can be set from defaults or flags)
+🔴 Required • 🧩 Templated • 📤 Exports as: `{{ .Output }}`
 
 The directory where the tool will be installed.
 
 ```yaml
-output: ~/.local/bin
+output: ./bin/{{ .OS }}
 ```
 
-### Exe
+### `exe`
 
-**Optional**: Yes (will be inferred if not provided)
+📤 Exports as: `{{ .Exe }}`
 
-Information about the executable.
+Information about the executable. `exe.name` will be inferred from `name` and the source type if not explicitly provided.
 
 Simple form:
 
@@ -248,33 +306,10 @@ Full form:
 exe:
   name: godyl
   patterns:
-    - "^{{ .Exe }}{{ .EXTENSION }}$"
-    - ".*/{{ .Exe }}{{ .EXTENSION }}$"
+    - "**/{{ .Exe }}{{ .EXTENSION }}"
 ```
 
-- `exe.name`: The name of the executable
-- `exe.patterns`: Regex patterns to find the executable in the downloaded archive
-
-### Platform
-
-**Optional**: Yes (will be inferred from the system)
-
-Platform and architecture information.
-
-```yaml
-platform:
-  os: linux
-  architecture:
-    type: amd64
-    version: ""
-  library: gnu
-  extension: ""
-  distribution: debian
-```
-
-### Aliases
-
-**Optional**: Yes
+### `aliases`
 
 Aliases for the tool. Will create symlinks (or copies on Windows).
 
@@ -284,20 +319,24 @@ aliases:
   - godl
 ```
 
-### Values
+### `values`
 
-**Optional**: Yes
+📤 Exports as: `{{ .Values }}`
 
 Arbitrary values that can be used in templates.
 
 ```yaml
 values:
-  customField: customValue
+  protocol: https
 ```
 
-### Fallbacks
+Use as:
 
-**Optional**: Yes
+```yaml
+url: {{ .Values.protocol }}://example.com/download/{{ .Name }}_{{ .OS }}_{{ .ARCH }}.tar.gz
+```
+
+### `fallbacks`
 
 Fallback strategies if no matches were made in releases.
 
@@ -306,23 +345,26 @@ fallbacks:
   - go
 ```
 
-### Hints
+### `hints`
 
-**Optional**: Yes
+🧩 Templated
 
 Hints to help `godyl` find the correct tool.
 
 ```yaml
 hints:
-  - pattern: "{{ .Exe }}"
+  - pattern: "*{{ .Exe }}*"
     weight: 1
-  - pattern: "{{ .OS }}"
+  - pattern: "^{{ .OS }}"
     must: true
+    regex: true
 ```
 
-### Source
+If weight is not provided, it will be set to 1.
 
-**Required** (can be set from defaults)
+### `source`
+
+🔴 Required • 🧩 Templated • 📤 Exports as: `{{ .Source }}`
 
 Information about the source of the tool.
 
@@ -344,9 +386,7 @@ source:
   type: url
   url:
     token:
-      token:
-      header: Authorization
-      scheme: Bearer
+    headers:
 ```
 
 Go source:
@@ -358,23 +398,30 @@ source:
     command: cmd/godyl
 ```
 
-### Commands
+#### Templating
 
-**Optional**: Yes
+Only the `token` fields support templating.
+
+Furthermore, the `tokens` themselves are available as:
+
+```yaml
+{{ .Tokens.GitHub }}
+{{ .Tokens.GitLab }}
+{{ .Tokens.URL }}
+```
+
+### `commands`
+
+🧩 Templated
 
 Commands to run before and after installation.
 
 ```yaml
 commands:
-  pre:
-    - "mkdir -p {{ .Output }}"
-  post:
-    - "chmod +x {{ .Output }}/{{ .Exe }}"
+  - "mkdir -p {{ .Output }}"
 ```
 
-### Tags
-
-**Optional**: Yes
+### `tags`
 
 Tags to filter tools.
 
@@ -384,9 +431,11 @@ tags:
   - downloader
 ```
 
-### Strategy
+The name of the current tool will always be added to the list of tags.
 
-**Required** (can be set from defaults)
+### `strategy`
+
+🔴 Required
 
 Strategy for updating the tool.
 
@@ -400,21 +449,9 @@ Valid values:
 - `sync`: Sync the tool to the desired version
 - `force`: Always download and install
 
-### Extensions
+### `skip`
 
-**Optional**: Yes
-
-Extensions to consider when matching tools.
-
-```yaml
-extensions:
-  - .zip
-  - .tar.gz
-```
-
-### Skip
-
-**Optional**: Yes
+🧩 Templated
 
 Conditions under which to skip the tool.
 
@@ -424,9 +461,13 @@ skip:
     reason: "Tool is not available on Windows"
 ```
 
-### Mode
+#### Templating
 
-**Required** (can be set from defaults)
+Only the `condition` field supports templating.
+
+### `mode`
+
+🔴 Required
 
 Mode for downloading and installing.
 
@@ -439,4 +480,4 @@ Valid values:
 - `find`: Download, extract, and find the executable
 - `extract`: Download and extract directly to the output directory
 
-{% endraw  %}
+{% endraw %}

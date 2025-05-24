@@ -3,7 +3,6 @@ package tool
 
 import (
 	"fmt"
-	"maps"
 
 	"github.com/idelchi/godyl/internal/templates"
 	"github.com/idelchi/godyl/internal/tools/sources"
@@ -13,16 +12,21 @@ import (
 // It adds any additional maps provided in the flatten argument to the template map.
 func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
 	templateMap := map[string]any{
-		"Name":    t.Name,
-		"Env":     t.Env,
-		"Values":  t.Values,
-		"Version": t.Version.Version,
-		"Exe":     t.Exe.Name,
-		"Output":  t.Output,
+		"Name":   t.Name,
+		"Env":    t.Env,
+		"Values": t.Values,
+		"Exe":    t.Exe.Name,
+		"Source": t.Source.Type.String(),
+		"Output": t.Output,
+		"Tokens": map[string]string{
+			"GitHub": t.Source.GitHub.Token,
+			"GitLab": t.Source.GitLab.Token,
+			"URL":    t.Source.URL.Token,
+		},
 	}
 
-	for _, o := range flatten {
-		maps.Copy(templateMap, o)
+	if t.Version.Version != "" {
+		templateMap["Version"] = t.Version.Version
 	}
 
 	return templateMap
@@ -35,11 +39,13 @@ func TemplateError(err error, name string) error {
 
 // TemplateFirst applies templating to various fields of the Tool struct, such as version, path, and checksum.
 // It processes these fields using Go templates and updates them with the templated values.
-func (t *Tool) TemplateFirst() error {
-	values := t.ToTemplateMap(t.Platform.ToMap())
+func (t *Tool) TemplateFirst(tmpl *templates.Processor) error {
+	if err := tmpl.ApplyAndSet(&t.Name); err != nil {
+		return TemplateError(err, "name")
+	}
 
 	// Apply templating to Source.Type
-	output, err := templates.Apply(t.Source.Type.String(), values)
+	output, err := tmpl.Apply(t.Source.Type.String())
 	if err != nil {
 		return TemplateError(err, "source.type")
 	}
@@ -48,44 +54,59 @@ func (t *Tool) TemplateFirst() error {
 
 	// Apply templating to the Skip conditions
 	for i := range t.Skip {
-		err = templates.ApplyAndSet(&t.Skip[i].Condition, values)
+		err = tmpl.ApplyAndSet(&t.Skip[i].Condition.Template)
 		if err != nil {
 			return TemplateError(err, "skip.condition")
 		}
 	}
 
-	if err := templates.ApplyAndSet(&t.Output, values); err != nil {
+	if err := tmpl.ApplyAndSet(&t.Output); err != nil {
 		return TemplateError(err, "output")
+	}
+
+	if err := tmpl.ApplyAndSet(&t.Source.GitHub.Token); err != nil {
+		return TemplateError(err, "github.token")
+	}
+
+	if err := tmpl.ApplyAndSet(&t.Source.GitLab.Token); err != nil {
+		return TemplateError(err, "gitlab.token")
+	}
+
+	if err := tmpl.ApplyAndSet(&t.Source.URL.Token); err != nil {
+		return TemplateError(err, "url.token")
 	}
 
 	return nil
 }
 
 // TemplateLast applies templating to the remaining fields of the Tool struct.
-func (t *Tool) TemplateLast() error {
-	values := t.ToTemplateMap(t.Platform.ToMap())
-
-	if err := templates.ApplyAndSet(&t.Exe.Name, values); err != nil {
-		return err
+// Templates:
+//   - Exe.Patterns
+//   - Commands
+//   - Hints patterns and weights
+//   - URL
+func (t *Tool) TemplateLast(tmpl *templates.Processor) error {
+	// Apply templating to the url headers
+	for key, value := range t.Source.URL.Headers {
+		for i := range value {
+			err := tmpl.ApplyAndSet(&value[i])
+			if err != nil {
+				return TemplateError(err, "url.headers."+key)
+			}
+		}
 	}
 
 	// Apply templating to Exe.Patterns
-	for i := range t.Exe.Patterns {
-		if err := templates.ApplyAndSet(&t.Exe.Patterns[i], values); err != nil {
+	patterns := *t.Exe.Patterns
+	for i := range patterns {
+		if err := tmpl.ApplyAndSet(&patterns[i]); err != nil {
 			return err
 		}
 	}
 
-	// Apply templating to Extensions
-	for i := range t.Extensions {
-		if err := templates.ApplyAndSet(&t.Extensions[i], values); err != nil {
-			return err
-		}
-	}
-
-	// Apply templating to Post commands
+	// Apply templating to commands
 	for i, cmd := range t.Commands.Commands {
-		output, err := templates.Apply(cmd.String(), values)
+		output, err := tmpl.Apply(cmd.String())
 		if err != nil {
 			return err
 		}
@@ -94,22 +115,22 @@ func (t *Tool) TemplateLast() error {
 	}
 
 	// Apply templating to Hints patterns and weights
-	for i := range t.Hints {
-		if err := templates.ApplyAndSet(&t.Hints[i].Pattern, values); err != nil {
+	hints := *t.Hints
+	for i := range hints {
+		if err := tmpl.ApplyAndSet(&hints[i].Pattern); err != nil {
 			return err
 		}
 
-		if err := templates.ApplyAndSet(&t.Hints[i].Weight, values); err != nil {
+		if err := tmpl.ApplyAndSet(&hints[i].Weight.Template); err != nil {
+			return err
+		}
+
+		if err := tmpl.ApplyAndSet(&hints[i].Match.Template); err != nil {
 			return err
 		}
 	}
 
-	if err := templates.ApplyAndSet(&t.URL, values); err != nil {
-		return err
-	}
-
-	// Template the .Name last
-	if err := templates.ApplyAndSet(&t.Name, values); err != nil {
+	if err := tmpl.ApplyAndSet(&t.URL); err != nil {
 		return err
 	}
 

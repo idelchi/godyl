@@ -1,6 +1,8 @@
 ---
 layout: default
-title: Status Command
+title: Status
+parent: Commands
+nav_order: 3
 ---
 
 # Status Command
@@ -24,11 +26,10 @@ The `status` command checks the status of the tools defined in the provided YAML
 
 ## Flags
 
-| Flag                    | Environment Variable       | Default       | Description                                 |
-| ----------------------- | -------------------------- | ------------- | ------------------------------------------- |
-| `--tags`, `-t`          | `GODYL_TOOL_TAGS`          | `["!native"]` | Tags to filter tools by. Use `!` to exclude |
-| `--source`              | `GODYL_TOOL_SOURCE`        | `github`      | Source from which to install the tools      |
-| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL` | `false`       | Skip SSL verification                       |
+| Flag           | Environment Variable  | Default       | Description                                 |
+| :------------- | :-------------------- | :------------ | :------------------------------------------ |
+| `--tags`, `-t` | `GODYL_STATUS_TAGS`   | `["!native"]` | Tags to filter tools by. Use `!` to exclude |
+| `--source`     | `GODYL_STATUS_SOURCE` | `github`      | Source from which to install the tools      |
 
 ## Examples
 
@@ -43,7 +44,3 @@ godyl status tools.yml
 ```sh
 godyl status tools.yml --tags idelchi/godyl
 ```
-
-## Related Topics
-
-- [Global Flags]({{ site.baseurl }}/commands/commands#global-flags)

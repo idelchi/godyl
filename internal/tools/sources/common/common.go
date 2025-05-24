@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"regexp"
 
 	"github.com/hashicorp/go-getter/v2"
 
@@ -34,7 +33,7 @@ type InstallData struct {
 // Download retrieves files according to the InstallData configuration.
 // Creates temporary directories when needed, manages the download process,
 // and returns the download output and file information.
-func Download(data InstallData) (string, file.File, error) {
+func Download(data InstallData) (file.File, error) {
 	var err error
 
 	var found file.File
@@ -43,7 +42,7 @@ func Download(data InstallData) (string, file.File, error) {
 
 	if data.Mode == "find" {
 		if dir, err = tmp.GodylCreateRandomDir(); err != nil {
-			return "", "", fmt.Errorf("creating random dir: %w", err)
+			return "", fmt.Errorf("creating random dir: %w", err)
 		}
 
 		defer func() {
@@ -51,23 +50,23 @@ func Download(data InstallData) (string, file.File, error) {
 		}()
 	}
 
-	downloader := download.New()
-	downloader.InsecureSkipVerify = data.NoVerifySSL
-	// Pass the progress listener if provided in InstallData
-	if data.ProgressListener != nil {
-		downloader.ProgressListener = data.ProgressListener
+	options := []download.Option{download.WithProgress(data.ProgressListener)}
+	if data.NoVerifySSL {
+		options = append(options, download.WithInsecureSkipVerify())
 	}
+
+	downloader := download.New(options...)
 
 	destination, err := downloader.Download(data.Path, dir.Path(), data.Header)
 	if err != nil {
-		return "", "", fmt.Errorf("downloading %q: %w", data.Path, err)
+		return "", fmt.Errorf("downloading %q: %w", data.Path, err)
 	}
 
 	if data.Mode == "find" {
 		found, err = FindAndSymlink(destination, data)
 	}
 
-	return "", found, err
+	return found, err
 }
 
 // FindAndSymlink locates an executable in the downloaded content and sets up symlinks.
@@ -97,18 +96,7 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 		// Match patterns in order of priority
 		for _, pattern := range d.Patterns {
 			match := func(file file.File) (bool, error) {
-				re, err := regexp.Compile(pattern)
-				if err != nil {
-					return false, fmt.Errorf("compiling pattern %q: %w", pattern, err)
-				}
-
-				matched := re.MatchString(file.Path())
-
-				if matched {
-					return true, nil
-				}
-
-				return false, nil
+				return file.Matches(pattern)
 			}
 
 			var err error
@@ -152,5 +140,5 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 	// Create symlinks for the aliases
 	aliases := files.New(d.Output, d.Aliases...)
 
-	return destination, aliases.SymlinksFor(target)
+	return destination, aliases.LinksFor(target)
 }

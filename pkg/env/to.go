@@ -1,30 +1,48 @@
 package env
 
 import (
+	"fmt"
 	"os"
+	"slices"
+	"strings"
 )
 
-// ToSlice converts the environment to a string slice.
-// Returns a slice where each element is a "key=value" string
+// AsSlice converts the environment to a string slice.
+// Returns a sorted slice where each element is a "key=value" string
 // representing an environment variable.
-func (e Env) ToSlice() []string {
-	slice := make([]string, 0, len(e))
+func (e *Env) AsSlice() []string {
+	slice := make([]string, 0, len(*e))
 
-	for k, v := range e {
-		slice = append(slice, k+"="+v)
+	for k, v := range *e {
+		slice = append(slice, strings.Join([]string{k, v}, "="))
 	}
+
+	slices.Sort(slice)
 
 	return slice
 }
 
-// ToEnv applies the environment to the current process.
-// Sets each key-value pair as a process environment variable
-// using os.Setenv. Returns an error if any variable cannot
-// be set.
-func (e Env) ToEnv() error {
-	for k, v := range e {
+// Keys returns the keys of the environment variables, sorted alphabetically.
+func (e *Env) Keys() []string {
+	keys := make([]string, 0, len(*e))
+
+	for k := range *e {
+		keys = append(keys, k)
+	}
+
+	slices.Sort(keys)
+
+	return keys
+}
+
+// Export applies the environment to the current process.
+// Expands any variable references in the values.
+func (e *Env) Export() error {
+	e.Expand()
+
+	for k, v := range *e {
 		if err := os.Setenv(k, v); err != nil {
-			return err
+			return fmt.Errorf("setting env var %q: %w", k, err)
 		}
 	}
 

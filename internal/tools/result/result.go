@@ -13,12 +13,9 @@ import (
 // Result represents the outcome of a tool installation operation.
 // It combines a status code with a descriptive message and an optional error.
 type Result struct {
-	// Message provides a human-readable description of the result.
+	err     error
 	Message string
-	// Status indicates the status of the operation.
-	Status Status
-	// err is an optional underlying error that provides more context.
-	err error
+	Status  Status
 }
 
 // New creates a new Result with the specified message and status.
@@ -42,6 +39,10 @@ const (
 	// Failed indicates the tool installation encountered an error.
 	Failed
 )
+
+func (r Result) String() string {
+	return fmt.Sprintf("%s: %s", r.Status, r.Message)
+}
 
 // Wrapped creates a new Result by appending the given message to the existing one.
 // Preserves the original status while extending the message context.

@@ -23,8 +23,8 @@ import (
 // Go represents a Go project configuration that can be installed from GitHub.
 type Go struct {
 	github  *github.GitHub
-	Data    common.Metadata `yaml:"-"`
-	Command string          `yaml:"command"`
+	Data    common.Metadata `json:"-"`
+	Command string          `json:"command"`
 }
 
 // Initialize sets up the Go project configuration from the given name.
@@ -40,8 +40,8 @@ func (g *Go) Version(name string) error {
 
 // Path constructs and stores the Go module path in metadata.
 // Uses the format github.com/{owner}/{repo}@{version}.
-func (g *Go) Path(_ string, _ []string, version string, _ match.Requirements) error {
-	g.github.Data.Set("path", fmt.Sprintf("github.com/%s/%s@%s", g.github.Owner, g.github.Repo, version))
+func (g *Go) URL(_ string, _ []string, version string, _ match.Requirements) error {
+	g.github.Data.Set("url", fmt.Sprintf("github.com/%s/%s@%s", g.github.Owner, g.github.Repo, version))
 
 	return nil
 }

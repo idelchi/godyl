@@ -2,6 +2,7 @@ package executable
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -14,7 +15,7 @@ type Parser struct {
 	Commands []string
 }
 
-// Parse attempts to extract the version string from  the provided output string using the defined regex patterns.
+// Parse attempts to extract the version string from the provided output string using the defined regex patterns.
 // It normalizes multi-line output into a single line and tries to match the patterns.
 // Returns the first matched version string or an error if no match is found.
 func (p *Parser) Parse(output string) (string, error) {
@@ -31,5 +32,8 @@ func (p *Parser) Parse(output string) (string, error) {
 		}
 	}
 
-	return "", errors.New("unable to find any match in output")
+	return "", fmt.Errorf("%w: %v", ErrNoMatch, p.Patterns)
 }
+
+// ErrNoMatch is returned when no match is found in the output.
+var ErrNoMatch = errors.New("no match found")

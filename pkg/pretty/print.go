@@ -37,3 +37,8 @@ func PrintYAMLMasked(obj any) {
 func PrintEnv(env any) {
 	fmt.Println(strings.TrimSpace(Env(env)))
 }
+
+// PrintDefault outputs the default representation of any value.
+func PrintDefault(env any) {
+	fmt.Println(env)
+}

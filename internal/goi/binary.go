@@ -107,8 +107,12 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 func (b *Binary) Download(path string) error {
 	url := "https://go.dev/dl/" + path
 
-	downloader := download.New()
-	downloader.InsecureSkipVerify = b.noVerifySSL
+	options := []download.Option{}
+	if b.noVerifySSL {
+		options = append(options, download.WithInsecureSkipVerify())
+	}
+
+	downloader := download.New(options...)
 
 	destination, err := downloader.Download(url, b.Dir.Path())
 	if err != nil {

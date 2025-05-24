@@ -15,13 +15,14 @@ import (
 
 // GitLab represents a GitLab project configuration and state.
 type GitLab struct {
-	Data                common.Metadata `yaml:"-"`
+	Data                common.Metadata `json:"-" mapstructure:"-"`
 	latestStoredRelease *gitlab.Release
-	Project             string
-	Namespace           string
-	Token               string `mask:"fixed"`
-	Server              string
-	Pre                 bool
+	Project             string `json:"project"   mapstructure:"project"`
+	Namespace           string `json:"namespace" mapstructure:"namespace"`
+	Token               string `json:"token"     mapstructure:"token"     mask:"fixed"`
+	Server              string `json:"server"    mapstructure:"server"`
+	Pre                 bool   `json:"pre"       mapstructure:"pre"`
+	NoToken             bool   `json:"no-token"  mapstructure:"no-token"`
 }
 
 // Initialize sets up the GitLab project configuration from the given name.
@@ -29,6 +30,10 @@ type GitLab struct {
 func (g *GitLab) Initialize(name string) error {
 	if err := g.PopulateNamespaceAndRepo(name); err != nil {
 		return err
+	}
+
+	if g.NoToken {
+		g.Token = ""
 	}
 
 	g.Data.Set("exe", g.Project)
@@ -50,13 +55,13 @@ func (g *GitLab) Version(_ string) error {
 
 // Path finds a matching release asset and stores its URL in metadata.
 // Uses version, extensions, and requirements to find the appropriate asset.
-func (g *GitLab) Path(_ string, extensions []string, version string, requirements match.Requirements) error {
+func (g *GitLab) URL(_ string, extensions []string, version string, requirements match.Requirements) error {
 	url, err := g.MatchAssetsToRequirements(extensions, version, requirements)
 	if err != nil {
 		return err
 	}
 
-	g.Data.Set("path", url)
+	g.Data.Set("url", url)
 
 	return nil
 }
@@ -71,7 +76,9 @@ func (g *GitLab) Install(
 	// Pass the progress listener down
 	d.ProgressListener = progressListener
 
-	return common.Download(d)
+	found, err = common.Download(d)
+
+	return "", found, err
 }
 
 // Get retrieves a metadata attribute value by its key.
@@ -180,6 +187,10 @@ func (g *GitLab) PopulateNamespaceAndRepo(name string) (err error) {
 
 // GetHeaders returns the HTTP headers required for GitLab API authentication.
 func (g *GitLab) GetHeaders() http.Header {
+	if g.NoToken {
+		return http.Header{}
+	}
+
 	return http.Header{
 		"PRIVATE-TOKEN": []string{g.Token},
 	}

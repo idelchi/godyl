@@ -22,8 +22,8 @@
   skip:
     reason: "ctop is not available for darwin arm64"
     condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
-  # [] because none of the binaries have any `proper` extension - the version number clutters it up so it looks like the extension is for example `.7-windows-amd64`
-  extensions: []
+  # [] because none of the assets have any `proper` extension - the version number clutters it up so it looks like the extension is for example `.7-windows-amd64`
+  hints: []
   tags:
     - docker
 
@@ -32,6 +32,7 @@
   hints:
     - pattern: "{{ .OS }}"
       weight: -1
+      type: contains
   tags:
     - kubernetes
 
@@ -39,10 +40,13 @@
   description: Run Kubernetes locally
   version:
     commands: version
-  extensions: "{{ .EXTENSION }}"
+  exe:
+    patterns: minikube*{{ .EXTENSION }}
   hints:
-    - pattern: "{{ .Exe }}"
-      weight: 1
+    pattern: .tar.gz
+    match: required
+    type: endswith
+
   tags:
     - kubernetes
 
@@ -173,7 +177,12 @@
 
 - name: mikefarah/yq
   description: YAML, JSON, and XML processor
-  extensions: "{{ .EXTENSION }}"
+  exe:
+    patterns: yq_*
+  hints:
+    - pattern: .zip
+      match: '{{ if eq .OS "windows" }}required{{ else }}weighted{{ end }}'
+      type: endswith
   tags:
     - processing
 
@@ -200,10 +209,12 @@
     condition: '{{ eq .OS "darwin" }}'
   hints:
     # eza releases both the `.tar.gz` and `.zip` which would have identical scores
-    - pattern: .tar.gz$
-      weight: 1
+    - pattern: .tar.gz
+      match: required
+      type: endswith
     - pattern: no_libgit
       weight: -1
+      type: contains
   tags:
     - terminal
 
@@ -229,7 +240,7 @@
   description: A TUI todo manager
   exe:
     patterns:
-      - "^{{ .OS }}-{{ .Exe }}"
+      - "{{ .OS }}-{{ .Exe }}*"
   skip:
     reason: "dooit not available for arm based architectures"
     condition: "{{ .IS_ARM }}"
@@ -247,8 +258,11 @@
   description: Good-looking diffs with diff-highlight and more.
   exe:
     name: diff-so-fancy
-    patterns: ^diff-so-fancy$
-  extensions: ""
+    patterns: diff-so-fancy
+  hints:
+    # No extension for the binary
+    - pattern: ^[^.]+$
+      type: regex
   tags:
     - processing
 
@@ -256,7 +270,7 @@
   description: A log management tool
   exe:
     name: logdy
-    patterns: ^logdy
+    patterns: logdy*
   fallbacks:
     - go
   tags:
@@ -285,25 +299,26 @@
   exe:
     name: sshed
     patterns:
-      - sshed
-      - ^cmd$
+      - "*sshed*"
+      - cmd
   fallbacks:
     - go
   hints:
     - pattern: "{{ .OS }}"
-      must: true
+      match: required
+      type: contains
   tags:
     - terminal
 
 - name: AlDanial/cloc
   description: Count Lines of Code
-  extensions:
-    - |
-      {{- if eq .OS "linux" -}}
-      .pl
-      {{- else -}}
-      .exe
-      {{- end -}}
+  hints:
+    - pattern: .pl
+      match: '{{ if eq .OS "linux" }}required{{ else }}weighted{{ end }}'
+      type: endswith
+    - pattern: .exe
+      match: '{{ if eq .OS "linux" }}weighted{{ else }}required{{ end }}'
+      type: endswith
   tags:
     - processing
 
@@ -345,7 +360,10 @@
       condition: '{{ eq .ARCH "arm" }}'
     - reason: "tere is not available for Darwin"
       condition: '{{ eq .OS "darwin" }}'
-  extensions: .zip
+  hints:
+    - pattern: .zip
+      match: required
+      type: endswith
   tags:
     - terminal
 
@@ -354,7 +372,7 @@
   exe:
     name: gh
     patterns:
-      - bin/gh{{ .EXTENSION }}$
+      - "bin/gh{{ .EXTENSION }}"
   commands:
     - "{{ .Output }}/{{ .Exe }} extension install github/gh-copilot || true"
     - "{{ .Output }}/{{ .Exe }} extension upgrade gh-copilot || true"
@@ -363,7 +381,6 @@
 
 - name: direnv/direnv
   description: Unclutter your .profile
-  extensions: []
   tags:
     - terminal
 
@@ -378,8 +395,6 @@
   description: Query and update data structures from the command line
   fallbacks:
     - go
-  extensions:
-    - .exe
   source:
     type: github
     go:
@@ -392,6 +407,7 @@
   hints:
     - pattern: static
       weight: 1
+      type: contains
   tags:
     - terminal
 
@@ -423,7 +439,9 @@
       condition: '{{ eq .ARCH "arm" }}'
     - reason: "jid is not available for darwin arm64"
       condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
-  extensions: .zip
+  hints:
+    - pattern: .zip
+      type: endswith
   tags:
     - processing
 
@@ -432,12 +450,13 @@
   skip:
     reason: "jnv not available for arm based architectures"
     condition: "{{ .IS_ARM }}"
-  extensions: |
-    {{- if eq .OS "windows" -}}
-        .zip
-    {{- else -}}
-        .xz
-    {{- end -}}
+  hints:
+    - pattern: .zip
+      match: '{{ if eq .OS "windows" }}required{{ end }}'
+      type: endswith
+    - pattern: .xz
+      match: '{{ if ne .OS "windows" }}required{{ end }}'
+      type: endswith
   tags:
     - processing
 
@@ -451,6 +470,7 @@
         {{- else -}}
         0
         {{- end -}}
+      type: contains
     - pattern: macos
       weight: |-
         {{- if eq .OS "darwin" -}}
@@ -458,6 +478,7 @@
         {{- else -}}
         0
         {{- end -}}
+      type: contains
     - pattern: armhf
       weight: |-
         {{- if eq .ARCH "arm" -}}
@@ -465,6 +486,7 @@
         {{- else -}}
         0
         {{- end -}}
+      type: contains
   tags:
     - processing
 
@@ -505,7 +527,7 @@
 - name: jarun/nnn
   description: The missing terminal file manager for X
   exe:
-    patterns: ^nnn.*
+    patterns: nnn*
   skip:
     - reason: "nnn is only available for linux"
       condition: '{{ ne .OS "linux" }}'
@@ -513,7 +535,8 @@
       condition: '{{ ne .ARCH "amd64" }}'
   hints:
     - pattern: icons
-      weight: 3
+      match: required
+      type: contains
   tags:
     - terminal
 
@@ -545,10 +568,11 @@
       condition: '{{ eq .OS "darwin" }}'
   exe:
     name: authelia
-    patterns: ^authelia
+    patterns: authelia*
   hints:
-    - pattern: "-musl"
+    - pattern: -musl
       weight: '{{ if eq .DISTRIBUTION "alpine" }}0{{ else }}-2{{ end }}'
+      type: contains
   tags:
     - automation
 
@@ -701,7 +725,9 @@
       apt-get update
       apt-get install -y {{ .Exe }}
       {{- end -}}
-  extensions: .exe
+  hints:
+    - pattern: .exe
+      type: endswith
   tags:
     - elevated
     - native
@@ -709,35 +735,41 @@
 
 - name: hairyhenderson/gomplate
   description: A versatile Go template processor
+  exe:
+    patterns: gomplate_*
   hints:
     # gomplate releases both the `.exe` and `.zip` which would have identical scores
-    - pattern: .exe$
+    - pattern: .zip
       weight: |-
         {{- if eq .OS "windows" -}}
         1
         {{- else -}}
         0
         {{- end -}}
+      type: endswith
   tags:
     - terminal
 
 - name: coredns/coredns
   description: DNS server that chains plugins
-  extensions: .tgz
+  hints:
+    - pattern: .tgz
+      type: endswith
   tags:
     - networking
 
 - name: watchexec/watchexec
   description: Executes commands in response to file modifications
   hints:
-    - pattern: "-musl"
+    - pattern: -musl
       weight: 2
-  extensions: |
-    {{- if eq .OS "windows" -}}
-        .zip
-    {{- else -}}
-        .tar.xz
-    {{- end -}}
+      type: contains
+    - pattern: .zip
+      weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
+      type: endswith
+    - pattern: .tar.xz
+      weight: '{{ if eq .OS "windows" }}0{{ else }}1{{ end }}'
+      type: endswith
   tags:
     - automation
 
@@ -772,7 +804,9 @@
       condition: '{{ eq .OS "windows" }}'
     - reason: "sops is not available for ARM32 architecture"
       condition: '{{ eq .ARCH "arm" }}'
-  extensions: "{{ .ARCH }}"
+  hints:
+    - pattern: "{{ .ARCH }}"
+      type: endswith
   tags:
     - security
 
@@ -808,7 +842,9 @@
 
 - name: paololazzari/play
   description: A TUI playground for your favorite programs, such as grep, sed and awk
-  extensions: zip
+  hints:
+    - pattern: .zip
+      type: endswith
   tags:
     - terminal
 
@@ -850,12 +886,25 @@
   tags:
     - go
 
+- name: charmbracelet/vhs
+  description: A terminal recorder
+  tags:
+    - terminal
+
+- name: ofabry/go-callvis
+  description: A development tool to help visualize call graph of a Go program using interactive view.
+  source:
+    type: go
+  tags:
+    - go
+
 - idelchi/gocry
 - idelchi/gogen
 - idelchi/go-match
 - idelchi/gonc
 - idelchi/go-next-tag
 - idelchi/tcisd
+- idelchi/envprof
 - name: idelchi/wslint
   version:
     commands: -v
@@ -863,10 +912,13 @@
 - name: gitlab-org/cli
   description: glab is an open source GitLab CLI tool
   exe: glab
-  source:
-    type: gitlab
-  extensions:
-    - .zip
-    - .tar.gz
+  hints:
+    - pattern: .zip
+      match: '{{ if eq .OS "windows" }}required{{ end }}'
+      type: endswith
+    - pattern: .tar.gz
+      match: '{{ if ne .OS "windows" }}required{{ end }}'
+      type: endswith
   tags:
     - terminal
+  inherit: gitlab

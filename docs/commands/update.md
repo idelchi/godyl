@@ -1,9 +1,13 @@
 ---
 layout: default
-title: Update Command
+title: Update
+parent: Commands
+nav_order: 5
 ---
 
 # Update Command
+
+![Godyl in Action (Update)]({{ site.baseurl }}/assets/gifs/update.gif)
 
 The `update` command updates the `godyl` application itself to the latest version or a specified version.
 
@@ -24,13 +28,13 @@ The `update` command allows you to keep your `godyl` installation up to date by 
 
 ## Flags
 
-| Flag                    | Environment Variable         | Default | Description                                                                                                    |
-| ----------------------- | ---------------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
-| `--no-verify-ssl`, `-k` | `GODYL_UPDATE_NO_VERIFY_SSL` | `false` | Skip SSL verification                                                                                          |
-| `--version`, `-v`       | `GODYL_UPDATE_VERSION`       | `""`    | Version to download (empty means latest)                                                                       |
-| `--pre`                 | `GODYL_UPDATE_PRE`           | `false` | Include pre-releases                                                                                           |
-| `--check`               | `GODYL_UPDATE_CHECK`         | `false` | Check for updates                                                                                              |
-| `--cleanup`             | `GODYL_UPDATE_CLEANUP`       | `false` | Cleanup old versions (Windows only; see [Platform-Specific Considerations](#platform-specific-considerations)) |
+| Flag              | Environment Variable   | Default | Description                                                                                                    |
+| :---------------- | :--------------------- | :------ | :------------------------------------------------------------------------------------------------------------- |
+| `--version`, `-v` | `GODYL_UPDATE_VERSION` | `""`    | Version to download (empty means latest)                                                                       |
+| `--pre`           | `GODYL_UPDATE_PRE`     | `false` | Include pre-releases                                                                                           |
+| `--check`         | `GODYL_UPDATE_CHECK`   | `false` | Check for updates                                                                                              |
+| `--cleanup`       | `GODYL_UPDATE_CLEANUP` | `false` | Cleanup old versions (Windows only; see [Platform-Specific Considerations](#platform-specific-considerations)) |
+| `--force`         | `GODYL_UPDATE_FORCE`   | `false` | Force update even if the current version is the latest                                                         |
 
 ## Examples
 
@@ -62,8 +66,4 @@ This will include pre-release versions when determining the latest version to in
 
 ### Windows
 
-On Windows, the update process launches a background process to clean up the old version, as the running binary cannot be directly replaced. This process will wait for the current `godyl` process to exit before completing the update. Can be enabled with the `--cleanup` flag.
-
-## Related Topics
-
-- [Global Flags]({{ site.baseurl }}/commands/commands#global-flags)
+On Windows, the running binary cannot be directly replaced. Use the `--cleanup` flag/option to launch a background process to remove up the old version.

@@ -2,7 +2,6 @@ package detect
 
 import (
 	"github.com/idelchi/godyl/internal/detect/platform"
-	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // Platform encapsulates system-specific characteristics and capabilities.
@@ -16,24 +15,56 @@ type Platform struct {
 
 // Parse extracts platform information from a string identifier.
 // Attempts to determine OS, architecture, and library details from the input.
-func (p *Platform) Parse(name string) {
-	p.OS.Parse(name)
-	p.Architecture.Parse(name)
-	p.Library.Parse(name)
-	p.Extension.Default(p.OS)
+func (p *Platform) ParseFrom(name string) {
+	p.OS.ParseFrom(name)
+	p.Architecture.ParseFrom(name)
+	p.Library.ParseFrom(name)
+	p.Extension.ParseFrom(p.OS)
 }
 
-// Merge combines two Platform configurations.
-// Copies non-zero values from the other Platform into this one,
-// preserving existing values when they are already set.
-func (p *Platform) Merge(other Platform) {
-	utils.SetIfZeroValue(&p.OS, other.OS)
-	utils.SetIfZeroValue(&p.Architecture.Type, other.Architecture.Type)
-	utils.SetIfZeroValue(&p.Architecture.Version, other.Architecture.Version)
-	utils.SetIfZeroValue(&p.Architecture.Raw, other.Architecture.Raw)
-	utils.SetIfZeroValue(&p.Library, other.Library)
-	utils.SetIfZeroValue(&p.Extension, other.Extension)
-	utils.SetIfZeroValue(&p.Distribution, other.Distribution)
+// Parse extracts platform information from a string identifier.
+// Attempts to determine OS, architecture, and library details from the input.
+func (p *Platform) Parse() error {
+	if err := p.OS.Parse(); err != nil {
+		return err
+	}
+
+	if err := p.Architecture.Parse(); err != nil {
+		return err
+	}
+
+	if err := p.Library.Parse(); err != nil {
+		return err
+	}
+
+	p.Extension.ParseFrom(p.OS)
+
+	return nil
+}
+
+// Merge merges unset fields from other into p and reports whether anything changed.
+func (p *Platform) Merge(other Platform) (changed bool) {
+	if p.OS.IsNil() {
+		p.OS, changed = other.OS, true
+	}
+
+	if p.Architecture.IsNil() {
+		p.Architecture, changed = other.Architecture, true
+	}
+
+	if p.Library.IsNil() {
+		p.Library, changed = other.Library, true
+	}
+
+	if p.Extension.IsNil() {
+		p.Extension, changed = other.Extension, true
+	}
+
+	if p.Distribution.IsNil() {
+		p.Distribution, changed = other.Distribution, true
+	}
+
+	return changed
 }
 
 // ToMap converts the Platform configuration into a map for templating.
@@ -41,8 +72,8 @@ func (p *Platform) Merge(other Platform) {
 func (p Platform) ToMap() map[string]any {
 	platformMap := make(map[string]any)
 	platformMap["OS"] = p.OS.String()
-	platformMap["ARCH"] = p.Architecture.Type
-	platformMap["ARCH_VERSION"] = p.Architecture.Version
+	platformMap["ARCH"] = p.Architecture.Type()
+	platformMap["ARCH_VERSION"] = p.Architecture.Version()
 	platformMap["ARCH_LONG"] = p.Architecture.String()
 	platformMap["IS_ARM"] = p.Architecture.IsARM()
 	platformMap["IS_X86"] = p.Architecture.IsX86()

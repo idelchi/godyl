@@ -6,8 +6,25 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
+
+func ConfigFile() file.File {
+	config := ConfigDir().WithFile("godyl")
+
+	extensions := []string{"yaml", "yml"}
+
+	for _, ext := range extensions {
+		config = config.WithExtension(ext)
+
+		if config.Exists() {
+			return config
+		}
+	}
+
+	return file.New("godyl.yml")
+}
 
 // ConfigDir returns the config directory for Godyl.
 func ConfigDir() folder.Folder {

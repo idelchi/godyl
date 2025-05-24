@@ -3,6 +3,7 @@ package match
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"sort"
 )
 
@@ -18,9 +19,10 @@ var (
 // Result represents the outcome of matching an asset.
 // It contains the asset, its score, and whether it is qualified.
 type Result struct {
-	Asset     Asset // Asset being evaluated.
-	Score     int   // Score representing how well the asset matches the requirements.
-	Qualified bool  // Qualified indicates whether the asset meets the necessary criteria.
+	Error     error
+	Asset     Asset
+	Score     int
+	Qualified bool
 }
 
 // Results is a collection of Result objects.
@@ -38,6 +40,10 @@ func (m Results) ToString() string {
 		result += fmt.Sprintf("		  arch: %v\n", res.Asset.Platform.Architecture)
 		result += fmt.Sprintf("		  library: %s\n", res.Asset.Platform.Library)
 		result += fmt.Sprintf("		  extension: %s\n", res.Asset.Platform.Extension)
+
+		if res.Error != nil {
+			result += fmt.Sprintf("		error: %s\n", res.Error)
+		}
 	}
 
 	return result
@@ -66,6 +72,7 @@ func (m Results) Best() Results {
 
 // Status evaluates the state of the results and returns an appropriate error if needed.
 func (m Results) Status() (err error) {
+	m = m.Sorted()
 	if !m.HasQualified() {
 		err = ErrNoQualified
 
@@ -73,7 +80,7 @@ func (m Results) Status() (err error) {
 	} else if m.IsAmbigious() {
 		err = ErrAmbiguous
 
-		return fmt.Errorf("%w: \n%s%s", err, m.ToString(), "  ** try to tune weights **")
+		return fmt.Errorf("%w: \n%s%s", err, m.Best().ToString(), "  ** try to tune weights **")
 	} else if !m.Success() {
 		err = ErrNoMatch
 
@@ -104,6 +111,26 @@ func (m Results) HasQualified() bool {
 	return false
 }
 
+// Error returns a combined error from all results.
+func (m Results) Errors() []error {
+	var errs []error
+
+	for _, result := range m {
+		if result.Error == nil {
+			continue
+		}
+
+		errs = append(errs, result.Error)
+	}
+
+	return errs
+}
+
+// HasErrors returns true if there are any errors in the results.
+func (m Results) HasErrors() bool {
+	return len(m.Errors()) > 0
+}
+
 // WithoutZero returns a new instance of Results without zero scores.
 func (m Results) WithoutZero() Results {
 	var qualified Results
@@ -120,7 +147,7 @@ func (m Results) WithoutZero() Results {
 // Sorted returns a new sorted instance of Results.
 // It sorts first by qualification status and then by score in descending order.
 func (m Results) Sorted() Results {
-	sortedResults := append(Results{}, m...) // Create a copy of the original slice
+	sortedResults := slices.Clone(m)
 	sort.Slice(sortedResults, func(i, j int) bool {
 		if sortedResults[i].Qualified != sortedResults[j].Qualified {
 			return sortedResults[i].Qualified

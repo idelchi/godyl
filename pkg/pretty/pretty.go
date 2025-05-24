@@ -1,32 +1,27 @@
 package pretty
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 
+	"github.com/goccy/go-yaml"
 	"github.com/joho/godotenv"
 	"github.com/showa-93/go-mask"
-
-	"gopkg.in/yaml.v3"
 )
 
 // YAML formats data as indented YAML.
 // Converts any value to a formatted YAML string with consistent
 // indentation. Returns error message as string if encoding fails.
 func YAML(obj any) string {
-	buf := bytes.Buffer{}
-	enc := yaml.NewEncoder(&buf)
-
 	const indent = 2
 
-	enc.SetIndent(indent)
-
-	if err := enc.Encode(&obj); err != nil {
+	// Use MarshalWithOptions to set the indent
+	yamlBytes, err := yaml.MarshalWithOptions(obj, yaml.Indent(indent), yaml.UseSingleQuote(true))
+	if err != nil {
 		return err.Error()
 	}
 
-	return buf.String()
+	return string(yamlBytes)
 }
 
 // YAMLMasked formats data as YAML with sensitive data masked.
@@ -87,7 +82,7 @@ func Env(obj any) string {
 	}
 
 	var data map[string]any
-	if err := json.Unmarshal(jsonData, &data); err != nil {
+	if err = json.Unmarshal(jsonData, &data); err != nil {
 		return err.Error()
 	}
 

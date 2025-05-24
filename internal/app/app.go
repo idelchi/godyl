@@ -1,6 +1,5 @@
-// Package app provides the entrypoint for the application.
-// It creates the root command and executes the application,
-// handling or returning any errors that occur.
+// Package app provides the entrypoint for the application, creating the root command
+// and executing it.
 package app
 
 import (
@@ -8,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/cli"
+	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
 )
 
@@ -29,13 +29,16 @@ func New(version string, embeds embed.FS) *Application {
 func (a *Application) Execute() error {
 	cfg := &config.Config{}
 
-	root, err := cli.NewCommand(cfg, a.version, a.embeds)
+	// Get the embedded files
+	files, err := common.NewEmbeddedFiles(a.embeds)
 	if err != nil {
-		return fmt.Errorf("application failed to initialize: %w", err)
+		return fmt.Errorf("creating embedded files: %w", err)
 	}
 
+	root := cli.Command(cfg, files, a.version)
+
 	// Execute the application
-	if err := root.Run(); err != nil {
+	if err := root.Execute(); err != nil {
 		return err //nolint:wrapcheck 		// Wrapping here adds no value.
 	}
 

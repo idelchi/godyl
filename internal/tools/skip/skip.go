@@ -3,39 +3,33 @@ package skip
 
 import (
 	"fmt"
-	"strconv"
+
+	"github.com/goccy/go-yaml/ast"
 
 	"github.com/idelchi/godyl/pkg/unmarshal"
-
-	"gopkg.in/yaml.v3"
 )
 
 // Skip represents a list of conditions under which certain operations (e.g., downloading, testing) should be skipped.
-type Skip []Condition
+type Skip unmarshal.SingleOrSliceType[Condition]
 
 // Condition defines a condition and an optional reason for skipping an operation.
 type Condition struct {
-	// Condition is a string that represents a boolean expression (e.g., "true" or "false") that determines whether the
-	// operation should be skipped.
-	Condition string
-	// Reason provides an optional explanation for why the operation is being skipped.
-	Reason string
-
-	condition bool
+	Reason    string
+	Condition unmarshal.Templatable[bool]
 }
 
 func (c Condition) True() bool {
-	return c.condition
+	return c.Condition.Value
 }
 
-func (c *Condition) Parse() (err error) {
+func (c *Condition) Parse() error {
 	// Parse the condition string into a boolean value.
-	c.condition, err = strconv.ParseBool(c.Condition)
+	err := c.Condition.Parse()
 	if err != nil {
-		return fmt.Errorf("parsing condition %q: %w", c.Condition, err)
+		return fmt.Errorf("parsing condition: %w", err)
 	}
 
-	return err
+	return nil
 }
 
 func (s Skip) Has() bool {
@@ -61,21 +55,11 @@ func (s *Skip) Evaluate() (Skip, error) {
 
 // UnmarshalYAML implements custom unmarshaling for Skip,
 // allowing the Skip field to be either a single condition or a list of conditions.
-func (s *Skip) UnmarshalYAML(value *yaml.Node) error {
-	// If the YAML value is a scalar (e.g., just a single condition), handle it directly.
-	if value.Kind == yaml.ScalarNode {
-		*s = []Condition{{Condition: value.Value}}
-
-		return nil
-	}
-
-	// Otherwise, treat it as a list of conditions and unmarshal accordingly.
-	result, err := unmarshal.SingleOrSlice[Condition](value, true)
+func (s *Skip) UnmarshalYAML(node ast.Node) (err error) {
+	*s, err = unmarshal.SingleOrSlice[Condition](node)
 	if err != nil {
-		return err
+		return fmt.Errorf("unmarshaling skip: %w", err)
 	}
-
-	*s = result
 
 	return nil
 }

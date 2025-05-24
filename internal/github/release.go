@@ -12,11 +12,9 @@ var ErrRelease = errors.New("release")
 
 // Release represents a GitHub release, containing the release name, tag, and associated assets.
 type Release struct {
-	// Name is the name of the release.
-	Name string `json:"name"`
-	// Tag is the tag associated with the release (e.g., version number).
-	Tag string `json:"tag_name"` //nolint:tagliatelle
-	// Assets is a collection of assets attached to the release.
+	Name   string `json:"name"`
+	Tag    string `json:"tag_name"`
+	Body   string `json:"body"`
 	Assets Assets `json:"assets"`
 }
 
@@ -30,7 +28,6 @@ func (r *Release) FromRepositoryRelease(release *github.RepositoryRelease) error
 		return fmt.Errorf("%w: release tag name is nil", ErrRelease)
 	}
 
-	// Convert GitHub assets to our Asset type
 	assets := make(Assets, 0, len(release.Assets))
 
 	for _, asset := range release.Assets {
@@ -55,6 +52,7 @@ func (r *Release) FromRepositoryRelease(release *github.RepositoryRelease) error
 		Name:   name,
 		Tag:    *release.TagName,
 		Assets: assets,
+		Body:   *release.Body,
 	}
 
 	return nil

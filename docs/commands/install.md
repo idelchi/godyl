@@ -1,9 +1,13 @@
 ---
 layout: default
-title: Install Command
+title: Install
+parent: Commands
+nav_order: 1
 ---
 
 # Install Command
+
+![Godyl in Action (Install)]({{ site.baseurl }}/assets/gifs/install.gif)
 
 The `install` command allows you to install tools defined in YAML configuration files.
 
@@ -23,18 +27,16 @@ The `install` command reads tool definitions from one or more YAML files (or fro
 
 ## Flags
 
-| Flag                    | Environment Variable       | Default       | Description                                   |
-| ----------------------- | -------------------------- | ------------- | --------------------------------------------- |
-| `--output`, `-o`        | `GODYL_TOOL_OUTPUT`        | `./bin`       | Output path for the downloaded tools          |
-| `--tags`, `-t`          | `GODYL_TOOL_TAGS`          | `["!native"]` | Tags to filter tools by. Use `!` to exclude   |
-| `--source`              | `GODYL_TOOL_SOURCE`        | `github`      | Source from which to install the tools        |
-| `--strategy`            | `GODYL_TOOL_STRATEGY`      | `none`        | Strategy to use for updating tools            |
-| `--os`                  | `GODYL_TOOL_OS`            | `""`          | Operating system to use for downloading       |
-| `--arch`                | `GODYL_TOOL_ARCH`          | `""`          | Architecture to use for downloading           |
-| `--parallel`, `-j`      | `GODYL_TOOL_PARALLEL`      | `0`           | Number of parallel downloads (0 is unlimited) |
-| `--no-verify-ssl`, `-k` | `GODYL_TOOL_NO_VERIFY_SSL` | `false`       | Skip SSL verification                         |
-| `--hint`                | `GODYL_TOOL_HINT`          | `[""]`        | Add hint patterns with weight 1               |
-| `--show`, `-s`          | `GODYL_TOOL_SHOW`          | `false`       | Show the configuration and exit               |
+| Flag             | Environment Variable     | Default       | Description                                 |
+| :--------------- | :----------------------- | :------------ | :------------------------------------------ |
+| `--output`, `-o` | `GODYL_INSTALL_OUTPUT`   | `./bin`       | Output path for the downloaded tools        |
+| `--tags`, `-t`   | `GODYL_INSTALL_TAGS`     | `["!native"]` | Tags to filter tools by. Use `!` to exclude |
+| `--source`       | `GODYL_INSTALL_SOURCE`   | `github`      | Source from which to install the tools      |
+| `--strategy`     | `GODYL_INSTALL_STRATEGY` | `none`        | Strategy to use for updating tools          |
+| `--os`           | `GODYL_INSTALL_OS`       | `""`          | Operating system to use for downloading     |
+| `--arch`         | `GODYL_INSTALL_ARCH`     | `""`          | Architecture to use for downloading         |
+| `--hint`         | `GODYL_INSTALL_HINT`     | `[""]`        | Add hint patterns with weight 1             |
+| `--show`, `-s`   | `GODYL_INSTALL_SHOW`     | `false`       | Show the configuration and exit             |
 
 ## Examples
 
@@ -79,8 +81,3 @@ godyl install tools.yml --strategy force
 ```sh
 godyl install tools.yml --os linux --arch arm64
 ```
-
-## Related Topics
-
-- [Global Flags]({{ site.baseurl }}/commands/commands#global-flags)
-- [Tool Configuration Format]({{ site.baseurl }}/configuration/tools#content-start)

@@ -3,15 +3,36 @@ package platform
 import (
 	"fmt"
 	"strings"
+
+	"github.com/goccy/go-yaml/ast"
+
+	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
 // OS represents an operating system configuration.
 type OS struct {
-	// Type is the canonical OS name (e.g., linux, windows, darwin).
-	Type string
+	Name string `single:"true"`
 
-	// Raw contains the original string that was parsed.
-	Raw string
+	canonical string
+	alias     string
+}
+
+func (o *OS) IsNil() bool {
+	return o.Name == ""
+}
+
+func (o *OS) UnmarshalYAML(node ast.Node) error {
+	type raw OS
+
+	if err := unmarshal.SingleStringOrStruct(node, (*raw)(o)); err != nil {
+		return fmt.Errorf("unmarshaling os: %w", err)
+	}
+
+	return nil
+}
+
+func (o OS) MarshalYAML() (any, error) {
+	return o.Name, nil
 }
 
 // OSInfo defines an operating system's characteristics.
@@ -52,21 +73,25 @@ func (OSInfo) Supported() []OSInfo {
 	}
 }
 
-// Parse extracts operating system information from a string identifier.
-// Matches against known OS types and aliases, setting type and raw values.
-// Returns an error if parsing fails.
-func (o *OS) Parse(name string) error {
-	name = strings.ToLower(name)
+func (o *OS) ParseFrom(name string, comparisons ...func(string, string) bool) error {
+	if len(comparisons) == 0 {
+		comparisons = append(comparisons, strings.Contains)
+	}
+
+	lower := strings.ToLower(name)
 
 	osInfo := OSInfo{}
 
 	for _, info := range osInfo.Supported() {
 		for _, alias := range append([]string{info.Type}, info.Aliases...) {
-			if strings.Contains(name, alias) {
-				o.Type = info.Type
-				o.Raw = alias
+			for _, compare := range comparisons {
+				if compare(lower, alias) {
+					o.Name = name
+					o.canonical = info.Type
+					o.alias = alias
 
-				return nil
+					return nil
+				}
 			}
 		}
 	}
@@ -74,15 +99,24 @@ func (o *OS) Parse(name string) error {
 	return fmt.Errorf("%w: OS from name: %s", ErrParse, name)
 }
 
+// Parse extracts operating system information from a string identifier.
+func (o *OS) Parse() error {
+	return o.ParseFrom(o.Name, strings.EqualFold)
+}
+
+func (o *OS) Type() string {
+	return o.canonical
+}
+
 // IsUnset checks if the OS type is empty.
 func (o *OS) IsUnset() bool {
-	return o.Type == ""
+	return o.canonical == ""
 }
 
 // Is checks for exact OS match including raw string.
 // Returns true only if both OS configurations are set and identical.
 func (o *OS) Is(other OS) bool {
-	return other.Raw == o.Raw && !o.IsUnset() && !other.IsUnset()
+	return other.alias == o.alias && !o.IsUnset() && !other.IsUnset()
 }
 
 // IsCompatibleWith checks if binaries built for this OS can run on another.
@@ -92,10 +126,10 @@ func (o *OS) IsCompatibleWith(other OS) bool {
 		return false
 	}
 
-	return o.Type == other.Type
+	return o.canonical == other.canonical
 }
 
 // String returns the canonical name of the operating system.
 func (o OS) String() string {
-	return o.Type
+	return o.canonical
 }

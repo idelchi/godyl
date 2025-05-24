@@ -39,7 +39,7 @@ func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error
 		return fmt.Errorf("getting executable path: %w", err)
 	}
 
-	log.Debug("Executable path: %q", exePath)
+	log.Debugf("Executable path: %q", exePath)
 
 	// Create a temporary folder for cleanup files
 	folder, err := tmp.GodylCreateRandomDir()
@@ -52,7 +52,7 @@ func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error
 	batchFile := file.New(folder.Path(), "cleanup.bat")
 	logFile := file.New(folder.Path(), "cleanup_debug.log")
 
-	log.Debug("Batch file stored in: %s", batchFile.Path())
+	log.Debugf("Batch file stored in: %s", batchFile.Path())
 
 	// Create cleanup script
 	if err := createBatchFile(templateContent, batchFile.Path(), cleanupData{

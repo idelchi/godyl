@@ -8,39 +8,28 @@ import (
 	"sync"
 	"time"
 
+	"github.com/idelchi/godyl/internal/tools/version"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
-// File returns the cache file for the specified cache type.
-func File(folder folder.Folder) file.File {
-	return folder.WithFile("godyl.json")
-}
-
-// New creates a new cache manager with the specified folder as the backend.
-func New(folder folder.Folder) *Cache {
+// New creates a new cache manager with the specified file as the backend.
+func New(file file.File) *Cache {
 	return &Cache{
-		File:  File(folder),
+		File:  file,
 		items: make(Items),
 	}
 }
 
 // Item represents a cache item.
 type Item struct {
-	// ID is the unique identifier for the item.
-	ID string
-	// Name is the name of the item.
-	Name string
-	// Path is the path to the item.
-	Path string
-	// Version is the version of the item.
-	Version string
-	// Time is the time when the item was created or last updated.
-	Downloaded time.Time
-	// Updated is the time when the item was last updated.
-	Updated time.Time
-	// Type is the type of the item.
-	Type string
+	Version    version.Version `json:"version"`
+	Downloaded time.Time       `json:"downloaded"`
+	Updated    time.Time       `json:"updated"`
+	ID         string          `json:"id"`
+	Name       string          `json:"name"`
+	Path       string          `json:"path"`
+	Type       string          `json:"type"`
 }
 
 // ErrItemNotFound is returned when an item is not found in the cache.
@@ -67,57 +56,47 @@ func (c *Cache) Load() error {
 
 	err := folder.FromFile(c.File).Create()
 	if err != nil {
-		return err
+		return err //nolint:wrapcheck 	// Error does not need additional wrapping.
 	}
 
 	err = c.Create()
 	if err != nil {
-		return err
+		return err //nolint:wrapcheck 	// Error does not need additional wrapping.
 	}
 
 	err = c.Write([]byte("[]"))
 	if err != nil {
-		return err
+		return err //nolint:wrapcheck 	// Error does not need additional wrapping.
 	}
 
 	return nil
 }
 
 // Get retrieves an item from the cache by ID.
-func (c *Cache) Get(id string) (*Item, error) {
+func (c *Cache) Get(identifier string) (*Item, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
-	item, ok := c.items[id]
+	item, ok := c.items[identifier]
 	if !ok {
-		return nil, fmt.Errorf("%w: %q", ErrItemNotFound, id)
+		return nil, fmt.Errorf("%w: %q", ErrItemNotFound, identifier)
 	}
 
 	return item, nil
 }
 
-// GetByProperty retrieves an item from the cache by a specific property.
-func (c *Cache) GetByProperty(property, value string) (*Item, error) {
+// GetByName retrieves an item from the cache by name.
+func (c *Cache) GetByName(name string) (*Item, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
-	accessors := map[string]func(*Item) string{
-		"name": func(i *Item) string { return i.Name },
-		"path": func(i *Item) string { return i.Path },
-	}
-
-	accessor, ok := accessors[property]
-	if !ok {
-		return nil, fmt.Errorf("invalid property: %s", property)
-	}
-
 	for _, item := range c.items {
-		if accessor(item) == value {
+		if item.Name == name {
 			return item, nil
 		}
 	}
 
-	return nil, fmt.Errorf("%w: %q", ErrItemNotFound, value)
+	return nil, fmt.Errorf("%w: %q", ErrItemNotFound, name)
 }
 
 // GetAll retrieves all items from the cache.
@@ -133,39 +112,43 @@ func (c *Cache) GetAll() ([]*Item, error) {
 	return items, nil
 }
 
-// Save stores an item in the.
+// Save stores an item in the cache.
 func (c *Cache) Save(item *Item) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
 	c.items[item.ID] = item
 
-	c.wasTouched = true
+	return c.persist()
+}
+
+// Delete removes an item from the cache by identifier.
+func (c *Cache) Delete(identifier string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if _, ok := c.items[identifier]; !ok {
+		return fmt.Errorf("%w: %q", ErrItemNotFound, identifier)
+	}
+
+	delete(c.items, identifier)
 
 	return c.persist()
 }
 
-// Delete removes an item from the cache by id.
-func (c *Cache) Delete(id string) error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+// Touched returns true if the cache was modified.
+func (c *Cache) Touched() bool {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
 
-	if _, ok := c.items[id]; !ok {
-		return errors.New("item not found")
-	}
-
-	delete(c.items, id)
-
-	c.wasTouched = true
-
-	return c.persist()
+	return c.wasTouched
 }
 
 // load reads the cache data from disk.
 func (c *Cache) load() error {
-	file, err := c.Open() // Using embedded File.Open() method
+	file, err := c.Open()
 	if err != nil {
-		return err
+		return err // Error does not need additional wrapping.
 	}
 	defer file.Close()
 
@@ -173,7 +156,7 @@ func (c *Cache) load() error {
 
 	decoder := json.NewDecoder(file)
 	if err := decoder.Decode(&items); err != nil {
-		return err
+		return err // Error does not need additional wrapping.
 	}
 
 	c.items = make(map[string]*Item, len(items))
@@ -186,9 +169,9 @@ func (c *Cache) load() error {
 
 // persist writes the cache data to disk.
 func (c *Cache) persist() error {
-	file, err := c.OpenForWriting() // Using embedded File.OpenForWriting() method
+	file, err := c.OpenForWriting()
 	if err != nil {
-		return err
+		return err //nolint:wrapcheck 	// Error does not need additional wrapping.
 	}
 	defer file.Close()
 
@@ -198,15 +181,20 @@ func (c *Cache) persist() error {
 	}
 
 	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ") // Pretty formatting
+	encoder.SetIndent("", "  ")
 
-	return encoder.Encode(items)
+	c.wasTouched = true
+
+	return encoder.Encode(items) //nolint:wrapcheck 	// Error does not need additional wrapping.
 }
 
-// Touched returns true if the cache was modified.
-func (c *Cache) Touched() bool {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
+// Set stores an item in the cache (adapter method for Manager interface).
+func (c *Cache) Set(id string, item *Item) error {
+	item.ID = id
+	return c.Save(item)
+}
 
-	return c.wasTouched
+// Remove removes an item from the cache (adapter method for Manager interface).
+func (c *Cache) Remove(id string) error {
+	return c.Delete(id)
 }

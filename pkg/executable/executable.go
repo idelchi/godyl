@@ -7,20 +7,22 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Executable represents a command-line executable.
-type Executable struct {
-	file.File
+type Executable string
+
+// New creates a new Executable instance from the provided paths.
+func New(paths ...string) Executable {
+	return Executable(filepath.ToSlash(filepath.Join(paths...)))
 }
 
-// NewExecutable creates a new Executable instance from the provided paths.
-func New(paths ...string) Executable {
-	return Executable{File: file.New(paths...)}
+// String returns the executable path as a string.
+func (e Executable) String() string {
+	return string(e)
 }
 
 // Command runs the specified command arguments by passing them to the executable.
@@ -28,7 +30,7 @@ func New(paths ...string) Executable {
 func (e Executable) Command(ctx context.Context, cmdArgs []string) (string, error) {
 	var out bytes.Buffer
 
-	cmd := exec.CommandContext(ctx, e.Path(), cmdArgs...)
+	cmd := exec.CommandContext(ctx, e.String(), cmdArgs...)
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 	cmd.Stdin = os.Stdin
@@ -54,15 +56,16 @@ func (e Executable) Parse(parser *Parser) (string, error) {
 		// Get the output of the command
 		output, err := e.Command(ctx, []string{cmdArgs})
 		if err != nil {
-			// // Collect errors and continue
+			// Collect errors
 			errs = append(errs, err)
 		}
 
-		if output, err := parser.Parse(output); err == nil {
-			return output, nil
+		if match, err := parser.Parse(output); err == nil {
+			return match, nil
+		} else { //nolint:revive		// Unindenting would then result in shadowing not appending the correct one.
+			// Collect errors
+			errs = append(errs, err)
 		}
-
-		errs = append(errs, err)
 
 		continue
 	}

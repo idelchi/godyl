@@ -5,6 +5,7 @@ package download
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -13,66 +14,83 @@ import (
 	"github.com/hashicorp/go-getter/v2"
 	retryablehttp "github.com/hashicorp/go-retryablehttp"
 
+	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // Downloader manages download settings.
 type Downloader struct {
-	ProgressListener   getter.ProgressTracker
-	ContextTimeout     time.Duration
-	ReadTimeout        time.Duration
-	HeadTimeout        time.Duration
-	InsecureSkipVerify bool
+	progressListener   getter.ProgressTracker
+	contextTimeout     time.Duration
+	readTimeout        time.Duration
+	headTimeout        time.Duration
+	insecureSkipVerify bool
 
 	// retry settings
-	MaxRetries   int
-	RetryWaitMin time.Duration
-	RetryWaitMax time.Duration
+	maxRetries   int
+	retryWaitMin time.Duration
+	retryWaitMax time.Duration
 }
 
-// New returns a Downloader with sane defaults.
-func New() *Downloader {
+// New creates a new Downloader with default settings and applies the given options.
+func New(opts ...Option) *Downloader {
 	const defaultTimeout = 5 * time.Minute
 
-	return &Downloader{
-		ContextTimeout:     defaultTimeout,
-		ReadTimeout:        defaultTimeout,
-		HeadTimeout:        defaultTimeout,
-		InsecureSkipVerify: false,
+	const defaultRetries = 3
 
-		MaxRetries:   3,
-		RetryWaitMin: 1 * time.Second,
-		RetryWaitMax: 30 * time.Second,
+	const defaultRetryWaitMin = time.Second
+
+	const defaultRetryWaitMax = 30 * time.Second
+
+	downloader := &Downloader{
+		contextTimeout: defaultTimeout,
+		readTimeout:    defaultTimeout,
+		headTimeout:    defaultTimeout,
+
+		maxRetries:   defaultRetries,
+		retryWaitMin: defaultRetryWaitMin,
+		retryWaitMax: defaultRetryWaitMax,
 	}
+
+	// Apply all provided options
+	for _, opt := range opts {
+		opt(downloader)
+	}
+
+	return downloader
 }
+
+var ErrDownload = errors.New("download error")
 
 // Download fetches url to output (archives auto‑extracted).
 func (d Downloader) Download(url, output string, header ...http.Header) (file.File, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), d.ContextTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), d.contextTimeout)
 	defer cancel()
 
 	// retryable HTTP client
-	rc := retryablehttp.NewClient()
-	rc.Logger = nil // silence default logging
-	rc.RetryMax = d.MaxRetries
-	rc.RetryWaitMin = d.RetryWaitMin
-	rc.RetryWaitMax = d.RetryWaitMax
-	rc.HTTPClient = cleanhttp.DefaultClient()
+	client := retryablehttp.NewClient()
+	client.Logger = nil // silence default logging
+	client.RetryMax = d.maxRetries
+	client.RetryWaitMin = d.retryWaitMin
+	client.RetryWaitMax = d.retryWaitMax
+	client.HTTPClient = cleanhttp.DefaultClient()
 
-	httpClient := rc.StandardClient()
+	httpClient := client.StandardClient()
 
-	if d.InsecureSkipVerify {
+	if d.insecureSkipVerify {
 		httpClient.Transport = &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, //nolint:gosec   // Only set if explicitly requested
 		}
 	}
 
 	// merge headers
-	h := make(http.Header)
-	for _, src := range header {
-		for k, vv := range src {
+	headers := make(http.Header)
+
+	for _, h := range header {
+		for k, vv := range h {
 			for _, v := range vv {
-				h.Add(k, v)
+				headers.Add(k, v)
 			}
 		}
 	}
@@ -80,26 +98,32 @@ func (d Downloader) Download(url, output string, header ...http.Header) (file.Fi
 	httpGetter := &getter.HttpGetter{
 		Netrc:                 true,
 		XTerraformGetDisabled: true,
-		HeadFirstTimeout:      d.HeadTimeout,
-		ReadTimeout:           d.ReadTimeout,
+		HeadFirstTimeout:      d.headTimeout,
+		ReadTimeout:           d.readTimeout,
 		Client:                httpClient,
-		Header:                h,
+		Header:                headers,
+	}
+
+	if !utils.IsURL(url) {
+		return file.New(), fmt.Errorf("%w: invalid URL: %q", ErrDownload, url)
 	}
 
 	req := &getter.Request{
-		Src:     url,
-		Dst:     output,
-		GetMode: getter.ModeAny,
-	}
-
-	if d.ProgressListener != nil {
-		req.ProgressListener = d.ProgressListener
+		Src:              url,
+		Dst:              output,
+		GetMode:          getter.ModeAny,
+		ProgressListener: d.progressListener,
 	}
 
 	res, err := (&getter.Client{Getters: []getter.Getter{httpGetter}}).Get(ctx, req)
 	if err != nil {
-		return file.New(), fmt.Errorf("getting file: %w", err)
+		debug.Debug("tried to download %q to %q", url, output)
+		debug.Debug("error: %v", err)
+
+		return file.New(), fmt.Errorf("%w: getting file: %w", ErrDownload, err)
 	}
+
+	debug.Debug("downloaded %q to %q", url, res.Dst)
 
 	return file.New(res.Dst), nil
 }

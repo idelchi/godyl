@@ -44,13 +44,11 @@ const (
 
 // TODO(Idelchi): Add validation.
 type Source struct {
-	Type Type `validate:"oneof=github gitlab url none go"`
-
-	None   none.None
+	GitHub github.GitHub
 	URL    url.URL
 	Go     goc.Go
+	Type   Type `validate:"oneof=github gitlab url none go"`
 	GitLab gitlab.GitLab
-	GitHub github.GitHub
 }
 
 // Populator defines the interface that all source types must implement.
@@ -59,7 +57,7 @@ type Source struct {
 type Populator interface {
 	Initialize(repo string) error
 	Version(version string) error
-	Path(name string, extensions []string, version string, requirements match.Requirements) error
+	URL(name string, extensions []string, version string, requirements match.Requirements) error
 	Install(data common.InstallData, progressListener getter.ProgressTracker) (string, file.File, error)
 	Get(key string) string
 }
@@ -75,7 +73,7 @@ func (s *Source) Installer() (Populator, error) {
 	case URL:
 		return &s.URL, nil
 	case NONE:
-		return &s.None, nil
+		return &none.None{}, nil
 	case GO:
 		s.Go.SetGitHub(&s.GitHub)
 

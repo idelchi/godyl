@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Installation
+nav_order: 2
 ---
 
 # Installation
@@ -21,7 +22,7 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install
 
 ## Docker
 
-You can test out `godyl` using Docker. The following command will run the latest version of `godyl`:
+You can test out the tool using Docker. The following command will run the latest version and install the default set of tools:
 
 ```sh
 export GITHUB_TOKEN=<your_github_token>

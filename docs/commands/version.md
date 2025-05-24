@@ -1,6 +1,8 @@
 ---
 layout: default
-title: Version Command
+title: Version
+parent: Commands
+nav_order: 8
 ---
 
 # Version Command
@@ -16,7 +18,3 @@ godyl version
 ## Aliases
 
 - `v`
-
-## Related Topics
-
-- [Global Flags]({{ site.baseurl }}/commands/commands#global-flags)

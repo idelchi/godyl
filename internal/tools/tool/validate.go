@@ -8,12 +8,14 @@ import (
 	"github.com/hashicorp/go-getter/v2"
 
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/templates"
 	"github.com/idelchi/godyl/internal/tools/result"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/strategy"
 	"github.com/idelchi/godyl/internal/tools/tags"
 	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
 	"github.com/idelchi/godyl/pkg/utils"
 	"github.com/idelchi/godyl/pkg/validator"
@@ -22,21 +24,37 @@ import (
 // Resolve attempts to resolve the tool's source and strategy based on the provided tags.
 // It handles environment variables, fallbacks, templating, and validation of the tool's
 // configuration. Returns a Result indicating success or failure with detailed messages.
-func (t *Tool) Resolve(tags tags.IncludeTags, dry bool) result.Result {
+func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.Result {
+	// Initialize default options
+	opts := resolveOptions{}
+
+	// Apply all options
+	for _, option := range options {
+		option(&opts)
+	}
+
+	if err := t.Platform.Parse(); err != nil {
+		return result.WithFailed("parsing platform").Wrap(err)
+	}
+
 	// Load environment variables from the system.
 	t.Env.Merge(env.FromEnv())
-
-	// Expand and set the output folder path.
-	t.Output = folder.New(t.Output).Expanded().Path()
 
 	// Expand environment variables.
 	t.Env.Expand()
 
-	if err := t.TemplateFirst(); err != nil {
+	// Create a basic template engine with missing key errors and a map of platform values
+	tmpl := templates.New(templates.WithMissingKeyError(), templates.WithSlimSprig()).
+		WithValues(t.Platform.ToMap(), t.ToTemplateMap())
+
+	if err := t.TemplateFirst(tmpl); err != nil {
 		return result.WithFailed("templating first").Wrap(err)
 	}
 
-	// Must pass atleast after first set of templates.
+	// Expand and set the output folder path.
+	t.Output = folder.New(t.Output).Expanded().Path()
+
+	// Must pass at least after first set of templates.
 	if err := t.Validate(); err != nil {
 		return result.WithFailed("validating config").Wrap(err)
 	}
@@ -53,6 +71,8 @@ func (t *Tool) Resolve(tags tags.IncludeTags, dry bool) result.Result {
 
 		// Get the installer for the current source type.
 		populator, err := t.Source.Installer()
+		t.populator = populator
+
 		if err != nil {
 			return result.WithFailed(fmt.Sprintf("getting populator: %s", err))
 		}
@@ -62,20 +82,23 @@ func (t *Tool) Resolve(tags tags.IncludeTags, dry bool) result.Result {
 			return result.WithFailed(fmt.Sprintf("initializing populator: %s", err))
 		}
 
-		// Apply templating to the tool's fields.
-		utils.SetIfZeroValue(&t.Exe.Name, populator.Get("exe"))
-		utils.SetIfZeroValue(&t.Exe.Name, t.Name)
+		// Set the executable name according the source type's rules.
+		utils.SetIfZero(&t.Exe.Name, populator.Get("exe"))
+		utils.SetIfZero(&t.Exe.Name, t.Name)
+
+		// Update the template engine with .exe
+		tmpl.AddValue("Exe", t.Exe.Name)
 
 		// Re-check skip conditions after applying templates.
 		if res = t.CheckSkipConditions(tags); !res.IsOK() {
 			return res
 		}
 
-		if dry {
-			break
+		if opts.skipVersion {
+			return result.WithSkipped("skipped version resolution")
 		}
 
-		if res = t.resolve(populator); res.IsFailed() {
+		if res = t.resolve(populator, tmpl, opts); res.IsFailed() {
 			continue // Move on to the next fallback.
 		}
 
@@ -85,53 +108,25 @@ func (t *Tool) Resolve(tags tags.IncludeTags, dry bool) result.Result {
 	return res
 }
 
-func (t *Tool) resolve(populator sources.Populator) result.Result {
+func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, opts resolveOptions) result.Result {
 	// Retrieve the tool's version from the installer if it is not already set.
-	if utils.IsZeroValue(t.Version.Version) {
+	if utils.IsZero(t.Version.Version) {
 		if err := populator.Version(t.Name); err != nil {
 			return result.WithFailed(fmt.Sprintf("getting version: %s", err))
 		}
+
+		t.Version.Version = populator.Get("version")
 	}
 
-	utils.SetIfZeroValue(&t.Version.Version, populator.Get("version"))
+	// Update the version to the template engine.
+	tmpl.AddValue("Version", t.Version.Version)
 
-	if err := t.TemplateLast(); err != nil {
+	if opts.upUntilVersion {
+		return result.WithSkipped("skipped after version resolution")
+	}
+
+	if err := t.TemplateLast(tmpl); err != nil {
 		return result.WithFailed(fmt.Sprintf("templating last: %s", err))
-	}
-
-	t.Extensions = t.Extensions.Compacted()
-	t.Aliases = t.Aliases.Compacted()
-
-	// Determine the tool's path if not already set.
-	if utils.IsZeroValue(t.URL) {
-		if err := t.Hints.Parse(); err != nil {
-			return result.WithFailed(fmt.Sprintf("parsing hints: %s", err))
-		}
-
-		hints := t.Hints
-		hints.Add(t.Extensions.ToHint())
-
-		if err := populator.Path(t.Name, nil, t.Version.Version, match.Requirements{
-			Platform: t.Platform,
-			Hints:    hints,
-		}); err != nil {
-			return result.WithFailed(fmt.Sprintf("getting path: %s", err))
-		}
-	}
-
-	utils.SetIfZeroValue(&t.URL, populator.Get("path"))
-
-	// Append platform-specific file extension to the executable name.
-	if !strings.HasSuffix(t.Exe.Name, t.Platform.Extension.String()) {
-		t.Exe.Name += t.Platform.Extension.String()
-	}
-
-	// Set patterns for finding the executable.
-	utils.SetSliceIfZero(&t.Exe.Patterns, fmt.Sprintf("^%s$", t.Exe.Name))
-
-	// Append platform-specific extensions to aliases.
-	for i, alias := range t.Aliases {
-		t.Aliases[i] = alias + t.Platform.Extension.String()
 	}
 
 	// Attempt to sync the tool using the current strategy.
@@ -143,6 +138,40 @@ func (t *Tool) resolve(populator sources.Populator) result.Result {
 	// Validate the tool's configuration.
 	if err := t.Validate(); err != nil {
 		return result.WithFailed(fmt.Sprintf("validating config: %s", err))
+	}
+
+	if opts.skipURL {
+		return outcome.Wrapped("requires download")
+	}
+
+	// Determine the tool's path if not already set.
+	if utils.IsZero(t.URL) {
+		if err := t.Hints.Parse(); err != nil {
+			return result.WithFailed(fmt.Sprintf("parsing hints: %s", err))
+		}
+
+		if err := populator.URL(t.Name, nil, t.Version.Version, match.Requirements{
+			Platform: t.Platform,
+			Hints:    *t.Hints.Reduced(),
+		}); err != nil {
+			return result.WithFailed(fmt.Sprintf("getting url: %s", err))
+		}
+
+		t.URL = populator.Get("url")
+	}
+
+	// Update the URL to the template engine.
+	tmpl.AddValue("URL", t.URL)
+
+	// Append platform-specific extensions to aliases.
+	for i, alias := range t.Aliases {
+		if !file.File(alias).HasExtension() {
+			t.Aliases[i] = alias + t.Platform.Extension.String()
+		}
+	}
+
+	if !strings.HasSuffix(t.Exe.Name, t.Platform.Extension.String()) && !file.File(t.Exe.Name).HasExtension() {
+		t.Exe.Name += t.Platform.Extension.String()
 	}
 
 	return outcome.Wrapped("requires download")
@@ -197,7 +226,7 @@ func (t *Tool) Download(progressListener getter.ProgressTracker) result.Result {
 		Path:        t.URL,
 		Name:        t.Name,
 		Exe:         t.Exe.Name,
-		Patterns:    t.Exe.Patterns,
+		Patterns:    *t.Exe.Patterns,
 		Output:      t.Output,
 		Aliases:     t.Aliases,
 		Mode:        t.Mode.String(),

@@ -1,43 +1,80 @@
 package env
 
 import (
+	"errors"
 	"fmt"
 	"maps"
 	"strings"
 )
 
-// Add parses and adds a key-value pair to the environment.
-// Takes a string in the format "key=value" and adds it to the Env map.
-// Returns an error if the string doesn't contain exactly one '=' separator.
-func (e *Env) Add(kv string) error {
-	const expectedParts = 2
+// Add parses and adds a key-value pairs to the environment.
+// Takes strings in the format "key=value" and adds it to the Env map.
+// Returns errors for strings that do not contain an '=' or have an empty key.
+func (e *Env) Add(keyValues ...string) error {
+	var errs []error
 
-	parts := strings.SplitN(kv, "=", expectedParts)
-	if len(parts) != expectedParts {
-		return fmt.Errorf("%w: %q", ErrEnvMalformed, kv)
+	for _, keyValue := range keyValues {
+		key, value, found := strings.Cut(keyValue, "=")
+
+		if !found {
+			errs = append(errs, fmt.Errorf("%w: %q", ErrEnvMalformed, keyValue))
+
+			continue
+		}
+
+		if key == "" {
+			errs = append(errs, fmt.Errorf("%w: empty key in pair %q", ErrEnvMalformed, keyValue))
+
+			continue
+		}
+
+		(*e)[key] = value
 	}
 
-	(*e)[parts[0]] = parts[1]
+	return errors.Join(errs...)
+}
+
+// AddPair adds a key-value pair to the environment.
+// Takes a key and value string and adds it to the Env map.
+// Returns an error if the key is empty.
+func (e *Env) AddPair(key, value string) error {
+	if key == "" {
+		return fmt.Errorf("%w: empty key", ErrEnvMalformed)
+	}
+
+	(*e)[key] = value
 
 	return nil
 }
 
-// Merge combines multiple environments into the current one.
-// Copies values from the provided environments into this one,
-// preserving existing values in case of key conflicts.
-func (e *Env) Merge(envs ...Env) {
-	for _, env := range envs {
-		maps.Copy(env, *e)
-		*e = env
-	}
+// Delete removes an environment variable by key.
+func (e *Env) Delete(key string) {
+	delete(*e, key)
 }
 
-// Merged creates a new environment by combining multiple environments.
+// Merge combines multiple environments into the current one.
+// Copies values from the provided environments,
+// preserving existing values in case of key conflicts.
+func (e *Env) Merge(envs ...Env) {
+	nEnv := Env{}
+
+	for _, env := range append(envs, *e) {
+		if env == nil {
+			continue
+		}
+
+		maps.Copy(nEnv, env)
+	}
+
+	*e = nEnv
+}
+
+// MergedWith creates a new environment by combining multiple environments.
 // Returns a new Env containing all values from this environment plus
 // any non-conflicting values from the provided environments.
 // Does not modify the original environment.
-func (e Env) Merged(envs ...Env) Env {
-	merged := maps.Clone(e)
+func (e *Env) MergedWith(envs ...Env) Env {
+	merged := maps.Clone(*e)
 
 	for _, env := range envs {
 		merged.Merge(env)

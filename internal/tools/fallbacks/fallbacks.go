@@ -2,12 +2,13 @@
 package fallbacks
 
 import (
+	"fmt"
 	"slices"
+
+	"github.com/goccy/go-yaml/ast"
 
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/pkg/unmarshal"
-
-	"gopkg.in/yaml.v3"
 )
 
 // Fallbacks represents a collection of fallback sources for the tool.
@@ -17,13 +18,11 @@ type Fallbacks []sources.Type
 
 // UnmarshalYAML implements custom unmarshaling for Tags,
 // allowing the field to be either a single string or a list of strings.
-func (f *Fallbacks) UnmarshalYAML(value *yaml.Node) error {
-	result, err := unmarshal.SingleOrSlice[sources.Type](value, false)
+func (f *Fallbacks) UnmarshalYAML(node ast.Node) (err error) {
+	*f, err = unmarshal.SingleOrSlice[sources.Type](node)
 	if err != nil {
-		return err
+		return fmt.Errorf("unmarshaling fallbacks: %w", err)
 	}
-
-	*f = result
 
 	return nil
 }

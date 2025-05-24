@@ -1,6 +1,8 @@
 package files
 
 import (
+	"fmt"
+
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
@@ -23,10 +25,25 @@ func New(dir string, paths ...string) (fs Files) {
 	return fs
 }
 
-// SymlinksFor creates symlinks from each file to a target.
-// Creates a symbolic link at each path in the collection,
-// pointing to the specified target file. Returns an error
-// if any symlink creation fails.
-func (es Files) SymlinksFor(file file.File) error {
-	return file.Symlink(es...)
+// LinksFor creates links for each file in the collection.
+// Creates a link at each path in the collection,
+// pointing to the specified target file.
+// See file.File.Links for more details.
+func (es Files) LinksFor(file file.File) error {
+	if err := file.Links(es...); err != nil {
+		return fmt.Errorf("creating links for %q: %w", file, err)
+	}
+
+	return nil
+}
+
+// Exists returns the first file in the collection that exists.
+func (es Files) Exists() (file.File, bool) {
+	for _, f := range es {
+		if f.Exists() {
+			return f, true
+		}
+	}
+
+	return file.File(""), false
 }

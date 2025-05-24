@@ -8,6 +8,10 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/goccy/go-yaml/ast"
+
+	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
 // ErrParse indicates a failure to parse platform-specific information.
@@ -24,10 +28,30 @@ const (
 // Architecture represents a CPU architecture configuration.
 // Tracks architecture type, version, raw string, and user-land bitness.
 type Architecture struct {
-	Type            string
-	Raw             string
-	Version         int
-	Is32BitUserLand bool
+	Name string `single:"true"`
+
+	canonical       string
+	alias           string
+	version         int
+	is32BitUserLand bool
+}
+
+func (a *Architecture) IsNil() bool {
+	return a.Name == ""
+}
+
+func (a *Architecture) UnmarshalYAML(node ast.Node) error {
+	type raw Architecture
+
+	if err := unmarshal.SingleStringOrStruct(node, (*raw)(a)); err != nil {
+		return fmt.Errorf("unmarshaling architecture: %w", err)
+	}
+
+	return nil
+}
+
+func (a Architecture) MarshalYAML() (any, error) {
+	return a.Name, nil
 }
 
 // ArchInfo defines an architecture's characteristics and parsing rules.
@@ -80,8 +104,12 @@ func (ArchInfo) Supported() []ArchInfo {
 // Parse extracts architecture information from a string identifier.
 // Matches against known architecture types and aliases, setting type,
 // version, and raw values. Returns an error if parsing fails.
-func (a *Architecture) Parse(name string) error {
-	name = strings.ToLower(name)
+func (a *Architecture) ParseFrom(name string, comparisons ...func(string, string) bool) error {
+	if len(comparisons) == 0 {
+		comparisons = append(comparisons, strings.Contains)
+	}
+
+	lower := strings.ToLower(name)
 
 	archInfo := ArchInfo{}
 
@@ -92,20 +120,23 @@ func (a *Architecture) Parse(name string) error {
 				continue
 			}
 
-			if strings.Contains(name, alias) {
-				a.Type = info.Type
-				a.Raw = alias
+			for _, compare := range comparisons {
+				if compare(lower, alias) {
+					a.Name = name
+					a.canonical = info.Type
+					a.alias = alias
 
-				if info.Parse != nil {
-					version, err := info.Parse(alias)
-					if err != nil {
-						return err
+					if info.Parse != nil {
+						version, err := info.Parse(alias)
+						if err != nil {
+							return err
+						}
+
+						a.version = version
 					}
 
-					a.Version = version
+					return nil
 				}
-
-				return nil
 			}
 		}
 	}
@@ -113,20 +144,25 @@ func (a *Architecture) Parse(name string) error {
 	return fmt.Errorf("%w: architecture from name: %s", ErrParse, name)
 }
 
+// Parse extracts operating system information from a string identifier.
+func (a *Architecture) Parse() error {
+	return a.ParseFrom(a.Name, strings.EqualFold)
+}
+
 // IsUnset checks if the architecture type is empty.
 func (a *Architecture) IsUnset() bool {
-	return a.Type == ""
+	return a.canonical == ""
 }
 
 // IsSet checks if the architecture type has been configured.
 func (a *Architecture) IsSet() bool {
-	return a.Type != ""
+	return a.canonical != ""
 }
 
 // Is checks for exact architecture match including raw string.
 // Returns true only if both architectures are set and identical.
 func (a *Architecture) Is(other Architecture) bool {
-	return other.Raw == a.Raw && !a.IsUnset() && !other.IsUnset()
+	return other.alias == a.alias && !a.IsUnset() && !other.IsUnset()
 }
 
 // IsCompatibleWith checks if this architecture can run binaries built for another.
@@ -140,12 +176,12 @@ func (a *Architecture) IsCompatibleWith(other Architecture) bool {
 		return true
 	}
 
-	if a.Type != other.Type {
+	if a.canonical != other.canonical {
 		return false
 	}
 
-	if a.Version != 0 && other.Version != 0 {
-		return a.Version >= other.Version
+	if a.version != 0 && other.version != 0 {
+		return a.version >= other.version
 	}
 
 	return true
@@ -154,48 +190,56 @@ func (a *Architecture) IsCompatibleWith(other Architecture) bool {
 // String returns the canonical string representation of the architecture.
 // Includes version information for ARM architectures (e.g., "armv7").
 func (a Architecture) String() string {
-	if a.Version != 0 {
-		if a.Type == armString {
-			return fmt.Sprintf("armv%d", a.Version)
+	if a.version != 0 {
+		if a.canonical == armString {
+			return fmt.Sprintf("armv%d", a.version)
 		}
 
-		return fmt.Sprintf("%sv%d", a.Type, a.Version)
+		return fmt.Sprintf("%sv%d", a.canonical, a.version)
 	}
 
-	return a.Type
+	return a.canonical
 }
 
 // To32BitUserLand converts a 64-bit architecture to its 32-bit equivalent.
 // Handles amd64->386 and arm64->armv7 conversions for 32-bit userland support.
 func (a *Architecture) To32BitUserLand() {
-	a.Is32BitUserLand = true
+	a.is32BitUserLand = true
 
-	switch a.Type {
+	switch a.canonical {
 	case "amd64":
-		a.Type = "386"
+		a.canonical = "386"
 	case "arm64":
-		a.Type = armString
-		a.Version = armhfValue
-		a.Raw = "armv7"
+		a.canonical = armString
+		a.version = armhfValue
+		a.alias = "armv7"
 	}
+}
+
+func (a *Architecture) Type() string {
+	return a.canonical
+}
+
+func (a *Architecture) Version() int {
+	return a.version
 }
 
 // Is64Bit checks if the architecture is 64-bit capable.
 // Returns true for amd64 and arm64 architectures.
 func (a *Architecture) Is64Bit() bool {
-	return strings.Contains(a.Type, "64")
+	return strings.Contains(a.canonical, "64")
 }
 
 // IsX86 checks if the architecture is x86-based.
 // Returns true for both 32-bit (386) and 64-bit (amd64) variants.
 func (a *Architecture) IsX86() bool {
-	return a.Type == "amd64" || a.Type == "386"
+	return a.canonical == "amd64" || a.canonical == "386"
 }
 
 // IsARM checks if the architecture is ARM-based.
 // Returns true for both 32-bit (arm) and 64-bit (arm64) variants.
 func (a *Architecture) IsARM() bool {
-	return a.Type == armString || a.Type == "arm64"
+	return a.canonical == armString || a.canonical == "arm64"
 }
 
 // Is32Bit detects if the system is running in 32-bit mode.

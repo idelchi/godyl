@@ -2,6 +2,7 @@
 package logger
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -14,18 +15,12 @@ import (
 type Level int
 
 const (
-	// SILENT represents no logging, effectively muting all log messages.
-	SILENT Level = iota - 1
-	// DEBUG represents debug-level messages, useful for development and troubleshooting.
-	DEBUG
-	// INFO represents informational messages, typically used for normal operation.
-	INFO
-	// WARN represents warning messages, which indicate potential issues but not failures.
-	WARN
-	// ERROR represents error messages, indicating failure in operation.
-	ERROR
-	// ALWAYS represents messages that should always be logged, regardless of the current log level.
-	ALWAYS
+	SILENT Level = iota - 1 // no logging
+	DEBUG                   // detailed debug information
+	INFO                    // normal operational messages
+	WARN                    // potentially harmful situations
+	ERROR                   // error events
+	ALWAYS                  // always shown regardless of current log level
 )
 
 // Logger holds the configuration for logging.
@@ -36,12 +31,14 @@ type Logger struct {
 	level  Level
 }
 
+// ErrInvalidLogLevel is returned when an invalid log level is provided.
+var ErrInvalidLogLevel = errors.New("invalid log level")
+
 // NewCustom creates a new Logger instance with the specified log level and output writer.
 // If an invalid log level is provided, it defaults to INFO.
-func NewCustom(level Level, output io.Writer) *Logger {
+func NewCustom(level Level, output io.Writer) (*Logger, error) {
 	if !level.IsALevel() {
-		fmt.Fprintf(os.Stderr, "Invalid log level: %q, setting to %q\n", level, INFO)
-		level = INFO
+		return nil, fmt.Errorf("%w: %q, setting to %q\n", ErrInvalidLogLevel, level, INFO)
 	}
 
 	return &Logger{
@@ -54,55 +51,76 @@ func NewCustom(level Level, output io.Writer) *Logger {
 			ERROR:  color.New(color.FgRed),
 			ALWAYS: color.New(color.FgGreen),
 		},
-	}
+	}, nil
 }
 
 // New creates a new Logger instance with the specified log level and writes to stdout.
-// If an invalid log level is provided, it defaults to INFO.
-func New(level Level) *Logger {
+func New(level Level) (*Logger, error) {
 	return NewCustom(level, os.Stdout)
 }
 
-// log prints a log message with the specified log level, applying colors based on the level if available.
-// The message will only be logged if the level's severity is equal to or higher than the Logger's current level.
+// log prints a log message with the specified level, respecting the configured minimum level.
 func (l *Logger) log(level Level, format string, args ...any) {
-	if l.level == SILENT || level < l.level {
+	if level < l.level && level != ALWAYS {
 		return
 	}
 
 	message := fmt.Sprintf(format, args...)
 	if c, ok := l.colors[level]; ok {
-		if _, err := c.Fprintln(l.output, message); err != nil {
-			panic(err)
-		}
+		_, _ = c.Fprintln(l.output, message)
 	} else {
-		if _, err := fmt.Fprintln(l.output, message); err != nil {
-			panic(err)
-		}
+		_ = writeSilently(l.output, message)
 	}
 }
 
-// Always logs a message at the INFO level, regardless of the current log level.
-func (l *Logger) Always(format string, args ...any) {
-	l.log(ALWAYS, format, args...)
+func writeSilently(w io.Writer, msg string) error {
+	_, err := fmt.Fprintln(w, msg)
+
+	return err
 }
 
-// Debug logs a debug-level message if the current log level allows it.
-func (l *Logger) Debug(format string, args ...any) {
-	l.log(DEBUG, format, args...)
+func (l *Logger) logPlain(level Level, message string) {
+	l.log(level, "%s", message)
 }
 
-// Info logs an informational message if the current log level allows it.
-func (l *Logger) Info(format string, args ...any) {
-	l.log(INFO, format, args...)
+// Always logs a message at the ALWAYS level, regardless of the current log level.
+func (l *Logger) Always(msg string) { l.logPlain(ALWAYS, msg) }
+
+// Alwaysf logs a formatted message at the ALWAYS level.
+func (l *Logger) Alwaysf(f string, a ...any) { l.log(ALWAYS, f, a...) }
+
+// Debug logs a message at the DEBUG level, if enabled.
+func (l *Logger) Debug(msg string) { l.logPlain(DEBUG, msg) }
+
+// Debugf logs a formatted message at the DEBUG level.
+func (l *Logger) Debugf(f string, a ...any) { l.log(DEBUG, f, a...) }
+
+// Info logs a message at the INFO level, if enabled.
+func (l *Logger) Info(msg string) { l.logPlain(INFO, msg) }
+
+// Infof logs a formatted message at the INFO level.
+func (l *Logger) Infof(f string, a ...any) { l.log(INFO, f, a...) }
+
+// Warn logs a message at the WARN level, if enabled.
+func (l *Logger) Warn(msg string) { l.logPlain(WARN, msg) }
+
+// Warnf logs a formatted message at the WARN level.
+func (l *Logger) Warnf(f string, a ...any) { l.log(WARN, f, a...) }
+
+// Error logs a message at the ERROR level, if enabled.
+func (l *Logger) Error(msg string) { l.logPlain(ERROR, msg) }
+
+// Errorf logs a formatted message at the ERROR level.
+func (l *Logger) Errorf(f string, a ...any) { l.log(ERROR, f, a...) }
+
+// SetLevel updates the logger's level at runtime.
+func (l *Logger) SetLevel(level Level) {
+	if level.IsALevel() {
+		l.level = level
+	}
 }
 
-// Warn logs a warning message if the current log level allows it.
-func (l *Logger) Warn(format string, args ...any) {
-	l.log(WARN, format, args...)
-}
-
-// Error logs an error message if the current log level allows it.
-func (l *Logger) Error(format string, args ...any) {
-	l.log(ERROR, format, args...)
+// Level returns the current log level.
+func (l *Logger) Level() Level {
+	return l.level
 }

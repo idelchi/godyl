@@ -24,28 +24,34 @@ func (p *Platform) Detect() error {
 		return fmt.Errorf("getting host information: %w", err)
 	}
 
+	operatingSystem = platform.OS{
+		Name: info.OS,
+	}
 	// Determine the OS from runtime information
-	if err := operatingSystem.Parse(info.OS); err != nil {
+	if err := operatingSystem.ParseFrom(info.OS); err != nil {
 		return fmt.Errorf("parsing OS: %w", err)
 	}
 
 	// Determine the Linux distribution from system information
-	distro.Parse(info.Platform) //nolint:errcheck 	// Ignore error as it's not critical
+	distro.ParseFrom(info.Platform) //nolint:errcheck 	// Ignore error as it's not critical
+
+	// Determine the architecture from the system's kernel architecture
+	if err := architecture.ParseFrom(info.KernelArch); err != nil {
+		return fmt.Errorf("parsing architecture: %w", err)
+	}
 
 	// Set the default library based on the OS and distribution
 	library = library.Default(operatingSystem, distro)
 
-	// Determine the architecture from the system's kernel architecture
-	if err := architecture.Parse(info.KernelArch); err != nil {
-		return fmt.Errorf("parsing architecture: %w", err)
-	}
-
-	if architecture.Is64Bit() && operatingSystem.Type == "linux" {
+	if architecture.Is64Bit() && operatingSystem.Type() == "linux" {
 		is32Bit, err := platform.Is32Bit()
 		if err == nil && is32Bit {
 			architecture.To32BitUserLand()
 		}
 	}
+
+	// Set the default file extension based on the OS
+	extension.ParseFrom(operatingSystem)
 
 	// Populate the Platform struct with the detected values
 	*p = Platform{
@@ -53,7 +59,7 @@ func (p *Platform) Detect() error {
 		Distribution: distro,
 		Architecture: architecture,
 		Library:      library,
-		Extension:    extension.Default(operatingSystem),
+		Extension:    extension,
 	}
 
 	return nil

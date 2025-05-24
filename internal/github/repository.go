@@ -85,7 +85,7 @@ func (g *Repository) GetLatestIncludingPreRelease() (*Release, error) {
 		}
 
 		// Compare the timestamps - need to use the Time property of Timestamp
-		if release.PublishedAt.Time.After(latestRelease.PublishedAt.Time) {
+		if release.PublishedAt.After(latestRelease.PublishedAt.Time) {
 			latestRelease = release
 		}
 	}

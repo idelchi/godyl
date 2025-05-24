@@ -14,12 +14,12 @@ import (
 
 // GitHub represents a GitHub repository configuration and state.
 type GitHub struct {
-	Data                common.Metadata `yaml:"-"`
+	Data                common.Metadata `json:"-" mapstructure:"-""`
 	latestStoredRelease *github.Release
-	Repo                string
-	Owner               string
-	Token               string `mask:"fixed"`
-	Pre                 bool
+	Repo                string `json:"repo"  mapstructure:"repo"`
+	Owner               string `json:"owner" mapstructure:"owner"`
+	Token               string `json:"token" mapstructure:"token" mask:"fixed"`
+	Pre                 bool   `json:"pre"   mapstructure:"pre"`
 }
 
 // Initialize sets up the GitHub repository configuration from the given name.
@@ -48,13 +48,13 @@ func (g *GitHub) Version(_ string) error {
 
 // Path finds a matching release asset and stores its URL in metadata.
 // Uses version, extensions, and requirements to find the appropriate asset.
-func (g *GitHub) Path(_ string, extensions []string, version string, requirements match.Requirements) error {
+func (g *GitHub) URL(_ string, extensions []string, version string, requirements match.Requirements) error {
 	url, err := g.MatchAssetsToRequirements(extensions, version, requirements)
 	if err != nil {
 		return err
 	}
 
-	g.Data.Set("path", url)
+	g.Data.Set("url", url)
 
 	return nil
 }
@@ -68,7 +68,9 @@ func (g *GitHub) Install(
 	// Pass the progress listener down to the common download function
 	d.ProgressListener = progressListener
 
-	return common.Download(d)
+	found, err = common.Download(d)
+
+	return "", found, err
 }
 
 // Get retrieves a metadata attribute value by its key.
@@ -89,11 +91,12 @@ func (g *GitHub) LatestVersion() (string, error) {
 	if g.Pre {
 		release, err = repository.GetLatestIncludingPreRelease()
 	} else {
-		if tag, err := repository.LatestVersionFromWeb(); err == nil {
-			return tag, nil
-		}
-
 		release, err = repository.LatestRelease()
+		if err != nil {
+			if tag, err := repository.LatestVersionFromWeb(); err == nil {
+				return tag, nil
+			}
+		}
 	}
 
 	if err != nil {
@@ -102,6 +105,7 @@ func (g *GitHub) LatestVersion() (string, error) {
 
 	// Store the latest release for future use
 	g.latestStoredRelease = release
+	g.Data.Set("body", release.Body)
 
 	return release.Tag, nil
 }
@@ -133,6 +137,11 @@ func (g *GitHub) MatchAssetsToRequirements(
 	assets := release.Assets
 
 	matches := assets.Match(requirements)
+
+	if matches.HasErrors() {
+		return "", matches.Errors()[0]
+	}
+
 	if matches.Status() != nil {
 		return "", matches.WithoutZero().Status()
 	}

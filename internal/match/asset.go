@@ -1,10 +1,10 @@
 package match
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/idelchi/godyl/internal/detect"
+	"github.com/idelchi/godyl/internal/tools/hints"
 )
 
 // Asset represents a downloadable file, typically for a specific platform.
@@ -16,22 +16,14 @@ type Asset struct {
 
 // NameLower returns the asset's name in lowercase.
 // This is useful for case-insensitive matching operations.
-func (a Asset) NameLower() string {
+func (a Asset) Lower() string {
 	return strings.ToLower(a.Name)
 }
 
 // Parse invokes the platform's parsing logic on the asset's name.
 // It populates or derives the platform information from the asset's name.
 func (a *Asset) Parse() {
-	a.Platform.Parse(a.Name)
-}
-
-// MatchHint checks if the asset's name matches the provided hint.
-// The hint can be a regular expression or a simple substring match.
-func (a Asset) MatchHint(hint Hint) bool {
-	regex, err := regexp.Compile(hint.Pattern)
-
-	return err == nil && regex.MatchString(a.NameLower())
+	a.Platform.ParseFrom(a.Name)
 }
 
 // PlatformMatch evaluates whether the asset's platform matches the required platform.
@@ -79,11 +71,20 @@ func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 
 // Match evaluates if the asset satisfies the given requirements.
 // It aggregates scores from both platform compatibility and matching hints.
-func (a Asset) Match(req Requirements) (int, bool) {
+func (a Asset) Match(req Requirements) (int, bool, error) {
 	// Check mandatory hints
 	for _, hint := range req.Hints {
-		if hint.Must && !a.MatchHint(hint) {
-			return 0, false
+		match, err := hint.Matches(a.Lower())
+		if err != nil {
+			return 0, false, err
+		}
+
+		if hint.Match.Value == hints.Required && !match {
+			return 0, false, nil
+		}
+
+		if hint.Match.Value == hints.Excluded && match {
+			return 0, false, nil
 		}
 	}
 
@@ -92,10 +93,15 @@ func (a Asset) Match(req Requirements) (int, bool) {
 
 	// Check non-mandatory hints and adjust the score
 	for _, hint := range req.Hints {
-		if !hint.Must && a.MatchHint(hint) {
-			score += hint.GetWeight()
+		match, err := hint.Matches(a.Lower())
+		if err != nil {
+			return 0, false, err
+		}
+
+		if hint.Match.Value == hints.Weighted && match {
+			score += hint.Weight.Value
 		}
 	}
 
-	return score, qualified
+	return score, qualified, nil
 }

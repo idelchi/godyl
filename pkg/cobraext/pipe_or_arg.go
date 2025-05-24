@@ -6,7 +6,7 @@ import (
 	"github.com/idelchi/gogen/pkg/stdin"
 )
 
-// 3. Empty string if neither source available.
+// PipeOrArg checks if there are any arguments passed to the command.
 func PipeOrArg(args []string) (string, error) {
 	if len(args) > 0 {
 		// Prioritize argument if it exists, regardless of stdin

@@ -28,7 +28,7 @@ func (n *None) Version(_ string) error {
 }
 
 // Path is a no-op implementation of the Populator interface.
-func (n *None) Path(_ string, _ []string, _ string, _ match.Requirements) error {
+func (n *None) URL(_ string, _ []string, _ string, _ match.Requirements) error {
 	return nil
 }
 

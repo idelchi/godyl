@@ -1,10 +1,16 @@
-tool:
-  output: ./bin/{{ .OS }}
+dump:
+  format: yaml
+  tools:
+    full: false
+  config:
+    all: false
 
 godyl:
   env-file:
     - .env
     - gitlab.env
+  inherit: default
+  no-progress: false
 
 update:
   cleanup: true

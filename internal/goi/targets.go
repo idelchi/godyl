@@ -6,6 +6,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/tools/hints"
 )
 
 // Targets represents a collection of Target files associated with a Go release.
@@ -54,18 +55,18 @@ func (gt Targets) Match() (match.Results, error) {
 	for _, tt := range gt.Files {
 		asset := match.Asset{Name: tt.FileName}
 
-		asset.Platform.OS.Parse(tt.OS)             //nolint:errcheck
-		asset.Platform.Architecture.Parse(tt.Arch) //nolint:errcheck
+		asset.Platform.OS.ParseFrom(tt.OS)             //nolint:errcheck
+		asset.Platform.Architecture.ParseFrom(tt.Arch) //nolint:errcheck
 
 		assets = append(assets, asset)
 	}
 
-	hints := []match.Hint{
-		{
-			Pattern: platform.OS.String(),
-			Must:    true,
-		},
+	hint := hints.Hint{
+		Pattern: platform.OS.String(),
 	}
+	hint.Match.Set(string(hints.Required))
+
+	hints := []hints.Hint{hint}
 
 	var err error
 

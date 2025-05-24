@@ -2,157 +2,68 @@
 package defaults
 
 import (
-	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
 
-	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/internal/detect"
-	"github.com/idelchi/godyl/pkg/path/file"
-
-	"gopkg.in/yaml.v3"
+	"github.com/idelchi/godyl/internal/debug"
+	"github.com/idelchi/godyl/internal/tools/tool"
+	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
-// Defaults manages a collection of default configurations for various tools.
-type Defaults map[string]*Default
+// Defaults represents a collection of default values for tools.
+type Defaults map[string]*tool.Tool
 
-// NewDefaults creates a new Defaults instance.
-func NewDefaults() *Defaults {
-	return &Defaults{}
+// NewDefaults initializes a new Defaults instance from the provided data.
+func NewDefaultsFromBytes(data []byte) (*Defaults, error) {
+	var defaults Defaults
+
+	if err := defaults.Load(data); err != nil {
+		return nil, fmt.Errorf("loading defaults: %w", err)
+	}
+
+	return &defaults, nil
 }
 
-// Unmarshal parses YAML configuration data into the Defaults map.
-// Returns an error if the YAML data is invalid or cannot be parsed.
-func (d *Defaults) Unmarshal(data []byte) error {
-	if err := yaml.Unmarshal(data, d); err != nil {
-		return fmt.Errorf("unmarshalling defaults: %w", err)
+// NewDefaults initializes the Defaults instance from the provided file.
+func (d *Defaults) Load(data []byte) error {
+	if err := unmarshal.Strict(data, d); err != nil {
+		return fmt.Errorf("defaults: %w", err)
 	}
 
 	return nil
 }
 
-// FromFile loads and parses a YAML configuration file into Defaults.
-// Returns an error if the file cannot be read or contains invalid YAML.
-func (d *Defaults) FromFile(path string) error {
-	data, err := os.ReadFile(filepath.Clean(path))
-	if err != nil {
-		return fmt.Errorf("reading file %q: %w", path, err)
+// get returns the tool with the given name from the defaults map.
+func (d Defaults) get(name string) (*tool.Tool, error) {
+	t, ok := d[name]
+	if !ok {
+		return nil, fmt.Errorf("%q not found in defaults", name)
 	}
 
-	return d.Unmarshal(data)
+	debug.Debug("Found %q in defaults", name)
+
+	return t, nil
 }
 
-// Validate performs structural validation of the Defaults configuration.
-// Ensures all required fields are properly set and contain valid values.
-func (d *Defaults) Validate() error {
-	var errs []error
+// Get returns the tool with the given name from the defaults map.
+// If the tool is not found, it returns nil.
+func (d Defaults) Get(name string) *tool.Tool {
+	t, _ := d.get(name)
 
-	// Validate each individual Default configuration
-	for key, def := range *d {
-		if def == nil {
-			continue
-		}
-
-		if err := def.Validate(); err != nil {
-			errs = append(errs, fmt.Errorf("%q: %w", key, err))
-		}
-	}
-
-	if len(errs) > 0 {
-		return fmt.Errorf("\n%w", errors.Join(errs...))
-	}
-
-	return nil
+	return t
 }
 
-// MergeWithConfig applies configuration overrides from flags and environment variables.
-// Updates default values for output paths, source types, tokens, platform settings,
-// and other configurable options. Returns an error if any values are invalid.
-func (d *Defaults) MergeWithConfig(cfg config.Config) error {
-	// For each default, merge the configuration
-	for key, def := range *d {
-		if def == nil {
-			continue
+// Pick returns a slice of tools from the defaults map based on the provided names.
+func (d Defaults) Pick(names ...string) (tools []*tool.Tool, err error) {
+	for _, name := range names {
+		t, err := d.get(name)
+		if err != nil {
+			return nil, err
 		}
 
-		if err := def.MergeWithConfig(cfg); err != nil {
-			return fmt.Errorf("merging defaults for %q: %w", key, err)
-		}
+		debug.Debug("Found %q in defaults", name)
+
+		tools = append(tools, t)
 	}
 
-	return nil
-}
-
-// Load loads configuration from a file or falls back to embedded defaults.
-// Initializes the configuration after loading. Returns an error if loading
-// or initialization fails.
-func (d *Defaults) Load(path file.File, defaults []byte, isSet bool) error {
-	if err := d.FromFile(path.Path()); err != nil {
-		if isSet {
-			return fmt.Errorf("loading defaults from %q: %w", path, err)
-		} else {
-			if err := d.Unmarshal(defaults); err != nil {
-				return fmt.Errorf("setting defaults: %w", err)
-			}
-		}
-	}
-
-	if err := d.Initialize(); err != nil {
-		return fmt.Errorf("initializing defaults: %w", err)
-	}
-
-	return nil
-}
-
-// Initialize detects the current platform and applies platform-specific defaults to all Default configurations.
-func (d *Defaults) Initialize() error {
-	// Detect the current platform (e.g., OS, architecture).
-	platform := detect.Platform{}
-	if err := platform.Detect(); err != nil {
-		return err
-	}
-
-	// For each default, initialize with platform configuration
-	for _, def := range *d {
-		if def == nil {
-			continue
-		}
-
-		if err := def.Initialize(platform); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// GetDefault returns a specific Default configuration by name.
-// If the configuration doesn't exist, it returns nil.
-func (d *Defaults) GetDefault(name string) *Default {
-	if def, ok := (*d)[name]; ok {
-		return def
-	}
-
-	return nil
-}
-
-// Load creates and configures a new Defaults instance.
-// Handles loading from files or embedded data, applies configuration
-// overrides, and returns the Defaults object and an error if any.
-func Load(path file.File, embeds config.Embedded, cfg config.Config) (*Defaults, error) {
-	// Create a new Defaults instance
-	defaults := NewDefaults()
-
-	// Load defaults from file or embedded data
-	if err := defaults.Load(path, embeds.Defaults, cfg.Root.IsSet("defaults")); err != nil {
-		return nil, err
-	}
-
-	// Apply configuration overrides
-	if err := defaults.MergeWithConfig(cfg); err != nil {
-		return nil, err
-	}
-
-	return defaults, nil
+	return tools, nil
 }

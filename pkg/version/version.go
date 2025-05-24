@@ -2,16 +2,19 @@
 package version
 
 import (
+	"strings"
 	"unicode"
 
 	"github.com/Masterminds/semver/v3"
 )
 
-// To attempts to convert a version string to a semantic version.
-func To(version string) *semver.Version {
-	for index := range len(version) {
-		candidate := version[index:]
-		if startsWithNonDigit(candidate) {
+// Parse attempts to extract the semantic version from a string.
+// It iterates through the string, left to right, looking for a valid semantic version.
+// If no valid version is found, it returns nil.
+func Parse(name string) *semver.Version {
+	for index := range len(name) {
+		candidate := name[index:]
+		if startsWithNonDigit(candidate) && !strings.HasPrefix(candidate, "v") {
 			continue
 		}
 
@@ -27,8 +30,8 @@ func To(version string) *semver.Version {
 // A failure will always return false.
 func Compare(a, b string) bool {
 	// Convert the version strings to semantic versions.
-	aVersion := To(a)
-	bVersion := To(b)
+	aVersion := Parse(a)
+	bVersion := Parse(b)
 
 	// If either version is nil, return false.
 	if aVersion == nil || bVersion == nil {
@@ -42,8 +45,8 @@ func Compare(a, b string) bool {
 // LessThan compares two version strings and returns true if the first version is less than the second.
 func LessThan(a, b string) bool {
 	// Convert the version strings to semantic versions.
-	aVersion := To(a)
-	bVersion := To(b)
+	aVersion := Parse(a)
+	bVersion := Parse(b)
 
 	// If either version is nil, return true.
 	if aVersion == nil || bVersion == nil {

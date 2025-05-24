@@ -4,9 +4,9 @@ package tags
 import (
 	"slices"
 
-	"github.com/idelchi/godyl/pkg/unmarshal"
+	"github.com/goccy/go-yaml/ast"
 
-	"gopkg.in/yaml.v3"
+	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
 // IncludeTags is a struct that defines the tags to include or exclude.
@@ -23,13 +23,11 @@ type Tags []string
 
 // UnmarshalYAML implements custom unmarshaling for Tags,
 // allowing the field to be either a single string or a list of strings.
-func (t *Tags) UnmarshalYAML(value *yaml.Node) error {
-	result, err := unmarshal.SingleOrSlice[string](value, false)
+func (t *Tags) UnmarshalYAML(node ast.Node) (err error) {
+	*t, err = unmarshal.SingleOrSlice[string](node)
 	if err != nil {
 		return err
 	}
-
-	*t = result
 
 	return nil
 }

@@ -2,7 +2,7 @@ package templates
 
 import (
 	"bytes"
-	"html/template"
+	"text/template"
 
 	sprig "github.com/go-task/slim-sprig/v3"
 )

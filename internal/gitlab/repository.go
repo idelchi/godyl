@@ -45,10 +45,13 @@ func (g *Repository) GetRelease(tag string) (*Release, error) {
 }
 
 // getReleasesWithOptions retrieves releases for the repository using the provided options.
-func (g *Repository) getReleasesWithOptions() ([]*gitlab.Release, error) {
+func (g *Repository) getReleasesWithOptions(perPage int) ([]*gitlab.Release, error) {
 	path := fmt.Sprintf("%s/%s", g.Namespace, g.Repo)
 
-	releases, _, err := g.client.Releases.ListReleases(path, &gitlab.ListReleasesOptions{})
+	releases, _, err := g.client.Releases.ListReleases(
+		path,
+		&gitlab.ListReleasesOptions{ListOptions: gitlab.ListOptions{PerPage: perPage}},
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list releases: %w", err)
 	}
@@ -62,7 +65,9 @@ func (g *Repository) getReleasesWithOptions() ([]*gitlab.Release, error) {
 
 // LatestRelease retrieves the latest release for the repository.
 func (g *Repository) LatestRelease() (*Release, error) {
-	releases, err := g.getReleasesWithOptions()
+	const PerPage = 1000
+
+	releases, err := g.getReleasesWithOptions(PerPage)
 	if err != nil {
 		return nil, err
 	}
@@ -81,8 +86,8 @@ func (g *Repository) LatestRelease() (*Release, error) {
 // GetLatestIncludingPreRelease retrieves the most recently published release for the repository,
 // including pre-releases. This returns the newest release by published date, regardless of
 // whether it's a regular release or pre-release.
-func (g *Repository) GetLatestIncludingPreRelease() (*Release, error) {
-	releases, err := g.getReleasesWithOptions()
+func (g *Repository) GetLatestIncludingPreRelease(perPage int) (*Release, error) {
+	releases, err := g.getReleasesWithOptions(perPage)
 	if err != nil {
 		return nil, err
 	}

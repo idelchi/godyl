@@ -8,7 +8,6 @@ import (
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
 	cconfig "github.com/idelchi/godyl/internal/config/dump/config"
-
 	"github.com/idelchi/godyl/pkg/koanfx"
 )
 

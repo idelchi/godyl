@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// Executable represents a command-line executable.
+// Executable represents the path to an executable.
 type Executable string
 
 // New creates a new Executable instance from the provided paths.
@@ -43,6 +43,10 @@ func (e Executable) Command(ctx context.Context, cmdArgs []string) (string, erro
 // Parse attempts to parse the output of the executable using the provided Parser object.
 // It iterates over each command defined in the Parser and returns the first successful match.
 func (e Executable) Parse(parser *Parser) (string, error) {
+	if len(parser.Commands) == 0 {
+		return "", errors.New("no commands provided for parsing output")
+	}
+
 	const timeout = 60 * time.Second
 
 	// Create a context with a timeout to prevent hanging

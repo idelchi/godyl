@@ -9,7 +9,7 @@ import (
 
 // UpdateCache attempts to update the cache with tool version information.
 func (p *Processor) UpdateCache(tool *tool.Tool) {
-	if tool.NoCache || tool.Version.Version == "" {
+	if tool.NoCache || tool.Version.Version == "" || p.cache == nil {
 		return
 	}
 
@@ -25,7 +25,7 @@ func (p *Processor) UpdateCache(tool *tool.Tool) {
 		Type:       tool.Source.Type.String(),
 	}
 
-	if err := p.cache.Save(item); err != nil {
+	if err := p.cache.Set(item.ID, item); err != nil {
 		p.log.Errorf("  failed to save cache: %v", err)
 	}
 }

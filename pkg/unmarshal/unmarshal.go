@@ -5,8 +5,7 @@ import (
 	"github.com/goccy/go-yaml/ast"
 )
 
-// Decode decodes a YAML node into the specified output type,
-// disallowing unknown fields.
+// Decode decodes a YAML node into the specified output type, disallowing unknown fields.
 func Decode(node ast.Node, out any) error {
 	if err := yaml.NodeToValue(node, out, yaml.Strict()); err != nil {
 		return err
@@ -15,8 +14,7 @@ func Decode(node ast.Node, out any) error {
 	return nil
 }
 
-// Strict unmarshals YAML data into the specified output type,
-// disallowing unknown fields.
+// Strict unmarshals YAML data into the specified output type, disallowing unknown fields.
 func Strict(data []byte, out any) error {
 	if err := yaml.UnmarshalWithOptions(data, out, yaml.Strict()); err != nil {
 		return err
@@ -25,8 +23,7 @@ func Strict(data []byte, out any) error {
 	return nil
 }
 
-// Lax unmarshals YAML data into the specified output type,
-// allowing unknown fields.
+// Lax unmarshals YAML data into the specified output type, allowing unknown fields.
 func Lax(data []byte, out any) error {
 	if err := yaml.Unmarshal(data, out); err != nil {
 		return err

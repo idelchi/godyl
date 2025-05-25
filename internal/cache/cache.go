@@ -144,6 +144,18 @@ func (c *Cache) Touched() bool {
 	return c.wasTouched
 }
 
+// Set stores an item in the cache (adapter method for Manager interface).
+func (c *Cache) Set(id string, item *Item) error {
+	item.ID = id
+
+	return c.Save(item)
+}
+
+// Remove removes an item from the cache (adapter method for Manager interface).
+func (c *Cache) Remove(id string) error {
+	return c.Delete(id)
+}
+
 // load reads the cache data from disk.
 func (c *Cache) load() error {
 	file, err := c.Open()

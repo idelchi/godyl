@@ -6,9 +6,11 @@ import (
 	"unicode"
 
 	"github.com/Masterminds/semver/v3"
+
+	"github.com/idelchi/godyl/pkg/utils"
 )
 
-// Parse attempts to extract the semantic version from a string.
+// Parse attempts to extract the semantic version from a complete string.
 // It iterates through the string, left to right, looking for a valid semantic version.
 // If no valid version is found, it returns nil.
 func Parse(name string) *semver.Version {
@@ -28,28 +30,20 @@ func Parse(name string) *semver.Version {
 
 // Compare compares two version strings for equality.
 // A failure will always return false.
-func Compare(a, b string) bool {
-	// Convert the version strings to semantic versions.
-	aVersion := Parse(a)
-	bVersion := Parse(b)
-
-	// If either version is nil, return false.
-	if aVersion == nil || bVersion == nil {
-		return false
-	}
-
+func Equal(a, b string) bool {
 	// Compare the two versions.
-	return aVersion.Equal(bVersion)
+	return Parse(a).Equal(Parse(b))
 }
 
-// LessThan compares two version strings and returns true if the first version is less than the second.
+// LessThan tests if one version is less than another one.
+// A failure will always return true.
 func LessThan(a, b string) bool {
 	// Convert the version strings to semantic versions.
 	aVersion := Parse(a)
 	bVersion := Parse(b)
 
 	// If either version is nil, return true.
-	if aVersion == nil || bVersion == nil {
+	if utils.AnyNil(aVersion, bVersion) {
 		return true
 	}
 

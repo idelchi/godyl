@@ -1,5 +1,4 @@
-// Package app provides the entrypoint for the application, creating the root command
-// and executing it.
+// Package app provides the entrypoint for the application, creating the root command and executing it.
 package app
 
 import (
@@ -35,11 +34,9 @@ func (a *Application) Execute() error {
 		return fmt.Errorf("creating embedded files: %w", err)
 	}
 
-	root := cli.Command(cfg, files, a.version)
-
 	// Execute the application
-	if err := root.Execute(); err != nil {
-		return err //nolint:wrapcheck 		// Wrapping here adds no value.
+	if err := cli.Command(cfg, files, a.version).Execute(); err != nil {
+		return err //nolint:wrapcheck 	// Error does not need additional wrapping.
 	}
 
 	return nil

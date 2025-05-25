@@ -32,5 +32,5 @@ func Validate(validations ...any) error {
 	}
 
 	// Add help text
-	return fmt.Errorf("%w\n%sSee --help for more info on usage", ErrValidation, errList.String())
+	return fmt.Errorf("%w\n%s", ErrValidation, errList.String())
 }

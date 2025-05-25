@@ -145,7 +145,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 		dotenv, err := iutils.LoadDotEnv(file)
 
 		if failureCriteria(err) {
-			return fmt.Errorf("loading .env file %q: %w", file, err)
+			return err
 		} else {
 			dotenvs = dotenvs.MergedWith(dotenv)
 		}

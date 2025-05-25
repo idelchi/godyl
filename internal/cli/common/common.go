@@ -11,9 +11,9 @@ import (
 )
 
 type Handler struct {
+	config   config.Config
 	logger   *logger.Logger
 	embedded Embedded
-	config   config.Config
 }
 
 func NewHandler(cfg config.Config, embedded Embedded) *Handler {

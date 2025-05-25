@@ -32,7 +32,7 @@ type Godyl struct {
 }
 
 func (g *Godyl) IsUpToDate() bool {
-	return vversion.Compare(g.Version, g.Tool.Version.Version)
+	return vversion.Equal(g.Version, g.Tool.Version.Version)
 }
 
 func NewGodyl(v string, cfg *config.Config) Godyl {

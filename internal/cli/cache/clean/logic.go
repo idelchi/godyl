@@ -74,7 +74,7 @@ func run(global config.Config) error {
 			continue
 		}
 
-		if version.Compare(parsed, tool.Version.Version) {
+		if version.Equal(parsed, tool.Version.Version) {
 			continue
 		}
 

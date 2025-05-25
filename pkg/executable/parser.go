@@ -19,6 +19,10 @@ type Parser struct {
 // It normalizes multi-line output into a single line and tries to match the patterns.
 // Returns the first matched version string or an error if no match is found.
 func (p *Parser) Parse(output string) (string, error) {
+	if len(p.Patterns) == 0 {
+		return "", errors.New("no patterns provided for parsing output")
+	}
+
 	// Normalize the output into a single line by replacing newlines with spaces.
 	normalizedOutput := strings.Join(strings.Split(output, "\n"), " ")
 

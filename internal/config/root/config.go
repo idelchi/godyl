@@ -8,22 +8,21 @@ import (
 
 // Root holds the root configuration options.
 type Root struct {
-	Tokens      Tokens      `json:"tokens"        mapstructure:",squash"`
-	Inherit     string      `json:"inherit"       mapstructure:"inherit"`
-	Defaults    file.File   `json:"defaults"      mapstructure:"defaults"`
-	ConfigFile  file.File   `json:"config-file"   mapstructure:"config-file"`
-	ErrorFile   file.File   `json:"error-file"    mapstructure:"error-file"`
-	Tools       string      `json:"tools"         mapstructure:"tools"`
-	LogLevel    string      `json:"log-level"     mapstructure:"log-level"     validate:"oneof=silent debug info warn error always"`
-	EnvFile     []file.File `json:"env-file"      mapstructure:"env-file"`
-	Cache       Cache       `json:"cache"         mapstructure:",squash"`
-	Parallel    int         `json:"parallel"      mapstructure:"parallel"      validate:"gte=0"`
-	Verbose     int         `json:"verbose"       mapstructure:"verbose"`
-	Show        Verbosity   `json:"show"          mapstructure:"show"`
-	NoVerifySSL bool        `json:"no-verify-ssl" mapstructure:"no-verify-ssl"`
-	NoProgress  bool        `json:"no-progress"   mapstructure:"no-progress"`
-
-	common.Tracker `json:"-"             mapstructure:"-"`
+	common.Tracker `json:"-" mapstructure:"-"`
+	Tokens         Tokens      `json:"tokens"        mapstructure:",squash"`
+	LogLevel       string      `json:"log-level"     mapstructure:"log-level"     validate:"oneof=silent debug info warn error always"`
+	ConfigFile     file.File   `json:"config-file"   mapstructure:"config-file"`
+	ErrorFile      file.File   `json:"error-file"    mapstructure:"error-file"`
+	Tools          string      `json:"tools"         mapstructure:"tools"`
+	Defaults       file.File   `json:"defaults"      mapstructure:"defaults"`
+	Inherit        string      `json:"inherit"       mapstructure:"inherit"`
+	EnvFile        []file.File `json:"env-file"      mapstructure:"env-file"`
+	Cache          Cache       `json:"cache"         mapstructure:",squash"`
+	Parallel       int         `json:"parallel"      mapstructure:"parallel"      validate:"gte=0"`
+	Verbose        int         `json:"verbose"       mapstructure:"verbose"`
+	Show           Verbosity   `json:"show"          mapstructure:"show"`
+	NoVerifySSL    bool        `json:"no-verify-ssl" mapstructure:"no-verify-ssl"`
+	NoProgress     bool        `json:"no-progress"   mapstructure:"no-progress"`
 }
 
 type Cache struct {

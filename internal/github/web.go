@@ -19,8 +19,10 @@ type WebReleaseInfo struct {
 
 // newHTTPClient returns a new HTTP client with reasonable timeouts.
 func newHTTPClient() *http.Client {
+	const Timeout = 10 * time.Second
+
 	return &http.Client{
-		Timeout: 10 * time.Second,
+		Timeout: Timeout,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			// Don't follow redirects, we just want the Location header
 			return http.ErrUseLastResponse

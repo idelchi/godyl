@@ -89,7 +89,9 @@ func (g *GitHub) LatestVersion() (string, error) {
 	var err error
 
 	if g.Pre {
-		release, err = repository.GetLatestIncludingPreRelease()
+		const PerPage = 1000
+
+		release, err = repository.GetLatestIncludingPreRelease(PerPage)
 	} else {
 		release, err = repository.LatestRelease()
 		if err != nil {

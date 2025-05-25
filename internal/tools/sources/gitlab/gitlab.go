@@ -99,7 +99,8 @@ func (g *GitLab) LatestVersion() (string, error) {
 	var release *gitlab.Release
 
 	if g.Pre {
-		release, err = repository.GetLatestIncludingPreRelease()
+		const PerPage = 1000
+		release, err = repository.GetLatestIncludingPreRelease(PerPage)
 	} else {
 		release, err = repository.LatestRelease()
 	}

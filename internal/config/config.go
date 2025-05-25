@@ -17,15 +17,15 @@ import (
 // Config holds the top level configuration for godyl.
 // It is split into sub-structs for each command.
 type Config struct {
+	Root     root.Root         `json:"godyl"    mapstructure:"godyl"`
+	Common   common.Common     `json:"-"        mapstructure:"-"`
 	Dump     dump.Dump         `json:"dump"     mapstructure:"dump"`
 	Cache    cache.Cache       `json:"cache"    mapstructure:"cache"`
 	Config   config.Config     `json:"config"   mapstructure:"config"`
-	Common   common.Common     `json:"-"        mapstructure:"-"`
 	Update   update.Update     `json:"update"   mapstructure:"update"`
 	Status   status.Status     `json:"status"   mapstructure:"status"`
 	Download download.Download `json:"download" mapstructure:"download"`
 	Install  install.Install   `json:"install"  mapstructure:"install"`
-	Root     root.Root         `json:"godyl"    mapstructure:"godyl"`
 }
 
 func (c *Config) ToTool(forced bool) *tool.Tool {

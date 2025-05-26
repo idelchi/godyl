@@ -15,7 +15,7 @@ import (
 
 // GitLab represents a GitLab project configuration and state.
 type GitLab struct {
-	Data                common.Metadata `json:"-" mapstructure:"-"`
+	Data                common.Metadata `json:"-"         mapstructure:"-"`
 	latestStoredRelease *gitlab.Release
 	Project             string `json:"project"   mapstructure:"project"`
 	Namespace           string `json:"namespace" mapstructure:"namespace"`

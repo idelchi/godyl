@@ -1,3 +1,4 @@
+// Package config provides configuration and flags for the godyl application.
 package config
 
 import (
@@ -17,17 +18,36 @@ import (
 // Config holds the top level configuration for godyl.
 // It is split into sub-structs for each command.
 type Config struct {
-	Root     root.Root         `json:"godyl"    mapstructure:"godyl"`
-	Common   common.Common     `json:"-"        mapstructure:"-"`
-	Dump     dump.Dump         `json:"dump"     mapstructure:"dump"`
-	Cache    cache.Cache       `json:"cache"    mapstructure:"cache"`
-	Config   config.Config     `json:"config"   mapstructure:"config"`
-	Update   update.Update     `json:"update"   mapstructure:"update"`
-	Status   status.Status     `json:"status"   mapstructure:"status"`
+	// Root contains the configuration for the `godyl` command.
+	Root root.Root `json:"godyl" mapstructure:"godyl"`
+
+	// Dump contains the configuration for the `godyl dump` command
+	Dump dump.Dump `json:"dump" mapstructure:"dump"`
+
+	// Cache contains the configuration for the `godyl cache` command (empty)
+	Cache cache.Cache `json:"-" mapstructure:"-"`
+
+	// Config contains the configuration for the `godyl config` command (empty)
+	Config config.Config `json:"-" mapstructure:"-"`
+
+	// Update contains the configuration for the `godyl update` command
+	Update update.Update `json:"update" mapstructure:"update"`
+
+	// Status contains the configuration for the `godyl status` command
+	Status status.Status `json:"status" mapstructure:"status"`
+
+	// Download contains the configuration for the `godyl download` command
 	Download download.Download `json:"download" mapstructure:"download"`
-	Install  install.Install   `json:"install"  mapstructure:"install"`
+
+	// Install contains the configuration for the `godyl install` command
+	Install install.Install `json:"install" mapstructure:"install"`
+
+	// Common contains a subset of common configuration options
+	Common common.Common `json:"-" mapstructure:"-"`
 }
 
+// ToTool converts the Config to a tool.Tool instance,
+// holding either default values or values set by the user.
 func (c *Config) ToTool(forced bool) *tool.Tool {
 	var tool tool.Tool
 

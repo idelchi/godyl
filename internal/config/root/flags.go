@@ -1,6 +1,8 @@
 package root
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/tmp"
@@ -8,11 +10,11 @@ import (
 	"github.com/idelchi/godyl/pkg/logger"
 )
 
+// Flags adds the flags for the `godyl` root command to the provided Cobra command.
 func Flags(cmd *cobra.Command) {
 	env := env.FromEnv()
 
-	cmd.Flags().
-		StringP("log-level", "l", logger.INFO.String(), "log level (silent, debug, info, warn, error, always)")
+	cmd.Flags().StringP("log-level", "l", logger.INFO.String(), fmt.Sprintf("log level (%v)", logger.LevelValues()))
 	cmd.Flags().IntP("parallel", "j", 0, "parallelism, 0 means unlimited.")
 	cmd.Flags().StringP("cache-dir", "", tmp.CacheDir().Path(), "path to cache directory")
 	cmd.Flags().BoolP("no-cache", "", false, "disable cache")

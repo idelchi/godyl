@@ -1,7 +1,12 @@
 package dump
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
 
+	"github.com/spf13/cobra"
+)
+
+// Flags adds the flags for the `godyl dump` command to the provided Cobra command.
 func Flags(cmd *cobra.Command) {
-	cmd.Flags().StringP("format", "f", "yaml", "Output format (json or yaml)")
+	cmd.Flags().StringP("format", "f", "yaml", fmt.Sprintf("Output format (%v)", "[json yaml]"))
 }

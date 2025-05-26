@@ -89,7 +89,6 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 
 	for _, t := range p.tools {
 		// capture
-
 		g.Go(func() error {
 			// Build run options
 			var runOpts []runner.RunOption

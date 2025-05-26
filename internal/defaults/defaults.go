@@ -9,6 +9,7 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
+// Default is an alias of tool.Tool for convenience.
 type Default = tool.Tool
 
 // Defaults represents a collection of default values for tools.

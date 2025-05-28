@@ -13,7 +13,7 @@ import (
 
 func run(global config.Config, embedded common.Embedded, args ...string) error {
 	// Load the tools from the source as []byte
-	data, err := iutils.ReadPathsOrDefault(global.Root.Tools, args...)
+	data, err := iutils.ReadPathsOrDefault(global.Tools, args...)
 	if err != nil {
 		return fmt.Errorf("reading tools file: %w", err)
 	}
@@ -28,11 +28,11 @@ func run(global config.Config, embedded common.Embedded, args ...string) error {
 	global.Common = global.Install.ToCommon()
 
 	runner := common.NewHandler(global, embedded)
-	if err := runner.SetupLogger(global.Root.LogLevel); err != nil {
+	if err := runner.SetupLogger(global.LogLevel); err != nil {
 		return fmt.Errorf("setting up logger: %w", err)
 	}
 
-	if err := runner.Resolve(global.Root.Defaults, &tools); err != nil {
+	if err := runner.Resolve(global.Defaults, &tools); err != nil {
 		return err
 	}
 

@@ -19,7 +19,7 @@ func Command(global *config.Config, local any) *cobra.Command {
 		Args:    cobra.NoArgs,
 		Run: func(cmd *cobra.Command, _ []string) {
 			// Exit early if the command is run with `--show/-s` flag.
-			if common.ExitOnShow(global.Root.ShowFunc) {
+			if common.ExitOnShow(global.ShowFunc) {
 				return
 			}
 
@@ -29,7 +29,7 @@ func Command(global *config.Config, local any) *cobra.Command {
 		},
 	}
 
-	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
+	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
 
 	return cmd
 }

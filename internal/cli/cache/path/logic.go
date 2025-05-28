@@ -8,10 +8,7 @@ import (
 )
 
 func run(dir folder.Folder) error {
-	cacheFile, err := cache.File(dir)
-	if err != nil {
-		return err
-	}
+	cacheFile, _ := cache.File(dir)
 
 	fmt.Println(cacheFile)
 

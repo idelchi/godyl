@@ -17,15 +17,15 @@ func Command(global *config.Config, local any) *cobra.Command {
 		Args:    cobra.NoArgs,
 		RunE: func(_ *cobra.Command, _ []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
-			if global.Root.ShowFunc() != nil {
+			if global.ShowFunc() != nil {
 				return nil
 			}
 
-			return run(global.Root.Cache.Dir)
+			return run(global.Cache.Dir)
 		},
 	}
 
-	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
+	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
 
 	return cmd
 }

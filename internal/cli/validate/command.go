@@ -24,7 +24,7 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 		},
 	}
 
-	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
+	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
 
 	return cmd
 }

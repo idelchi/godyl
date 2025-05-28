@@ -40,14 +40,14 @@ func New(toolsList tools.Tools, cfg config.Config, log *logger.Logger) *Processo
 
 	var cacheImpl *cache.Cache
 
-	if !cfg.Root.Cache.Disabled {
-		file, _ := cache.File(cfg.Root.Cache.Dir)
+	if !cfg.Cache.Disabled {
+		file, _ := cache.File(cfg.Cache.Dir)
 		cacheImpl = cache.New(file)
 		cacheManager = cacheImpl
 	}
 
 	// Initialize progress manager
-	progressMgr := progress.NewDefaultManager(cfg.Root.NoProgress)
+	progressMgr := progress.NewDefaultManager(cfg.NoProgress)
 
 	// Initialize runner
 	runnerImpl := runner.NewDefaultRunner(cacheImpl, log)
@@ -79,7 +79,7 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 	ctx := context.Background()
 	g, ctx := errgroup.WithContext(ctx)
 
-	if par := p.config.Root.Parallel; par > 0 {
+	if par := p.config.Parallel; par > 0 {
 		g.SetLimit(par)
 		p.log.Debugf("running with %d parallel downloads", par)
 	}
@@ -98,7 +98,7 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 				runOpts = append(runOpts, runner.WithNoDownload())
 			}
 
-			if p.config.Root.NoVerifySSL {
+			if p.config.NoVerifySSL {
 				runOpts = append(runOpts, runner.WithNoVerifySSL())
 			}
 
@@ -164,7 +164,7 @@ func (p *Processor) presentResults() {
 	// Create table formatter
 	tableFormatter := presentation.NewTableFormatter(presentation.TableConfig{
 		MaxWidth: 100,
-		Verbose:  p.config.Root.Verbose > 0,
+		Verbose:  p.config.Verbose > 0,
 	})
 
 	// Render table
@@ -177,7 +177,7 @@ func (p *Processor) presentResults() {
 	}
 
 	// Display results
-	if p.config.Root.Verbose > 0 {
+	if p.config.Verbose > 0 {
 		p.log.Info("")
 		p.log.Info("Installation Summary:")
 		p.log.Info(tableOutput)
@@ -195,7 +195,7 @@ func (p *Processor) presentResults() {
 func (p *Processor) presentErrors(summary results.Summary) {
 	// Determine error format
 	format := presentation.ErrorFormatText
-	if p.config.Root.ErrorFile.Path() != "" {
+	if p.config.ErrorFile.Path() != "" {
 		format = presentation.ErrorFormatJSON
 	}
 
@@ -214,13 +214,13 @@ func (p *Processor) presentErrors(summary results.Summary) {
 	}
 
 	// Output errors
-	if p.config.Root.ErrorFile.Path() == "" {
+	if p.config.ErrorFile.Path() == "" {
 		p.log.Error(errorOutput)
 	} else {
-		if err := p.config.Root.ErrorFile.Write([]byte(errorOutput)); err != nil {
-			p.log.Errorf("failed to write error output to %q: %v", p.config.Root.ErrorFile.Path(), err)
+		if err := p.config.ErrorFile.Write([]byte(errorOutput)); err != nil {
+			p.log.Errorf("failed to write error output to %q: %v", p.config.ErrorFile.Path(), err)
 		} else {
-			p.log.Errorf("See error file %q for details", p.config.Root.ErrorFile.Path())
+			p.log.Errorf("See error file %q for details", p.config.ErrorFile.Path())
 		}
 	}
 }

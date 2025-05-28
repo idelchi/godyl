@@ -13,7 +13,7 @@ import (
 
 // run executes the `config dump` command.
 func run(cfg config.Config, koanf *koanfx.KoanfWithTracker, paths ...string) error {
-	file := cfg.Root.ConfigFile
+	file := cfg.ConfigFile
 	if !file.Exists() {
 		fmt.Printf("Config file %q doesn't exist\n", file)
 

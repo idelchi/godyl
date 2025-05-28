@@ -28,14 +28,14 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 		`),
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
-			if common.ExitOnShow(global.Root.ShowFunc) {
+			if common.ExitOnShow(global.ShowFunc) {
 				return nil
 			}
 
 			return run(*global, *embedded, cmd.Root().Version)
 		},
 	}
-	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
+	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
 
 	update.Flags(cmd)
 

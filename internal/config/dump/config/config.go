@@ -11,5 +11,5 @@ type Config struct {
 
 	// Tracker embed the common tracker configuration, allowing to tracker
 	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `     json:"-"   mapstructure:"-"`
+	common.Tracker `json:"-" mapstructure:"-"`
 }

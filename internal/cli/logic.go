@@ -19,6 +19,7 @@ import (
 	penv "github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/koanfx"
 	"github.com/idelchi/godyl/pkg/logger"
+	pfile "github.com/idelchi/godyl/pkg/path/file"
 )
 
 func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
@@ -27,7 +28,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 
 	commandPath := common.BuildCommandPath(cmd)
 	envPrefix := commandPath.Env().Scoped()
-	sectionPrefix := commandPath.Section().String()
+	sectionPrefix := ""
 	name := commandPath.Last()
 
 	// Get the current command's flags
@@ -59,12 +60,14 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 
 	// At this point, the location of the config file can be determined through either
 	// the environment variables or the flags.
-	// Unmarshal the config into the struct to get the config file path.
-	if err := k.Unmarshal(&cfg); err != nil {
-		log.Fatalf("Failed to unmarshal config into struct: %v", err)
-	}
+	// Unmarshal the config into a temporary struct to get the config file path.
+	// var tmpConfig config.Config
+	// if err := k.Unmarshal(&tmpConfig); err != nil {
+	// 	log.Fatalf("Failed to unmarshal config into struct: %v", err)
+	// }
 
-	configFile := cfg.ConfigFile
+	// configFile := tmpConfig.ConfigFile
+	configFile := pfile.New(k.Get("config-file").(string))
 	isSet := k.IsSet("config-file")
 
 	// We fail if:
@@ -102,7 +105,8 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 
 	// We can already validate the config file here by unmarshalling it with koanfx.WithErrorUnused()
 	// This will throw an error if there are any unused fields in the config file.
-	if err := k.Unmarshal(&cfg, koanfx.WithErrorUnused()); err != nil {
+	var tmpConfig config.Config
+	if err := k.Unmarshal(&tmpConfig, koanfx.WithErrorUnused()); err != nil {
 		return fmt.Errorf("unmarshalling config file %q: %w", configFile, err)
 	}
 
@@ -120,8 +124,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 
 	// Load config file
 	// Create a new Koanf instance, basing off the already loaded config file but cut at the relevant section
-	_ = koanfx.NewWithTracker(flags).ResetKoanf(k.Cut(sectionPrefix)).TrackAll().Track()
-	k = koanfx.NewWithTracker(flags).ResetKoanf(k.Koanf).TrackAll().Track()
+	k = koanfx.NewWithTracker(flags).ResetKoanf(k.Cut(sectionPrefix)).TrackAll().Track()
 
 	// Load environment variables
 	if err := k.TrackAll().Load(
@@ -142,7 +145,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	// At this point, the location of the `.env` file(s) can be determined through either
 	// the config file, environment variables or the flags.
 	// Unmarshal the config into the struct to get the `.env` file path.
-	if err := k.Unmarshal(&cfg); err != nil {
+	if err := k.Unmarshal(&tmpConfig); err != nil {
 		return fmt.Errorf("unmarshalling config into struct: %w", err)
 	}
 
@@ -159,8 +162,8 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	// - Env vars from env-file (in order from right to left overwriting)
 	dotenvs := penv.Env{}
 
-	for i := len(cfg.EnvFile) - 1; i >= 0; i-- {
-		file := cfg.EnvFile[i]
+	for i := len(tmpConfig.EnvFile) - 1; i >= 0; i-- {
+		file := tmpConfig.EnvFile[i]
 		dotenv, err := iutils.LoadDotEnv(file)
 
 		if failureCriteria(err) {
@@ -178,7 +181,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 					This might be confusing as it will have no effect.
 					Instead, use only:
 						'GODYL_ENV_FILE' or '--env-file'
-				`, "env-file", dotenvs.Get("GODYL_ENV_FILE"), cfg.EnvFile))
+				`, "env-file", dotenvs.Get("GODYL_ENV_FILE"), tmpConfig.EnvFile))
 
 		dotenvs.Delete("GODYL_ENV_FILE")
 	}
@@ -189,7 +192,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 					This might be confusing as it will have no effect.
 					Instead, use:
 						'GODYL_CONFIG_FILE' or '--config-file'
-				`, "config-file", dotenvs.Get("GODYL_CONFIG_FILE"), cfg.EnvFile))
+				`, "config-file", dotenvs.Get("GODYL_CONFIG_FILE"), tmpConfig.EnvFile))
 
 		dotenvs.Delete("GODYL_CONFIG_FILE")
 	}

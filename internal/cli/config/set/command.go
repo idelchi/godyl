@@ -13,7 +13,7 @@ import (
 // Command returns the `cache path` command.
 func Command(global *config.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "set",
+		Use:   "set <key> <value>",
 		Short: "Interact with the config",
 		Long:  "Interact with the config.",
 		Args:  cobra.ExactArgs(2), //nolint:mnd	// The command takes 2 arguments as documented.

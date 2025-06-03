@@ -30,7 +30,7 @@ func run(cfg config.Config, embedded common.Embedded, args ...string) (err error
 		return err
 	}
 
-	iutils.Print(cfg.Dump.Format, c)
+	iutils.Print(iutils.YAML, c)
 
 	return nil
 }

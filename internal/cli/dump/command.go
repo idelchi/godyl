@@ -6,7 +6,6 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/internal/config/dump"
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
@@ -34,8 +33,6 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 	}
 
 	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
-
-	dump.Flags(cmd)
 
 	subcommands(cmd, global, embedded)
 

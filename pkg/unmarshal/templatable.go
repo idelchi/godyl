@@ -30,8 +30,10 @@ func (t *Templatable[T]) UnmarshalYAML(node ast.Node) error {
 }
 
 // MarshalYAML returns the Template string for YAML serialization.
+//
+// TODO(Idelchi): Return t.Template or t.Value?
 func (t Templatable[T]) MarshalYAML() (any, error) {
-	return t.Value, nil
+	return t.Template, nil
 }
 
 // IsUnset returns true if the Template is empty.

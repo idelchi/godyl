@@ -10,20 +10,32 @@ import (
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
+// ConfigFile returns the first existing “godyl” configuration file it finds.
+//
+// Search order:
+//  1. $CONFIG_DIR/godyl.yaml
+//  2. $CONFIG_DIR/godyl.yml
+//  3. ./godyl.yml (project root)
+//
+// If none exist, it falls back to $CONFIG_DIR/godyl.yml, allowing callers
+// to create or write it later.
 func ConfigFile() file.File {
-	config := ConfigDir().WithFile("godyl")
+	base := ConfigDir().WithFile("godyl")
 
-	extensions := []string{"yaml", "yml"}
-
-	for _, ext := range extensions {
-		config = config.WithExtension(ext)
-
-		if config.Exists() {
-			return config
+	// Check config directory for YAML/YML variants.
+	for _, ext := range []string{"yaml", "yml"} {
+		if f := base.WithExtension(ext); f.Exists() {
+			return f
 		}
 	}
 
-	return file.New("godyl.yml")
+	// Fallback: project-local godyl.yml
+	if local := file.New("godyl.yml"); local.Exists() {
+		return local
+	}
+
+	// Default path when nothing exists yet.
+	return base.WithExtension("yml")
 }
 
 // ConfigDir returns the config directory for Godyl.

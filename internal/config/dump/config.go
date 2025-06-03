@@ -5,7 +5,6 @@ import (
 	"github.com/idelchi/godyl/internal/config/common"
 	"github.com/idelchi/godyl/internal/config/dump/config"
 	"github.com/idelchi/godyl/internal/config/dump/tools"
-	"github.com/idelchi/godyl/internal/iutils"
 )
 
 // Dump holds the configuration for the `dump` command.
@@ -15,9 +14,6 @@ type Dump struct {
 
 	// Config contains the configuration for the `godyl dump config` command.
 	Config config.Config `json:"config" mapstructure:"config" validate:"-"`
-
-	// Format specifies the output format for the dump command.
-	Format iutils.Format `json:"format" validate:"oneof=json yaml"`
 
 	// Tracker embed the common tracker configuration, allowing to tracker
 	// whether configuration values have been explicitly set or defaulted

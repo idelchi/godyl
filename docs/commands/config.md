@@ -21,10 +21,10 @@ godyl config [path|set] [flags]
 
 ## Subcommands
 
-| Subcommand | Description                        |
-| :--------- | :--------------------------------- |
-| `path`     | Print the path to the config file. |
-| `set`      | Set a value in the config file.    |
+| Subcommand          | Description                       |
+| :------------------ | :-------------------------------- |
+| `path`              | Print the path to the config file |
+| `set <key> <value>` | Set a value in the config file    |
 
 > **Note**: The `set` command will lead to loss of order and comments in the config file.
 
@@ -33,5 +33,5 @@ godyl config [path|set] [flags]
 ### Store tokens in the config file
 
 ```sh
-godyl config set godyl.github-token <token>
+godyl config set github-token secret-token
 ```

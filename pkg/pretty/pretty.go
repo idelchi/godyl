@@ -16,7 +16,7 @@ func YAML(obj any) string {
 	const indent = 2
 
 	// Use MarshalWithOptions to set the indent
-	yamlBytes, err := yaml.MarshalWithOptions(obj, yaml.Indent(indent), yaml.UseSingleQuote(true))
+	yamlBytes, err := yaml.MarshalWithOptions(obj, yaml.Indent(indent), yaml.UseSingleQuote(true), yaml.UseLiteralStyleIfMultiline(true))
 	if err != nil {
 		return err.Error()
 	}

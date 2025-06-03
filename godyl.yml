@@ -1,6 +1,4 @@
 dump:
-  format: yaml
-
   tools:
     full: false
 

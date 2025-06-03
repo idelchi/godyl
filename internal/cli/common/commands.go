@@ -40,8 +40,10 @@ func excludeSubcommandsFields(s any) any {
 		t = t.Elem()
 	}
 
-	var fields []reflect.StructField
-	var values []reflect.Value
+	var (
+		fields []reflect.StructField
+		values []reflect.Value
+	)
 
 	for i := range t.NumField() {
 		field := t.Field(i)

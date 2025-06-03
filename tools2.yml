@@ -295,7 +295,6 @@
     SSH client with easy bookmarking and config management
     Note, does not contain a version stamp and will therefore always reinstall, unless cache file is used.
   version:
-    # note: sshed does not have a version command
     commands: []
   exe:
     name: sshed
@@ -891,6 +890,13 @@
   description: A terminal recorder
   tags:
     - terminal
+
+- name: ofabry/go-callvis
+  description: A development tool to help visualize call graph of a Go program using interactive view.
+  source:
+    type: go
+  tags:
+    - go
 
 - idelchi/gocry
 - idelchi/gogen

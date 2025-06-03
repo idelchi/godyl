@@ -26,7 +26,7 @@ func run(cfg config.Config, args []string) error {
 		return err
 	}
 
-	iutils.Print(cfg.Dump.Format, cache)
+	iutils.Print(iutils.YAML, cache)
 
 	return nil
 }

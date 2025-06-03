@@ -44,7 +44,7 @@ func run(cfg config.Config, koanf *koanfx.KoanfWithTracker, paths ...string) err
 				fmt.Printf(" ---- %s ----\n", path)
 			}
 
-			iutils.Print(cfg.Dump.Format, val)
+			iutils.Print(iutils.YAML, val)
 
 			if len(paths) > 1 {
 				fmt.Println()
@@ -59,12 +59,12 @@ func run(cfg config.Config, koanf *koanfx.KoanfWithTracker, paths ...string) err
 
 		koanf.Unmarshal(&raw)
 
-		iutils.Print(cfg.Dump.Format, raw)
+		iutils.Print(iutils.YAML, raw)
 
 		return nil
 	}
 
-	iutils.Print(cfg.Dump.Format, koanf.Raw())
+	iutils.Print(iutils.YAML, koanf.Raw())
 
 	return nil
 }

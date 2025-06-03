@@ -73,8 +73,11 @@ func (g *Repository) getLatestReleaseInfoFromWeb(ctx context.Context) (*WebRelea
 	// Extract the tag from the Location header
 	// The URL format is typically: https://github.com/owner/repo/releases/tag/v1.2.3
 	parts := strings.Split(loc, "/")
-	if len(parts) < 2 {
-		return nil, fmt.Errorf("unable to parse release tag from URL: %s", loc)
+
+	const expectedParts = 2
+
+	if len(parts) < expectedParts {
+		return nil, fmt.Errorf("unable to parse release tag from URL: %q", loc)
 	}
 
 	tag := parts[len(parts)-1]

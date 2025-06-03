@@ -20,7 +20,7 @@ func Command(global *config.Config, local any) *cobra.Command {
 				return nil
 			}
 
-			return run(global.Dump.Format)
+			return run()
 		},
 	}
 	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)

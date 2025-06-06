@@ -62,7 +62,7 @@ func (c *Commands) Combined() Command {
 		stringCommands = append(stringCommands, string(cmd))
 	}
 
-	return Command(strings.Join(stringCommands, "; "))
+	return Command(strings.Join(stringCommands, "\n"))
 }
 
 // Run executes the combined commands with the provided environment variables.

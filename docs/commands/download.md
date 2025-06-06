@@ -21,6 +21,7 @@ godyl [flags] download [tool|URL]... [flags]
 
 ## Aliases
 
+- `dl`
 - `x`
 
 ## Description

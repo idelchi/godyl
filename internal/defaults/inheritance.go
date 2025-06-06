@@ -9,13 +9,13 @@ import (
 
 // BuildGraph builds a directed acyclic graph (DAG) from the defaults.
 func (d Defaults) BuildGraph() (*dag.DAG[string], error) {
-	// 1. collect node IDs (= tool names)
+	// Collect node IDs (default names)
 	nodes := make([]string, 0, len(d))
 	for name := range d {
 		nodes = append(nodes, name)
 	}
 
-	// 2. parent-lookup function required by dag.Build
+	// Parent-lookup function required by dag.Build
 	parentFn := func(name string) []string {
 		t := d[name]
 		if t == nil {
@@ -29,11 +29,11 @@ func (d Defaults) BuildGraph() (*dag.DAG[string], error) {
 		return *t.Inherit
 	}
 
-	// 3. Build and validate the DAG
+	// Build and validate the DAG
 	return dag.Build(nodes, parentFn)
 }
 
-// ResolveInheritance validates inheritance and mutates every *tool.Tool so that all
+// ResolveInheritance validates inheritance and mutates every Default so that all
 // parents' fields are applied.
 func (d Defaults) ResolveInheritance() error {
 	// Build the dependency DAG once.

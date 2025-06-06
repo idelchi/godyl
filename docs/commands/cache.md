@@ -12,12 +12,8 @@ The `cache` command allows interaction with `godyl`'s cache.
 ## Syntax
 
 ```sh
-godyl cache [path|remove|dump|sync] [flags]
+godyl cache [path|remove|clean] [flags]
 ```
-
-## Aliases
-
-- `c`
 
 ## Description
 
@@ -28,9 +24,8 @@ Since this might not be so robust, it will first check the cache to see if a ver
 
 ## Subcommands
 
-| Subcommand                | Description                                                                                                                                                     |
-| :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `path`                    | Print the path to the cache file                                                                                                                                |
-| `remove`, `rm`            | Remove the cache file                                                                                                                                           |
-| `dump [name]` `ls [name]` | Show the contents of the cache file. Optionally show a specific item (by name)                                                                                  |
-| `clean`                   | Compares the tools in the cache with the tools installed on the system and updates the cache file accordingly. Currently removes entries or updates the version |
+| Subcommand     | Description                                                                                                                                                     |
+| :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `path`         | Print the path to the cache file                                                                                                                                |
+| `remove`, `rm` | Remove the cache file                                                                                                                                           |
+| `clean`        | Compares the tools in the cache with the tools installed on the system and updates the cache file accordingly. Currently removes entries or updates the version |

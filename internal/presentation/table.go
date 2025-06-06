@@ -57,9 +57,11 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 			Number:   i + 1,
 			WidthMax: h.WidthMax,
 		}
+
 		if h.Bold {
 			config.Colors = text.Colors{text.Bold}
 		}
+
 		columnConfigs = append(columnConfigs, config)
 	}
 
@@ -68,6 +70,7 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 
 	// Set style
 	t.SetStyle(table.StyleRounded)
+
 	t.Style().Color.Header = text.Colors{text.FgBlue, text.Bold}
 
 	// Track row colors
@@ -79,6 +82,7 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 		if colors, exists := rowColors[attr.Number]; exists {
 			return colors
 		}
+
 		return nil
 	})
 

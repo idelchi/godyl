@@ -17,7 +17,7 @@ func run(global config.Config, embedded common.Embedded, args ...string) error {
 		return err
 	}
 
-	iutils.Print(global.Dump.Format, c)
+	iutils.Print(iutils.YAML, c)
 
 	return nil
 }

@@ -19,7 +19,7 @@ func Command(global *config.Config, local any) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Since the command is allowed to run with `--show/-s` flag,
 			// we should suppress the default error message for unknown subcommands.
-			if common.ExitOnShow(global.Root.ShowFunc, args...) {
+			if common.ExitOnShow(global.ShowFunc, args...) {
 				return nil
 			}
 
@@ -27,7 +27,7 @@ func Command(global *config.Config, local any) *cobra.Command {
 		},
 	}
 
-	common.SetSubcommandDefaults(cmd, nil, global.Root.ShowFunc)
+	common.SetSubcommandDefaults(cmd, nil, global.ShowFunc)
 
 	subcommands(cmd, global)
 

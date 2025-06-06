@@ -38,7 +38,7 @@ func Command(cfg *config.Config, files *common.Embedded, version string) *cobra.
 			return run(cmd, args, cfg)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if common.ExitOnShow(cfg.Root.ShowFunc, args...) {
+			if common.ExitOnShow(cfg.ShowFunc, args...) {
 				return nil
 			}
 

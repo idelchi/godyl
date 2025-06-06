@@ -19,7 +19,7 @@ func run(cfg config.Config, embedded common.Embedded, args ...string) (err error
 
 	// Load the tools from the source as []byte
 	if !cfg.Dump.Tools.Embedded {
-		data, err = iutils.ReadPathsOrDefault(cfg.Root.Tools, args...)
+		data, err = iutils.ReadPathsOrDefault(cfg.Tools, args...)
 		if err != nil {
 			return fmt.Errorf("reading tools file: %w", err)
 		}
@@ -30,7 +30,7 @@ func run(cfg config.Config, embedded common.Embedded, args ...string) (err error
 		return err
 	}
 
-	iutils.Print(cfg.Dump.Format, c)
+	iutils.Print(iutils.YAML, c)
 
 	return nil
 }

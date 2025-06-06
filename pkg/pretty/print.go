@@ -9,13 +9,13 @@ import (
 // PrintJSON outputs formatted JSON to stdout.
 // Prints any value as indented JSON with consistent formatting.
 func PrintJSON(obj any) {
-	fmt.Println(JSON(obj))
+	fmt.Println(strings.TrimSpace(JSON(obj)))
 }
 
 // PrintYAML outputs formatted YAML to stdout.
 // Prints any value as indented YAML with consistent formatting.
 func PrintYAML(obj any) {
-	fmt.Println(YAML(obj))
+	fmt.Println(strings.TrimSpace(YAML(obj)))
 }
 
 // PrintJSONMasked outputs masked JSON to stdout.

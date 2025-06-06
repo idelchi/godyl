@@ -11,9 +11,9 @@ import (
 )
 
 type Handler struct {
+	config   config.Config
 	logger   *logger.Logger
 	embedded Embedded
-	config   config.Config
 }
 
 func NewHandler(cfg config.Config, embedded Embedded) *Handler {
@@ -79,7 +79,7 @@ func (c *Handler) Resolve(defaultFile file.File, tools *tools.Tools) (err error)
 	}
 
 	// Assign default inheritance to all tools
-	tools.DefaultInheritance(c.config.Root.Inherit)
+	tools.DefaultInheritance(c.config.Inherit)
 
 	// We can now resolve the inheritance scheme of all the tools.
 	if err := tools.ResolveInheritance(defs); err != nil {

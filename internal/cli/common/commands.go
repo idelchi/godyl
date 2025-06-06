@@ -3,6 +3,7 @@ package common
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/knadh/koanf/providers/env"
@@ -30,6 +31,38 @@ type Trackable interface {
 	Validate() error
 }
 
+func excludeSubcommandsFields(s any) any {
+	v := reflect.ValueOf(s)
+	t := reflect.TypeOf(s)
+
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+		t = t.Elem()
+	}
+
+	var (
+		fields []reflect.StructField
+		values []reflect.Value
+	)
+
+	for i := range t.NumField() {
+		field := t.Field(i)
+		if field.Tag.Get("validate") != "-" && !field.Anonymous {
+			fields = append(fields, field)
+			values = append(values, v.Field(i))
+		}
+	}
+
+	newType := reflect.StructOf(fields)
+	newStruct := reflect.New(newType).Elem()
+
+	for i, val := range values {
+		newStruct.Field(i).Set(val)
+	}
+
+	return newStruct.Interface()
+}
+
 func KCreateSubcommandPreRunE(
 	name string,
 	cfg Trackable,
@@ -51,6 +84,9 @@ func KCreateSubcommandPreRunE(
 		if cmd.HasParent() {
 			// Strip the root command from the section prefix
 			sectionPrefix = commandPath.WithoutRoot().Section()
+		} else {
+			// If we are at the root command, we don't need a section prefix
+			sectionPrefix = ""
 		}
 
 		defer func() {
@@ -60,12 +96,17 @@ func KCreateSubcommandPreRunE(
 
 				if cfg != nil {
 					fmt.Println("-- configuration --")
-					f(cfg)
+					f(excludeSubcommandsFields(cfg))
+
+					fmt.Println("")
 				}
 
 				if cmd.Flags().NArg() > 0 {
 					fmt.Println("-- arguments --")
 					f(cmd.Flags().Args())
+
+					fmt.Println("")
+
 				}
 			}
 		}()

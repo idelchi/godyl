@@ -29,11 +29,11 @@ func run(global config.Config, embedded common.Embedded, args ...string) error {
 	global.Common = global.Status.ToCommon()
 
 	runner := common.NewHandler(global, embedded)
-	if err := runner.SetupLogger(global.Root.LogLevel); err != nil {
+	if err := runner.SetupLogger(global.LogLevel); err != nil {
 		return fmt.Errorf("setting up logger: %w", err)
 	}
 
-	if err := runner.Resolve(global.Root.Defaults, &tools); err != nil {
+	if err := runner.Resolve(global.Defaults, &tools); err != nil {
 		return err
 	}
 	// At this point, all tools have been resolved and can be processed by the processor

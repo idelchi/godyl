@@ -2,7 +2,7 @@
 # Description : Docker image containing the godyl binary
 #]=======================================================================]
 
-ARG GO_VERSION=1.24.2
+ARG GO_VERSION=1.24.4
 ARG DISTRO=bookworm
 
 #### ---- Build ---- ####

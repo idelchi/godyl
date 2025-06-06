@@ -19,8 +19,8 @@ type Collector interface {
 
 // DefaultCollector is the default implementation of Collector.
 type DefaultCollector struct {
-	mu      sync.Mutex
 	results []runner.Result
+	mu      sync.Mutex
 }
 
 // NewCollector creates a new DefaultCollector.
@@ -45,6 +45,7 @@ func (c *DefaultCollector) All() []runner.Result {
 	// Return a copy to prevent external modification
 	results := make([]runner.Result, len(c.results))
 	copy(results, c.results)
+
 	return results
 }
 

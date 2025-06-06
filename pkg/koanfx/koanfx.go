@@ -69,20 +69,6 @@ func (kwt *KoanfWithTracker) IsSet(key string) bool {
 	return kwt.Tracker.IsSet(key)
 }
 
-// withAll tracks all keys from the koanf instance.
-func (kwt *KoanfWithTracker) withAll() func() {
-	return func() {
-		kwt.Tracker.TrackAll(kwt.Koanf)
-	}
-}
-
-// withFlags tracks changed flags from a FlagSet.
-func (kwt *KoanfWithTracker) withFlags() func() {
-	return func() {
-		kwt.Tracker.TrackFlags(kwt.flags)
-	}
-}
-
 // TrackAll tracks all keys from the koanf instance.
 func (kwt *KoanfWithTracker) TrackAll() *KoanfWithTracker {
 	kwt.active = kwt.withAll()
@@ -135,4 +121,18 @@ func (kwt *KoanfWithTracker) AsMapAny() (map[string]any, error) {
 	}
 
 	return mapAny, nil
+}
+
+// withAll tracks all keys from the koanf instance.
+func (kwt *KoanfWithTracker) withAll() func() {
+	return func() {
+		kwt.Tracker.TrackAll(kwt.Koanf)
+	}
+}
+
+// withFlags tracks changed flags from a FlagSet.
+func (kwt *KoanfWithTracker) withFlags() func() {
+	return func() {
+		kwt.Tracker.TrackFlags(kwt.flags)
+	}
 }

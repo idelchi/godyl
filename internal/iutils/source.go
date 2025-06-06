@@ -23,7 +23,7 @@ type FileSource struct {
 func (s FileSource) Read() ([]byte, error) {
 	content, err := s.File.Read()
 	if err != nil {
-		return nil, fmt.Errorf("reading file %q: %w", s.File, err)
+		return nil, err
 	}
 
 	return content, nil

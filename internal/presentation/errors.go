@@ -16,8 +16,8 @@ type ErrorFormatter struct {
 
 // ErrorConfig configures the error formatter.
 type ErrorConfig struct {
-	WrapWidth int
 	Format    ErrorFormat
+	WrapWidth int
 }
 
 // ErrorFormat represents the output format for errors.
@@ -62,6 +62,7 @@ func (f *ErrorFormatter) formatJSON(errors []results.ErrorDetail) (string, error
 	}
 
 	jsonErrors := make([]jsonError, 0, len(errors))
+
 	for _, e := range errors {
 		je := jsonError{
 			Tool:    e.Tool,
@@ -70,6 +71,7 @@ func (f *ErrorFormatter) formatJSON(errors []results.ErrorDetail) (string, error
 		if e.Error != nil {
 			je.Error = e.Error.Error()
 		}
+
 		jsonErrors = append(jsonErrors, je)
 	}
 
@@ -94,7 +96,7 @@ func (f *ErrorFormatter) formatText(errors []results.ErrorDetail) string {
 		sb.WriteString(fmt.Sprintf("Tool: %q\n", e.Tool))
 
 		// Message
-		sb.WriteString(fmt.Sprintf("Message: %s", e.Message))
+		sb.WriteString("Message: " + e.Message)
 
 		// Error details if present
 		if e.Error != nil {
@@ -112,9 +114,11 @@ func (f *ErrorFormatter) FormatSummary(summary results.Summary) string {
 	if summary.Successful > 0 {
 		parts = append(parts, fmt.Sprintf("%d successful", summary.Successful))
 	}
+
 	if summary.Failed > 0 {
 		parts = append(parts, fmt.Sprintf("%d failed", summary.Failed))
 	}
+
 	if summary.Skipped > 0 {
 		parts = append(parts, fmt.Sprintf("%d skipped", summary.Skipped))
 	}

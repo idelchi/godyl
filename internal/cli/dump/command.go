@@ -6,7 +6,6 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/internal/config/dump"
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
@@ -25,7 +24,7 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Since the command is allowed to run with `--show/-s` flag,
 			// we should suppress the default error message for unknown subcommands.
-			if common.ExitOnShow(global.Root.ShowFunc, args...) {
+			if common.ExitOnShow(global.ShowFunc, args...) {
 				return nil
 			}
 
@@ -33,9 +32,7 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 		},
 	}
 
-	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
-
-	dump.Flags(cmd)
+	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
 
 	subcommands(cmd, global, embedded)
 

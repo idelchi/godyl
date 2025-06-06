@@ -16,10 +16,10 @@ func run(cfg config.Config, embedded common.Embedded, version string) error {
 
 	godyl := updater.NewGodyl(version, &cfg)
 
-	cfg.Root.Inherit = "default"
+	cfg.Inherit = "default"
 
 	runner := common.NewHandler(cfg, embedded)
-	if err := runner.SetupLogger(cfg.Root.LogLevel); err != nil {
+	if err := runner.SetupLogger(cfg.LogLevel); err != nil {
 		return fmt.Errorf("setting up logger: %w", err)
 	}
 

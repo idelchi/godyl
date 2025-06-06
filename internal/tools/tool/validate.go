@@ -43,7 +43,7 @@ func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.R
 	// Expand environment variables.
 	t.Env.Expand()
 
-	// Create a basic template engine with missing key errors and a map of platform values
+	// Create a basic template engine with missing key errors and a map of platform values and tool values.
 	tmpl := templates.New(templates.WithMissingKeyError(), templates.WithSlimSprig()).
 		WithValues(t.Platform.ToMap(), t.ToTemplateMap())
 
@@ -53,6 +53,9 @@ func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.R
 
 	// Expand and set the output folder path.
 	t.Output = folder.New(t.Output).Expanded().Path()
+
+	// Update the template engine with the new tools values
+	tmpl.AddValues(t.ToTemplateMap())
 
 	// Must pass at least after first set of templates.
 	if err := t.Validate(); err != nil {

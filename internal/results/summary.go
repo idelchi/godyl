@@ -10,19 +10,19 @@ import (
 
 // Summary provides an aggregated view of all results.
 type Summary struct {
+	Results    []runner.Result
+	Errors     []ErrorDetail
 	Total      int
 	Successful int
 	Failed     int
 	Skipped    int
-	Results    []runner.Result
-	Errors     []ErrorDetail
 }
 
 // ErrorDetail contains detailed error information for a failed tool.
 type ErrorDetail struct {
+	Error   error
 	Tool    string
 	Message string
-	Error   error
 }
 
 // HasErrors returns true if there are any failed results.
@@ -37,7 +37,7 @@ func (s Summary) Error() error {
 	}
 
 	if s.Failed == 1 {
-		return fmt.Errorf("1 tool failed to install")
+		return errors.New("1 tool failed to install")
 	}
 
 	return fmt.Errorf("%d tools failed to install", s.Failed)
@@ -50,6 +50,7 @@ func (s Summary) DetailedError() error {
 	}
 
 	errs := make([]error, 0, len(s.Errors))
+
 	for _, e := range s.Errors {
 		if e.Error != nil {
 			errs = append(errs, fmt.Errorf("%s: %s: %w", e.Tool, e.Message, e.Error))
@@ -64,10 +65,12 @@ func (s Summary) DetailedError() error {
 // ByStatus returns all results with the given status.
 func (s Summary) ByStatus(status runner.Status) []runner.Result {
 	var results []runner.Result
+
 	for _, r := range s.Results {
 		if r.Status == status {
 			results = append(results, r)
 		}
 	}
+
 	return results
 }

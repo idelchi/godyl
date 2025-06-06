@@ -15,7 +15,7 @@ import (
 
 // GitLab represents a GitLab project configuration and state.
 type GitLab struct {
-	Data                common.Metadata `json:"-" mapstructure:"-"`
+	Data                common.Metadata `json:"-"         mapstructure:"-"`
 	latestStoredRelease *gitlab.Release
 	Project             string `json:"project"   mapstructure:"project"`
 	Namespace           string `json:"namespace" mapstructure:"namespace"`
@@ -99,7 +99,8 @@ func (g *GitLab) LatestVersion() (string, error) {
 	var release *gitlab.Release
 
 	if g.Pre {
-		release, err = repository.GetLatestIncludingPreRelease()
+		const PerPage = 1000
+		release, err = repository.GetLatestIncludingPreRelease(PerPage)
 	} else {
 		release, err = repository.LatestRelease()
 	}

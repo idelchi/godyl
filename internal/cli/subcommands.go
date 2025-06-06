@@ -24,8 +24,8 @@ func subcommands(cmd *cobra.Command, global *config.Config, embedded *common.Emb
 		status.Command(global, &global.Status, embedded),
 		dump.Command(global, &global.Dump, embedded),
 		update.Command(global, &global.Update, embedded),
-		cache.Command(global, &global.Cache),
-		cconfig.Command(global, &global.Config),
+		cache.Command(global, nil),
+		cconfig.Command(global, nil),
 		validate.Command(global, nil, embedded),
 
 		version.Command(global, nil),

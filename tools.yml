@@ -373,9 +373,6 @@
     name: gh
     patterns:
       - "bin/gh{{ .EXTENSION }}"
-  commands:
-    - "{{ .Output }}/{{ .Exe }} extension install github/gh-copilot || true"
-    - "{{ .Output }}/{{ .Exe }} extension upgrade gh-copilot || true"
   tags:
     - terminal
 
@@ -576,163 +573,6 @@
   tags:
     - automation
 
-- name: nvbn/thefuck
-  description: Magnificent app which corrects your previous console command
-  exe: thefuck
-  version: 3.32
-  source:
-    type: none
-  commands:
-    - |
-      {{ if eq .OS "linux" }}
-      pip install {{ .Exe }}=={{ .Version }} --user --break-system-packages
-      {{ else }}
-      echo "installation skipped"
-      {{ end }}
-  tags:
-    - python
-    - native
-    - terminal
-
-- name: facebook/PathPicker
-  description: A tool for selecting files from bash output
-  version: 0.9.5
-  source:
-    type: none
-  commands:
-    - set -e
-    - rm -rf {{ .Output }} /tmp/PathPicker
-    - mkdir -p {{ .Output }}
-    - git clone --branch={{ .Version }} https://github.com/facebook/PathPicker.git /tmp/PathPicker
-    - cp /tmp/PathPicker/fpp {{ .Output }}/fpp
-    - rm -rf /tmp/PathPicker
-  tags:
-    - linux
-    - native
-    - terminal
-
-- name: sebglazebrook/aliases
-  description: Contextual, dynamic aliases for the bash shell
-  version: 0.8.1
-  source:
-    type: none
-  commands:
-    - TMP_DIR=$(mktemp -d)
-    - echo curl -L -o ${TMP_DIR}/aliases_{{ .Version }}.deb https://github.com/sebglazebrook/aliases/raw/refs/heads/master/releases/{{ .Version }}/debian/aliases_{{ .Version }}.deb
-    - curl -L -o ${TMP_DIR}/aliases_{{ .Version }}.deb https://github.com/sebglazebrook/aliases/raw/refs/heads/master/releases/{{ .Version }}/debian/aliases_{{ .Version }}.deb
-    - apt-get install -y ${TMP_DIR}/aliases_{{ .Version }}.deb
-    - rm -rf ${TMP_DIR}
-    - aliases init --global >> ~/.bashrc
-  tags:
-    - elevated
-    - linux
-    - native
-    - terminal
-
-- name: shannonmoeller/up
-  description: Quickly navigate to a parent directory
-  source:
-    type: none
-  commands:
-    - |
-      curl --create-dirs -o ~/.config/up/up.sh https://raw.githubusercontent.com/shannonmoeller/up/master/up.sh
-      echo 'source ~/.config/up/up.sh' >> ~/.bashrc
-  tags:
-    - linux
-    - native
-    - terminal
-
-- name: nschloe/stressberry
-  description: Stress tests for the Raspberry Pi
-  exe: stress
-  version: v0.3.3
-  source:
-    type: none
-  commands:
-    - apt-get update
-    - apt-get install -y {{ .Exe }}
-  tags:
-    - elevated
-    - linux
-    - native
-    - automation
-
-- name: 89luca89/distrobox
-  description: Use any linux distribution inside your terminal
-  exe: distrobox
-  version: 1.7.2.1
-  source:
-    type: none
-  commands:
-    - apt-get update
-    - apt-get install -y {{ .Exe }}
-  tags:
-    - elevated
-    - linux
-    - native
-    - virtualization
-
-- name: dominikwilkowski/cfonts
-  description: Sexy ANSI fonts for the console
-  exe: cfonts
-  source:
-    type: none
-  commands:
-    - TMPDIR=$(mktemp -d)
-    - export RUSTUP_HOME=${TMPDIR}/home
-    - export CARGO_HOME=${TMPDIR}/cargo
-    - curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
-    - dir=$(dirname {{ .Output }})
-    - ${TMPDIR}/cargo/bin/cargo install {{ .Exe }} --root ${dir}
-    - rm -rf ${TMPDIR}
-  tags:
-    - native
-    - terminal
-
-- name: yank
-  description: Copy terminal output to clipboard
-  version: 1.3.0-1
-  exe: yank-cli
-  source:
-    type: none
-  commands:
-    - |
-      {{ if eq .OS "linux" }}
-      apt-get update
-      apt-get install -y {{ .Name }}={{ .Version }}
-      {{ else }}
-      echo "installation skipped"
-      {{ end }}
-  tags:
-    - elevated
-    - linux
-    - native
-    - terminal
-
-- name: jpmens/jo
-  exe: jo
-  description: JSON output from a shell
-  source:
-    type: |-
-      {{- if eq .OS "windows" -}}
-          github
-      {{- else -}}
-          none
-      {{- end -}}
-  commands:
-    - |
-      {{- if ne .OS "windows" -}}
-      apt-get update
-      apt-get install -y {{ .Exe }}
-      {{- end -}}
-  hints:
-    - pattern: .exe
-      type: endswith
-  tags:
-    - elevated
-    - native
-    - processing
-
 - name: hairyhenderson/gomplate
   description: A versatile Go template processor
   exe:
@@ -868,11 +708,6 @@
 
 - name: jdx/mise
   description: The front-end to your dev env
-  commands:
-    - exit 0
-    - MISE_PATH=$(which mise)
-    - echo "eval \"\$($MISE_PATH activate bash)\"" >> ~/.bashrc
-    - echo "eval \"\$($MISE_PATH activate zsh)\"" >> ~/.zshrc
   tags:
     - terminal
 
@@ -897,6 +732,16 @@
     type: go
   tags:
     - go
+
+- name: astral-sh/uv
+  description: An extremely fast Python package and project manager, written in Rust.
+  tags:
+    - python
+
+- name: astral-sh/ruff
+  description: An extremely fast Python linter and code formatter, written in Rust.
+  tags:
+    - python
 
 - idelchi/gocry
 - idelchi/gogen

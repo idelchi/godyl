@@ -7,7 +7,7 @@ import (
 )
 
 type Download struct {
-	common.Tracker `json:"-"       mapstructure:"-"`
+	common.Tracker `json:"-" mapstructure:"-"`
 	Version        string       `json:"version" mapstructure:"version"`
 	Source         sources.Type `json:"source"  mapstructure:"source"  validate:"oneof=github gitlab url go command"`
 	OS             string       `json:"os"      mapstructure:"os"`

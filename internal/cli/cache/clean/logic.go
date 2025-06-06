@@ -14,7 +14,7 @@ import (
 
 // run executes the `cache clean` command.
 func run(global config.Config) error {
-	root := global.Root
+	root := global
 
 	cacheFile, err := cache.File(root.Cache.Dir)
 	if err != nil {
@@ -74,7 +74,7 @@ func run(global config.Config) error {
 			continue
 		}
 
-		if version.Compare(parsed, tool.Version.Version) {
+		if version.Equal(parsed, tool.Version.Version) {
 			continue
 		}
 

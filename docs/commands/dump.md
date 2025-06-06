@@ -19,12 +19,6 @@ godyl [flags] dump [defaults|env|platform|tools] [flags]
 
 The `dump` command provides a way to inspect `godyl`'s configuration, available tools, and system information. This can be helpful for debugging, understanding the current setup, or creating custom tool configurations.
 
-## Flags
-
-| Flag             | Environment Variable | Default | Description                |
-| :--------------- | :------------------- | :------ | :------------------------- |
-| `--format`, `-f` | `GODYL_DUMP_FORMAT`  | `yaml`  | Output format (yaml, json) |
-
 ## Subcommands
 
 | Subcommand           | Description                                               |
@@ -38,10 +32,11 @@ The `dump` command provides a way to inspect `godyl`'s configuration, available 
 
 ## Flags for `dump tools`
 
-| Flag           | Environment Variable    | Default | Description                |
-| :------------- | :---------------------- | :------ | :------------------------- |
-| `--full`, `-f` | `GODYL_DUMP_TOOLS_FULL` | `false` | Show full tool information |
-| `--tags`, `-f` | `GODYL_DUMP_TOOLS_TAGS` | `false` | Filter by tags             |
+| Flag              | Environment Variable        | Default | Description                |
+| :---------------- | :-------------------------- | :------ | :------------------------- |
+| `--full`, `-f`    | `GODYL_DUMP_TOOLS_FULL`     | `false` | Show full tool information |
+| `--tags`, `-f`    | `GODYL_DUMP_TOOLS_TAGS`     | `false` | Filter by tags             |
+| `--embedded, `-e` | `GODYL_DUMP_TOOLS_EMBEDDED` | `true`  | Show only embedded tools   |
 
 ## Flags for `dump config`
 
@@ -62,7 +57,7 @@ godyl dump defaults
 Select specific keys:
 
 ```sh
-godyl dump defaults linux,default
+godyl dump defaults linux default
 ```
 
 ### Display environment variables

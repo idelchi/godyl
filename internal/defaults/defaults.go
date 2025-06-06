@@ -9,8 +9,11 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
+// Default is an alias of tool.Tool for convenience.
+type Default = tool.Tool
+
 // Defaults represents a collection of default values for tools.
-type Defaults map[string]*tool.Tool
+type Defaults map[string]*Default
 
 // NewDefaults initializes a new Defaults instance from the provided data.
 func NewDefaultsFromBytes(data []byte) (*Defaults, error) {
@@ -32,28 +35,16 @@ func (d *Defaults) Load(data []byte) error {
 	return nil
 }
 
-// get returns the tool with the given name from the defaults map.
-func (d Defaults) get(name string) (*tool.Tool, error) {
-	t, ok := d[name]
-	if !ok {
-		return nil, fmt.Errorf("%q not found in defaults", name)
-	}
-
-	debug.Debug("Found %q in defaults", name)
-
-	return t, nil
-}
-
-// Get returns the tool with the given name from the defaults map.
-// If the tool is not found, it returns nil.
-func (d Defaults) Get(name string) *tool.Tool {
+// Get returns the default with the given name from the defaults map.
+// If the default is not found, it returns nil.
+func (d Defaults) Get(name string) *Default {
 	t, _ := d.get(name)
 
 	return t
 }
 
-// Pick returns a slice of tools from the defaults map based on the provided names.
-func (d Defaults) Pick(names ...string) (tools []*tool.Tool, err error) {
+// Pick returns a slice of defaults from the defaults map based on the provided names.
+func (d Defaults) Pick(names ...string) (tools []*Default, err error) {
 	for _, name := range names {
 		t, err := d.get(name)
 		if err != nil {
@@ -66,4 +57,16 @@ func (d Defaults) Pick(names ...string) (tools []*tool.Tool, err error) {
 	}
 
 	return tools, nil
+}
+
+// get returns the default with the given name from the defaults map.
+func (d Defaults) get(name string) (*Default, error) {
+	t, ok := d[name]
+	if !ok {
+		return nil, fmt.Errorf("%q not found in defaults", name)
+	}
+
+	debug.Debug("Found %q in defaults", name)
+
+	return t, nil
 }

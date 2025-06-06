@@ -7,13 +7,13 @@ import (
 	"github.com/idelchi/godyl/internal/iutils"
 )
 
-func run(format iutils.Format) error {
+func run() error {
 	platform := &detect.Platform{}
 	if err := platform.Detect(); err != nil {
 		return fmt.Errorf("detecting platform: %w", err)
 	}
 
-	iutils.Print(format, platform)
+	iutils.Print(iutils.YAML, platform)
 
 	return nil
 }

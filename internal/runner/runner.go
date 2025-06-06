@@ -12,11 +12,11 @@ import (
 
 // Result represents the outcome of a tool operation.
 type Result struct {
-	Tool     *tool.Tool
-	Status   Status
-	Message  string
 	Error    error
+	Tool     *tool.Tool
 	Metadata map[string]any
+	Message  string
+	Status   Status
 }
 
 // Status represents the possible states of a tool operation.
@@ -43,9 +43,9 @@ type RunOption func(*runOptions)
 // runOptions holds configuration for a tool run.
 type runOptions struct {
 	progressTracker getter.ProgressTracker
+	resolveOptions  []tool.ResolveOption
 	noDownload      bool
 	noVerifySSL     bool
-	resolveOptions  []tool.ResolveOption
 }
 
 // WithProgressTracker sets the progress tracker for downloads.

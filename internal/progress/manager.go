@@ -3,6 +3,7 @@ package progress
 
 import (
 	"github.com/hashicorp/go-getter/v2"
+
 	"github.com/idelchi/godyl/pkg/download/progress"
 )
 

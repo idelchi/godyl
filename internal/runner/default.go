@@ -53,6 +53,7 @@ func (r *DefaultRunner) Run(ctx context.Context, t *tool.Tool, tags tags.Include
 	// Check if we should skip download
 	if opts.noDownload || opts.resolveOptions != nil {
 		t.DisableCache()
+
 		return r.convertResult(t, resolveResult)
 	}
 
@@ -70,6 +71,7 @@ func (r *DefaultRunner) Run(ctx context.Context, t *tool.Tool, tags tags.Include
 // convertResult converts an internal result.Result to a runner.Result.
 func (r *DefaultRunner) convertResult(t *tool.Tool, res result.Result) Result {
 	var status Status
+
 	switch {
 	case res.IsOK():
 		status = StatusOK

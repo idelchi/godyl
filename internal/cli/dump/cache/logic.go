@@ -11,7 +11,7 @@ import (
 
 // run executes the `cache dump` command.
 func run(cfg config.Config, args []string) error {
-	cacheFile, err := cache.File(cfg.Root.Cache.Dir)
+	cacheFile, err := cache.File(cfg.Cache.Dir)
 	if err != nil {
 		return err
 	}
@@ -26,7 +26,7 @@ func run(cfg config.Config, args []string) error {
 		return err
 	}
 
-	iutils.Print(cfg.Dump.Format, cache)
+	iutils.Print(iutils.YAML, cache)
 
 	return nil
 }

@@ -60,10 +60,10 @@ func (g *Repository) GetRelease(tag string) (*Release, error) {
 // GetLatestIncludingPreRelease retrieves the most recently published release for the repository,
 // including pre-releases. This returns the newest release by published date, regardless of
 // whether it's a regular release or pre-release.
-func (g *Repository) GetLatestIncludingPreRelease() (*Release, error) {
+func (g *Repository) GetLatestIncludingPreRelease(perPage int) (*Release, error) {
 	// List all releases including pre-releases
 	opts := &github.ListOptions{
-		PerPage: 100, // Get a reasonable number of releases to compare
+		PerPage: perPage,
 	}
 
 	repositoryReleases, _, err := g.client.Repositories.ListReleases(g.ctx, g.Owner, g.Repo, opts)

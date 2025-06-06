@@ -1,3 +1,4 @@
+//go:generate go tool string-enumer -t Format -o format_enumer___generated.go .
 package iutils
 
 import (

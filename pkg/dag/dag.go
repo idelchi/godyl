@@ -130,7 +130,7 @@ func Build[K comparable](
 
 		for _, p := range graph.parents[node] {
 			if _, ok := set[p]; !ok {
-				return fmt.Errorf("%w: undefined parent %q referenced by %q", ErrDag, p, node)
+				return fmt.Errorf("%w: undefined parent %v referenced by %v", ErrDag, p, node)
 			}
 
 			if err := dfs(p); err != nil {

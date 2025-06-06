@@ -37,7 +37,7 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 		Args: cobra.ArbitraryArgs,
 		RunE: func(_ *cobra.Command, args []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
-			if common.ExitOnShow(global.Root.ShowFunc) {
+			if common.ExitOnShow(global.ShowFunc) {
 				return nil
 			}
 
@@ -45,7 +45,7 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 		},
 	}
 
-	common.SetSubcommandDefaults(cmd, local, global.Root.ShowFunc)
+	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
 
 	install.Flags(cmd)
 

@@ -3,15 +3,13 @@ package defaults
 import (
 	"errors"
 	"fmt"
-
-	"github.com/idelchi/godyl/internal/tools/tool"
 )
 
-// MergeWith merges all the stored defaults with the provided tools.
+// MergeWith merges all the stored defaults with the provided defaults.
 // The sequence is:
 //
 //	others[0] <-- others[1] <-- others[2]... <-- d[name]
-func (d *Defaults) MergeWith(others ...*tool.Tool) error {
+func (d *Defaults) MergeWith(others ...*Default) error {
 	for name, t := range *d {
 		if t == nil {
 			return fmt.Errorf("tool %q is nil", name)
@@ -25,11 +23,11 @@ func (d *Defaults) MergeWith(others ...*tool.Tool) error {
 	return nil
 }
 
-// MergeFrom merges the current tool with the provided tools,
+// MergeFrom merges the current default with the provided defaults,
 // the sequence being.
 //
 //	d[name] <- others[0] <-- others[1] <-- others[2]...
-func (d *Defaults) MergeFrom(others ...*tool.Tool) error {
+func (d *Defaults) MergeFrom(others ...*Default) error {
 	if len(others) == 0 {
 		return errors.New("no defaults to merge")
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/knadh/koanf/parsers/yaml"
@@ -18,6 +19,7 @@ import (
 	penv "github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/koanfx"
 	"github.com/idelchi/godyl/pkg/logger"
+	pfile "github.com/idelchi/godyl/pkg/path/file"
 )
 
 func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
@@ -26,7 +28,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 
 	commandPath := common.BuildCommandPath(cmd)
 	envPrefix := commandPath.Env().Scoped()
-	sectionPrefix := commandPath.Section().String()
+	sectionPrefix := ""
 	name := commandPath.Last()
 
 	// Get the current command's flags
@@ -58,10 +60,15 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 
 	// At this point, the location of the config file can be determined through either
 	// the environment variables or the flags.
-	// Unmarshal the config into the struct to get the config file path.
-	if err := k.Unmarshal(&cfg.Root); err != nil {
-		log.Fatalf("Failed to unmarshal config into struct: %v", err)
-	}
+	// Unmarshal the config into a temporary struct to get the config file path.
+	// var tmpConfig config.Config
+	// if err := k.Unmarshal(&tmpConfig); err != nil {
+	// 	log.Fatalf("Failed to unmarshal config into struct: %v", err)
+	// }
+
+	// configFile := tmpConfig.ConfigFile
+	configFile := pfile.New(k.Get("config-file").(string))
+	isSet := k.IsSet("config-file")
 
 	// We fail if:
 	// The provider returns an error and
@@ -69,7 +76,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	// 	OR
 	//    the config file was set explicitly
 	failureCriteria := func(err error) bool {
-		return err != nil && (cfg.Root.ConfigFile.Exists() || k.IsSet("config-file"))
+		return err != nil && (configFile.Exists() || isSet)
 	}
 
 	// Once the location is known, load the config using a new Koanf instance.
@@ -78,14 +85,29 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	// Load environment variables
 	k = koanfx.NewWithTracker(nil)
 
-	if err := k.Load(file.Provider(cfg.Root.ConfigFile.Path()), yaml.Parser()); failureCriteria(err) {
-		return fmt.Errorf("loading config file %q: %w", cfg.Root.ConfigFile.Path(), err)
+	if err := k.Load(file.Provider(configFile.Path()), yaml.Parser()); failureCriteria(err) {
+		return fmt.Errorf("loading config file %q: %w", configFile, err)
+	}
+
+	var logWarning []string
+
+	// If the config file was set in the config file, issue a warning
+	if k.Exists("config-file") {
+		logWarning = append(logWarning, heredoc.Docf(`
+					%q was set to %q in the loaded config file %q.
+					This might be confusing as it will have no effect.
+					Instead, use only:
+						'GODYL_CONFIG_FILE' or '--config-file')
+					`, "config-file", k.Get("config-file"), configFile))
+
+		k.Delete("config-file") // Clear the value that was collected from the config file
 	}
 
 	// We can already validate the config file here by unmarshalling it with koanfx.WithErrorUnused()
 	// This will throw an error if there are any unused fields in the config file.
-	if err := k.Unmarshal(&cfg, koanfx.WithErrorUnused()); err != nil {
-		return fmt.Errorf("unmarshalling config file %q: %w", cfg.Root.ConfigFile.Path(), err)
+	var tmpConfig config.Config
+	if err := k.Unmarshal(&tmpConfig, koanfx.WithErrorUnused()); err != nil {
+		return fmt.Errorf("unmarshalling config file %q: %w", configFile, err)
 	}
 
 	// Set the context for future use in subcommands. Each subcommand has to be able to extract
@@ -123,7 +145,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	// At this point, the location of the `.env` file(s) can be determined through either
 	// the config file, environment variables or the flags.
 	// Unmarshal the config into the struct to get the `.env` file path.
-	if err := k.Unmarshal(&cfg.Root); err != nil {
+	if err := k.Unmarshal(&tmpConfig); err != nil {
 		return fmt.Errorf("unmarshalling config into struct: %w", err)
 	}
 
@@ -140,30 +162,39 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	// - Env vars from env-file (in order from right to left overwriting)
 	dotenvs := penv.Env{}
 
-	for i := len(cfg.Root.EnvFile) - 1; i >= 0; i-- {
-		file := cfg.Root.EnvFile[i]
+	for i := len(tmpConfig.EnvFile) - 1; i >= 0; i-- {
+		file := tmpConfig.EnvFile[i]
 		dotenv, err := iutils.LoadDotEnv(file)
 
 		if failureCriteria(err) {
-			return fmt.Errorf("loading .env file %q: %w", file, err)
+			return err
 		} else {
 			dotenvs = dotenvs.MergedWith(dotenv)
 		}
 	}
 
-	var logWarning bool
 	// If the config file or env-file was set in the .env file,
 	// we remove it from the loaded env vars and issue a warning
 	if dotenvs.Exists("GODYL_ENV_FILE") {
-		dotenvs.Delete("GODYL_ENV_FILE")
+		logWarning = append(logWarning, heredoc.Docf(`
+					%q was set to %q in the loaded .env file(s) %q.
+					This might be confusing as it will have no effect.
+					Instead, use only:
+						'GODYL_ENV_FILE' or '--env-file'
+				`, "env-file", dotenvs.Get("GODYL_ENV_FILE"), tmpConfig.EnvFile))
 
-		logWarning = true
+		dotenvs.Delete("GODYL_ENV_FILE")
 	}
 
 	if dotenvs.Exists("GODYL_CONFIG_FILE") {
-		dotenvs.Delete("GODYL_CONFIG_FILE")
+		logWarning = append(logWarning, heredoc.Docf(`
+					%q was set to %q in the loaded .env file(s) %q.
+					This might be confusing as it will have no effect.
+					Instead, use:
+						'GODYL_CONFIG_FILE' or '--config-file'
+				`, "config-file", dotenvs.Get("GODYL_CONFIG_FILE"), tmpConfig.EnvFile))
 
-		logWarning = true
+		dotenvs.Delete("GODYL_CONFIG_FILE")
 	}
 
 	cmd.SetContext(context.WithValue(cmd.Context(), "dotenv", dotenvs))
@@ -179,8 +210,8 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	// This means subsequent subcommands can just use env vars and no longer need to load the env-file(s) again.
 
 	// Set a default value for the tools file if it was not set in the config file or env-file(s)
-	if cfg.Root.Tools == "" {
-		cfg.Root.Tools = "tools.yml"
+	if cfg.Tools == "" {
+		cfg.Tools = "tools.yml"
 	}
 
 	// 3rd Pass
@@ -188,12 +219,12 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	//	- Load environment variables
 	// 	- Load flags
 	// Fully populate the configuration struct for this command.
-	if err := common.KCreateSubcommandPreRunE(name, &cfg.Root, cfg.Root.ShowFunc)(cmd, args); err != nil {
+	if err := common.KCreateSubcommandPreRunE(name, cfg, cfg.ShowFunc)(cmd, args); err != nil {
 		return err
 	}
 
 	// Full config available here
-	lvl, err := logger.LevelString(cfg.Root.LogLevel)
+	lvl, err := logger.LevelString(cfg.LogLevel)
 	if err != nil {
 		return fmt.Errorf("parsing log level: %w", err)
 	}
@@ -204,14 +235,8 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	}
 
 	// Make a simple warning: If the env-file was set from the .envs, the user might be confused
-	if logWarning {
-		log.Warn(heredoc.Doc(`
-					'config-file' and/or 'env-file' was set in the loaded '.env' file(s)
-					This might be confusing as it will have no effect.
-					Instead, use:
-						'GODYL_CONFIG_FILE' or '--config-file'
-						'GODYL_ENV_FILE' or '--env-file'
-				`))
+	if len(logWarning) > 0 {
+		log.Warn(strings.TrimSpace(strings.Join(logWarning, "\n")))
 	}
 
 	return nil

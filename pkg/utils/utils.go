@@ -12,6 +12,18 @@ import (
 	"github.com/jinzhu/copier"
 )
 
+// AnyNil checks if any pointer in the provided slice is nil.
+func AnyNil[T any](ptrs ...*T) bool {
+	// Check if any pointer in the slice is nil.
+	for _, ptr := range ptrs {
+		if ptr == nil {
+			return true
+		}
+	}
+
+	return false
+}
+
 // IsSliceNilOrEmpty checks if a slice pointer is nil or points to an empty slice.
 func IsSliceNilOrEmpty[T ~[]E, E any](ptr *T) bool {
 	return IsSliceNil(ptr) || IsSliceEmpty(*ptr)

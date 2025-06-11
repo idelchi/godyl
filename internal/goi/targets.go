@@ -63,6 +63,7 @@ func (gt Targets) Match() (match.Results, error) {
 
 	hint := hints.Hint{
 		Pattern: platform.OS.String(),
+		Type:    "contains",
 	}
 	hint.Match.Set(string(hints.Required))
 

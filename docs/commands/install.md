@@ -31,15 +31,15 @@ Additionally, it will respect the `GODYL_TOOLS` environment variable, as well as
 
 ## Flags
 
-| Flag             | Environment Variable     | Default       | Description                                                           |
-| :--------------- | :----------------------- | :------------ | :-------------------------------------------------------------------- |
-| `--output`, `-o` | `GODYL_INSTALL_OUTPUT`   | `./bin`       | Output path for the downloaded tools                                  |
-| `--os`           | `GODYL_INSTALL_OS`       | `""`          | Override the OS to match                                              |
-| `--arch`         | `GODYL_INSTALL_ARCH`     | `""`          | Override the architecture to match                                    |
-| `--tags`, `-t`   | `GODYL_INSTALL_TAGS`     | `["!native"]` | Tags to filter tools by. Use `!` to exclude                           |
-| `--source`       | `GODYL_INSTALL_SOURCE`   | `github`      | Source from which to install the tools                                |
-| `--strategy`     | `GODYL_INSTALL_STRATEGY` | `none`        | Strategy to use for updating tools                                    |
-| `--dry`          | `GODYL_INSTALL_DRY`      | `false`       | Dry run. Will not download, but show what would be done. Implies `-v` |
+| Flag             | Environment Variable     | Default  | Description                                                           |
+| :--------------- | :----------------------- | :------- | :-------------------------------------------------------------------- |
+| `--output`, `-o` | `GODYL_INSTALL_OUTPUT`   | `./bin`  | Output path for the downloaded tools                                  |
+| `--os`           | `GODYL_INSTALL_OS`       | `""`     | Override the OS to match                                              |
+| `--arch`         | `GODYL_INSTALL_ARCH`     | `""`     | Override the architecture to match                                    |
+| `--tags`, `-t`   | `GODYL_INSTALL_TAGS`     | `[]`     | Tags to filter tools by. Use `!` to exclude                           |
+| `--source`       | `GODYL_INSTALL_SOURCE`   | `github` | Source from which to install the tools                                |
+| `--strategy`     | `GODYL_INSTALL_STRATEGY` | `none`   | Strategy to use for updating tools                                    |
+| `--dry`          | `GODYL_INSTALL_DRY`      | `false`  | Dry run. Will not download, but show what would be done. Implies `-v` |
 
 ## Examples
 

@@ -95,3 +95,5 @@ to bring down the latest version, if the current one is out of date.
 {% endraw %}
 
 For a sample, see [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) or run `godyl dump tools -e > tools.yml` to inspect the default configuration.
+
+> **Note**: Tool is currently in development, and the code-base is rather chaotic, until it is cleaned up.

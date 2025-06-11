@@ -114,6 +114,10 @@
 
 - name: sharkdp/fd
   description: A simple, fast and user-friendly alternative to 'find'
+  hints:
+    - pattern: .tar.gz
+      match: '{{ if ne .OS "windows" }}required{{ else }}excluded{{ end }}'
+      type: endswith
   tags:
     - terminal
 
@@ -150,6 +154,10 @@
 
 - name: lsd-rs/lsd
   description: The next gen ls command
+  hints:
+    - pattern: .tar.gz
+      match: '{{ if ne .OS "windows" }}required{{ else }}excluded{{ end }}'
+      type: endswith
   tags:
     - terminal
 

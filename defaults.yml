@@ -68,11 +68,6 @@ default:
     - pattern: .txt
       type: endswith
       match: excluded
-
-    # Avoid debian packages
-    - pattern: .deb
-      type: endswith
-      match: excluded
   source:
     type: github
   mode: find

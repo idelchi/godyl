@@ -31,7 +31,7 @@ See [Command Reference]({{ site.baseurl }}/commands) and sub-commands for detail
 
 {% raw %}
 
-Environment variables are available for all flag arguments and are prefixed with `GODYL_` and further with `_<SUBCOMMAND>` for each subcommand.
+Environment variables are available for all flag arguments and are prefixed with `GODYL_` and further with `<SUBCOMMAND>_` for each subcommand.
 
 The `.env` files follow the same format.
 
@@ -47,7 +47,7 @@ GODYL_DUMP_TOOLS_FULL=true
 
 All environment variables are also loaded into the run-time environment, regardless of whether they came directly from the environment or from a `.env` file.
 
-As such, they can all be accessed with `{{ .Env.<ENV_VAR> }}`.
+They can be accessed with `{{ .Env.<ENV_VAR> }}`.
 
 {% endraw %}
 
@@ -59,10 +59,9 @@ For example, to set:
 
 - the `env-file` flag on the root command
 - `output` flag for the `install` subcommand
-- `format` flag for the `dump` subcommand
 - the `full` flag for the `dump tools` subcommand,
 
-you would use the following format in your YAML file:
+you would use the following format in your `yaml` file:
 
 ```yaml
 # Root command
@@ -70,12 +69,11 @@ env-file:
   - .env
 
 # `install` subcommand
-tool:
+install:
   output: ~/.local/bin
 
 # `dump` subcommand
 dump:
-  format: json
   # `dump tools` subcommand
   tools:
     full: true

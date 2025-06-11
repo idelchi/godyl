@@ -32,6 +32,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ARG TASK_VERSION=v3.41.0
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TARGETARCH}.tar.gz | tar -xz -C /usr/local/bin
 
+RUN --mount=type=secret,id=tokens.env \
+    curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install.sh | sh -s -- -d /opt -v v0.0.10 && \
+    # Install GoReleaser
+    /opt/godyl dump tools --tags goreleaser/goreleaser,cli/cli,idelchi/go-next-tag | /opt/godyl --env-file=/run/secrets/tokens.env i - --output=/usr/local/bin && \
+    rm -rf /tmp/godyl
+
 WORKDIR /work
 
 # Create User (Debian/Ubuntu)
@@ -88,7 +94,10 @@ ENV TZ=Europe/Zurich
 FROM debian:bookworm-slim AS final
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
     ca-certificates \
+    git \
+    jq \
     && rm -rf /var/lib/apt/lists/*
 
 # Create User (Debian/Ubuntu)
@@ -96,6 +105,11 @@ ARG USER=user
 ARG UID=1001
 RUN groupadd -r -g ${UID} ${USER} && \
     useradd -r -u ${UID} -g ${UID} -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gnome-keyring \
+    dbus-x11 \
+    && rm -rf /var/lib/apt/lists/*
 
 USER ${USER}
 WORKDIR /home/${USER}
@@ -107,3 +121,11 @@ ENV PATH=$PATH:/root/.local/bin
 ENV XDG_RUNTIME_DIR=/tmp/${UID}
 ENV XDG_CONFIG_HOME=/home/${USER}/.config
 ENV XDG_CACHE_HOME=/home/${USER}/.cache
+
+RUN mkdir -p $XDG_RUNTIME_DIR && chmod 700 $XDG_RUNTIME_DIR
+
+# Timezone
+ENV TZ=Europe/Zurich
+
+# dbus-run-session -- bash
+# echo 'somecredstorepass' | gnome-keyring-daemon --unlock

@@ -27,50 +27,65 @@ default:
       - "**/{{ .Exe }}{{ .EXTENSION }}"
   hints:
     # General rules
-    # Name of the executable (without extension), anywhere in the assets name
-    - "*{{ .Exe }}*"
+    # Name of the executable (without extension)
+    - pattern: "{{ .Exe }}"
+      type: contains
 
-    # .tar.gz format extension is commonly used
-    - "*.tar.gz"
+    # .tar.gz format is commonly used
+    - pattern: .tar.gz
+      type: endswith
 
     # .exe extensions for Windows
-    - pattern: "*.exe"
+    - pattern: .exe
       weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
+      type: endswith
 
       # .zip extensions for Windows
-    - pattern: "*.zip"
+    - pattern: .zip
       weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
+      type: endswith
 
       # .zip extensions for macOS
-    - pattern: "*.zip"
+    - pattern: .zip
       weight: '{{ if eq .OS "darwin" }}1{{ else }}0{{ end }}'
+      type: endswith
 
     # ARM32 specifics
     # Give priority to the current version
-    - pattern: "*armv{{ .ARCH_VERSION }}*"
+    - pattern: armv{{ .ARCH_VERSION }}
       weight: 4
+      type: contains
 
     # Less priority to the previous version
-    - pattern: "*armv{{sub .ARCH_VERSION 1}}*"
+    - pattern: armv{{sub .ARCH_VERSION 1}}
       weight: 3
+      type: contains
 
     # Even less priority to the previous version
-    - pattern: "*armv{{sub .ARCH_VERSION 2}}*"
+    - pattern: armv{{sub .ARCH_VERSION 2}}
       weight: 2
+      type: contains
 
-    # Match anything that starts with arm and is not followed by a 'v'
+    # Matches strings starting with 'arm' followed by any single character except 'v'
+    # TODO(Idelchi): Why?
     - pattern: arm[^v]
-      regex: true
+      type: regex
 
     # Alpine Linux specifics
     # Match musl-based ARM binaries
-    - pattern: "*musleabihf*"
+    - pattern: musleabihf
       weight: |-
         {{- if and (eq .DISTRIBUTION "alpine") (eq .ARCH "arm") -}}
         1
         {{- else -}}
         0
         {{- end -}}
+      type: contains
+
+    # Avoid files ending with .txt (commonly the checksum.txt file)
+    - pattern: .txt
+      type: endswith
+      match: excluded
   source:
     type: github
   mode: find

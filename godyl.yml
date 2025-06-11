@@ -8,3 +8,6 @@ keyring: true
 update:
   # Cleanup the previous binary when running on windows
   cleanup: true
+
+# Set verbosity level
+verbose: 1

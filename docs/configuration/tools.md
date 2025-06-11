@@ -18,28 +18,27 @@ You can use a full or simple form for the tool definitions. Most fields follow t
 ## Configuration
 
 ```yaml
-- idelchi/godyl
+- idelchi/envprof
 ```
 
-This is the simplest form to download the latest release of `godyl` from the the default source type (for example, `github` or `gitlab`).
+This is the simplest form to download the latest release of `envprof` from the the default source type (for example, `github` or `gitlab`).
 
 For more complex configurations, you can use the extended form:
 
 ```yaml
-name: godyl
-description: Asset downloader
-output: ~/.local/bin
+name: idelchi/envprof
+description: Environment profile manager
 exe:
-  name: godyl
+  name: envprof
   patterns:
     - "**/{{ .Exe }}{{ .EXTENSION }}"
 aliases:
-  - gd
+  - ep
 source:
   type: github
 tags:
   - cli
-  - downloader
+  - env
 strategy: sync
 ```
 
@@ -49,9 +48,9 @@ A complete reference for all fields is available below.
 
 ```yaml
 # Name of the tool to download. Used as display name and for inferring other fields.
-name: idelchi/godyl
+name: idelchi/envprof
 # Optional description of the tool, for documentation purposes.
-description: Asset downloader for GitHub releases, URLs, and Go projects
+description: Profile-based environment variable manager
 # Version tracking of the tool. Specifies the target version, as well as how to parse the current version.
 version:
   # For `github` and `gitlab` sources, leave empty to fetch the latest release from the API.
@@ -69,7 +68,7 @@ version:
     - '.*?(\d+\.\d+\.\d+).*'
 # The download url. For `github` and `gitlab` sources,
 # leave empty to populate from the API.
-url: "https://github.com/idelchi/godyl/releases/download/v0.0.1/godyl_{{ .OS }}_{{ .ARCH }}.tar.gz"
+url: "https://github.com/idelchi/envprof/releases/download/v0.0.1/envprof_{{ .OS }}_{{ .ARCH }}.tar.gz"
 # The output directory where the tool will be placed.
 output: ~/.local/bin # [`--output`]
 # The executable name. Specifies the desired output name of the executable,
@@ -78,7 +77,7 @@ exe:
   # The name to use for the executable.
   # Will be inferred from `name` using source-specific rules if not provided.
   # If no suffix is provided, the platform-specific suffix will be added.
-  name: godyl
+  name: envprof
   # Glob patterns to find the executable in the downloads.
   # Uses globstar, so you can use `**` to match any number of directories.
   patterns:
@@ -102,7 +101,6 @@ hints:
       {{- else -}}
       0
       {{- end -}}
-
     # Method to use for matching the pattern.
     type: glob|regex|globstar|startswith|endswith|contains
     # Whether to use the weight for matches, require the match, or exclude the match.
@@ -113,13 +111,13 @@ source:
     # Inferred from first part of `name` if not provided
     owner: idelchi
     # Inferred from last part of `name` if not provided
-    repo: godyl
+    repo: envprof
     token: secret # [`--github-token`]
   gitlab:
     # Inferred from first part of `name` if not provided
     namespace: idelchi/go-projects
     # Inferred from last part of `name` if not provided
-    project: godyl
+    project: envprof
     token: secret # [`--gitlab-token`]
     server: https://gitlab.self-hosted.com
     no-token: false # Suppress usage of token
@@ -134,7 +132,7 @@ source:
   go:
     # Specifies the path for the `go install` command.
     # Useful when the installable is not in the default path (e.g `cmd/<tool>` or `.`).
-    command: cmd/godyl
+    command: cmd/envprof
 # Run custom commands after the installation (or only commands if `source.type` is `none`).
 commands:
   # The list of commands to run.
@@ -146,12 +144,12 @@ commands:
   exit_on_error: false
 # List of tags to filter tools.
 tags:
-  - downloader
+  - env
 # Strategy for updating existing tools.
 strategy: none|sync|force
 # Skip the tool if the condition is met.
 skip:
-  - reason: "godyl is not available for Darwin"
+  - reason: "envprof is not available for Darwin"
     condition: '{{ eq .OS "darwin" }}'
 # The mode for downloading and installing the tool.
 # `find` will download, extract, and find the executable.
@@ -229,7 +227,7 @@ For each tool, you can see whether it is required, supports templating, and whet
 The name of the tool to download. Used as display name and for inferring other fields.
 
 ```yaml
-name: idelchi/godyl
+name: idelchi/envprof
 ```
 
 Used for inferrence in [`exe`](#exe) and [`source`](#source)
@@ -273,7 +271,7 @@ version:
 The url of the tool to download. Must be a URL to a file. Will be inferred by the source type if not provided.
 
 ```yaml
-url: https://github.com/idelchi/godyl/releases/download/v0.1.0/godyl_linux_amd64.tar.gz
+url: https://github.com/idelchi/envprof/releases/download/v0.1.0/envprof_linux_amd64.tar.gz
 ```
 
 The most common use-case is to have it inferred from the `source` field configuration for the `github` and `gitlab` sources.
@@ -297,14 +295,14 @@ Information about the executable. `exe.name` will be inferred from `name` and th
 Simple form:
 
 ```yaml
-exe: godyl
+exe: envprof
 ```
 
 Full form:
 
 ```yaml
 exe:
-  name: godyl
+  name: envprof
   patterns:
     - "**/{{ .Exe }}{{ .EXTENSION }}"
 ```
@@ -374,7 +372,7 @@ GitHub source:
 source:
   type: github
   github:
-    repo: godyl
+    repo: envprof
     owner: idelchi
     token:
 ```
@@ -395,7 +393,7 @@ Go source:
 source:
   type: go
   go:
-    command: cmd/godyl
+    command: cmd/envprof
 ```
 
 #### Templating
@@ -424,7 +422,7 @@ commands:
       exit 1
     fi
   - mkdir -p {{ .Output }}
-  - wget -qO- https://github.com/idelchi/godyl/releases/download/{{ .Version }}/godyl_{{ .OS }}_{{ .ARCH }}.tar.gz | tar -xz -C {{ .Output }}
+  - wget -qO- https://github.com/idelchi/envprof/releases/download/{{ .Version }}/envprof_{{ .OS }}_{{ .ARCH }}.tar.gz | tar -xz -C {{ .Output }}
 ```
 
 ### `tags`

@@ -1,8 +1,6 @@
 services:
   build:
     build:
-      secrets:
-        - tokens.env
       args:
         - GODYL_VERSION=local
       target: build
@@ -22,7 +20,7 @@ services:
   final:
     extends: build
     working_dir: /home/user/
-    image: idelchi/godyl:final
+    image: idelchi/godyl:dev
     build:
       target: final
 

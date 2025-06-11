@@ -29,7 +29,7 @@ export GITHUB_TOKEN=<your_github_token>
 docker run -it --rm --name godyl --env GITHUB_TOKEN docker.io/idelchi/godyl:dev
 
 # Inside the container, run:
-godyl dump tools | godyl install - --output=~/.local/bin
+godyl dump tools -e | godyl install - --output=~/.local/bin
 ```
 
 ## From Source

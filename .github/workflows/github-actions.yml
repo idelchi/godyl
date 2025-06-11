@@ -56,7 +56,7 @@ jobs:
         run: go run . dump platform
 
       - name: Dry install tools
-        run: go run . dump tools -e | go run . status -
+        run: go run . dump tools -e | go run . -v i - --dry
 
   # next-tag:
   #   uses: idelchi/devenv/.github/workflows/next-tag.yml@dev

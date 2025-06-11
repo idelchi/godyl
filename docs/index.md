@@ -59,6 +59,12 @@ curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install
 
 {% raw %}
 
+Export the `GODYL_GITHUB_TOKEN` environment variable with your GitHub API token:
+
+```sh
+export GODYL_GITHUB_TOKEN=<your_github_token>
+```
+
 Download (and extract) a single tool:
 
 ```sh

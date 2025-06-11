@@ -22,8 +22,7 @@ func (p *Platform) ParseFrom(name string) {
 	p.Extension.ParseFrom(p.OS)
 }
 
-// Parse extracts platform information from a string identifier.
-// Attempts to determine OS, architecture, and library details from the input.
+// Parse extracts platform information from the configured fields.
 func (p *Platform) Parse() error {
 	if err := p.OS.Parse(); err != nil {
 		return err
@@ -34,7 +33,7 @@ func (p *Platform) Parse() error {
 	}
 
 	if err := p.Library.Parse(); err != nil {
-		return err
+		p.Library = p.Library.Default(p.OS, p.Distribution)
 	}
 
 	p.Extension.ParseFrom(p.OS)

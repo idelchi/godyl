@@ -396,6 +396,9 @@ source:
     command: cmd/envprof
 ```
 
+> **Note**: Choosing `go` as a source or fallback, without having a local installation and the `go` command available, will result in
+> the download of the latest version of `go`.
+
 #### Templating
 
 Only the `token` fields support templating.

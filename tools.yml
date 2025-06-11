@@ -719,6 +719,10 @@
 - name: google/go-jsonnet
   description: A formatter for Jsonnet
   exe: jsonnetfmt
+  hints:
+    - pattern: .deb
+      match: excluded
+      type: endswith
   tags:
     - processing
 

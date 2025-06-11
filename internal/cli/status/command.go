@@ -12,7 +12,7 @@ import (
 // Command returns the `status` command.
 func Command(global *root.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "status [tools.yml]...",
+		Use:     "status [tools.yml|-]...",
 		Aliases: []string{"diff", "s"},
 		Short:   "Status of installed tools as specified in the YAML file(s).",
 		Long:    "Status of installed tools as specified in the YAML file(s).",

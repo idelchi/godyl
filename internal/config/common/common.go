@@ -6,7 +6,7 @@ import (
 )
 
 type Common struct {
-	Tracker  `json:"-" mapstructure:"-"`
+	Tracker  `yaml:"-" mapstructure:"-"`
 	Output   string
 	Strategy strategy.Strategy
 	Source   sources.Type

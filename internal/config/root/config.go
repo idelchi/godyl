@@ -9,7 +9,6 @@ import (
 	"github.com/idelchi/godyl/internal/config/update"
 	"github.com/idelchi/godyl/internal/tools/hints"
 	"github.com/idelchi/godyl/internal/tools/tool"
-	"github.com/idelchi/godyl/pkg/koanfx"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
@@ -21,100 +20,100 @@ import (
 type Config struct {
 	/* Subcommands */
 	// Dump contains the configuration for the `godyl dump` command
-	Dump dump.Dump `json:"dump" mapstructure:"dump" validate:"-"`
+	Dump dump.Dump `yaml:"dump" mapstructure:"dump" validate:"-"`
 
 	// Cache contains the configuration for the `godyl cache` command (empty)
-	// Cache cache.Cache `json:"-" mapstructure:"-" validate:"-"`
+	// Cache cache.Cache `yaml:"-" mapstructure:"-" validate:"-"`
 
 	// Config contains the configuration for the `godyl config` command (empty)
-	// Config root.Config `json:"-" mapstructure:"-" validate:"-"`
+	// Config root.Config `yaml:"-" mapstructure:"-" validate:"-"`
 
 	// Update contains the configuration for the `godyl update` command
-	Update update.Update `json:"update" mapstructure:"update" validate:"-"`
+	Update update.Update `yaml:"update" mapstructure:"update" validate:"-"`
 
 	// Status contains the configuration for the `godyl status` command
-	Status status.Status `json:"status" mapstructure:"status" validate:"-"`
+	Status status.Status `yaml:"status" mapstructure:"status" validate:"-"`
 
 	// Download contains the configuration for the `godyl download` command
-	Download download.Download `json:"download" mapstructure:"download" validate:"-"`
+	Download download.Download `yaml:"download" mapstructure:"download" validate:"-"`
 
 	// Install contains the configuration for the `godyl install` command
-	Install install.Install `json:"install" mapstructure:"install" validate:"-"`
+	Install install.Install `yaml:"install" mapstructure:"install" validate:"-"`
 
 	/* Flags */
 	// Tokens store authentication tokens for various sources
-	Tokens Tokens `json:"tokens" mapstructure:",squash"`
+	Tokens Tokens `yaml:",inline,flatten" mapstructure:",squash"`
 
 	// Inherit specifies the default scheme to inherit from when no scheme is specified
-	Inherit string `json:"inherit" mapstructure:"inherit"`
+	Inherit string `yaml:"inherit" mapstructure:"inherit"`
 
 	// ErrorFile specifies the file to log errors
-	ErrorFile file.File `json:"error-file" mapstructure:"error-file"`
+	ErrorFile file.File `yaml:"error-file" mapstructure:"error-file"`
 
 	// Tools specifies the tools file to be used
-	Tools string `json:"tools" mapstructure:"tools"`
+	Tools string `yaml:"tools" mapstructure:"tools"`
 
 	// Defaults specifies the default file to be used
-	Defaults file.File `json:"defaults" mapstructure:"defaults"`
+	Defaults file.File `yaml:"defaults" mapstructure:"defaults"`
 
 	// ConfigFile specifies the configuration file to be used
-	ConfigFile file.File `json:"config-file" mapstructure:"config-file"`
+	ConfigFile file.File `yaml:"config-file" mapstructure:"config-file"`
 
 	// LogLevel specifies the logging level
-	LogLevel string `json:"log-level" mapstructure:"log-level" validate:"oneof=silent debug info warn error always"`
+	LogLevel string `yaml:"log-level" mapstructure:"log-level" validate:"oneof=silent debug info warn error always"`
 
 	// EnvFile specifies the environment files to be used
-	EnvFile []file.File `json:"env-file" mapstructure:"env-file"`
+	EnvFile []file.File `yaml:"env-file" mapstructure:"env-file"`
 
 	// Cache holds the cache configuration options
-	Cache Cache `json:"cache" mapstructure:",squash"`
+	Cache Cache `yaml:",inline,flatten" mapstructure:",squash"`
 
 	// Parallel specifies the number of parallel operations
-	Parallel int `json:"parallel" mapstructure:"parallel" validate:"gte=0"`
+	Parallel int `yaml:"parallel" mapstructure:"parallel" validate:"gte=0"`
 
 	// Verbose specifies the verbosity level
-	Verbose int `json:"verbose" mapstructure:"verbose"`
+	Verbose int `yaml:"verbose" mapstructure:"verbose"`
 
 	// Show specifies the verbosity level for showing output
-	Show Verbosity `json:"show" mapstructure:"show"`
+	Show Verbosity `yaml:"show" mapstructure:"show"`
 
 	// NoVerifySSL disables SSL verification
-	NoVerifySSL bool `json:"no-verify-ssl" mapstructure:"no-verify-ssl"`
+	NoVerifySSL bool `yaml:"no-verify-ssl" mapstructure:"no-verify-ssl"`
 
 	// NoProgress disables progress indicators
-	NoProgress bool `json:"no-progress" mapstructure:"no-progress"`
+	NoProgress bool `yaml:"no-progress" mapstructure:"no-progress"`
 
 	// Keyring enables the use of the keyring for retrieving tokens
-	Keyring bool `json:"keyring" mapstructure:"keyring"`
+	Keyring bool `yaml:"keyring" mapstructure:"keyring"`
 
 	/* Other Options */
 	// Common contains a subset of common configuration options
-	Common common.Common `json:"-" mapstructure:"-"`
+	Common common.Common `yaml:"-" mapstructure:"-"`
 
 	// Tracker embed the common tracker configuration, allowing to tracker
 	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `json:"-" mapstructure:"-"`
+	common.Tracker `yaml:"-" mapstructure:"-"`
 }
 
 // Cache holds the configuration options for caching.
 type Cache struct {
 	// Path to cache folder
-	Dir folder.Folder `json:"cache-dir" mapstructure:"cache-dir"`
+	Dir folder.Folder `yaml:"cache-dir" mapstructure:"cache-dir"`
 
 	// Disabled disables cache interaction
-	Disabled bool `json:"no-cache" mapstructure:"no-cache"`
+	Disabled bool `yaml:"no-cache" mapstructure:"no-cache"`
 }
 
 // Tokens holds the configuration options for authentication tokens.
 type Tokens struct {
 	// GitHub token for authentication
-	GitHub string `json:"github-token" mapstructure:"github-token" mask:"fixed"`
+	GitHub string `yaml:"github-token" mapstructure:"github-token" mask:"fixed"`
 
 	// GitLab token for authentication
-	GitLab string `json:"gitlab-token" mapstructure:"gitlab-token" mask:"fixed"`
+	GitLab string `yaml:"gitlab-token" mapstructure:"gitlab-token" mask:"fixed"`
 
 	// URL token for authentication
-	URL string `json:"url-token" mapstructure:"url-token" mask:"fixed"`
+	URL string `yaml:"url-token" mapstructure:"url-token" mask:"fixed"`
 }
 
 // AllTokensSet checks if all of the tokens are set.
@@ -194,6 +193,6 @@ func (c *Config) ToTool(forced bool) *tool.Tool {
 	return &tool
 }
 
-func (c *Config) AsKoanf() (*koanfx.Koanf, error) {
-	return koanfx.FromStruct(c)
-}
+// func (c *Config) AsKoanf() (*koanfx.Koanf, error) {
+// 	return koanfx.FromStruct(c)
+// }

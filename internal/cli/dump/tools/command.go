@@ -16,7 +16,7 @@ import (
 // Command returns the `dump tools` command.
 func Command(global *root.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "tools [tools.yml...,-]",
+		Use:   "tools [tools.yml|-]...",
 		Short: "Display tools information",
 		Long: heredoc.Doc(`
 			Dumps out tools configuration.
@@ -54,9 +54,8 @@ func Command(global *root.Config, local any, embedded *common.Embedded) *cobra.C
 
 			if global.Dump.Tools.Embedded && len(args) > 0 {
 				return fmt.Errorf(
-					"%w: cannot specify arguments (%v) together with the --embedded flag, use one or the other",
+					"%w: cannot specify arguments together with the --embedded flag, use one or the other",
 					ierrors.ErrUsage,
-					args,
 				)
 			}
 

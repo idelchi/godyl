@@ -14,7 +14,8 @@ import (
 func run(input common.Input) error {
 	cfg, _, _, _, args := input.Unpack()
 
-	tokens := iutils.StructToMap(cfg.Tokens)
+	kTokens, _ := iutils.StructToKoanf(cfg.Tokens)
+	tokens := kTokens.Map()
 
 	selected := make(map[string]any, len(args))
 
@@ -45,7 +46,7 @@ func run(input common.Input) error {
 	case true:
 		store := tokenstore.New()
 
-		if err, ok := store.Available(); !ok {
+		if ok, err := store.Available(); !ok {
 			return err
 		}
 

@@ -8,6 +8,8 @@ import (
 
 // Flags adds the flags for the `godyl install` command to the provided Cobra command.
 func Flags(cmd *cobra.Command) {
+	cmd.Flags().SortFlags = false
+
 	cmd.Flags().StringP("output", "o", "./bin", "Output path for the downloaded tools")
 	cmd.Flags().String("os", "", "Operating system to install the tools for")
 	cmd.Flags().String("arch", "", "Architecture to install the tools for")

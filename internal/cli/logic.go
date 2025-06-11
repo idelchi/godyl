@@ -233,7 +233,7 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	if !cfg.AllTokensSet() && !strings.HasPrefix(calledFrom.CommandPath(), "godyl auth") && cfg.Keyring {
 		store := tokenstore.New()
 
-		if err, ok := store.Available(); !ok {
+		if ok, err := store.Available(); !ok {
 			return err
 		}
 
@@ -263,14 +263,6 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	if err := common.KCreateSubcommandPreRunE(cmd, cfg, cfg.ShowFunc)(cmd, []string{}); err != nil {
 		return err
 	}
-
-	all, err := koanfx.FromStruct(cfg)
-	if err != nil {
-		return fmt.Errorf("converting config to Koanf: %w", err)
-	}
-
-	common.GlobalContext.Global = cfg
-	common.GlobalContext.All = all
 
 	// Full config available here
 	lvl, err := logger.LevelString(cfg.LogLevel)

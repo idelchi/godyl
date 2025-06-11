@@ -1,0 +1,52 @@
+package main
+
+import (
+	"fmt"
+
+	"github.com/idelchi/godyl/internal/iutils"
+	"github.com/idelchi/godyl/pkg/pretty"
+)
+
+type Config struct {
+	Tokens Tokens `yaml:",inline,flatten" mapstructure:",squash"`
+
+	More More `yaml:"more" mapstructure:"more"`
+}
+
+// Tokens holds the configuration options for authentication tokens.
+type Tokens struct {
+	// GitHub token for authentication
+	GitHub string `yaml:"github-token" mapstructure:"github-token" mask:"fixed"`
+
+	// GitLab token for authentication
+	GitLab string `yaml:"gitlab-token" mapstructure:"gitlab-token" mask:"fixed"`
+
+	// URL token for authentication
+	URL string `yaml:"url-token" mapstructure:"url-token" mask:"fixed"`
+}
+
+type More struct {
+	Value string `yaml:"value" mapstructure:"value"`
+}
+
+func main() {
+	cfg := &Config{
+		Tokens: Tokens{
+			GitHub: "your-github-token",
+			GitLab: "your-gitlab-token",
+			URL:    "your-url-token",
+		},
+	}
+
+	x := iutils.StructToMap(cfg)
+	u, _ := iutils.StructToMapAny(cfg)
+	v := iutils.StructToKoanf(cfg)
+
+	u["github-token"] = "shawtay"
+
+	pretty.PrintYAML(x)
+	fmt.Println("")
+	pretty.PrintYAML(u)
+	fmt.Println("")
+	pretty.PrintYAML(v.Map())
+}

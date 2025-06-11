@@ -23,7 +23,7 @@ func run(input common.Input) error {
 	switch cfg.Keyring {
 	case true:
 		store := tokenstore.New()
-		if err, ok := store.Available(); !ok {
+		if ok, err := store.Available(); !ok {
 			return err
 		}
 
@@ -47,7 +47,9 @@ func run(input common.Input) error {
 	case false:
 		configuration := context.Config
 
-		keys := iutils.StructToMap(cfg.Tokens).Keys()
+		tokens, _ := iutils.StructToKoanf(cfg.Tokens)
+
+		keys := tokens.Keys()
 		if len(args) > 0 {
 			keys = args
 		}

@@ -13,19 +13,19 @@ import (
 func run(input common.Input) error {
 	cfg, _, context, _, _ := input.Unpack()
 
-	tokens := iutils.StructToMap(cfg.Tokens).Keys()
+	tokens, _ := iutils.StructToKoanf(cfg.Tokens)
 
 	switch cfg.Keyring {
 	case true:
 		store := tokenstore.New()
 
-		if err, ok := store.Available(); !ok {
+		if ok, err := store.Available(); !ok {
 			return err
 		}
 
-		values, err := tokenstore.New().GetAll(tokens)
+		values, err := store.GetAll(tokens.Keys()...)
 		if err != nil {
-			return fmt.Errorf("tokenstore not available: %w", err)
+			return err
 		}
 
 		if len(values) == 0 {
@@ -36,7 +36,7 @@ func run(input common.Input) error {
 
 		pretty.PrintYAML(values)
 	case false:
-		configuration := context.Config.Filtered(tokens...)
+		configuration := context.Config.Filtered(tokens.Keys()...)
 
 		pretty.PrintYAML(configuration.Map())
 	}

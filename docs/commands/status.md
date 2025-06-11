@@ -26,10 +26,9 @@ The `status` command checks the status of the tools defined in the provided YAML
 
 ## Flags
 
-| Flag           | Environment Variable  | Default       | Description                                 |
-| :------------- | :-------------------- | :------------ | :------------------------------------------ |
-| `--tags`, `-t` | `GODYL_STATUS_TAGS`   | `["!native"]` | Tags to filter tools by. Use `!` to exclude |
-| `--source`     | `GODYL_STATUS_SOURCE` | `github`      | Source from which to install the tools      |
+| Flag           | Environment Variable | Default       | Description                                 |
+| :------------- | :------------------- | :------------ | :------------------------------------------ |
+| `--tags`, `-t` | `GODYL_STATUS_TAGS`  | `["!native"]` | Tags to filter tools by. Use `!` to exclude |
 
 ## Examples
 

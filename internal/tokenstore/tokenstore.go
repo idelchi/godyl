@@ -26,52 +26,58 @@ func New() TokenStore {
 }
 
 // Available checks if the keyring service is available for storing tokens.
-func (ts TokenStore) Available() (error, bool) {
+func (ts TokenStore) Available() (bool, error) {
 	// Try a quick get on a non-existent key
 	_, err := keyring.Get(ts.Service, "__health_check__", 1*time.Second)
 
-	return err, !errors.Is(err, keyring.ErrTimeout)
+	return !errors.Is(err, keyring.ErrTimeout), err
 }
 
-// GetAll retrieves all tokens for the specified users.
-func (ts TokenStore) GetAll(users []string) (map[string]string, error) {
+// GetAll retrieves a map of tokens from the keyring for the specified keys.
+// If a key is not found, it is skipped.
+func (ts TokenStore) GetAll(keys ...string) (map[string]string, error) {
 	tokens := make(map[string]string)
 
-	for _, user := range users {
-		value, err := ts.Get(user)
+	for _, key := range keys {
+		value, err := ts.Get(key)
+
 		switch {
-		case err == nil:
 		case errors.Is(err, keyring.ErrNotFound):
 			continue
-		default:
+		case err != nil:
 			return tokens, err
 		}
 
-		tokens[user] = value
+		tokens[key] = value
 	}
 
 	return tokens, nil
 }
 
-// SetAll sets multiple tokens for the specified users.
+// SetAll sets multiple tokens in the keyring.
 func (ts TokenStore) SetAll(tokens map[string]any) error {
-	for user, token := range tokens {
-		if err := ts.Set(user, token.(string)); err != nil {
-			return fmt.Errorf("%s: failed to set token: %w", user, err)
+	for key, token := range tokens {
+		value, ok := token.(string)
+		if !ok {
+			return fmt.Errorf("%s: invalid token type %T, expected string", key, token)
+		}
+
+		if err := ts.Set(key, value); err != nil {
+			return fmt.Errorf("%s: failed to set key: %w", key, err)
 		}
 	}
 
 	return nil
 }
 
-// Set stores a token for a specific user in the keyring.
-func (ts TokenStore) Set(user, token string) error {
-	return keyring.Set(ts.Service, user, token, defaultTimeout)
+// Set stores a token in the keyring for a specific key.
+func (ts TokenStore) Set(key, token string) error {
+	return keyring.Set(ts.Service, key, token, defaultTimeout)
 }
 
-// Get retrieves a token for a specific user from the keyring.
-func (ts TokenStore) Get(user string) (string, error) {
-	token, err := keyring.Get(ts.Service, user, defaultTimeout)
+// Get retrieves a token from the keyring for a specific key.
+func (ts TokenStore) Get(key string) (string, error) {
+	token, err := keyring.Get(ts.Service, key, defaultTimeout)
 	if err != nil {
 		return "", err
 	}
@@ -80,7 +86,7 @@ func (ts TokenStore) Get(user string) (string, error) {
 }
 
 // Delete removes the given keys from the keyring.
-// If no keys are provided, it clears all tokens for the service.
+// If no keys are provided, it clears all keys for the service.
 func (ts TokenStore) Delete(keys ...string) error {
 	if len(keys) == 0 {
 		return keyring.DeleteAll(ts.Service, defaultTimeout)

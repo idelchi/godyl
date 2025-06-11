@@ -2,14 +2,11 @@ package iutils
 
 import (
 	"fmt"
-	"maps"
-	"slices"
 	"strings"
-
-	"github.com/fatih/structs"
 
 	"github.com/idelchi/godyl/internal/tools/tags"
 	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/pkg/koanfx"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
@@ -51,24 +48,7 @@ func Any[T comparable](args ...T) T {
 	return zero
 }
 
-// Map is a type alias for a map with string keys and any values.
-type Map map[string]any
-
-// StructToMap converts a struct to a Map, using the "json" tag for field names.
-func StructToMap(s any) Map {
-	str := structs.New(s)
-
-	str.TagName = "json"
-
-	return str.Map()
-}
-
-// Keys returns the keys of the Map as a slice of strings.
-func (m Map) Keys() []string {
-	return slices.Collect(maps.Keys(m))
-}
-
-// Values returns the values of the Map as a slice of any.
-func (m Map) Values() []any {
-	return slices.Collect(maps.Values(m))
+// StructToKoanf converts a struct to a `koanf` instance, using the "yaml" tag for field names.
+func StructToKoanf(s any) (*koanfx.Koanf, error) {
+	return koanfx.FromStruct(s, "yaml")
 }

@@ -5,17 +5,16 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	cconfig "github.com/idelchi/godyl/internal/config/dump/config"
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
 // Command returns the `dump config` command.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "config [key...]",
-		Short:   "Display config information",
-		Aliases: []string{"ls"},
-		Args:    cobra.ArbitraryArgs,
+		Use:   "config [key...]",
+		Short: "Display configuration information",
+		Long:  "Display the complete resolved configuration or specific keys.",
+		Args:  cobra.ArbitraryArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
 			if common.ExitOnShow(global.ShowFunc) {
@@ -27,8 +26,6 @@ func Command(global *root.Config, local any) *cobra.Command {
 	}
 
 	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
-
-	cconfig.Flags(cmd)
 
 	return cmd
 }

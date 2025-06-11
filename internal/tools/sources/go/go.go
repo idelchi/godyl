@@ -23,8 +23,8 @@ import (
 // Go represents a Go project configuration that can be installed from GitHub.
 type Go struct {
 	github  *github.GitHub
-	Data    common.Metadata `json:"-"`
-	Command string          `json:"command"`
+	Data    common.Metadata `yaml:"-"`
+	Command string          `yaml:"command"`
 }
 
 // Initialize sets up the Go project configuration from the given name.

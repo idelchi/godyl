@@ -15,14 +15,14 @@ import (
 
 // GitLab represents a GitLab project configuration and state.
 type GitLab struct {
-	Data                common.Metadata `json:"-"         mapstructure:"-"`
+	Data                common.Metadata `yaml:"-"         mapstructure:"-"`
 	latestStoredRelease *gitlab.Release
-	Project             string `json:"project"   mapstructure:"project"`
-	Namespace           string `json:"namespace" mapstructure:"namespace"`
-	Token               string `json:"token"     mapstructure:"token"     mask:"fixed"`
-	Server              string `json:"server"    mapstructure:"server"`
-	Pre                 bool   `json:"pre"       mapstructure:"pre"`
-	NoToken             bool   `json:"no-token"  mapstructure:"no-token"`
+	Project             string `yaml:"project"   mapstructure:"project"`
+	Namespace           string `yaml:"namespace" mapstructure:"namespace"`
+	Token               string `yaml:"token"     mapstructure:"token"     mask:"fixed"`
+	Server              string `yaml:"server"    mapstructure:"server"`
+	Pre                 bool   `yaml:"pre"       mapstructure:"pre"`
+	NoToken             bool   `yaml:"no-token"  mapstructure:"no-token"`
 }
 
 // Initialize sets up the GitLab project configuration from the given name.

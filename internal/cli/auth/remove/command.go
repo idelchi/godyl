@@ -15,6 +15,8 @@ import (
 
 // Command returns the `auth remove` command.
 func Command(global *root.Config, local any) *cobra.Command {
+	tokens, _ := iutils.StructToKoanf(global.Tokens)
+
 	cmd := &cobra.Command{
 		Use:   "remove [token...]",
 		Short: "Remove authentication tokens.",
@@ -24,7 +26,7 @@ func Command(global *root.Config, local any) *cobra.Command {
 			Allowed values are:
 
 			%v
-		`, strings.TrimSpace(pretty.YAML(iutils.StructToMap(global.Tokens).Keys()))),
+		`, strings.TrimSpace(pretty.YAML(tokens.Keys()))),
 		Example: heredoc.Doc(`
 			# Remove all tokens
 			$ godyl auth remove
@@ -34,7 +36,7 @@ func Command(global *root.Config, local any) *cobra.Command {
 		`),
 		Aliases:   []string{"rm"},
 		Args:      cobra.OnlyValidArgs,
-		ValidArgs: iutils.StructToMap(global.Tokens).Keys(),
+		ValidArgs: tokens.Keys(),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
 			if global.ShowFunc() != nil {

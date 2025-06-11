@@ -20,6 +20,10 @@ import (
 func run(input common.Input) error {
 	cfg, embedded, _, _, args := input.Unpack()
 
+	if cfg.Download.Dry {
+		cfg.Verbose = 1
+	}
+
 	tools := tools.Tools{}
 
 	for _, name := range args {

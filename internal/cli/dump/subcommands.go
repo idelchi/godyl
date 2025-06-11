@@ -23,7 +23,7 @@ func subcommands(cmd *cobra.Command, global *root.Config, embedded *common.Embed
 		platform.Command(global, nil),
 		tools.Command(global, &global.Dump.Tools, embedded),
 		cache.Command(global, nil),
-		cconfig.Command(global, &global.Dump.Config),
+		cconfig.Command(global, nil),
 		auth.Command(global, nil),
 	)
 }

@@ -14,12 +14,12 @@ import (
 
 // GitHub represents a GitHub repository configuration and state.
 type GitHub struct {
-	Data                common.Metadata `json:"-" mapstructure:"-""`
+	Data                common.Metadata `yaml:"-" mapstructure:"-""`
 	latestStoredRelease *github.Release
-	Repo                string `json:"repo"  mapstructure:"repo"`
-	Owner               string `json:"owner" mapstructure:"owner"`
-	Token               string `json:"token" mapstructure:"token" mask:"fixed"`
-	Pre                 bool   `json:"pre"   mapstructure:"pre"`
+	Repo                string `yaml:"repo"  mapstructure:"repo"`
+	Owner               string `yaml:"owner" mapstructure:"owner"`
+	Token               string `yaml:"token" mapstructure:"token" mask:"fixed"`
+	Pre                 bool   `yaml:"pre"   mapstructure:"pre"`
 }
 
 // Initialize sets up the GitHub repository configuration from the given name.

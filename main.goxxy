@@ -7,6 +7,39 @@ import (
 	"github.com/spf13/cobra"
 )
 
+
+package root
+
+import (
+	"github.com/idelchi/godyl/internal/config/common"
+	"github.com/idelchi/godyl/internal/config/download"
+	"github.com/idelchi/godyl/internal/config/dump"
+	"github.com/idelchi/godyl/internal/config/install"
+	"github.com/idelchi/godyl/internal/config/status"
+	"github.com/idelchi/godyl/internal/config/update"
+	"github.com/idelchi/godyl/internal/tools/hints"
+	"github.com/idelchi/godyl/internal/tools/tool"
+	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/folder"
+)
+
+type Config struct {
+	Tokens Tokens `yaml:",inline" mapstructure:",squash"`
+}
+
+// Tokens holds the configuration options for authentication tokens.
+type Tokens struct {
+	// GitHub token for authentication
+	GitHub string `yaml:"github-token" mapstructure:"github-token" mask:"fixed"`
+
+	// GitLab token for authentication
+	GitLab string `yaml:"gitlab-token" mapstructure:"gitlab-token" mask:"fixed"`
+
+	// URL token for authentication
+	URL string `yaml:"url-token" mapstructure:"url-token" mask:"fixed"`
+}
+
+
 func main() {
 	var verbose bool
 	var listAll bool

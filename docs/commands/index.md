@@ -11,18 +11,25 @@ has_children: true
 
 ## Available Commands
 
+### Main commands
+
 | Command                                            | Description                           |
 | :------------------------------------------------- | :------------------------------------ |
 | [`install`]({{ site.baseurl }}/commands/install)   | Install tools from YAML files         |
 | [`download`]({{ site.baseurl }}/commands/download) | Download and install individual tools |
-| [`status`]({{ site.baseurl }}/commands/status)     | Check the status of installed tools   |
-| [`dump`]({{ site.baseurl }}/commands/dump)         | Display configuration information     |
 | [`update`]({{ site.baseurl }}/commands/update)     | Update the godyl application          |
-| [`cache`]({{ site.baseurl }}/commands/cache)       | Manage the cache                      |
-| [`config`]({{ site.baseurl }}/commands/config)     | Manage the configuration              |
-| [`auth`]({{ site.baseurl }}/commands/auth)         | Manage the authentication tokens      |
-| [`validate`]({{ site.baseurl }}/commands/validate) | Validate the configuration            |
-| [`version`]({{ site.baseurl }}/commands/version)   | Display the current version           |
+
+### Auxiliary commands
+
+| Command                                            | Description                         |
+| :------------------------------------------------- | :---------------------------------- |
+| [`status`]({{ site.baseurl }}/commands/status)     | Check the status of installed tools |
+| [`dump`]({{ site.baseurl }}/commands/dump)         | Display configuration information   |
+| [`cache`]({{ site.baseurl }}/commands/cache)       | Manage the cache                    |
+| [`config`]({{ site.baseurl }}/commands/config)     | Manage the configuration            |
+| [`auth`]({{ site.baseurl }}/commands/auth)         | Manage the authentication tokens    |
+| [`validate`]({{ site.baseurl }}/commands/validate) | Validate the configuration          |
+| [`version`]({{ site.baseurl }}/commands/version)   | Display the current version         |
 
 ## Global Flags
 
@@ -66,9 +73,9 @@ If you get a lot of error messages for a run, use `error-file` to log them to a 
 Authentication tokens default to the following values (in order of precedence),
 if not set anywhere else in the [configuration]({{ site.baseurl }}/configuration/index#configuration):
 
-- `--github-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)), or the environment variables (`GITHUB_TOKEN`, `GH_TOKEN`)
-- `--gitlab-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)), or the environment variables (`GITLAB_TOKEN`, `CI_JOB_TOKEN`)
-- `--url-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)), or the environment variable `URL_TOKEN`
+- `--github-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)) (when using the keyring), or the environment variables (`GITHUB_TOKEN`, `GH_TOKEN`)
+- `--gitlab-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)) (when using the keyring), or the environment variables (`GITLAB_TOKEN`, `CI_JOB_TOKEN`)
+- `--url-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)) (when using the keyring), or the environment variable `URL_TOKEN`
 
 If you'd like to use the keyring for authentication, it's more convenient to set the value in the `yaml` configuration file:
 

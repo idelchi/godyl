@@ -18,8 +18,7 @@ func Command(global *root.Config, local any) *cobra.Command {
 			$ godyl dump auth
 			$ godyl --keyring dump auth
 		`),
-		Aliases: []string{"ls"},
-		Args:    cobra.NoArgs,
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
 			if global.ShowFunc() != nil {

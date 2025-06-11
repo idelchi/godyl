@@ -53,7 +53,6 @@ func Command(files *common.Embedded, version string) *cobra.Command {
 	}
 
 	cmd.CompletionOptions.DisableDefaultCmd = false
-	cmd.Flags().SortFlags = false
 	cmd.SetVersionTemplate("{{ .Version }}\n")
 
 	root.Flags(cmd)

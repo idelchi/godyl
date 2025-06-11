@@ -14,6 +14,10 @@ import (
 func run(input common.Input) error {
 	cfg, embedded, _, _, args := input.Unpack()
 
+	if cfg.Download.Dry {
+		cfg.Verbose = 1
+	}
+
 	// Load the tools from the source as []byte
 	data, err := iutils.ReadPathsOrDefault(cfg.Tools, args...)
 	if err != nil {

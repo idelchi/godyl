@@ -1,7 +1,6 @@
 package common
 
 import (
-	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/koanfx"
 )
@@ -20,7 +19,4 @@ type Context struct {
 	DotEnv *env.Env
 	// Env holds the parsed environment variables.
 	Env *env.Env
-
-	Global *root.Config
-	All    *koanfx.Koanf
 }

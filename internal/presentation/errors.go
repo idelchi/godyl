@@ -56,9 +56,9 @@ func (f *ErrorFormatter) FormatErrors(errors []results.ErrorDetail) (string, err
 // formatJSON formats errors as JSON.
 func (f *ErrorFormatter) formatJSON(errors []results.ErrorDetail) (string, error) {
 	type jsonError struct {
-		Tool    string `json:"tool"`
-		Message string `json:"message"`
-		Error   string `json:"error,omitempty"`
+		Tool    string `yaml:"tool"`
+		Message string `yaml:"message"`
+		Error   string `yaml:"error,omitempty"`
 	}
 
 	jsonErrors := make([]jsonError, 0, len(errors))

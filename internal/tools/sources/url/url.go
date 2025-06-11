@@ -16,9 +16,9 @@ import (
 
 // URL represents a URL-based download source configuration.
 type URL struct {
-	Headers http.Header     `json:"headers" mapstructure:"headers"`
-	Data    common.Metadata `json:"-"       mapstructure:"-"`
-	Token   string          `json:"token"   mapstructure:"token"   mask:"fixed"`
+	Headers http.Header     `yaml:"headers" mapstructure:"headers"`
+	Data    common.Metadata `yaml:"-"       mapstructure:"-"`
+	Token   string          `yaml:"token"   mapstructure:"token"   mask:"fixed"`
 }
 
 // Initialize is a no-op implementation of the Populator interface.

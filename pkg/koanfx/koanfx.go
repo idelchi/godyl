@@ -28,9 +28,9 @@ func New() *Koanf {
 
 // FromStruct creates a new Koanf instance from a struct, loading the struct's fields into the koanf.Koanf
 // instance.
-func FromStruct(data any) (*Koanf, error) {
+func FromStruct(data any, tag string) (*Koanf, error) {
 	k := New()
-	if err := k.Load(structs.Provider(data, "json"), nil); err != nil {
+	if err := k.Load(structs.Provider(data, tag), nil); err != nil {
 		return nil, err
 	}
 

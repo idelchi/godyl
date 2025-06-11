@@ -13,7 +13,7 @@ import (
 // Command returns the `install` command.
 func Command(global *root.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "install [tools.yml...] [-]",
+		Use:     "install [tools.yml|-]...",
 		Aliases: []string{"i"},
 		Short:   "Install tools from one of more YAML files",
 		Long: heredoc.Doc(`

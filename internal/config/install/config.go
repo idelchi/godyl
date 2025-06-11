@@ -8,26 +8,26 @@ import (
 // Package install provides the configuration for the `install` command.
 type Install struct {
 	// Strategy defines how the installation should be performed
-	Strategy strategy.Strategy `json:"strategy" mapstructure:"strategy" validate:"oneof=none sync force"`
+	Strategy strategy.Strategy `yaml:"strategy" mapstructure:"strategy" validate:"oneof=none sync force"`
 
 	// OS defines the target operating system for the installation
-	OS string `json:"os" mapstructure:"os"`
+	OS string `yaml:"os" mapstructure:"os"`
 
 	// Arch defines the target architecture for the installation
-	Arch string `json:"arch" mapstructure:"arch"`
+	Arch string `yaml:"arch" mapstructure:"arch"`
 
 	// Output specifies the output directory for the installation
-	Output string `json:"output" mapstructure:"output"`
+	Output string `yaml:"output" mapstructure:"output"`
 
 	// Tags are used to filter the installation based on specific criteria
-	Tags []string `json:"tags" mapstructure:"tags"`
+	Tags []string `yaml:"tags" mapstructure:"tags"`
 
 	// Dry indicates whether the installation should be performed in dry-run mode
-	Dry bool `json:"dry" mapstructure:"dry"`
+	Dry bool `yaml:"dry" mapstructure:"dry"`
 
 	// Tracker embed the common tracker configuration, allowing to tracker
 	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `json:"-" mapstructure:"-"`
+	common.Tracker `yaml:"-" mapstructure:"-"`
 }
 
 // ToCommon converts the Install configuration to a common.Common instance.

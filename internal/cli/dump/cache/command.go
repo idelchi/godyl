@@ -11,10 +11,9 @@ import (
 // Command returns the `dump cache` command.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "cache [name]",
-		Short:   "Display cache information",
-		Aliases: []string{"ls"},
-		Args:    cobra.MaximumNArgs(1),
+		Use:   "cache [name]",
+		Short: "Display cache information",
+		Args:  cobra.MaximumNArgs(1),
 
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Exit early if the command is run with `--show/-s` flag.

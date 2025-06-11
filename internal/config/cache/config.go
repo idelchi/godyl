@@ -6,5 +6,5 @@ import (
 )
 
 type Cache struct {
-	common.Tracker `json:"-" mapstructure:"-"`
+	common.Tracker `yaml:"-" mapstructure:"-"`
 }

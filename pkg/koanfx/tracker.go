@@ -69,3 +69,6 @@ func (dt *Tracker) TrackFlags(flags *pflag.FlagSet) {
 		}
 	})
 }
+
+// TODO(Idelchi): Implement an additional tracking "FromWhere" method that tracks where the key was set from (e.g.,
+// command line, config file, etc.)

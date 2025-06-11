@@ -15,9 +15,7 @@
 
 For full documentation, see [homepage](https://idelchi.github.io/godyl)
 
-![Godyl in Action](./assets/gifs/install.gif)
-
-shawtay
+![Godyl in Action](https://github.com/idelchi/godyl/blob/dev/docs/assets/gifs/install.gif)
 
 `godyl` helps with batch-downloading and installing statically compiled binaries from:
 

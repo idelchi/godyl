@@ -13,6 +13,8 @@
 [![Build Status](https://github.com/idelchi/godyl/actions/workflows/github-actions.yml/badge.svg)](https://github.com/idelchi/godyl/actions/workflows/github-actions.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+![Godyl in Action](https://github.com/idelchi/godyl/blob/main/docs/assets/gifs/install.gif)
+
 For full documentation, see [homepage](https://idelchi.github.io/godyl)
 
 `godyl` helps with batch-downloading and installing statically compiled binaries from:

@@ -146,7 +146,9 @@ func (p *Processor) updateCache(result runner.Result) {
 	now := time.Now()
 
 	item := &cache.Item{
-		ID:         result.Tool.ID(),
+		ID: result.Tool.ID(),
+		// TODO(Idelchi): Name is too ambiguous and can be used for several tools (especially repos that store multiple
+		// tools), consider using something else.
 		Name:       result.Tool.Name,
 		Version:    result.Tool.Version,
 		Path:       result.Tool.AbsPath(),

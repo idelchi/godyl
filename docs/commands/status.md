@@ -12,7 +12,7 @@ The `status` command allows you to check whether there are tools missing or sync
 ## Syntax
 
 ```sh
-godyl [flags] status [tools.yml...|STDIN]
+godyl [flags] status [tools.yml|-]...
 ```
 
 ## Aliases

@@ -19,8 +19,8 @@ godyl auth [remove|set] [flags]
 
 | Subcommand                           | Description                                |
 | :----------------------------------- | :----------------------------------------- |
-| `set [token...]`                     | Store tokens from the parsed configuration |
-| `remove [token...]`, `rm [token...]` | Remove authentication tokens               |
+| `set [token]...`                     | Store tokens from the parsed configuration |
+| `remove [token]...`, `rm [token]...` | Remove authentication tokens               |
 
 ## Examples
 

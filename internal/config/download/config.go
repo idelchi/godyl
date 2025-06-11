@@ -7,15 +7,15 @@ import (
 )
 
 type Download struct {
-	Version string       `yaml:"version" mapstructure:"version"`
-	Source  sources.Type `yaml:"source"  mapstructure:"source"  validate:"oneof=github gitlab url go command"`
-	OS      string       `yaml:"os"      mapstructure:"os"`
-	Arch    string       `yaml:"arch"    mapstructure:"arch"`
-	Output  string       `yaml:"output"  mapstructure:"output"`
-	Hints   []string     `yaml:"hints"   mapstructure:"hints"`
-	Dry     bool         `yaml:"dry"     mapstructure:"dry"`
+	Version string       `mapstructure:"version" yaml:"version"`
+	Source  sources.Type `mapstructure:"source"  yaml:"source"  validate:"oneof=github gitlab url go command"`
+	OS      string       `mapstructure:"os"      yaml:"os"`
+	Arch    string       `mapstructure:"arch"    yaml:"arch"`
+	Output  string       `mapstructure:"output"  yaml:"output"`
+	Hints   []string     `mapstructure:"hints"   yaml:"hints"`
+	Dry     bool         `mapstructure:"dry"     yaml:"dry"`
 
-	common.Tracker `yaml:"-" mapstructure:"-"`
+	common.Tracker `mapstructure:"-" yaml:"-"`
 }
 
 func (d Download) ToCommon() common.Common {

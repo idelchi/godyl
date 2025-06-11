@@ -1,10 +1,10 @@
+# Dump settings
 dump:
   tools:
+    # Always dump out the embedded tools
     embedded: true
-inherit: default
 # Use the keyring to store the tokens
 keyring: true
-no-progress: false
 update:
   # Cleanup the previous binary when running on windows
   cleanup: true

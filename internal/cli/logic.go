@@ -244,7 +244,6 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		githubToken = iutils.Any(ghToken, githubToken)
 		gitlabToken = iutils.Any(glToken, gitlabToken)
 		urlToken = iutils.Any(uToken, urlToken)
-
 	}
 
 	if err := cobraext.SetFlagIfNotSet(flags.Lookup("github-token"), githubToken); err != nil {

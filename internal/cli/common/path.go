@@ -18,6 +18,7 @@ func (c CommandPath) Section() iutils.Prefix {
 	if len(c) <= 1 {
 		return iutils.Prefix("")
 	}
+
 	return iutils.Prefix(strings.Join(c.WithoutRoot(), ".")).Lower()
 }
 

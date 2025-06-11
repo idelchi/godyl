@@ -92,11 +92,11 @@ func KCreateSubcommandPreRunE(
 
 		// Validate the configuration
 		if err := validator.Validate(cfg); err != nil {
-			return fmt.Errorf("validating config for command %q: %w", err, sectionPrefix)
+			return fmt.Errorf("validating config for command %w: %w", err, sectionPrefix)
 		}
 
 		if err := cfg.Validate(); err != nil {
-			return fmt.Errorf("validating config for command %q: %w", err, sectionPrefix)
+			return fmt.Errorf("validating config for command %w: %w", err, sectionPrefix)
 		}
 
 		return nil

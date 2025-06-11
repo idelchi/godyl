@@ -6,7 +6,7 @@ import (
 )
 
 type Tracker struct {
-	tracker *koanfx.Tracker `yaml:"-" mapstructure:"-"`
+	tracker *koanfx.Tracker `mapstructure:"-" yaml:"-"`
 }
 
 func (t *Tracker) Validate() error {

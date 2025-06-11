@@ -25,7 +25,7 @@ godyl config [path|set] [flags]
 | :------------------------------- | :-------------------------------- |
 | `path`                           | Print the path to the config file |
 | `set <key> <value>`              | Set a value in the config file    |
-| `remove [key...]`, `rm [key...]` | Remove entries in the config file |
+| `remove [key]...`, `rm [key]...` | Remove entries in the config file |
 
 > **Note**: The `set` command will lead to loss of order and newlines in the config file.
 

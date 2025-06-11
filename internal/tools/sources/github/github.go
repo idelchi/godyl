@@ -16,10 +16,10 @@ import (
 type GitHub struct {
 	Data                common.Metadata `yaml:"-" mapstructure:"-""`
 	latestStoredRelease *github.Release
-	Repo                string `yaml:"repo"  mapstructure:"repo"`
-	Owner               string `yaml:"owner" mapstructure:"owner"`
-	Token               string `yaml:"token" mapstructure:"token" mask:"fixed"`
-	Pre                 bool   `yaml:"pre"   mapstructure:"pre"`
+	Repo                string `mapstructure:"repo"  yaml:"repo"`
+	Owner               string `mapstructure:"owner" yaml:"owner"`
+	Token               string `mapstructure:"token" mask:"fixed" yaml:"token"`
+	Pre                 bool   `mapstructure:"pre"   yaml:"pre"`
 }
 
 // Initialize sets up the GitHub repository configuration from the given name.

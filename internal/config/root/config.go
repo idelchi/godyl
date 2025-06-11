@@ -20,7 +20,7 @@ import (
 type Config struct {
 	/* Subcommands */
 	// Dump contains the configuration for the `godyl dump` command
-	Dump dump.Dump `yaml:"dump" mapstructure:"dump" validate:"-"`
+	Dump dump.Dump `mapstructure:"dump" validate:"-" yaml:"dump"`
 
 	// Cache contains the configuration for the `godyl cache` command (empty)
 	// Cache cache.Cache `yaml:"-" mapstructure:"-" validate:"-"`
@@ -29,91 +29,91 @@ type Config struct {
 	// Config root.Config `yaml:"-" mapstructure:"-" validate:"-"`
 
 	// Update contains the configuration for the `godyl update` command
-	Update update.Update `yaml:"update" mapstructure:"update" validate:"-"`
+	Update update.Update `mapstructure:"update" validate:"-" yaml:"update"`
 
 	// Status contains the configuration for the `godyl status` command
-	Status status.Status `yaml:"status" mapstructure:"status" validate:"-"`
+	Status status.Status `mapstructure:"status" validate:"-" yaml:"status"`
 
 	// Download contains the configuration for the `godyl download` command
-	Download download.Download `yaml:"download" mapstructure:"download" validate:"-"`
+	Download download.Download `mapstructure:"download" validate:"-" yaml:"download"`
 
 	// Install contains the configuration for the `godyl install` command
-	Install install.Install `yaml:"install" mapstructure:"install" validate:"-"`
+	Install install.Install `mapstructure:"install" validate:"-" yaml:"install"`
 
 	/* Flags */
 	// Tokens store authentication tokens for various sources
-	Tokens Tokens `yaml:",inline,flatten" mapstructure:",squash"`
+	Tokens Tokens `mapstructure:",squash" yaml:",inline,flatten"`
 
 	// Inherit specifies the default scheme to inherit from when no scheme is specified
-	Inherit string `yaml:"inherit" mapstructure:"inherit"`
+	Inherit string `mapstructure:"inherit" yaml:"inherit"`
 
 	// ErrorFile specifies the file to log errors
-	ErrorFile file.File `yaml:"error-file" mapstructure:"error-file"`
+	ErrorFile file.File `mapstructure:"error-file" yaml:"error-file"`
 
 	// Tools specifies the tools file to be used
-	Tools string `yaml:"tools" mapstructure:"tools"`
+	Tools string `mapstructure:"tools" yaml:"tools"`
 
 	// Defaults specifies the default file to be used
-	Defaults file.File `yaml:"defaults" mapstructure:"defaults"`
+	Defaults file.File `mapstructure:"defaults" yaml:"defaults"`
 
 	// ConfigFile specifies the configuration file to be used
-	ConfigFile file.File `yaml:"config-file" mapstructure:"config-file"`
+	ConfigFile file.File `mapstructure:"config-file" yaml:"config-file"`
 
 	// LogLevel specifies the logging level
-	LogLevel string `yaml:"log-level" mapstructure:"log-level" validate:"oneof=silent debug info warn error always"`
+	LogLevel string `mapstructure:"log-level" validate:"oneof=silent debug info warn error always" yaml:"log-level"`
 
 	// EnvFile specifies the environment files to be used
-	EnvFile []file.File `yaml:"env-file" mapstructure:"env-file"`
+	EnvFile []file.File `mapstructure:"env-file" yaml:"env-file"`
 
 	// Cache holds the cache configuration options
-	Cache Cache `yaml:",inline,flatten" mapstructure:",squash"`
+	Cache Cache `mapstructure:",squash" yaml:",inline,flatten"`
 
 	// Parallel specifies the number of parallel operations
-	Parallel int `yaml:"parallel" mapstructure:"parallel" validate:"gte=0"`
+	Parallel int `mapstructure:"parallel" validate:"gte=0" yaml:"parallel"`
 
 	// Verbose specifies the verbosity level
-	Verbose int `yaml:"verbose" mapstructure:"verbose"`
+	Verbose int `mapstructure:"verbose" yaml:"verbose"`
 
 	// Show specifies the verbosity level for showing output
-	Show Verbosity `yaml:"show" mapstructure:"show"`
+	Show Verbosity `mapstructure:"show" yaml:"show"`
 
 	// NoVerifySSL disables SSL verification
-	NoVerifySSL bool `yaml:"no-verify-ssl" mapstructure:"no-verify-ssl"`
+	NoVerifySSL bool `mapstructure:"no-verify-ssl" yaml:"no-verify-ssl"`
 
 	// NoProgress disables progress indicators
-	NoProgress bool `yaml:"no-progress" mapstructure:"no-progress"`
+	NoProgress bool `mapstructure:"no-progress" yaml:"no-progress"`
 
 	// Keyring enables the use of the keyring for retrieving tokens
-	Keyring bool `yaml:"keyring" mapstructure:"keyring"`
+	Keyring bool `mapstructure:"keyring" yaml:"keyring"`
 
 	/* Other Options */
 	// Common contains a subset of common configuration options
-	Common common.Common `yaml:"-" mapstructure:"-"`
+	Common common.Common `mapstructure:"-" yaml:"-"`
 
 	// Tracker embed the common tracker configuration, allowing to tracker
 	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `yaml:"-" mapstructure:"-"`
+	common.Tracker `mapstructure:"-" yaml:"-"`
 }
 
 // Cache holds the configuration options for caching.
 type Cache struct {
 	// Path to cache folder
-	Dir folder.Folder `yaml:"cache-dir" mapstructure:"cache-dir"`
+	Dir folder.Folder `mapstructure:"cache-dir" yaml:"cache-dir"`
 
 	// Disabled disables cache interaction
-	Disabled bool `yaml:"no-cache" mapstructure:"no-cache"`
+	Disabled bool `mapstructure:"no-cache" yaml:"no-cache"`
 }
 
 // Tokens holds the configuration options for authentication tokens.
 type Tokens struct {
 	// GitHub token for authentication
-	GitHub string `yaml:"github-token" mapstructure:"github-token" mask:"fixed"`
+	GitHub string `mapstructure:"github-token" mask:"fixed" yaml:"github-token"`
 
 	// GitLab token for authentication
-	GitLab string `yaml:"gitlab-token" mapstructure:"gitlab-token" mask:"fixed"`
+	GitLab string `mapstructure:"gitlab-token" mask:"fixed" yaml:"gitlab-token"`
 
 	// URL token for authentication
-	URL string `yaml:"url-token" mapstructure:"url-token" mask:"fixed"`
+	URL string `mapstructure:"url-token" mask:"fixed" yaml:"url-token"`
 }
 
 // AllTokensSet checks if all of the tokens are set.

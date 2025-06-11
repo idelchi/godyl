@@ -221,6 +221,7 @@ func (c *Cache) deleteByName(name string) error {
 	for id, item := range c.items {
 		if item.Name == name {
 			delete(c.items, id)
+
 			return c.persist()
 		}
 	}

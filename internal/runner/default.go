@@ -80,6 +80,7 @@ func (r *DefaultRunner) convertResult(t *tool.Tool, res result.Result) Result {
 	case res.IsFailed():
 		status = StatusFailed
 	}
+
 	return Result{
 		Tool:    t,
 		Status:  status,

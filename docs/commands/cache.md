@@ -27,5 +27,5 @@ Since this might not be so robust, it will first check the cache to see if a ver
 | Subcommand                          | Description                                                                                                    |
 | :---------------------------------- | :------------------------------------------------------------------------------------------------------------- |
 | `path`                              | Print the path to the cache file                                                                               |
-| `remove [name...]`, `rm  [name...]` | Remove entries in the cache file                                                                               |
+| `remove [name]...`, `rm  [name]...` | Remove entries in the cache file                                                                               |
 | `clean`                             | Compares the tools in the cache with the tools installed on the system and updates the cache file accordingly. |

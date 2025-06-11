@@ -21,15 +21,15 @@ The `dump` command provides a way to inspect `godyl`'s configuration, available 
 
 ## Subcommands
 
-| Subcommand              | Description                                               |
-| :---------------------- | :-------------------------------------------------------- |
-| `defaults [default...]` | Display the default configuration settings                |
-| `env`                   | Display environment variables that affect the application |
-| `platform`              | Display information about the current platform            |
-| `tools`                 | Display information about available tools                 |
-| `cache [name]`          | Display information about the cache                       |
-| `config [key]`          | Display information about the configuration               |
-| `auth`                  | Display information about authentication tokens           |
+| Subcommand                | Description                                               |
+| :------------------------ | :-------------------------------------------------------- |
+| `defaults [default]...`   | Display the default configuration settings                |
+| `env`                     | Display environment variables that affect the application |
+| `platform`                | Display information about the current platform            |
+| `tools [tools.yml\|-]...` | Display information about available tools                 |
+| `cache [name]`            | Display information about the cache                       |
+| `config [key]`            | Display information about the configuration               |
+| `auth`                    | Display information about authentication tokens           |
 
 ## Flags for `dump tools`
 

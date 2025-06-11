@@ -14,7 +14,7 @@ The `install` command allows you to install tools defined in YAML configuration 
 ## Syntax
 
 ```sh
-godyl [flags] install [tools.yml...,-] [flags]
+godyl [flags] install [tools.yml|-]... [flags]
 ```
 
 ## Aliases

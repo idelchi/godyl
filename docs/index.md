@@ -43,7 +43,7 @@ Most properties can be overridden, with `hints` and `skip` used to help the tool
 
 for the tools listed in the default [tools.yml](https://github.com/idelchi/godyl/blob/dev/tools.yml) file.
 
-> **Note**: You'll have a very short journey with this tool without a GitHub API token. To avoid rate limiting when using `github` as a source type, set up an API token and use it with the `--github-token` flag or the `GODYL_GITHUB_TOKEN` environment variable.
+> **Note**: You'll have a very short journey with this tool without a GitHub API token. To avoid rate limiting when using `github` as a source type, set up an API token and use it with the `--github-token` flag or the `GODYL_GITHUB_TOKEN` environment variable. See [Authentication]({{ site.baseurl }}/commands/index#authentication) for more details.
 
 Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
 
@@ -73,7 +73,7 @@ Create a `tools.yml` file to define multiple tools:
     - sync
 
 - name: helm/helm
-  path: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
+  url: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
   tags:
     - kubernetes
 ```
@@ -94,4 +94,4 @@ to bring down the latest version, if the current one is out of date.
 
 {% endraw %}
 
-For a sample, see [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) or run `godyl dump tools > tools.yml` to inspect the default configuration.
+For a sample, see [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) or run `godyl dump tools -e > tools.yml` to inspect the default configuration.

@@ -13,22 +13,13 @@ Hints help `godyl` choose the right asset to download, especially when multiple 
 
 ```yaml
 hints:
-  # Prefer the exact executable name
-  - pattern: "*{{ .Exe }}*"
-    weight: 1
-
-  # Prefer .zip files on Windows
-  - pattern: "*.zip"
-    weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
+  # Require .zip extension on Windows, but allow deviations for other platforms
+  - pattern: .zip
+    match: '{{ if eq .OS "windows" }}required{{ else }}weighted{{ end }}'
+    type: endswith
 ```
 
-Setting `must: true` requires that the pattern matches, otherwise the asset is excluded:
-
-```yaml
-hints:
-  - pattern: "*{{ .OS }}*"
-    must: true
-```
+See [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) for various examples of hints.
 
 ## Conditional Logic
 
@@ -39,14 +30,6 @@ You can use conditional logic to customize behavior based on the platform:
 skip:
   reason: "Tool is not available on Windows"
   condition: '{{ eq .OS "windows" }}'
-
-# Use different version based on OS
-version: |-
-  {{- if eq .OS "windows" -}}
-    v0.1.0
-  {{- else -}}
-    v0.2.0
-  {{- end -}}
 ```
 
 ## Custom Commands
@@ -59,30 +42,6 @@ commands:
   - "chmod +x {{ .Output }}/{{ .Exe }}"
   - "{{ .Output }}/{{ .Exe }} --configure"
 ```
-
-## Alternative Installation Methods
-
-For tools that aren't available as binaries, you can use commands:
-
-```yaml
-source:
-  type: |
-    {{- if eq .OS "windows" -}}
-    url
-    {{- else -}}
-    github
-    {{- end -}}
-```
-
-## Create subset tools.yml
-
-Extract a subset of tools from the embedded tools.yml:
-
-```sh
-godyl dump tools --tags docker > docker-tools.yml
-```
-
-This creates a file containing only tools tagged with "docker".
 
 ## Platform Inference
 

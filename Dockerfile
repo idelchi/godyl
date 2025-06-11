@@ -78,11 +78,8 @@ ENV TZ=Europe/Zurich
 
 FROM debian:bookworm-slim AS final
 
-RUN apt-get update && apt-get install -y \
-    curl \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
-    git \
-    jq \
     && rm -rf /var/lib/apt/lists/*
 
 # Create User (Debian/Ubuntu)
@@ -101,6 +98,3 @@ ENV PATH=$PATH:/root/.local/bin
 ENV XDG_RUNTIME_DIR=/tmp/${UID}
 ENV XDG_CONFIG_HOME=/home/${USER}/.config
 ENV XDG_CACHE_HOME=/home/${USER}/.cache
-
-# Timezone
-ENV TZ=Europe/Zurich

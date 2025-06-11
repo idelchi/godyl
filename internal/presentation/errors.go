@@ -96,7 +96,7 @@ func (f *ErrorFormatter) formatText(errors []results.ErrorDetail) string {
 		sb.WriteString(fmt.Sprintf("Tool: %q\n", e.Tool))
 
 		// Message
-		sb.WriteString("Message: " + e.Message)
+		sb.WriteString(e.Message)
 
 		// Error details if present
 		if e.Error != nil {

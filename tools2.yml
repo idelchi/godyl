@@ -5,4 +5,5 @@
   tags:
     - go
 # cd ws
-# DEBUG=true godyl --env-file=tokens.env -v install --output=~/.local/bin tools2.yml --tags=ofabry/go-callvis
+# godyl dump tools -e | godyl --env-file=tokens.env -v install - --dry
+

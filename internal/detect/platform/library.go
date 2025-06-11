@@ -62,6 +62,9 @@ func (LibraryInfo) Supported() []LibraryInfo {
 		{
 			Type: "android",
 		},
+		{
+			Type: "libSystem",
+		},
 	}
 }
 
@@ -131,6 +134,11 @@ var compatibilityMatrix = map[string]map[string]bool{
 	"android": {
 		"android": true,
 	},
+	"libSystem": {
+		"libSystem": true,
+		"gnu":       true,
+		"musl":      true,
+	},
 }
 
 // IsCompatibleWith checks if binaries built against this library can run
@@ -176,6 +184,8 @@ func (l *Library) Default(os OS, distro Distribution) Library {
 		default:
 			return Library{Name: "gnu", canonical: "gnu", alias: "gnu"}
 		}
+	case "darwin":
+		return Library{Name: "libSystem", canonical: "libSystem", alias: "libSystem"}
 	default:
 		return Library{}
 	}

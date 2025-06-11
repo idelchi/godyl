@@ -3,14 +3,15 @@ package path
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/cache"
-	"github.com/idelchi/godyl/pkg/path/folder"
+	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/tmp"
 )
 
-func run(dir folder.Folder) error {
-	cacheFile, _ := cache.File(dir)
+// run executes the `cache path` command.
+func run(input common.Input) error {
+	cfg, _, _, _, _ := input.Unpack()
 
-	fmt.Println(cacheFile)
+	fmt.Println(tmp.CacheFile(cfg.Cache.Dir))
 
 	return nil
 }

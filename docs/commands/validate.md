@@ -1,16 +1,24 @@
 ---
 layout: default
-title: Validate
+title: validate
 parent: Commands
-nav_order: 7
+nav_order: 9
 ---
 
 # Validate Command
 
-The `validate` recursively validates all subcommands configuration against the active configuration.
+`validate` recursively validates the active configuration for all subcommands.
 
 ## Syntax
 
 ```sh
 godyl validate
+```
+
+## Examples
+
+### Validate and display configuration for all subcommands
+
+```sh
+godyl validate -s
 ```

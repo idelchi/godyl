@@ -1,27 +1,36 @@
+// Package remove contains the subcommand definition for `cache remove`.
 package remove
 
 import (
+	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/root"
 )
 
 // Command returns the `cache remove` command.
-func Command(global *config.Config, local any) *cobra.Command {
+func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "remove",
-		Short:   "Remove the cache",
-		Long:    "Remove the cache.",
+		Use:   "remove [name...]",
+		Short: "Remove cache entries.",
+		Long:  "Remove all or specific entries.",
+		Example: heredoc.Doc(`
+			# Remove all entries from the cache
+			$ godyl cache remove
+
+			# Remove a specific entry from the cache
+			$ godyl cache remove idelchi/envprof
+		`),
 		Aliases: []string{"rm"},
-		Args:    cobra.NoArgs,
-		RunE: func(_ *cobra.Command, _ []string) error {
+		Args:    cobra.ArbitraryArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
 			if global.ShowFunc() != nil {
 				return nil
 			}
 
-			return run(global.Cache.Dir)
+			return run(common.Input{Global: global, Embedded: nil, Cmd: cmd, Args: args})
 		},
 	}
 

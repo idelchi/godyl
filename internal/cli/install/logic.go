@@ -4,16 +4,22 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/internal/processor"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
-func run(global config.Config, embedded common.Embedded, args ...string) error {
+// run executes the `install` command.
+func run(input common.Input) error {
+	cfg, embedded, _, _, args := input.Unpack()
+
+	if cfg.Download.Dry {
+		cfg.Verbose = 1
+	}
+
 	// Load the tools from the source as []byte
-	data, err := iutils.ReadPathsOrDefault(global.Tools, args...)
+	data, err := iutils.ReadPathsOrDefault(cfg.Tools, args...)
 	if err != nil {
 		return fmt.Errorf("reading tools file: %w", err)
 	}
@@ -25,22 +31,22 @@ func run(global config.Config, embedded common.Embedded, args ...string) error {
 	}
 
 	// Generate a common configuration for the command
-	global.Common = global.Install.ToCommon()
+	cfg.Common = cfg.Install.ToCommon()
 
-	runner := common.NewHandler(global, embedded)
-	if err := runner.SetupLogger(global.LogLevel); err != nil {
+	runner := common.NewHandler(*cfg, *embedded)
+	if err := runner.SetupLogger(cfg.LogLevel); err != nil {
 		return fmt.Errorf("setting up logger: %w", err)
 	}
 
-	if err := runner.Resolve(global.Defaults, &tools); err != nil {
+	if err := runner.Resolve(cfg.Defaults, &tools); err != nil {
 		return err
 	}
 
 	// At this point, all tools have been resolved and can be processed by the processor
-	proc := processor.New(tools, global, runner.Logger())
-	proc.NoDownload = global.Install.Dry
+	proc := processor.New(tools, *cfg, runner.Logger())
+	proc.NoDownload = cfg.Install.Dry
 
-	if err := proc.Process(iutils.SplitTags(global.Install.Tags)); err != nil {
+	if err := proc.Process(iutils.SplitTags(cfg.Install.Tags)); err != nil {
 		return fmt.Errorf("processing tools: %w", err)
 	}
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/processor"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/mode"
@@ -17,7 +16,14 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
-func run(global config.Config, embedded common.Embedded, args ...string) error {
+// run executes the `download` command.
+func run(input common.Input) error {
+	cfg, embedded, _, _, args := input.Unpack()
+
+	if cfg.Download.Dry {
+		cfg.Verbose = 1
+	}
+
 	tools := tools.Tools{}
 
 	for _, name := range args {
@@ -25,7 +31,7 @@ func run(global config.Config, embedded common.Embedded, args ...string) error {
 			Mode:     mode.Extract,
 			Strategy: strategy.Force,
 			Version: version.Version{
-				Version: global.Download.Version,
+				Version: cfg.Download.Version,
 			},
 		}
 
@@ -42,22 +48,22 @@ func run(global config.Config, embedded common.Embedded, args ...string) error {
 	}
 
 	// Generate a common configuration for the command
-	global.Common = global.Download.ToCommon()
-	global.Cache.Disabled = true
+	cfg.Common = cfg.Download.ToCommon()
+	cfg.Cache.Disabled = true
 
-	runner := common.NewHandler(global, embedded)
-	if err := runner.SetupLogger(global.LogLevel); err != nil {
+	runner := common.NewHandler(*cfg, *embedded)
+	if err := runner.SetupLogger(cfg.LogLevel); err != nil {
 		return fmt.Errorf("setting up logger: %w", err)
 	}
 
-	if err := runner.Resolve(global.Defaults, &tools); err != nil {
+	if err := runner.Resolve(cfg.Defaults, &tools); err != nil {
 		return err
 	}
 
 	// Process tools
-	proc := processor.New(tools, global, runner.Logger())
+	proc := processor.New(tools, *cfg, runner.Logger())
 
-	proc.NoDownload = global.Download.Dry
+	proc.NoDownload = cfg.Download.Dry
 	if err := proc.Process(tags.IncludeTags{}); err != nil {
 		return fmt.Errorf("processing tools: %w", err)
 	}

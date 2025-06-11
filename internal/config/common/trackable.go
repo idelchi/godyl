@@ -6,7 +6,7 @@ import (
 )
 
 type Tracker struct {
-	tracker *koanfx.Tracker `json:"-" mapstructure:"-"`
+	tracker *koanfx.Tracker `mapstructure:"-" yaml:"-"`
 }
 
 func (t *Tracker) Validate() error {
@@ -33,6 +33,8 @@ func (t *Tracker) IsSet(name string) bool {
 		for _, n := range t.tracker.Names() {
 			debug.Debug("- %s", n)
 		}
+	} else {
+		debug.Debug("name %s found in tracker", name)
 	}
 
 	return t.tracker.IsSet(name)

@@ -7,9 +7,9 @@ import (
 )
 
 // Validate checks the root configuration for correctness.
-func (r *Root) Validate() error {
-	if r.IsSet("defaults") && !r.Defaults.Exists() {
-		return fmt.Errorf("%w: %q does not exist", ierrors.ErrUsage, r.Defaults)
+func (c *Config) Validate() error {
+	if c.IsSet("defaults") && !c.Defaults.Exists() {
+		return fmt.Errorf("%w: %q does not exist", ierrors.ErrUsage, c.Defaults)
 	}
 
 	return nil

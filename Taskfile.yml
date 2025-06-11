@@ -21,6 +21,7 @@ includes:
     taskfile: "{{.DEVENV}}/taskfiles/Taskfile.go.yml"
     vars:
       COVERAGE: 0.0%
+      CONFIG_DIR: .
   github: "{{.DEVENV}}/taskfiles/Taskfile.github.yml"
 
 silent: true

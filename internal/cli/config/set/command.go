@@ -1,34 +1,30 @@
+// Package set contains the subcommand definition for `config set`.
 package set
 
 import (
-	"errors"
-
+	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/pkg/koanfx"
+	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Command returns the `cache path` command.
-func Command(global *config.Config, local any) *cobra.Command {
+// Command returns the `config set` command.
+func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set <key> <value>",
-		Short: "Interact with the config",
-		Long:  "Interact with the config.",
-		Args:  cobra.ExactArgs(2), //nolint:mnd	// The command takes 2 arguments as documented.
+		Short: "Set a key in the configuration",
+		Example: heredoc.Doc(`
+			$ godyl config set dump.tools.full true
+		`),
+		Args: cobra.ExactArgs(2), //nolint:mnd	// The command takes 2 arguments as documented.
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
 			if common.ExitOnShow(global.ShowFunc) {
 				return nil
 			}
 
-			koanf, ok := cmd.Root().Context().Value("config").(*koanfx.KoanfWithTracker)
-			if !ok {
-				return errors.New("failed to get config from context")
-			}
-
-			return run(global.ConfigFile.Absolute(), koanf, args[0], args[1])
+			return run(common.Input{Global: global, Cmd: cmd, Args: args})
 		},
 	}
 

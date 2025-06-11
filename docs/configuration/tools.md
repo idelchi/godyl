@@ -414,11 +414,17 @@ Furthermore, the `tokens` themselves are available as:
 
 🧩 Templated
 
-Commands to run before and after installation.
+Commands to run after the main source has been executed.
 
 ```yaml
 commands:
-  - "mkdir -p {{ .Output }}"
+  - |
+    if ! command -v wget; then
+      echo "wget is not installed. Please install wget to proceed."
+      exit 1
+    fi
+  - mkdir -p {{ .Output }}
+  - wget -qO- https://github.com/idelchi/godyl/releases/download/{{ .Version }}/godyl_{{ .OS }}_{{ .ARCH }}.tar.gz | tar -xz -C {{ .Output }}
 ```
 
 ### `tags`

@@ -9,14 +9,23 @@ import (
 	"github.com/showa-93/go-mask"
 )
 
+const indent = 2
+
+var YAMLOptions = []yaml.EncodeOption{
+	yaml.Indent(indent),                   // Set indentation to 2 spaces
+	yaml.UseSingleQuote(true),             // Use single quotes for strings
+	yaml.UseLiteralStyleIfMultiline(true), // Use literal style for multiline strings
+}
+
 // YAML formats data as indented YAML.
 // Converts any value to a formatted YAML string with consistent
 // indentation. Returns error message as string if encoding fails.
 func YAML(obj any) string {
-	const indent = 2
-
 	// Use MarshalWithOptions to set the indent
-	yamlBytes, err := yaml.MarshalWithOptions(obj, yaml.Indent(indent), yaml.UseSingleQuote(true), yaml.UseLiteralStyleIfMultiline(true))
+	yamlBytes, err := yaml.MarshalWithOptions(
+		obj,
+		YAMLOptions...,
+	)
 	if err != nil {
 		return err.Error()
 	}

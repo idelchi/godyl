@@ -5,12 +5,14 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
-func Command(cfg *config.Config, files *common.Embedded, version string) *cobra.Command {
+// Command returns the root `godyl` command.
+func Command(files *common.Embedded, version string) *cobra.Command {
+	cfg := &root.Config{}
+
 	cobra.EnableTraverseRunHooks = true
 	cobra.EnableCommandSorting = false
 
@@ -34,9 +36,9 @@ func Command(cfg *config.Config, files *common.Embedded, version string) *cobra.
 		SilenceUsage:     true,
 		SilenceErrors:    true,
 		TraverseChildren: true,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			return run(cmd, args, cfg)
-		},
+		// PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// 	return run(cmd, cfg)
+		// },
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if common.ExitOnShow(cfg.ShowFunc, args...) {
 				return nil
@@ -46,8 +48,11 @@ func Command(cfg *config.Config, files *common.Embedded, version string) *cobra.
 		},
 	}
 
+	cmd.PersistentPreRunE = func(calledFrom *cobra.Command, _ []string) error {
+		return run(cmd, cfg, calledFrom)
+	}
+
 	cmd.CompletionOptions.DisableDefaultCmd = false
-	cmd.Flags().SortFlags = false
 	cmd.SetVersionTemplate("{{ .Version }}\n")
 
 	root.Flags(cmd)

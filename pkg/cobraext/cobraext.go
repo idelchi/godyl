@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 // UnknownSubcommandAction handles unknown cobra subcommands.
@@ -30,4 +31,17 @@ func UnknownSubcommandAction(cmd *cobra.Command, args []string) error {
 	}
 
 	return errors.New(err) //nolint: err113 	 // The error should be returned as is
+}
+
+// SetFlagIfNotSet sets a flag's value only if it has not been set yet.
+func SetFlagIfNotSet(flag *pflag.Flag, value string) error {
+	if flag.Changed {
+		return nil // Flag is already set, no need to change it
+	}
+
+	if err := flag.Value.Set(value); err != nil {
+		return fmt.Errorf("setting flag %q to value %q: %w", flag.Name, value, err)
+	}
+
+	return nil
 }

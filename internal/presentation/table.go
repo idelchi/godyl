@@ -73,6 +73,8 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 
 	t.Style().Color.Header = text.Colors{text.FgBlue, text.Bold}
 
+	t.SortBy([]table.SortBy{{Name: "Tool", Mode: table.Asc}})
+
 	// Track row colors
 	rowColors := make(map[int]text.Colors)
 	rowNum := 0

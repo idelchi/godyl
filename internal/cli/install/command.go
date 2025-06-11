@@ -1,5 +1,4 @@
-// Package install implements the install command for godyl.
-// It provides functionality to install tools from a YAML configuration file.
+// Package install contains the subcommand definition for `install`.
 package install
 
 import (
@@ -7,13 +6,14 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/config/install"
+	"github.com/idelchi/godyl/internal/config/root"
 )
 
-func Command(global *config.Config, local any, embedded *common.Embedded) *cobra.Command {
+// Command returns the `install` command.
+func Command(global *root.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "install [tools.yml...] [-]",
+		Use:     "install [tools.yml|-]...",
 		Aliases: []string{"i"},
 		Short:   "Install tools from one of more YAML files",
 		Long: heredoc.Doc(`
@@ -35,13 +35,13 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 			$ cat tools.yml | godyl install - tools1.yml tools2.yml
 		`),
 		Args: cobra.ArbitraryArgs,
-		RunE: func(_ *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
 			if common.ExitOnShow(global.ShowFunc) {
 				return nil
 			}
 
-			return run(*global, *embedded, args...)
+			return run(common.Input{Global: global, Cmd: cmd, Args: args, Embedded: embedded})
 		},
 	}
 

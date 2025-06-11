@@ -58,6 +58,11 @@ func CacheDir() folder.Folder {
 	return folder.New(cacheDir, "godyl")
 }
 
+// CacheFile returns the cache file from the specified folder.
+func CacheFile(folder folder.Folder) file.File {
+	return folder.WithFile("godyl.json")
+}
+
 // DownloadDir returns the download directory for Godyl.
 func DownloadDir() folder.Folder {
 	downloadDir, err := UserRuntimeDir()

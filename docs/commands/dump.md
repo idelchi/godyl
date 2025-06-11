@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Dump
+title: dump
 parent: Commands
 nav_order: 4
 ---
@@ -12,7 +12,7 @@ The `dump` command displays various configuration settings and information about
 ## Syntax
 
 ```sh
-godyl [flags] dump [defaults|env|platform|tools] [flags]
+godyl [flags] dump [auth|cache|config|defaults|env|platform|tools] [flags]
 ```
 
 ## Description
@@ -21,40 +21,35 @@ The `dump` command provides a way to inspect `godyl`'s configuration, available 
 
 ## Subcommands
 
-| Subcommand           | Description                                               |
-| :------------------- | :-------------------------------------------------------- |
-| `defaults [name...]` | Display the default configuration settings                |
-| `env`                | Display environment variables that affect the application |
-| `platform`           | Display information about the current platform            |
-| `tools`              | Display information about available tools                 |
-| `cache [name]`       | Display information about the cache                       |
-| `config [name]`      | Display information about the config                      |
+| Subcommand                | Description                                               |
+| :------------------------ | :-------------------------------------------------------- |
+| `defaults [default]...`   | Display the default configuration settings                |
+| `env`                     | Display environment variables that affect the application |
+| `platform`                | Display information about the current platform            |
+| `tools [tools.yml\|-]...` | Display information about available tools                 |
+| `cache [name]`            | Display information about the cache                       |
+| `config [key]`            | Display information about the configuration               |
+| `auth`                    | Display information about authentication tokens           |
 
 ## Flags for `dump tools`
 
 | Flag              | Environment Variable        | Default | Description                |
 | :---------------- | :-------------------------- | :------ | :------------------------- |
-| `--full`, `-f`    | `GODYL_DUMP_TOOLS_FULL`     | `false` | Show full tool information |
-| `--tags`, `-f`    | `GODYL_DUMP_TOOLS_TAGS`     | `false` | Filter by tags             |
 | `--embedded, `-e` | `GODYL_DUMP_TOOLS_EMBEDDED` | `true`  | Show only embedded tools   |
-
-## Flags for `dump config`
-
-| Flag           | Environment Variable    | Default | Description                |
-| :------------- | :---------------------- | :------ | :------------------------- |
-| `--full`, `-f` | `GODYL_DUMP_TOOLS_FULL` | `false` | Show full tool information |
+| `--tags`, `-f`    | `GODYL_DUMP_TOOLS_TAGS`     | `false` | Filter by tags             |
+| `--full`, `-f`    | `GODYL_DUMP_TOOLS_FULL`     | `false` | Show full tool information |
 
 ## Examples
 
 ### Display the default configuration embedded in the binary
 
-Output the whole default map:
+Output the full embedded defaults:
 
 ```sh
 godyl dump defaults
 ```
 
-Select specific keys:
+Select specific defaults:
 
 ```sh
 godyl dump defaults linux default
@@ -68,6 +63,12 @@ godyl dump env
 
 Output will list all environment variables that affect `godyl`'s behavior.
 
+### Display a configuration setting
+
+```sh
+godyl dump config update.cleanup
+```
+
 ### Display platform information
 
 ```sh
@@ -76,15 +77,15 @@ godyl dump platform
 
 Output will show details about your current platform, including OS, architecture, and other system information.
 
-### Display available tools
+### Display available tools embedded in the binary
 
 ```sh
-godyl dump tools
+godyl dump tools --embedded
 ```
 
 Output will list the tools that are embedded in the `godyl` binary. This can be used as a starting point for creating custom tool configurations.
 
-### Display full tool information
+### Display full tool information from the current `tools.yml` configuration
 
 ```sh
 godyl dump tools --full
@@ -101,7 +102,7 @@ godyl dump cache
 ### Display cache information for a specific item
 
 ```sh
-godyl dump cache idelchi/godyl
+godyl dump cache idelchi/envprof
 ```
 
 Output will show details about the cache, including its location, size, and contents.
@@ -113,7 +114,7 @@ Output will show details about the cache, including its location, size, and cont
 You can use the `dump tools` command to create a starting point for your own tools configuration:
 
 ```sh
-godyl dump tools > my-tools.yml
+godyl dump tools -e > my-tools.yml
 ```
 
 This creates a YAML file containing all the embedded tools, which you can then modify according to your needs.
@@ -123,11 +124,17 @@ This creates a YAML file containing all the embedded tools, which you can then m
 You can use the `dump tools` command in combination with the `install` command to install all embedded tools:
 
 ```sh
-godyl dump tools | godyl install - --output ~/.local/bin
+godyl dump tools -e | godyl install - --output ~/.local/bin
 ```
 
 or only specific tags:
 
 ```sh
-godyl dump tools --tags docker | godyl install - --output ~/.local/bin
+godyl dump tools -e --tags docker | godyl install - --output ~/.local/bin
+```
+
+### Generate a configuration file from the resolved configuration
+
+```sh
+godyl dump config > godyl.yml
 ```

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Download
+title: download
 parent: Commands
 nav_order: 2
 ---
@@ -16,7 +16,7 @@ The `download` command allows you to download (and extract if necessary) individ
 ## Syntax
 
 ```sh
-godyl [flags] download [tool|URL]... [flags]
+godyl [flags] download [tool, URL]... [flags]
 ```
 
 ## Aliases
@@ -32,27 +32,28 @@ When using the `download` command, the tool will be downloaded and extracted dir
 
 ## Flags
 
-| Flag              | Environment Variable     | Default  | Description                                                          |
-| :---------------- | :----------------------- | :------- | :------------------------------------------------------------------- |
-| `--output`, `-o`  | `GODYL_DOWNLOAD_OUTPUT`  | `./bin`  | Output path for the downloaded tools                                 |
-| `--source`        | `GODYL_DOWNLOAD_SOURCE`  | `github` | Source from which to install the tools                               |
-| `--os`            | `GODYL_DOWNLOAD_OS`      | `""`     | Operating system to use for downloading                              |
-| `--arch`          | `GODYL_DOWNLOAD_ARCH`    | `""`     | Architecture to use for downloading                                  |
-| `--hint`          | `GODYL_DOWNLOAD_HINT`    | `[""]`   | Add hint patterns with weight 1                                      |
-| `--version`, `-v` | `GODYL_DOWNLOAD_VERSION` | `""`     | Version to download. Will set the `{{ .Version }}` template variable |
+| Flag              | Environment Variable     | Default  | Description                                                           |
+| :---------------- | :----------------------- | :------- | :-------------------------------------------------------------------- |
+| `--output`, `-o`  | `GODYL_DOWNLOAD_OUTPUT`  | `./bin`  | Output path for the downloaded tools                                  |
+| `--source`        | `GODYL_DOWNLOAD_SOURCE`  | `github` | Source from which to install the tools                                |
+| `--os`            | `GODYL_DOWNLOAD_OS`      | `""`     | Operating system to use for downloading                               |
+| `--arch`          | `GODYL_DOWNLOAD_ARCH`    | `""`     | Architecture to use for downloading                                   |
+| `--hint`          | `GODYL_DOWNLOAD_HINT`    | `[""]`   | Add hint patterns with weight 1                                       |
+| `--version`, `-v` | `GODYL_DOWNLOAD_VERSION` | `""`     | Version to download. Will set the `{{ .Version }}` template variable  |
+| `--dry`           | `GODYL_DOWNLOAD_DRY`     | `false`  | Dry run. Will not download, but show what would be done. Implies `-v` |
 
 ## Examples
 
 ### Download a specific version
 
 ```sh
-godyl download idelchi/godyl --version v0.1.0
+godyl download idelchi/envprof --version v0.1.0
 ```
 
 ### Download multiple tools
 
 ```sh
-godyl download idelchi/godyl idelchi/tcisd
+godyl download idelchi/envprof idelchi/tcisd
 ```
 
 ### Download from a direct URL

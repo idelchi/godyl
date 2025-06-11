@@ -9,11 +9,12 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/idelchi/godyl/internal/cache"
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/internal/presentation"
 	"github.com/idelchi/godyl/internal/progress"
 	"github.com/idelchi/godyl/internal/results"
 	"github.com/idelchi/godyl/internal/runner"
+	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/tags"
 	"github.com/idelchi/godyl/internal/tools/tool"
@@ -24,9 +25,9 @@ import (
 type Processor struct {
 	runner     runner.Runner
 	results    results.Collector
-	cache      cache.Manager
+	cache      *cache.Cache
 	progress   progress.Manager
-	config     config.Config
+	config     root.Config
 	log        *logger.Logger
 	tools      tools.Tools
 	Options    []tool.ResolveOption
@@ -34,23 +35,19 @@ type Processor struct {
 }
 
 // New creates a new Processor.
-func New(toolsList tools.Tools, cfg config.Config, log *logger.Logger) *Processor {
+func New(toolsList tools.Tools, cfg root.Config, log *logger.Logger) *Processor {
 	// Initialize cache
-	var cacheManager cache.Manager
-
-	var cacheImpl *cache.Cache
+	var cacheManager *cache.Cache
 
 	if !cfg.Cache.Disabled {
-		file, _ := cache.File(cfg.Cache.Dir)
-		cacheImpl = cache.New(file)
-		cacheManager = cacheImpl
+		cacheManager = cache.New(tmp.CacheFile(cfg.Cache.Dir))
 	}
 
 	// Initialize progress manager
 	progressMgr := progress.NewDefaultManager(cfg.NoProgress)
 
 	// Initialize runner
-	runnerImpl := runner.NewDefaultRunner(cacheImpl, log)
+	runnerImpl := runner.NewDefaultRunner(cacheManager, log)
 
 	// Initialize results collector
 	collector := results.NewCollector()
@@ -142,17 +139,23 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 
 // updateCache updates the cache with a successful result.
 func (p *Processor) updateCache(result runner.Result) {
+	if result.Tool.Version.Version == "" {
+		return
+	}
+
+	now := time.Now()
+
 	item := &cache.Item{
 		ID:         result.Tool.ID(),
 		Name:       result.Tool.Name,
 		Version:    result.Tool.Version,
-		Path:       result.Tool.Output,
-		Type:       string(result.Tool.Source.Type),
-		Downloaded: time.Now(),
-		Updated:    time.Now(),
+		Path:       result.Tool.AbsPath(),
+		Type:       result.Tool.Source.Type.String(),
+		Downloaded: now,
+		Updated:    now,
 	}
 
-	if err := p.cache.Set(item.ID, item); err != nil {
+	if err := p.cache.Add(item); err != nil {
 		p.log.Errorf("failed to update cache for %s: %v", result.Tool.Name, err)
 	}
 }
@@ -181,6 +184,8 @@ func (p *Processor) presentResults() {
 		p.log.Info("")
 		p.log.Info("Installation Summary:")
 		p.log.Info(tableOutput)
+
+		p.log.Infof("%d tools processed", len(summary.Results))
 	} else {
 		p.log.Info("Done!")
 	}

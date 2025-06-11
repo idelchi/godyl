@@ -1,17 +1,16 @@
-// Package download implements the download command for godyl.
-// It provides functionality to download and extract tools from various sources.
+// Package download contains the subcommand definition for `download`.
 package download
 
 import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/config/download"
+	"github.com/idelchi/godyl/internal/config/root"
 )
 
-func Command(global *config.Config, local any, embedded *common.Embedded) *cobra.Command {
-	// Create the download command
+// Command returns the `download` command.
+func Command(global *root.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "download [tool]",
 		Aliases: []string{"dl", "x"},
@@ -23,7 +22,7 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 				return nil
 			}
 
-			return run(*global, *embedded, args...)
+			return run(common.Input{Global: global, Cmd: cmd, Args: args, Embedded: embedded})
 		},
 	}
 

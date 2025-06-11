@@ -1,3 +1,4 @@
+// Package clean contains the subcommand definition for `clean`.
 package clean
 
 import (
@@ -5,28 +6,26 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/root"
 )
 
 // Command returns the `cache clean` command.
-func Command(global *config.Config, local any) *cobra.Command {
+func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "clean",
 		Short: "Clean the cache",
-		Long: heredoc.Doc(`Clean can be run to clear the cache from removed tools,
-		as well as updating the recorded versions in case of mismatches.
-			`),
-		Example: heredoc.Doc(`
-			$ godyl cache clean
-			`),
+		Long: heredoc.Doc(`
+			Clean can be run to clear the cache from removed tools,
+			as well as updating the recorded versions in case of mismatches.
+		`),
 		Args: cobra.NoArgs,
-		RunE: func(_ *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
 			if common.ExitOnShow(global.ShowFunc) {
 				return nil
 			}
 
-			return run(*global)
+			return run(common.Input{Global: global, Embedded: nil, Cmd: cmd, Args: args})
 		},
 	}
 

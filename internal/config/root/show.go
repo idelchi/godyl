@@ -7,6 +7,11 @@ import (
 // ShowFuncType declares the type for the ShowFunc function.
 type ShowFuncType func() func(any)
 
+// NoShow is a constant that represents a ShowFuncType that returns nil, meaning no output will be shown.
+var NoShow = ShowFuncType(func() func(any) {
+	return nil
+})
+
 // Verbosity controls the level of output shown to the user in the ShowFunc function.
 type Verbosity int
 
@@ -20,8 +25,8 @@ const (
 )
 
 // ShowFunc returns the function to be used for showing the output based on the Verbosity level.
-func (r *Root) ShowFunc() func(any) {
-	switch r.Show {
+func (c *Config) ShowFunc() func(any) {
+	switch c.Show {
 	case None:
 		return nil
 	case Masked:

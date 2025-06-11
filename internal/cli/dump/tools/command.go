@@ -1,5 +1,4 @@
-// Package tools implements the tools dump subcommand for godyl.
-// It displays information about the configured tools.
+// Package tools contains the subcommand definition for `dump tools`.
 package tools
 
 import (
@@ -9,14 +8,15 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/config/dump/tools"
+	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/internal/ierrors"
 )
 
-func Command(global *config.Config, local any, embedded *common.Embedded) *cobra.Command {
+// Command returns the `dump tools` command.
+func Command(global *root.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "tools [tools.yml...|-]",
+		Use:   "tools [tools.yml|-]...",
 		Short: "Display tools information",
 		Long: heredoc.Doc(`
 			Dumps out tools configuration.
@@ -46,7 +46,7 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 			$ godyl dump tools --embedded --tags go | godyl install -
 		`),
 		Args: cobra.ArbitraryArgs,
-		RunE: func(_ *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
 			if common.ExitOnShow(global.ShowFunc) {
 				return nil
@@ -54,13 +54,12 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 
 			if global.Dump.Tools.Embedded && len(args) > 0 {
 				return fmt.Errorf(
-					"%w: cannot specify arguments (%v) together with the --embedded flag, use one or the other",
+					"%w: cannot specify arguments together with the --embedded flag, use one or the other",
 					ierrors.ErrUsage,
-					args,
 				)
 			}
 
-			return run(*global, *embedded, args...)
+			return run(common.Input{Global: global, Cmd: cmd, Args: args, Embedded: embedded})
 		},
 	}
 

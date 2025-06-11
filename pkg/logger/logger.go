@@ -59,30 +59,6 @@ func New(level Level) (*Logger, error) {
 	return NewCustom(level, os.Stdout)
 }
 
-// log prints a log message with the specified level, respecting the configured minimum level.
-func (l *Logger) log(level Level, format string, args ...any) {
-	if level < l.level && level != ALWAYS {
-		return
-	}
-
-	message := fmt.Sprintf(format, args...)
-	if c, ok := l.colors[level]; ok {
-		_, _ = c.Fprintln(l.output, message)
-	} else {
-		_ = writeSilently(l.output, message)
-	}
-}
-
-func writeSilently(w io.Writer, msg string) error {
-	_, err := fmt.Fprintln(w, msg)
-
-	return err
-}
-
-func (l *Logger) logPlain(level Level, message string) {
-	l.log(level, "%s", message)
-}
-
 // Always logs a message at the ALWAYS level, regardless of the current log level.
 func (l *Logger) Always(msg string) { l.logPlain(ALWAYS, msg) }
 
@@ -123,4 +99,28 @@ func (l *Logger) SetLevel(level Level) {
 // Level returns the current log level.
 func (l *Logger) Level() Level {
 	return l.level
+}
+
+// log prints a log message with the specified level, respecting the configured minimum level.
+func (l *Logger) log(level Level, format string, args ...any) {
+	if level < l.level && level != ALWAYS {
+		return
+	}
+
+	message := fmt.Sprintf(format, args...)
+	if c, ok := l.colors[level]; ok {
+		_, _ = c.Fprintln(l.output, message)
+	} else {
+		_ = writeSilently(l.output, message)
+	}
+}
+
+func writeSilently(w io.Writer, msg string) error {
+	_, err := fmt.Fprintln(w, msg)
+
+	return err
+}
+
+func (l *Logger) logPlain(level Level, message string) {
+	l.log(level, "%s", message)
 }

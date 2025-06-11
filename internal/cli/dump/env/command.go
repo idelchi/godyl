@@ -1,34 +1,26 @@
-// Package env implements the env dump subcommand for godyl.
-// It displays information about the environment variables.
+// Package env contains the subcommand definition for `dump env`.
 package env
 
 import (
-	"errors"
-
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
-	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/internal/config/root"
 )
 
-func Command(global *config.Config, local any) *cobra.Command {
+// Command returns the `dump env` command.
+func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "env",
 		Short: "Display environment information",
 		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			// Exit early if the command is run with `--show/-s` flag.
 			if common.ExitOnShow(global.ShowFunc) {
 				return nil
 			}
 
-			dotenv, ok := cmd.Root().Context().Value("dotenv").(env.Env)
-			if !ok {
-				return errors.New("failed to get dotenv from context")
-			}
-
-			return run(dotenv)
+			return run(common.Input{Global: global, Cmd: cmd, Args: args, Embedded: nil})
 		},
 	}
 

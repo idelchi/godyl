@@ -1,9 +1,7 @@
 package root
 
 import (
-	"github.com/idelchi/godyl/internal/config/cache"
 	"github.com/idelchi/godyl/internal/config/common"
-	"github.com/idelchi/godyl/internal/config/config"
 	"github.com/idelchi/godyl/internal/config/download"
 	"github.com/idelchi/godyl/internal/config/dump"
 	"github.com/idelchi/godyl/internal/config/install"
@@ -15,106 +13,117 @@ import (
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
-// Root holds the root level configuration options.
-type Root struct {
+// TODO(Idelchi): Change all to be .Config instead of .Dump, .Update, etc.
+
+// Config holds the root level configuration options.
+// It is split into sub-structs for each command.
+type Config struct {
 	/* Subcommands */
 	// Dump contains the configuration for the `godyl dump` command
-	Dump dump.Dump `json:"dump" mapstructure:"dump"`
+	Dump dump.Dump `mapstructure:"dump" validate:"-" yaml:"dump"`
 
 	// Cache contains the configuration for the `godyl cache` command (empty)
-	cache cache.Cache `json:"-" mapstructure:"-"`
+	// Cache cache.Cache `yaml:"-" mapstructure:"-" validate:"-"`
 
 	// Config contains the configuration for the `godyl config` command (empty)
-	config config.Config `json:"-" mapstructure:"-"`
+	// Config root.Config `yaml:"-" mapstructure:"-" validate:"-"`
 
 	// Update contains the configuration for the `godyl update` command
-	Update update.Update `json:"update" mapstructure:"update"`
+	Update update.Update `mapstructure:"update" validate:"-" yaml:"update"`
 
 	// Status contains the configuration for the `godyl status` command
-	Status status.Status `json:"status" mapstructure:"status"`
+	Status status.Status `mapstructure:"status" validate:"-" yaml:"status"`
 
 	// Download contains the configuration for the `godyl download` command
-	Download download.Download `json:"download" mapstructure:"download"`
+	Download download.Download `mapstructure:"download" validate:"-" yaml:"download"`
 
 	// Install contains the configuration for the `godyl install` command
-	Install install.Install `json:"install" mapstructure:"install"`
+	Install install.Install `mapstructure:"install" validate:"-" yaml:"install"`
 
 	/* Flags */
 	// Tokens store authentication tokens for various sources
-	Tokens Tokens `json:"tokens" mapstructure:",squash"`
+	Tokens Tokens `mapstructure:",squash" yaml:",inline,flatten"`
 
 	// Inherit specifies the default scheme to inherit from when no scheme is specified
-	Inherit string `json:"inherit" mapstructure:"inherit"`
+	Inherit string `mapstructure:"inherit" yaml:"inherit"`
 
 	// ErrorFile specifies the file to log errors
-	ErrorFile file.File `json:"error-file" mapstructure:"error-file"`
+	ErrorFile file.File `mapstructure:"error-file" yaml:"error-file"`
 
 	// Tools specifies the tools file to be used
-	Tools string `json:"tools" mapstructure:"tools"`
+	Tools string `mapstructure:"tools" yaml:"tools"`
 
 	// Defaults specifies the default file to be used
-	Defaults file.File `json:"defaults" mapstructure:"defaults"`
+	Defaults file.File `mapstructure:"defaults" yaml:"defaults"`
 
 	// ConfigFile specifies the configuration file to be used
-	ConfigFile file.File `json:"config-file" mapstructure:"config-file"`
+	ConfigFile file.File `mapstructure:"config-file" yaml:"config-file"`
 
 	// LogLevel specifies the logging level
-	LogLevel string `json:"log-level" mapstructure:"log-level" validate:"oneof=silent debug info warn error always"`
+	LogLevel string `mapstructure:"log-level" validate:"oneof=silent debug info warn error always" yaml:"log-level"`
 
 	// EnvFile specifies the environment files to be used
-	EnvFile []file.File `json:"env-file" mapstructure:"env-file"`
+	EnvFile []file.File `mapstructure:"env-file" yaml:"env-file"`
 
 	// Cache holds the cache configuration options
-	Cache Cache `json:"cache" mapstructure:",squash"`
+	Cache Cache `mapstructure:",squash" yaml:",inline,flatten"`
 
 	// Parallel specifies the number of parallel operations
-	Parallel int `json:"parallel" mapstructure:"parallel" validate:"gte=0"`
+	Parallel int `mapstructure:"parallel" validate:"gte=0" yaml:"parallel"`
 
 	// Verbose specifies the verbosity level
-	Verbose int `json:"verbose" mapstructure:"verbose"`
+	Verbose int `mapstructure:"verbose" yaml:"verbose"`
 
 	// Show specifies the verbosity level for showing output
-	Show Verbosity `json:"show" mapstructure:"show"`
+	Show Verbosity `mapstructure:"show" yaml:"show"`
 
 	// NoVerifySSL disables SSL verification
-	NoVerifySSL bool `json:"no-verify-ssl" mapstructure:"no-verify-ssl"`
+	NoVerifySSL bool `mapstructure:"no-verify-ssl" yaml:"no-verify-ssl"`
 
 	// NoProgress disables progress indicators
-	NoProgress bool `json:"no-progress" mapstructure:"no-progress"`
+	NoProgress bool `mapstructure:"no-progress" yaml:"no-progress"`
+
+	// Keyring enables the use of the keyring for retrieving tokens
+	Keyring bool `mapstructure:"keyring" yaml:"keyring"`
 
 	/* Other Options */
 	// Common contains a subset of common configuration options
-	Common common.Common `json:"-" mapstructure:"-"`
+	Common common.Common `mapstructure:"-" yaml:"-"`
 
 	// Tracker embed the common tracker configuration, allowing to tracker
 	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `json:"-" mapstructure:"-"`
+	common.Tracker `mapstructure:"-" yaml:"-"`
 }
 
 // Cache holds the configuration options for caching.
 type Cache struct {
 	// Path to cache folder
-	Dir folder.Folder `json:"cache-dir" mapstructure:"cache-dir"`
+	Dir folder.Folder `mapstructure:"cache-dir" yaml:"cache-dir"`
 
 	// Disabled disables cache interaction
-	Disabled bool `json:"no-cache" mapstructure:"no-cache"`
+	Disabled bool `mapstructure:"no-cache" yaml:"no-cache"`
 }
 
 // Tokens holds the configuration options for authentication tokens.
 type Tokens struct {
 	// GitHub token for authentication
-	GitHub string `json:"github-token" mapstructure:"github-token" mask:"fixed"`
+	GitHub string `mapstructure:"github-token" mask:"fixed" yaml:"github-token"`
 
 	// GitLab token for authentication
-	GitLab string `json:"gitlab-token" mapstructure:"gitlab-token" mask:"fixed"`
+	GitLab string `mapstructure:"gitlab-token" mask:"fixed" yaml:"gitlab-token"`
 
 	// URL token for authentication
-	URL string `json:"url-token" mapstructure:"url-token" mask:"fixed"`
+	URL string `mapstructure:"url-token" mask:"fixed" yaml:"url-token"`
+}
+
+// AllTokensSet checks if all of the tokens are set.
+func (c Config) AllTokensSet() bool {
+	return c.IsSet("github-token") && c.IsSet("gitlab-token") && c.IsSet("url-token")
 }
 
 // ToTool converts the Config to a tool.Tool instance,
 // holding either default values or values set by the user.
-func (c *Root) ToTool(forced bool) *tool.Tool {
+func (c *Config) ToTool(forced bool) *tool.Tool {
 	var tool tool.Tool
 
 	type Settable interface {
@@ -183,3 +192,7 @@ func (c *Root) ToTool(forced bool) *tool.Tool {
 
 	return &tool
 }
+
+// func (c *Config) AsKoanf() (*koanfx.Koanf, error) {
+// 	return koanfx.FromStruct(c)
+// }

@@ -3,7 +3,7 @@ package common
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/internal/defaults"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/pkg/logger"
@@ -11,12 +11,12 @@ import (
 )
 
 type Handler struct {
-	config   config.Config
+	config   root.Config
 	logger   *logger.Logger
 	embedded Embedded
 }
 
-func NewHandler(cfg config.Config, embedded Embedded) *Handler {
+func NewHandler(cfg root.Config, embedded Embedded) *Handler {
 	return &Handler{
 		config:   cfg,
 		embedded: embedded,
@@ -103,17 +103,23 @@ func (c *Handler) Logger() *logger.Logger {
 	return c.logger
 }
 
-func (c *Handler) SetupLogger(level string) error {
+func (c *Handler) SetupLogger(level string) (err error) {
+	c.logger, err = SetupLogger(level)
+
+	return err
+}
+
+func SetupLogger(level string) (*logger.Logger, error) {
 	// Retrieve log level and create a logger instance
 	lvl, err := logger.LevelString(level)
 	if err != nil {
-		return fmt.Errorf("parsing log level: %w", err)
+		return nil, fmt.Errorf("parsing log level: %w", err)
 	}
 
-	c.logger, err = logger.New(lvl)
+	l, err := logger.New(lvl)
 	if err != nil {
-		return fmt.Errorf("creating logger: %w", err)
+		return nil, fmt.Errorf("creating logger: %w", err)
 	}
 
-	return nil
+	return l, nil
 }

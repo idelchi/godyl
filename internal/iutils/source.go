@@ -66,10 +66,14 @@ func NewMultiSource(sources ...Source) *MultiSource {
 func (s MultiSource) Read() ([]byte, error) {
 	var buf bytes.Buffer
 
-	for _, source := range s.Sources {
+	for i, source := range s.Sources {
 		data, err := source.Read()
 		if err != nil {
 			return nil, fmt.Errorf("reading from source: %w", err)
+		}
+
+		if i > 0 {
+			buf.WriteByte('\n')
 		}
 
 		buf.Write(data)

@@ -4,12 +4,13 @@ import (
 	"fmt"
 
 	"github.com/go-viper/mapstructure/v2"
+	"github.com/knadh/koanf/providers/structs"
 	"github.com/knadh/koanf/v2"
 	"github.com/spf13/pflag"
 )
 
-// KoanfWithTracker is a wrapper around koanf.Koanf that tracks the keys that have been set.
-type KoanfWithTracker struct {
+// Koanf is a wrapper around koanf.Koanf that tracks the keys that have been set.
+type Koanf struct {
 	*koanf.Koanf
 	flags   *pflag.FlagSet
 	Tracker *Tracker
@@ -17,74 +18,77 @@ type KoanfWithTracker struct {
 	active func()
 }
 
-// New creates a new KoanfWithTracker instance with a new koanf.Koanf instance.
-func New() *KoanfWithTracker {
-	return &KoanfWithTracker{
-		Koanf: koanf.New("."),
-	}
-}
-
-// NewWithTracker creates a new KoanfWithTracker instance with a new koanf.Koanf instance and a pflag.FlagSet.
-func NewWithTracker(flags *pflag.FlagSet) *KoanfWithTracker {
-	return &KoanfWithTracker{
+// New creates a new Koanf instance with a new koanf.Koanf instance.
+func New() *Koanf {
+	return &Koanf{
 		Koanf:   koanf.New("."),
-		flags:   flags,
 		Tracker: NewTracker(),
 	}
 }
 
-// ResetFlags overwrites the flags in the KoanfWithTracker instance with a new pflag.FlagSet.
-func (kwt *KoanfWithTracker) ResetFlags(newF *pflag.FlagSet) *KoanfWithTracker {
-	return &KoanfWithTracker{
+// FromStruct creates a new Koanf instance from a struct, loading the struct's fields into the koanf.Koanf
+// instance.
+func FromStruct(data any, tag string) (*Koanf, error) {
+	k := New()
+	if err := k.Load(structs.Provider(data, tag), nil); err != nil {
+		return nil, err
+	}
+
+	return k, nil
+}
+
+// WithFlags overwrites the flags in the Koanf instance with a new pflag.FlagSet.
+func (kwt *Koanf) WithFlags(newF *pflag.FlagSet) *Koanf {
+	return &Koanf{
 		Koanf:   kwt.Koanf,
 		flags:   newF,
 		Tracker: kwt.Tracker,
 	}
 }
 
-// ResetTracker overwrites the Tracker in the KoanfWithTracker instance with a new Tracker.
-func (kwt *KoanfWithTracker) ResetTracker() *KoanfWithTracker {
-	return &KoanfWithTracker{
+// ClearTracker overwrites the Tracker in the Koanf instance with a fresh Tracker instance.
+func (kwt *Koanf) ClearTracker() *Koanf {
+	return &Koanf{
 		Koanf:   kwt.Koanf,
 		flags:   kwt.flags,
 		Tracker: NewTracker(),
 	}
 }
 
-// ResetKoanf overwrites the Koanf in the KoanfWithTracker instance with a new koanf.Koanf instance.
-func (kwt *KoanfWithTracker) ResetKoanf(newK *koanf.Koanf) *KoanfWithTracker {
+// WithKoanf overwrites the Koanf in the Koanf instance with a new koanf.Koanf instance.
+func (kwt *Koanf) WithKoanf(newK *koanf.Koanf) *Koanf {
 	if newK == nil {
 		newK = koanf.New(".")
 	}
 
-	return &KoanfWithTracker{
+	return &Koanf{
 		Koanf:   newK,
 		flags:   kwt.flags,
 		Tracker: kwt.Tracker,
 	}
 }
 
-// IsSet checks if a key is set in the KoanfWithTracker instance.
-func (kwt *KoanfWithTracker) IsSet(key string) bool {
+// IsSet checks if a key is set in the Koanf instance.
+func (kwt *Koanf) IsSet(key string) bool {
 	return kwt.Tracker.IsSet(key)
 }
 
 // TrackAll tracks all keys from the koanf instance.
-func (kwt *KoanfWithTracker) TrackAll() *KoanfWithTracker {
+func (kwt *Koanf) TrackAll() *Koanf {
 	kwt.active = kwt.withAll()
 
 	return kwt
 }
 
 // TrackFlags tracks changed flags from a FlagSet.
-func (kwt *KoanfWithTracker) TrackFlags() *KoanfWithTracker {
+func (kwt *Koanf) TrackFlags() *Koanf {
 	kwt.active = kwt.withFlags()
 
 	return kwt
 }
 
 // Track sets the active tracking function to the last one set.
-func (kwt *KoanfWithTracker) Track() *KoanfWithTracker {
+func (kwt *Koanf) Track() *Koanf {
 	if kwt.active != nil {
 		kwt.active()
 	}
@@ -93,7 +97,7 @@ func (kwt *KoanfWithTracker) Track() *KoanfWithTracker {
 }
 
 // Load loads configuration from a provider and tracks the source.
-func (kwt *KoanfWithTracker) Load(p koanf.Provider, pa koanf.Parser, opts ...koanf.Option) error {
+func (kwt *Koanf) Load(p koanf.Provider, pa koanf.Parser, opts ...koanf.Option) error {
 	if err := kwt.Koanf.Load(p, pa, opts...); err != nil {
 		return fmt.Errorf("loading config: %w", err)
 	}
@@ -104,34 +108,47 @@ func (kwt *KoanfWithTracker) Load(p koanf.Provider, pa koanf.Parser, opts ...koa
 }
 
 // Unmarshal unmarshals the configuration into the provided struct.
-func (kwt *KoanfWithTracker) Unmarshal(destination any, opts ...Option) error {
+func (kwt *Koanf) Unmarshal(destination any, opts ...Option) error {
 	return Unmarshal(kwt.Koanf, "", destination, opts...)
 }
 
 // UnmarshalWithMetadata unmarshals the configuration into the provided struct and returns metadata.
-func (kwt *KoanfWithTracker) UnmarshalWithMetadata(destination any, opts ...Option) (mapstructure.Metadata, error) {
+func (kwt *Koanf) UnmarshalWithMetadata(destination any, opts ...Option) (mapstructure.Metadata, error) {
 	return UnmarshalWithMetadata(kwt.Koanf, "", destination, opts...)
 }
 
-// AsMapAny unmarshals the configuration into a map[string]any.
-func (kwt *KoanfWithTracker) AsMapAny() (map[string]any, error) {
-	var mapAny map[string]any
-	if err := kwt.Unmarshal(&mapAny); err != nil {
-		return nil, fmt.Errorf("unmarshaling into struct: %w", err)
+// Filtered returns a new Koanf instance that only contains the specified keys.
+// Any keys that don't exist in the original instance are ignored.
+func (kwt *Koanf) Filtered(keys ...string) *Koanf {
+	// Create a new Koanf instance with the same delimiter
+	filtered := New()
+
+	// Iterate through the requested keys
+	for _, key := range keys {
+		// Only copy keys that exist in the original
+		if kwt.Exists(key) {
+			// Get the value and set it in the new instance
+			filtered.Set(key, kwt.Get(key))
+		}
 	}
 
-	return mapAny, nil
+	return filtered
+}
+
+// Map returns the koanf instance as a map.
+func (kwt *Koanf) Map() map[string]any {
+	return kwt.Raw()
 }
 
 // withAll tracks all keys from the koanf instance.
-func (kwt *KoanfWithTracker) withAll() func() {
+func (kwt *Koanf) withAll() func() {
 	return func() {
 		kwt.Tracker.TrackAll(kwt.Koanf)
 	}
 }
 
 // withFlags tracks changed flags from a FlagSet.
-func (kwt *KoanfWithTracker) withFlags() func() {
+func (kwt *Koanf) withFlags() func() {
 	return func() {
 		kwt.Tracker.TrackFlags(kwt.flags)
 	}

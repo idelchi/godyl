@@ -3,12 +3,14 @@ package path
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/internal/cli/common"
 )
 
 // run executes the `config path` command.
-func run(file file.File) error {
-	fmt.Println(file)
+func run(input common.Input) error {
+	cfg, _, _, _, _ := input.Unpack()
+
+	fmt.Println(cfg.ConfigFile.Absolute())
 
 	return nil
 }

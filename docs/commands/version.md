@@ -1,8 +1,8 @@
 ---
 layout: default
-title: Version
+title: version
 parent: Commands
-nav_order: 8
+nav_order: 10
 ---
 
 # Version Command

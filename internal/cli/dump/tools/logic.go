@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/tags"
@@ -12,7 +11,10 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
-func run(cfg config.Config, embedded common.Embedded, args ...string) (err error) {
+// run executes the `dump tools` command.
+func run(input common.Input) (err error) {
+	cfg, embedded, _, _, args := input.Unpack()
+
 	tags := iutils.SplitTags(cfg.Dump.Tools.Tags)
 
 	data := embedded.Tools

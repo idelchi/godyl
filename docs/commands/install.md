@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Install
+title: install
 parent: Commands
 nav_order: 1
 ---
@@ -14,7 +14,7 @@ The `install` command allows you to install tools defined in YAML configuration 
 ## Syntax
 
 ```sh
-godyl [flags] install [tools.yml...|-] [flags]
+godyl [flags] install [tools.yml|-]... [flags]
 ```
 
 ## Aliases
@@ -23,20 +23,23 @@ godyl [flags] install [tools.yml...|-] [flags]
 
 ## Description
 
-The `install` command reads tool definitions from one or more YAML files (or from standard input) and installs them according to the specified configuration. If no file is specified, it defaults to using `tools.yml` in the current directory.
+The `install` command reads tool definitions from one or more YAML files (or from standard input) and installs them according to the specified configuration.
+
+If no file is specified, it defaults to using `tools.yml` in the current directory.
+
+Additionally, it will respect the `GODYL_TOOLS` environment variable, as well as the `tools` key in the config file.
 
 ## Flags
 
-| Flag             | Environment Variable     | Default       | Description                                 |
-| :--------------- | :----------------------- | :------------ | :------------------------------------------ |
-| `--output`, `-o` | `GODYL_INSTALL_OUTPUT`   | `./bin`       | Output path for the downloaded tools        |
-| `--tags`, `-t`   | `GODYL_INSTALL_TAGS`     | `["!native"]` | Tags to filter tools by. Use `!` to exclude |
-| `--source`       | `GODYL_INSTALL_SOURCE`   | `github`      | Source from which to install the tools      |
-| `--strategy`     | `GODYL_INSTALL_STRATEGY` | `none`        | Strategy to use for updating tools          |
-| `--os`           | `GODYL_INSTALL_OS`       | `""`          | Operating system to use for downloading     |
-| `--arch`         | `GODYL_INSTALL_ARCH`     | `""`          | Architecture to use for downloading         |
-| `--hint`         | `GODYL_INSTALL_HINT`     | `[""]`        | Add hint patterns with weight 1             |
-| `--show`, `-s`   | `GODYL_INSTALL_SHOW`     | `false`       | Show the configuration and exit             |
+| Flag             | Environment Variable     | Default       | Description                                                           |
+| :--------------- | :----------------------- | :------------ | :-------------------------------------------------------------------- |
+| `--output`, `-o` | `GODYL_INSTALL_OUTPUT`   | `./bin`       | Output path for the downloaded tools                                  |
+| `--os`           | `GODYL_INSTALL_OS`       | `""`          | Override the OS to match                                              |
+| `--arch`         | `GODYL_INSTALL_ARCH`     | `""`          | Override the architecture to match                                    |
+| `--tags`, `-t`   | `GODYL_INSTALL_TAGS`     | `["!native"]` | Tags to filter tools by. Use `!` to exclude                           |
+| `--source`       | `GODYL_INSTALL_SOURCE`   | `github`      | Source from which to install the tools                                |
+| `--strategy`     | `GODYL_INSTALL_STRATEGY` | `none`        | Strategy to use for updating tools                                    |
+| `--dry`          | `GODYL_INSTALL_DRY`      | `false`       | Dry run. Will not download, but show what would be done. Implies `-v` |
 
 ## Examples
 

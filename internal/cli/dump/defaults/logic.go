@@ -6,13 +6,14 @@ import (
 	"github.com/goccy/go-yaml"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
 	"github.com/idelchi/godyl/internal/iutils"
 )
 
-// run executes the `cache dump` command.
-func run(global config.Config, embedded common.Embedded, args ...string) error {
-	c, err := getDefaults(embedded, args)
+// run executes the `dump defaults` command.
+func run(input common.Input) error {
+	_, embedded, _, _, args := input.Unpack()
+
+	c, err := getDefaults(*embedded, args)
 	if err != nil {
 		return err
 	}

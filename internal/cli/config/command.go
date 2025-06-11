@@ -1,19 +1,33 @@
+// Package config contains the subcommand definition for `config`.
 package config
 
 import (
+	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
 // Command returns the `config` command.
-func Command(global *config.Config, local any) *cobra.Command {
+func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "config [command]",
-		Short:   "Interact with the config",
-		Long:    "Interact with the config",
+		Use:   "config [command]",
+		Short: "Interact with the config file.",
+		Long: heredoc.Doc(`
+			Display the path, remove, or set entries in the configuration file.
+		`),
+		Example: heredoc.Doc(`
+			# Display the configuration file path
+			$ godyl config path
+
+			# Remove all entries from the configuration file
+			$ godyl config remove
+
+			# Remove specific keys from the configuration file
+			$ godyl config remove no-progress dump update.cleanup
+		`),
 		Aliases: []string{"cfg"},
 		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -27,7 +41,7 @@ func Command(global *config.Config, local any) *cobra.Command {
 		},
 	}
 
-	common.SetSubcommandDefaults(cmd, nil, global.ShowFunc)
+	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
 
 	subcommands(cmd, global)
 

@@ -1,17 +1,17 @@
-// Package defaults implements the defaults dump subcommand for godyl.
-// It displays the application's default configuration settings.
+// Package defaults contains the subcommand definition for `dump defaults`.
 package defaults
 
 import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/root"
 )
 
-func Command(global *config.Config, local any, embedded *common.Embedded) *cobra.Command {
+// Command returns the `dump defaults` command.
+func Command(global *root.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "defaults [name...]",
+		Use:   "defaults [default...]",
 		Short: "Display default configuration settings",
 		Args:  cobra.ArbitraryArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -20,7 +20,7 @@ func Command(global *config.Config, local any, embedded *common.Embedded) *cobra
 				return nil
 			}
 
-			return run(*global, *embedded, args...)
+			return run(common.Input{Global: global, Cmd: cmd, Args: args, Embedded: embedded})
 		},
 	}
 

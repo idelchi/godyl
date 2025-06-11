@@ -10,7 +10,7 @@ import (
 
 	"github.com/inconshreveable/go-update"
 
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools/mode"
 	"github.com/idelchi/godyl/internal/tools/sources"
@@ -35,7 +35,7 @@ func (g *Godyl) IsUpToDate() bool {
 	return vversion.Equal(g.Version, g.Tool.Version.Version)
 }
 
-func NewGodyl(v string, cfg *config.Config) Godyl {
+func NewGodyl(v string, cfg *root.Config) Godyl {
 	path := "idelchi/godyl" // Default
 
 	if info, ok := debug.ReadBuildInfo(); ok {

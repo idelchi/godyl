@@ -4,16 +4,20 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/cache"
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/iutils"
+	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// run executes the `cache dump` command.
-func run(cfg config.Config, args []string) error {
-	cacheFile, err := cache.File(cfg.Cache.Dir)
-	if err != nil {
-		return err
+// run executes the `dump cache` command.
+func run(input common.Input) error {
+	cfg, _, _, _, args := input.Unpack()
+
+	cacheFile := tmp.CacheFile(cfg.Cache.Dir)
+
+	if !cacheFile.Exists() {
+		return fmt.Errorf("cache file %q does not exist", cacheFile)
 	}
 
 	var name string
@@ -41,7 +45,7 @@ func getCache(file file.File, name string) (content any, err error) {
 	if name != "" {
 		content, err = cache.GetByName(name)
 	} else {
-		content, err = cache.GetAll()
+		content, err = cache.Get()
 	}
 
 	if err != nil {

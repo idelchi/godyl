@@ -6,6 +6,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/tools/tags"
 	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/pkg/koanfx"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
@@ -32,4 +33,22 @@ func SplitTags(tagList []string) tags.IncludeTags {
 	}
 
 	return tags
+}
+
+// Any returns the first non-zero value from the provided arguments.
+func Any[T comparable](args ...T) T {
+	var zero T
+
+	for _, arg := range args {
+		if arg != zero {
+			return arg
+		}
+	}
+
+	return zero
+}
+
+// StructToKoanf converts a struct to a `koanf` instance, using the "yaml" tag for field names.
+func StructToKoanf(s any) (*koanfx.Koanf, error) {
+	return koanfx.FromStruct(s, "yaml")
 }

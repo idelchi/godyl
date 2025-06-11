@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"strings"
@@ -14,28 +13,33 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/root"
+	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/iutils"
+	"github.com/idelchi/godyl/internal/tokenstore"
+	"github.com/idelchi/godyl/pkg/cobraext"
 	penv "github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/koanfx"
 	"github.com/idelchi/godyl/pkg/logger"
 	pfile "github.com/idelchi/godyl/pkg/path/file"
 )
 
-func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
-	// Extract some commonly used strings
-	cmd = cmd.Root()
+// TODO(Idelchi): Some subcommands should NOT validate the config file, such as `auth`, `config`.
 
+func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error {
+	debug.Debug("[PersistentPreRunE root] Current command: %s\n", cmd.CommandPath())
+	debug.Debug("[PersistentPreRunE root] Called from: %s\n", calledFrom.CommandPath())
+
+	// Extract some commonly used strings
 	commandPath := common.BuildCommandPath(cmd)
 	envPrefix := commandPath.Env().Scoped()
-	sectionPrefix := ""
-	name := commandPath.Last()
+	sectionPrefix := commandPath.Section().String()
 
 	// Get the current command's flags
 	flags := cmd.Flags()
 
 	// Create a new Koanf instance
-	k := koanfx.NewWithTracker(flags)
+	k := koanfx.New()
 
 	// 1st Pass
 	//	- Load environment variables
@@ -51,22 +55,14 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	}
 
 	// Load flags
-	if err := k.TrackFlags().Load(
+	if err := k.WithFlags(flags).TrackFlags().Load(
 		posflag.Provider(flags, "", k),
 		nil,
 	); err != nil {
 		log.Fatalf("error loading config: %v", err)
 	}
 
-	// At this point, the location of the config file can be determined through either
-	// the environment variables or the flags.
-	// Unmarshal the config into a temporary struct to get the config file path.
-	// var tmpConfig config.Config
-	// if err := k.Unmarshal(&tmpConfig); err != nil {
-	// 	log.Fatalf("Failed to unmarshal config into struct: %v", err)
-	// }
-
-	// configFile := tmpConfig.ConfigFile
+	// configFile := tmproot.ConfigFile
 	configFile := pfile.New(k.Get("config-file").(string))
 	isSet := k.IsSet("config-file")
 
@@ -83,7 +79,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	// This way we can validate the full configuration file, as the environment variables and flags
 	// won't match the structure (yet).
 	// Load environment variables
-	k = koanfx.NewWithTracker(nil)
+	k = koanfx.New()
 
 	if err := k.Load(file.Provider(configFile.Path()), yaml.Parser()); failureCriteria(err) {
 		return fmt.Errorf("loading config file %q: %w", configFile, err)
@@ -105,16 +101,15 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 
 	// We can already validate the config file here by unmarshalling it with koanfx.WithErrorUnused()
 	// This will throw an error if there are any unused fields in the config file.
-	var tmpConfig config.Config
+	var tmpConfig root.Config
 	if err := k.Unmarshal(&tmpConfig, koanfx.WithErrorUnused()); err != nil {
 		return fmt.Errorf("unmarshalling config file %q: %w", configFile, err)
 	}
 
-	// Set the context for future use in subcommands. Each subcommand has to be able to extract
-	// it's own subsection, but no longer need to validate it.
+	// Store the parsed and validated configuration for future use in subcommands.
+	// Each subcommand has to be able to extract it's own subsection, but no longer need to validate it.
 	// Make sure this is a copy of the Koanf instance, as it will be modified in the next steps.
-	config := koanfx.NewWithTracker(nil)
-	cmd.SetContext(context.WithValue(cmd.Context(), "config", config.ResetKoanf(k.Copy())))
+	configuration := koanfx.New().WithKoanf(k.Copy())
 
 	// 2nd Pass
 	//  - Load the config file
@@ -124,7 +119,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 
 	// Load config file
 	// Create a new Koanf instance, basing off the already loaded config file but cut at the relevant section
-	k = koanfx.NewWithTracker(flags).ResetKoanf(k.Cut(sectionPrefix)).TrackAll().Track()
+	k = koanfx.New().WithKoanf(k.Cut(sectionPrefix)).TrackAll().Track()
 
 	// Load environment variables
 	if err := k.TrackAll().Load(
@@ -135,7 +130,7 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 	}
 
 	// Load flags
-	if err := k.TrackFlags().Load(
+	if err := k.WithFlags(flags).TrackFlags().Load(
 		posflag.Provider(flags, "", k),
 		nil,
 	); err != nil {
@@ -197,12 +192,10 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 		dotenvs.Delete("GODYL_CONFIG_FILE")
 	}
 
-	cmd.SetContext(context.WithValue(cmd.Context(), "dotenv", dotenvs))
+	env := penv.FromEnv()
+	menv := env.MergedWith(dotenvs)
 
-	penv := penv.FromEnv()
-	penv = penv.MergedWith(dotenvs)
-
-	if err := penv.Export(); err != nil {
+	if err := menv.Export(); err != nil {
 		return fmt.Errorf("exporting environment variables: %w", err)
 	}
 
@@ -214,12 +207,59 @@ func run(cmd *cobra.Command, args []string, cfg *config.Config) error {
 		cfg.Tools = "tools.yml"
 	}
 
+	// Store the various processed values in the global context.
+	common.GlobalContext.Config = configuration
+	common.GlobalContext.Env = &env
+	common.GlobalContext.DotEnv = &dotenvs
+
 	// 3rd Pass
 	//  - Load the config file
 	//	- Load environment variables
 	// 	- Load flags
 	// Fully populate the configuration struct for this command.
-	if err := common.KCreateSubcommandPreRunE(name, cfg, cfg.ShowFunc)(cmd, args); err != nil {
+	if err := common.KCreateSubcommandPreRunE(cmd, cfg, root.NoShow)(cmd, []string{}); err != nil {
+		return err
+	}
+
+	// 4th Pass
+	// Default values for tokens are deferred such that they can be
+	// set with .env files or the keyring without unnecessary checks
+
+	// TODO(Idelchi): Allow also GITHUB_TOKEN_FILE, GITLAB_TOKEN_FILE, URL_TOKEN_FILE
+	githubToken := menv.GetAny("GITHUB_TOKEN", "GH_TOKEN")
+	gitlabToken := menv.GetAny("GITLAB_TOKEN", "CI_JOB_TOKEN")
+	urlToken := menv.GetAny("URL_TOKEN")
+
+	if !cfg.AllTokensSet() && !strings.HasPrefix(calledFrom.CommandPath(), "godyl auth") && cfg.Keyring {
+		store := tokenstore.New()
+
+		if ok, err := store.Available(); !ok {
+			return err
+		}
+
+		ghToken, _ := store.Get("github-token")
+		glToken, _ := store.Get("gitlab-token")
+		uToken, _ := store.Get("url-token")
+
+		githubToken = iutils.Any(ghToken, githubToken)
+		gitlabToken = iutils.Any(glToken, gitlabToken)
+		urlToken = iutils.Any(uToken, urlToken)
+	}
+
+	if err := cobraext.SetFlagIfNotSet(flags.Lookup("github-token"), githubToken); err != nil {
+		return err
+	}
+
+	if err := cobraext.SetFlagIfNotSet(flags.Lookup("gitlab-token"), gitlabToken); err != nil {
+		return err
+	}
+
+	if err := cobraext.SetFlagIfNotSet(flags.Lookup("url-token"), urlToken); err != nil {
+		return err
+	}
+
+	// Parse again with the new defaults
+	if err := common.KCreateSubcommandPreRunE(cmd, cfg, cfg.ShowFunc)(cmd, []string{}); err != nil {
 		return err
 	}
 

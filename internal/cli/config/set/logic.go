@@ -3,18 +3,28 @@ package set
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/config/root"
+	"github.com/idelchi/godyl/pkg/editor"
 	"github.com/idelchi/godyl/pkg/koanfx"
-	"github.com/idelchi/godyl/pkg/path/file"
-	"github.com/idelchi/godyl/pkg/pretty"
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
-func run(file file.File, koanf *koanfx.KoanfWithTracker, path, value string) error {
-	if !file.Exists() {
-		return fmt.Errorf("config file %q doesn't exist", file)
+// run executes the `config set` command.
+func run(input common.Input) error {
+	cfg, _, context, _, args := input.Unpack()
+
+	koanf := context.Config
+
+	if err := validate(koanf, args[0], args[1]); err != nil {
+		return err
 	}
 
+	return editor.New(cfg.ConfigFile.Absolute()).Merge(koanf.Map())
+}
+
+// validate checks if the provided key and value are valid for the configuration.
+func validate(koanf *koanfx.Koanf, path, value string) error {
 	// First unmarshal the value string as YAML to get proper typing
 	var typedValue any
 	if err := unmarshal.Lax([]byte(value), &typedValue); err != nil {
@@ -22,25 +32,13 @@ func run(file file.File, koanf *koanfx.KoanfWithTracker, path, value string) err
 	}
 
 	if err := koanf.Set(path, typedValue); err != nil {
-		return fmt.Errorf("setting value in config file %q: %w", file, err)
-	}
-
-	var cfg config.Config
-
-	if err := koanf.Unmarshal(&cfg, koanfx.WithErrorUnused()); err != nil {
 		return err
 	}
 
-	mapAny, err := koanf.AsMapAny()
-	if err != nil {
-		return fmt.Errorf("getting config as map: %w", err)
-	}
+	var cfg root.Config
 
-	// Write the updated config back to the file
-	if err := file.Write([]byte(pretty.YAML(mapAny))); err != nil {
-		return fmt.Errorf("writing config file %q: %w", file, err)
-	} else {
-		fmt.Printf("Updated config key %q\n", path)
+	if err := koanf.Unmarshal(&cfg, koanfx.WithErrorUnused()); err != nil {
+		return err
 	}
 
 	return nil

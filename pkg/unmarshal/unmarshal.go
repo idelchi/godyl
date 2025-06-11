@@ -15,8 +15,10 @@ func Decode(node ast.Node, out any) error {
 }
 
 // Strict unmarshals YAML data into the specified output type, disallowing unknown fields.
-func Strict(data []byte, out any) error {
-	if err := yaml.UnmarshalWithOptions(data, out, yaml.Strict()); err != nil {
+func Strict(data []byte, out any, options ...yaml.DecodeOption) error {
+	options = append(options, yaml.Strict())
+
+	if err := yaml.UnmarshalWithOptions(data, out, options...); err != nil {
 		return err
 	}
 
@@ -24,8 +26,8 @@ func Strict(data []byte, out any) error {
 }
 
 // Lax unmarshals YAML data into the specified output type, allowing unknown fields.
-func Lax(data []byte, out any) error {
-	if err := yaml.Unmarshal(data, out); err != nil {
+func Lax(data []byte, out any, options ...yaml.DecodeOption) error {
+	if err := yaml.UnmarshalWithOptions(data, out, options...); err != nil {
 		return err
 	}
 

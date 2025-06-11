@@ -14,10 +14,10 @@ import (
 
 // Commands represents a collection of shell commands that can be executed together.
 type Commands struct {
-	Data         common.Metadata                      `json:"-"`
-	Commands     unmarshal.SingleOrSliceType[Command] `json:"commands"`
-	AllowFailure bool                                 `json:"allow-failure"`
-	ExitOnError  bool                                 `json:"exit-on-error"`
+	Data         common.Metadata                      `yaml:"-"`
+	Commands     unmarshal.SingleOrSliceType[Command] `yaml:"commands"`
+	AllowFailure bool                                 `yaml:"allow-failure"`
+	ExitOnError  bool                                 `yaml:"exit-on-error"`
 }
 
 func (e *Commands) UnmarshalYAML(node ast.Node) error {

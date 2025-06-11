@@ -3,68 +3,42 @@ package config
 import (
 	"fmt"
 
-	"github.com/knadh/koanf/providers/confmap"
-	"github.com/knadh/koanf/providers/structs"
-
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/iutils"
-	"github.com/idelchi/godyl/pkg/koanfx"
+	"github.com/idelchi/godyl/pkg/pretty"
 )
 
-// run executes the `config dump` command.
-func run(cfg config.Config, koanf *koanfx.KoanfWithTracker, paths ...string) error {
-	file := cfg.ConfigFile
-	if !file.Exists() {
-		fmt.Printf("Config file %q doesn't exist\n", file)
+// run executes the `dump config` command.
+func run(input common.Input) error {
+	cfg, _, _, _, args := input.Unpack()
+
+	if len(args) == 0 {
+		pretty.PrintYAML(cfg)
 
 		return nil
 	}
 
-	if len(paths) > 0 {
-		if cfg.Dump.Config.All {
-			emptyConfig := config.Config{}
-			k := koanfx.New()
+	configuration, err := iutils.StructToKoanf(cfg)
+	if err != nil {
+		return err
+	}
 
-			if err := k.Load(structs.Provider(emptyConfig, "yaml"), nil); err != nil {
-				return err
-			}
-
-			k.Load(confmap.Provider(koanf.All(), "."), nil)
-
-			koanf = k
+	for _, key := range args {
+		val := configuration.Get(key)
+		if val == nil {
+			return fmt.Errorf("value %q not found in config", key)
 		}
 
-		for _, path := range paths {
-			val := koanf.Get(path)
-			if val == nil {
-				return fmt.Errorf("value %q not found in config", path)
-			}
-
-			if len(paths) > 1 {
-				fmt.Printf(" ---- %s ----\n", path)
-			}
-
-			iutils.Print(iutils.YAML, val)
-
-			if len(paths) > 1 {
-				fmt.Println()
-			}
+		if len(args) > 1 {
+			fmt.Printf(" ---- %s ----\n", key)
 		}
 
-		return nil
+		iutils.Print(iutils.YAML, val)
+
+		if len(args) > 1 {
+			fmt.Println()
+		}
 	}
-
-	if cfg.Dump.Config.All {
-		var raw config.Config
-
-		koanf.Unmarshal(&raw)
-
-		iutils.Print(iutils.YAML, raw)
-
-		return nil
-	}
-
-	iutils.Print(iutils.YAML, koanf.Raw())
 
 	return nil
 }

@@ -1,23 +1,12 @@
 package common
 
 import (
-	"context"
+	"reflect"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/idelchi/godyl/internal/config/root"
 )
-
-func FromEnvOrFile(keys ...string) (string, error) {
-	for _, key := range keys {
-		if value := viper.GetString(key); value != "" {
-			return value, nil
-		}
-	}
-
-	return "", nil
-}
 
 func ExitOnShow(show root.ShowFuncType, args ...string) bool {
 	if show() != nil && len(args) == 0 {
@@ -39,11 +28,54 @@ func SetSubcommandDefaults(cmd *cobra.Command, local any, show root.ShowFuncType
 		config = local
 	}
 
-	cmd.PersistentPreRunE = KCreateSubcommandPreRunE(cmd.Name(), config, show)
-	SetSubcommandConfig(cmd, config)
+	cmd.PersistentPreRunE = KCreateSubcommandPreRunE(cmd, config, show)
 }
 
-func SetSubcommandConfig(cmd *cobra.Command, config Trackable) {
-	ctx := context.WithValue(context.Background(), "config", config)
-	cmd.SetContext(ctx)
+// Input is the input structure for the CLI commands.
+type Input struct {
+	// Global contains the global configuration.
+	Global *root.Config
+	// Embedded contains the embedded configuration.
+	Embedded *Embedded
+	// Cmd is the current command being executed.
+	Cmd *cobra.Command
+	// Args are the arguments passed to the command.
+	Args []string
+}
+
+// Unpack is a convenience method to unpack the Input structure into its components.
+func (i Input) Unpack() (*root.Config, *Embedded, *Context, *cobra.Command, []string) {
+	return i.Global, i.Embedded, &GlobalContext, i.Cmd, i.Args
+}
+
+func excludeFields(s any, tag string) any {
+	v := reflect.ValueOf(s)
+	t := reflect.TypeOf(s)
+
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+		t = t.Elem()
+	}
+
+	var (
+		fields []reflect.StructField
+		values []reflect.Value
+	)
+
+	for i := range t.NumField() {
+		field := t.Field(i)
+		if field.Tag.Get(tag) != "-" && !field.Anonymous {
+			fields = append(fields, field)
+			values = append(values, v.Field(i))
+		}
+	}
+
+	newType := reflect.StructOf(fields)
+	newStruct := reflect.New(newType).Elem()
+
+	for i, val := range values {
+		newStruct.Field(i).Set(val)
+	}
+
+	return newStruct.Interface()
 }

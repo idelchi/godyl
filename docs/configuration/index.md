@@ -19,6 +19,8 @@ Settings are applied (in order of highest to lowest priority) by:
 6. `defaults.yml` file (embedded or passed as configuration)
 7. Command-line flag default values
 
+In addition, tokens can be set in the keyring, or from a few other commonly used environment variables. See [Authentication]({{ site.baseurl }}/commands/index#authentication) for more details.
+
 All of above will be merged for run-time settings and to form the complete definition for each tool.
 
 ## Commandline flags
@@ -64,9 +66,8 @@ you would use the following format in your YAML file:
 
 ```yaml
 # Root command
-godyl:
-  env-file:
-    - .env
+env-file:
+  - .env
 
 # `install` subcommand
 tool:

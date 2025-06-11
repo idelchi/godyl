@@ -8,6 +8,17 @@ import (
 	"os"
 )
 
+// createFolder creates the directory for this file if it does not exist.
+func (f File) createFolder() error {
+	const perm = 0o755
+
+	if err := os.MkdirAll(f.Dir(), perm); err != nil {
+		return fmt.Errorf("creating directory %q: %w", f, err)
+	}
+
+	return nil
+}
+
 // CreateRandomInDir creates a uniquely named file.
 // Creates a file with a random name inside the specified directory.
 // Use empty string for directory to create in system temp directory.
@@ -28,6 +39,10 @@ func CreateRandomInDir(dir, pattern string) (File, error) {
 // Create creates a new empty file at this path.
 // Returns an error if the file cannot be created.
 func (f File) Create() error {
+	if err := f.createFolder(); err != nil {
+		return err
+	}
+
 	file, err := os.Create(f.String())
 	if err != nil {
 		return fmt.Errorf("creating file %q: %w", f, err)

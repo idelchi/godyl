@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/cli/common"
 )
 
 // allSubCommands returns all subcommands (recursive) of the given root command.
@@ -26,7 +26,10 @@ func allSubCommands(cmd *cobra.Command) []*cobra.Command {
 	return cmds
 }
 
-func run(cfg config.Config, cmd *cobra.Command, args []string) error {
+// run executes the `validate` command.
+func run(input common.Input) error {
+	_, _, _, cmd, _ := input.Unpack()
+
 	all := allSubCommands(cmd.Root())
 
 	errs := []error{}

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Status
+title: status
 parent: Commands
 nav_order: 3
 ---
@@ -12,7 +12,7 @@ The `status` command allows you to check whether there are tools missing or sync
 ## Syntax
 
 ```sh
-godyl [flags] status [tools.yml...|STDIN]
+godyl [flags] status [tools.yml|-]...
 ```
 
 ## Aliases
@@ -26,10 +26,9 @@ The `status` command checks the status of the tools defined in the provided YAML
 
 ## Flags
 
-| Flag           | Environment Variable  | Default       | Description                                 |
-| :------------- | :-------------------- | :------------ | :------------------------------------------ |
-| `--tags`, `-t` | `GODYL_STATUS_TAGS`   | `["!native"]` | Tags to filter tools by. Use `!` to exclude |
-| `--source`     | `GODYL_STATUS_SOURCE` | `github`      | Source from which to install the tools      |
+| Flag           | Environment Variable | Default       | Description                                 |
+| :------------- | :------------------- | :------------ | :------------------------------------------ |
+| `--tags`, `-t` | `GODYL_STATUS_TAGS`  | `["!native"]` | Tags to filter tools by. Use `!` to exclude |
 
 ## Examples
 

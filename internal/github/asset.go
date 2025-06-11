@@ -9,14 +9,13 @@ import (
 // Asset represents a GitHub release asset with its name, download URL, and content type.
 type Asset struct {
 	// Name is the name of the asset.
-
 	Name string `json:"name"`
+
 	// URL is the browser download URL for the asset.
+	URL string `json:"browser_download_url"` //nolint:tagliatelle	// This is how GitHub returns the URL for the asset.
 
-	URL string `json:"browser_download_url"` //nolint:tagliatelle
 	// Type is the content type of the asset.
-
-	Type string `json:"content_type"` //nolint:tagliatelle
+	Type string `json:"content_type"` //nolint:tagliatelle			// This is how GitHub returns the content type for the asset.
 }
 
 // Match checks if the asset name matches the given pattern.

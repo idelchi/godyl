@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Update
+title: update
 parent: Commands
 nav_order: 5
 ---

@@ -1,3 +1,4 @@
+// Package validate contains the subcommand definition for `validate`.
 package validate
 
 import (
@@ -5,16 +6,17 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/godyl/internal/cli/common"
-	"github.com/idelchi/godyl/internal/config"
+	"github.com/idelchi/godyl/internal/config/root"
 )
 
-func Command(global *config.Config, local any, embedded *common.Embedded) *cobra.Command {
+// Command returns the `validate` command.
+func Command(global *root.Config, local any, embedded *common.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "validate",
 		Short: "Validate the configuration for all subcommands",
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := run(*global, cmd, args); err != nil {
+			if err := run(common.Input{Global: global, Cmd: cmd, Args: args, Embedded: embedded}); err != nil {
 				color.Red(err.Error())
 
 				return

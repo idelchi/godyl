@@ -10,10 +10,6 @@ import (
 
 type CommandPath []string
 
-func (c CommandPath) Sections() iutils.Prefix {
-	return iutils.Prefix(strings.Join(c, ".")).Lower()
-}
-
 func (c CommandPath) Section() iutils.Prefix {
 	if len(c) <= 1 {
 		return iutils.Prefix("")
@@ -28,10 +24,6 @@ func (c CommandPath) Env() iutils.Prefix {
 
 func (c CommandPath) WithoutRoot() CommandPath {
 	return c[1:]
-}
-
-func (c CommandPath) Last() string {
-	return c[len(c)-1]
 }
 
 func BuildCommandPath(cmd *cobra.Command) CommandPath {

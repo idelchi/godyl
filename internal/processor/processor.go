@@ -231,13 +231,3 @@ func (p *Processor) presentErrors(summary results.Summary) {
 		}
 	}
 }
-
-// Cache initializes the cache for the processor.
-// Kept for backward compatibility.
-func (p *Processor) Cache() error {
-	if p.cache != nil {
-		return p.cache.Load()
-	}
-
-	return nil
-}

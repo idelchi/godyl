@@ -186,6 +186,16 @@ tasks:
       - go install golang.org/x/tools/cmd/deadcode@latest
       - deadcode .
 
+  dev:
+    cmds:
+      - |
+        # Get the current branch name
+        current_branch=$(git rev-parse --abbrev-ref HEAD)
+        # Get the current commit hash
+        current_commit=$(git rev-parse HEAD)
+        docker compose build --build-arg GODYL_VERSION=${current_branch}:${current_commit} final
+        docker compose push final
+
   gifs:
     cmds:
       - docker compose run --remove-orphans --build gifs

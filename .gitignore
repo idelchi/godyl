@@ -28,3 +28,4 @@ bin
 .logs
 *.exe.old
 example-other-apps-by-me
+.depr

@@ -9,24 +9,25 @@ on:
       - main
 
 jobs:
-  # info:
-  #   uses: idelchi/devenv/.github/workflows/info.yml@dev
+  info:
+    uses: idelchi/devenv/.github/workflows/info.yml@dev
+    if: false
 
-  # cleanup:
-  #   uses: idelchi/devenv/.github/workflows/cleanup.yml@dev
-  #   if: github.ref == 'refs/heads/dev'
-  #   needs: info
-  #   permissions:
-  #     actions: write
+  cleanup:
+    uses: idelchi/devenv/.github/workflows/cleanup.yml@dev
+    if: github.ref == 'refs/heads/dev' && false
+    needs: info
+    permissions:
+      actions: write
 
-  # lint:
-  #   if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
-  #   # uses: idelchi/devenv/.github/workflows/task.yml@dev
-  #   needs: cleanup
-  #   runs-on: ubuntu-24.04
-  #   steps:
-  #     - name: Dry run
-  #       run: echo "Dry run"
+  lint:
+    if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
+    # uses: idelchi/devenv/.github/workflows/task.yml@dev
+    needs: cleanup
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Dry run
+        run: echo "Dry run"
 
   test:
     if: ${{ ! startsWith(github.ref, 'refs/tags/') }}

@@ -73,24 +73,24 @@ jobs:
           echo "args:"
           echo "  - ${{ inputs.args }}"
 
-      # - uses: docker/setup-qemu-action@v3
-      #   with:
-      #     platforms: ${{ inputs.platforms }}
+      - uses: docker/setup-qemu-action@v3
+        with:
+          platforms: ${{ inputs.platforms }}
 
-      # - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3
 
-      # - uses: docker/login-action@v3
-      #   with:
-      #     username: ${{ inputs.username }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ inputs.username }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # - uses: docker/build-push-action@v6
-      #   with:
-      #     platforms: ${{ inputs.platforms }}
-      #     cache-from: type=gha
-      #     cache-to: type=gha,mode=max
-      #     push: true
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     labels: ${{ steps.meta.outputs.labels }}
-      #     target: final
-      #     build-args: ${{ inputs.args }}
+      - uses: docker/build-push-action@v6
+        with:
+          platforms: ${{ inputs.platforms }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          target: final
+          build-args: ${{ inputs.args }}

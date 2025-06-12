@@ -19,7 +19,7 @@ jobs:
 
   docker:
     uses: idelchi/devenv/.github/workflows/docker.yml@dev
-    if: ${{ !failure() && !cancelled() }}
+    if: ${{ !failure() && !cancelled() && !startsWith(github.ref, 'refs/tags/') }}
     needs: release
     permissions:
       contents: write

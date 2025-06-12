@@ -34,20 +34,15 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 
 	binary.noVerifySSL = noVerifySSL
 
-	// Step 1: Search for go binary on system
+	// 1: Search for go binary on system
 	if path, err := exec.LookPath("go"); err == nil {
 		binary.File = file.New(path)
 		binary.Env = Env{}
 		binary.Dir = folder.New(binary.File.Dir())
 
 		return binary, nil
-		// Step 2: Else search in other possible paths
-		// } else if path, err := binary.Find("/some", "/other", "/paths"); err == nil {
-		// 	binary.File = path
-		// 	binary.Env = Env{}
-		// 	binary.Dir = folder.New(binary.File.Dir())
-		// 	return binary, nil
-		// Step 3: Else search in the (possibly) previously created directory
+
+		// 2: Else search in the (possibly) previously created directory
 	} else if path, err := binary.Find(tmp.GodylDir("go").Path()); err == nil {
 		binary.File = path
 		binary.Dir = folder.New(binary.File.Dir())

@@ -1,0 +1,43 @@
+name: godyl
+
+on:
+  workflow_dispatch:
+  # pull_request:
+  # push:
+  #   branches:
+  #     - dev
+  #     - main
+
+jobs:
+  info:
+    uses: idelchi/devenv/.github/workflows/info.yml@dev
+
+  lint:
+    uses: idelchi/devenv/.github/workflows/task.yml@dev
+    needs: info
+
+  test:
+    needs: lint
+    strategy:
+      matrix:
+        os:
+          - ubuntu-24.04
+          - windows-2022
+          - macos-14
+    runs-on: ${{ matrix.os }}
+    env:
+      GODYL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.4"
+          check-latest: true
+
+      - name: Dump out platform
+        run: go run . dump platform
+
+      - name: Dry install tools
+        run: go run . dump tools -e | go run . -v i - --dry

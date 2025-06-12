@@ -19,6 +19,7 @@ jobs:
 
   test:
     if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
+    needs: lint
     strategy:
       matrix:
         os:

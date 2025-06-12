@@ -10,8 +10,8 @@ on:
       - main
 
 jobs:
-  info:
-    uses: idelchi/devenv/.github/workflows/info.yml@dev
+  # info:
+  #   uses: idelchi/devenv/.github/workflows/info.yml@dev
 
   # release:
   #   uses: idelchi/devenv/.github/workflows/gorelease.yml@dev
@@ -26,7 +26,7 @@ jobs:
     # uses: idelchi/devenv/.github/workflows/docker.yml@dev
     uses: ./.github/workflows/docker.yml
     # if: ${{ ! endsWith(github.ref, '-beta') }}
-    needs: release
+    # needs: release
     permissions:
       contents: write
     secrets: inherit

@@ -10,17 +10,17 @@ on:
       - main
 
 jobs:
-  # info:
-  #   uses: idelchi/devenv/.github/workflows/info.yml@dev
+  info:
+    uses: idelchi/devenv/.github/workflows/info.yml@dev
 
-  release:
-    uses: idelchi/devenv/.github/workflows/gorelease.yml@dev
-    if: ${{ endsWith(github.ref, '-shawtay') }}
-    # needs: info
-    permissions:
-      contents: write
-    with:
-      config: .devenv/.goreleaser.yaml
+  # release:
+  #   uses: idelchi/devenv/.github/workflows/gorelease.yml@dev
+  #   if: ${{ endsWith(github.ref, '-shawtay') }}
+  #   # needs: info
+  #   permissions:
+  #     contents: write
+  #   with:
+  #     config: .devenv/.goreleaser.yaml
 
   docker:
     # uses: idelchi/devenv/.github/workflows/docker.yml@dev

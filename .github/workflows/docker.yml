@@ -61,6 +61,8 @@ jobs:
         id: meta
         with:
           images: ${{ inputs.image }}
+        tags: |
+          type=semver,pattern={{version}}
 
       - name: info
         run: |

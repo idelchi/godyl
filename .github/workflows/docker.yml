@@ -65,7 +65,7 @@ jobs:
 
       - name: info
         run: |
-          echo "Building Docker image '${{ inputs.image }}'"
+          echo "Building image '${{ inputs.image }}'"
           echo "tags:"
           for tag in ${{ steps.meta.outputs.tags }}; do
             echo "  - ${tag#${{ inputs.image }}:}"

@@ -61,14 +61,26 @@ jobs:
         id: meta
         with:
           images: ${{ inputs.image }}
+          flavor: |
+            latest=false
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
+            # Tag releases like "v1.2.3" as "1.2.3" and "1.2"
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
+            # Tag all branches with their name
+            type=ref,event=branch
+
+            # Tag the default branch as "latest"
+            type=raw,value=latest,enable={{is_default_branch}}
+
       - name: info
         run: |
+          echo "Building Docker image"
+          echo "Generated tags:"
+          echo "${{ steps.meta.outputs.tags }}"
+          echo "Generated labels:"
+          echo "${{ steps.meta.outputs.labels }}"
           echo "Building Docker image '${{ steps.meta.outputs.tags }}'"
           echo "Using args: ${{ inputs.args }}"
 

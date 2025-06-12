@@ -5,5 +5,5 @@
   tags:
     - go
 # cd ws
-# godyl dump tools -e | godyl --env-file=tokens.env -v install - --dry
+# godyl dump tools -e | godyl -v install - --dry
 

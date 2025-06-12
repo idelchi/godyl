@@ -57,6 +57,8 @@ func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output str
 
 	binary, err := goi.New(d.NoVerifySSL)
 	if err != nil {
+		mu.Unlock()
+
 		return "", "", err
 	}
 	mu.Unlock()

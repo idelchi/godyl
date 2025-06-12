@@ -56,6 +56,8 @@ tasks:
   clean:
     - task: aux:clean
     - task: go:clean
+    - cmd: |
+        rm -rf .bin-*
 
   info:
     - task: git

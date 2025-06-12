@@ -55,8 +55,8 @@ func (gt Targets) Match() (match.Results, error) {
 	for _, tt := range gt.Files {
 		asset := match.Asset{Name: tt.FileName}
 
-		asset.Platform.OS.ParseFrom(tt.OS)             //nolint:errcheck
-		asset.Platform.Architecture.ParseFrom(tt.Arch) //nolint:errcheck
+		asset.Platform.OS.ParseFrom(tt.OS)
+		asset.Platform.Architecture.ParseFrom(tt.Arch)
 
 		assets = append(assets, asset)
 	}

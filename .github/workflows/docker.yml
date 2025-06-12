@@ -68,10 +68,10 @@ jobs:
           echo "Building Docker image '${{ inputs.image }}'"
           echo "tags:"
           for tag in ${{ steps.meta.outputs.tags }}; do
-            echo "${tag#${{ inputs.image }}:}"
+            echo "  - ${tag#${{ inputs.image }}:}"
           done
           echo "args:"
-          echo "${{ inputs.args }}"
+          echo "  - ${{ inputs.args }}"
 
       # - uses: docker/setup-qemu-action@v3
       #   with:

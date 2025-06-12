@@ -19,8 +19,7 @@ jobs:
 
   docker:
     uses: idelchi/devenv/.github/workflows/docker.yml@dev
-    if: ${{ !failure() && !cancelled() && !startsWith(github.ref, 'refs/tags/') }}
-    needs: release
+    if: ${{ !startsWith(github.ref, 'refs/tags/') }}
     permissions:
       contents: write
     secrets: inherit

@@ -2,11 +2,11 @@ name: godyl
 
 on:
   workflow_dispatch:
-  pull_request:
-  push:
-    branches:
-      - dev
-      - main
+  # pull_request:
+  # push:
+  #   branches:
+  #     - dev
+  #     - main
 
 jobs:
   info:

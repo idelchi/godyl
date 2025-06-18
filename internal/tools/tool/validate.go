@@ -102,7 +102,6 @@ func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.R
 		}
 
 		if res = t.resolve(populator, tmpl, opts); res.IsFailed() {
-			fmt.Println(res)
 			continue // Move on to the next fallback.
 		}
 

@@ -8,7 +8,7 @@ import (
 
 type Download struct {
 	Version string       `mapstructure:"version" yaml:"version"`
-	Source  sources.Type `mapstructure:"source"  yaml:"source"  validate:"oneof=github gitlab url go command"`
+	Source  sources.Type `mapstructure:"source"  yaml:"source"  validate:"oneof=github gitlab url none go"`
 	OS      string       `mapstructure:"os"      yaml:"os"`
 	Arch    string       `mapstructure:"arch"    yaml:"arch"`
 	Output  string       `mapstructure:"output"  yaml:"output"`

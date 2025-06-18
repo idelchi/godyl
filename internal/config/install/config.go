@@ -2,6 +2,7 @@ package install
 
 import (
 	"github.com/idelchi/godyl/internal/config/common"
+	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/strategy"
 )
 
@@ -25,6 +26,8 @@ type Install struct {
 	// Dry indicates whether the installation should be performed in dry-run mode
 	Dry bool `mapstructure:"dry" yaml:"dry"`
 
+	Source sources.Type `mapstructure:"source" yaml:"source" validate:"oneof=github gitlab url none go"`
+
 	// Tracker embed the common tracker configuration, allowing to tracker
 	// whether configuration values have been explicitly set or defaulted
 	common.Tracker `mapstructure:"-" yaml:"-"`
@@ -37,6 +40,7 @@ func (i Install) ToCommon() common.Common {
 		Strategy: i.Strategy,
 		OS:       i.OS,
 		Arch:     i.Arch,
+		Source:   i.Source,
 
 		Tracker: i.Tracker,
 	}

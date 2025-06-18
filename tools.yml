@@ -797,6 +797,9 @@
 
 - name: denisidoro/navi
   description: An interactive cheatsheet tool for the command line.
+  skip:
+    reason: "navi is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
 
 - name: open-policy-agent/opa
   description: An open-source policy engine that enables unified policy enforcement across the stack.

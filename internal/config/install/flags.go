@@ -11,6 +11,7 @@ func Flags(cmd *cobra.Command) {
 	cmd.Flags().SortFlags = false
 
 	cmd.Flags().StringP("output", "o", "./bin", "Output path for the downloaded tools")
+	cmd.Flags().String("source", "github", "source from which to install the tools (github, gitlab, url, go, none)")
 	cmd.Flags().String("os", "", "Operating system to install the tools for")
 	cmd.Flags().String("arch", "", "Architecture to install the tools for")
 

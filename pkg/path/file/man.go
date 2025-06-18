@@ -87,6 +87,27 @@ func (f File) IsExecutable() (bool, error) {
 	return info.Mode()&0o111 != 0, nil
 }
 
+// MakeExecutable sets the file as executable for user, group, and others.
+func (f File) MakeExecutable() error {
+	// Get the current file info
+	info, err := f.Info()
+	if err != nil {
+		return fmt.Errorf("getting file info: %w", err)
+	}
+
+	const executableMask = 0o111 // User, Group, and Others execute permissions
+
+	// Set the executable bit for user, group, and others
+	newMode := info.Mode() | executableMask
+
+	// Change the file mode
+	if err := f.Chmod(newMode); err != nil {
+		return fmt.Errorf("changing file mode: %w", err)
+	}
+
+	return nil
+}
+
 // Exists checks if the path exists in the filesystem.
 // Returns true if the path exists, false otherwise.
 func (f File) Exists() bool {

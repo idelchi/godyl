@@ -7,7 +7,6 @@ import (
 	"github.com/idelchi/godyl/internal/config/install"
 	"github.com/idelchi/godyl/internal/config/status"
 	"github.com/idelchi/godyl/internal/config/update"
-	"github.com/idelchi/godyl/internal/tools/hints"
 	"github.com/idelchi/godyl/internal/tools/tool"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
@@ -184,15 +183,5 @@ func (c *Config) ToTool(forced bool) *tool.Tool {
 		tool.Platform.Architecture.Name = c.Common.Arch
 	}
 
-	for _, hint := range c.Common.Hints {
-		tool.Hints.Add(hints.Hint{
-			Pattern: hint,
-		})
-	}
-
 	return &tool
 }
-
-// func (c *Config) AsKoanf() (*koanfx.Koanf, error) {
-// 	return koanfx.FromStruct(c)
-// }

@@ -6,6 +6,7 @@ import (
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/processor"
 	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/tools/hints"
 	"github.com/idelchi/godyl/internal/tools/mode"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/strategy"
@@ -49,6 +50,7 @@ func run(input common.Input) error {
 
 	// Generate a common configuration for the command
 	cfg.Common = cfg.Download.ToCommon()
+
 	cfg.Cache.Disabled = true
 
 	runner := common.NewHandler(*cfg, *embedded)
@@ -58,6 +60,15 @@ func run(input common.Input) error {
 
 	if err := runner.Resolve(cfg.Defaults, &tools); err != nil {
 		return err
+	}
+
+	// Add the hints that were passed via the `--hint` flag
+	for _, tool := range tools {
+		for _, hint := range cfg.Download.Hints {
+			tool.Hints.Add(hints.Hint{
+				Pattern: hint,
+			})
+		}
 	}
 
 	// Process tools

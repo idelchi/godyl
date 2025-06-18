@@ -397,6 +397,10 @@
 
 - name: TomWright/dasel
   description: Query and update data structures from the command line
+  hints:
+    - pattern: .gz
+      match: excluded
+      type: endswith
   fallbacks:
     - go
   source:

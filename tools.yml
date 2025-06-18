@@ -1,3 +1,10 @@
+- name: traefik/traefik
+  description: The Cloud Native Application Proxy
+  version:
+    commands: version
+  tags:
+    - automation
+
 - name: moncho/dry
   description: A Docker manager for the terminal
   tags:
@@ -16,39 +23,6 @@
   aliases: lazy
   tags:
     - docker
-
-- name: bcicen/ctop
-  description: Top-like interface for container metrics
-  skip:
-    reason: "ctop is not available for darwin arm64"
-    condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
-  # [] because none of the assets have any `proper` extension - the version number clutters it up so it looks like the extension is for example `.7-windows-amd64`
-  hints: []
-  tags:
-    - docker
-
-- name: kdash-rs/kdash
-  description: A simple and fast dashboard for Kubernetes
-  hints:
-    - pattern: "{{ .OS }}"
-      weight: -1
-      type: contains
-  tags:
-    - kubernetes
-
-- name: kubernetes/minikube
-  description: Run Kubernetes locally
-  version:
-    commands: version
-  exe:
-    patterns: minikube*{{ .EXTENSION }}
-  hints:
-    pattern: .tar.gz
-    match: required
-    type: endswith
-
-  tags:
-    - kubernetes
 
 - name: ahmetb/kubectx
   description: Faster way to switch between clusters and namespaces in kubectl
@@ -121,17 +95,42 @@
   tags:
     - terminal
 
+- name: bcicen/ctop
+  description: Top-like interface for container metrics
+  skip:
+    reason: "ctop is not available for darwin arm64"
+    condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
+  # [] because none of the assets have any `proper` extension - the version number clutters it up so it looks like the extension is for example `.7-windows-amd64`
+  hints: []
+  tags:
+    - docker
+
+- name: kdash-rs/kdash
+  description: A simple and fast dashboard for Kubernetes
+  hints:
+    - pattern: "{{ .OS }}"
+      weight: -1
+      type: contains
+  tags:
+    - kubernetes
+
+- name: kubernetes/minikube
+  description: Run Kubernetes locally
+  version:
+    commands: version
+  exe:
+    patterns: minikube*{{ .EXTENSION }}
+  hints:
+    pattern: .tar.gz
+    match: required
+    type: endswith
+  tags:
+    - kubernetes
+
 - name: knqyf263/pet
   description: Simple command-line snippet manager
   tags:
     - terminal
-
-- name: traefik/traefik
-  description: The Cloud Native Application Proxy
-  version:
-    commands: version
-  tags:
-    - automation
 
 - name: ldez/traefik-certs-dumper
   description: |
@@ -763,6 +762,11 @@
   tags:
     - python
 
+- name: eksctl-io/eksctl
+  description: The official CLI for Amazon EKS !
+  tags:
+    - kubernetes
+
 - idelchi/gocry
 - idelchi/gogen
 - idelchi/go-match
@@ -773,6 +777,42 @@
 - name: idelchi/wslint
   version:
     commands: -v
+
+- name: argoproj/argo-cd
+  description: Declarative continuous deployment for Kubernetes.
+
+- name: wagoodman/dive
+  description: A tool for exploring each layer in a Docker image.
+
+- name: istio/istio
+  description: An open platform to connect, manage, and secure microservices.
+  exe: istioctl
+
+- name: kubernetes-sigs/kustomize
+  description: A tool to customize Kubernetes YAML configurations.
+
+- name: denisidoro/navi
+  description: An interactive cheatsheet tool for the command line.
+
+- name: open-policy-agent/opa
+  description: An open-source policy engine that enables unified policy enforcement across the stack.
+  hints:
+    # No extension for the binary
+    - pattern: ^[^.]+$
+      type: regex
+    # Select the static variant
+    - pattern: static
+      type: endswith
+
+- name: oras-project/oras
+  description: A tool for managing container images and artifacts in OCI registries.
+
+- name: StyraInc/regal
+  description: A tool for managing and validating Rego policies.
+
+- name: gitlab-org/release-cli
+  description: A command-line tool for managing GitLab releases.
+  inherit: gitlab
 
 - name: gitlab-org/cli
   description: glab is an open source GitLab CLI tool

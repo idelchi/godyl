@@ -5,8 +5,8 @@ on:
   push:
     tags:
       - "*"
-  #   branches:
-  #     - main
+    branches:
+      - main
 
 jobs:
   release:
@@ -19,7 +19,7 @@ jobs:
 
   docker:
     uses: idelchi/devenv/.github/workflows/docker.yml@dev
-    if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ !startsWith(github.ref, 'refs/tags/') && false }}
     permissions:
       contents: write
     secrets: inherit

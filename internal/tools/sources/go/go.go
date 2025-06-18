@@ -98,20 +98,22 @@ func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output str
 
 	name := strings.TrimSuffix(d.Exe, filepath.Ext(d.Exe))
 
+	mod, version, ok := strings.Cut(d.Path, "@")
+	if !ok {
+		// fallback or panic, depending on your context
+		return "", "", fmt.Errorf("invalid module path: %s", d.Path)
+	}
+
 	paths := []string{
-		d.Path,
-		strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/cmd/%s@", name, name), 1),
-		strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/cmd@", name), 1),
+		fmt.Sprintf("%s@%s", mod, version),
+		fmt.Sprintf("%s/cmd/%s@%s", mod, name, version),
+		fmt.Sprintf("%s/cmd@%s", mod, version),
 	}
 
 	if g.Command != "" {
 		paths = []string{
-			strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/%s@", name, g.Command), 1),
+			fmt.Sprintf("%s/%s@%s", mod, g.Command, version),
 		}
-	}
-
-	for i, path := range paths {
-		paths[i] = strings.ToLower(path)
 	}
 
 	defer func() {
@@ -142,4 +144,13 @@ func (g *Go) Get(attribute string) string {
 // SetGitHub configures the GitHub repository for the Go project.
 func (g *Go) SetGitHub(gh *github.GitHub) {
 	g.github = gh
+}
+
+func insertImportSubpath(path, sub string) string {
+	mod, version, ok := strings.Cut(path, "@")
+	if !ok {
+		return path // or handle error/log as needed
+	}
+
+	return fmt.Sprintf("%s/%s@%s", mod, sub, version)
 }

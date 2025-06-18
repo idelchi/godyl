@@ -70,6 +70,8 @@ default:
       match: excluded
   source:
     type: github
+    go:
+      base: github.com
   mode: find
   strategy: sync
   version:

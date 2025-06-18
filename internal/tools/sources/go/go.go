@@ -7,6 +7,7 @@ package goc
 import (
 	"fmt"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 
@@ -34,9 +35,13 @@ type Go struct {
 // TODO(Idelchi): This should be ignored if the version is already set.
 // As a workaround, just return nil for now.
 func (g *Go) Initialize(name string) error {
-	g.github.Initialize(name)
+	if g.Base != "github.com" {
+		g.github.Repo = name
 
-	return nil
+		return nil
+	}
+
+	return g.github.Initialize(name)
 }
 
 // Version fetches the latest release version and stores it in metadata.
@@ -47,11 +52,11 @@ func (g *Go) Version(name string) error {
 // URL constructs and stores the Go module path in metadata.
 // Uses the format github.com/{owner}/{repo}@{version}.
 func (g *Go) URL(_ string, _ []string, version string, _ match.Requirements) error {
-	if g.Base == "" {
-		g.Base = "github.com"
-	}
+	parts := []string{g.Base, g.github.Owner, g.github.Repo}
 
-	g.github.Data.Set("url", fmt.Sprintf("%s/%s/%s@%s", g.Base, g.github.Owner, g.github.Repo, version))
+	parts = slices.DeleteFunc(parts, func(s string) bool { return s == "" })
+
+	g.github.Data.Set("url", fmt.Sprintf("%s@%s", strings.Join(parts, "/"), version))
 
 	return nil
 }

@@ -509,6 +509,9 @@
   tags:
     - terminal
 
+- name: hadolint/hadolint
+  description: Dockerfile linter
+
 - name: jesseduffield/lazygit
   description: simple terminal UI for git commands
   aliases: lg
@@ -797,6 +800,9 @@
 
 - name: denisidoro/navi
   description: An interactive cheatsheet tool for the command line.
+  skip:
+    reason: "navi is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
 
 - name: open-policy-agent/opa
   description: An open-source policy engine that enables unified policy enforcement across the stack.
@@ -820,6 +826,15 @@
     - pattern: win32
       match: '{{ if eq .OS "windows" }}required{{ else }}excluded{{ end }}'
       type: contains
+
+- name: crate-ci/typos
+  description: A tool for detecting and correcting typos in source code.
+
+- name: koalaman/shellcheck
+  description: A shell script static analysis tool that helps to find bugs in shell scripts.
+  skip:
+    reason: "shellcheck is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
 
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases.

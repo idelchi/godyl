@@ -137,6 +137,12 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 		return destination, fmt.Errorf("copying %q to %q: %w", destination, target, err)
 	}
 
+	if ok, _ := target.IsExecutable(); !ok {
+		if err := target.MakeExecutable(); err != nil {
+			return destination, fmt.Errorf("making %q executable: %w", target, err)
+		}
+	}
+
 	// Create symlinks for the aliases
 	aliases := files.New(d.Output, d.Aliases...)
 

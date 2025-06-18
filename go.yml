@@ -2,6 +2,3 @@
   description: Chronos is a static race detector for the Go language written in Go
   version: latest
   exe: chronos
-  source:
-    go:
-      command: cmd/chronos

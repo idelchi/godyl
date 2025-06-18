@@ -145,12 +145,3 @@ func (g *Go) Get(attribute string) string {
 func (g *Go) SetGitHub(gh *github.GitHub) {
 	g.github = gh
 }
-
-func insertImportSubpath(path, sub string) string {
-	mod, version, ok := strings.Cut(path, "@")
-	if !ok {
-		return path // or handle error/log as needed
-	}
-
-	return fmt.Sprintf("%s/%s@%s", mod, sub, version)
-}

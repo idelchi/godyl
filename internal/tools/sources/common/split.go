@@ -14,7 +14,7 @@ func SplitName(name string) (first, second string, err error) {
 	// Check if the name is in the correct format
 	const expectedParts = 2
 	if len(split) != expectedParts {
-		return first, second, fmt.Errorf("invalid source name: %s", name)
+		return first, second, fmt.Errorf("invalid name: %s", name)
 	}
 
 	return split[0], split[1], nil
@@ -28,7 +28,7 @@ func CutName(name string) (first, second string, err error) {
 	first, second, found := strings.Cut(name, "/")
 
 	if !found {
-		return first, second, fmt.Errorf("invalid source name: %s", name)
+		return first, second, fmt.Errorf("invalid name: %s", name)
 	}
 
 	return first, second, nil

@@ -39,7 +39,7 @@ func (g *Go) Version(name string) error {
 	return g.github.Version(name)
 }
 
-// Path constructs and stores the Go module path in metadata.
+// URL constructs and stores the Go module path in metadata.
 // Uses the format github.com/{owner}/{repo}@{version}.
 func (g *Go) URL(_ string, _ []string, version string, _ match.Requirements) error {
 	if g.Base == "" {

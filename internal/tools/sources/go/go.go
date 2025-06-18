@@ -25,6 +25,7 @@ type Go struct {
 	github  *github.GitHub
 	Data    common.Metadata `yaml:"-"`
 	Command string          `yaml:"command"`
+	Base    string          `yaml:"base"`
 }
 
 // Initialize sets up the Go project configuration from the given name.
@@ -41,7 +42,11 @@ func (g *Go) Version(name string) error {
 // Path constructs and stores the Go module path in metadata.
 // Uses the format github.com/{owner}/{repo}@{version}.
 func (g *Go) URL(_ string, _ []string, version string, _ match.Requirements) error {
-	g.github.Data.Set("url", fmt.Sprintf("github.com/%s/%s@%s", g.github.Owner, g.github.Repo, version))
+	if g.Base == "" {
+		g.Base = "github.com"
+	}
+
+	g.github.Data.Set("url", fmt.Sprintf("%s/%s/%s@%s", g.Base, g.github.Owner, g.github.Repo, version))
 
 	return nil
 }

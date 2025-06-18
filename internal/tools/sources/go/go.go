@@ -38,6 +38,8 @@ func (g *Go) Initialize(name string) error {
 	if g.Base != "github.com" {
 		g.github.Repo = name
 
+		g.Data.Set("exe", name)
+
 		return nil
 	}
 
@@ -61,6 +63,7 @@ func (g *Go) URL(_ string, _ []string, version string, _ match.Requirements) err
 	return nil
 }
 
+// TODO(Idelchi): Remove this at some point - why do we need it?
 var mu sync.Mutex
 
 // Install downloads and builds the Go project using 'go install'.

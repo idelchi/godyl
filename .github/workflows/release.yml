@@ -3,8 +3,10 @@ name: release
 on:
   workflow_dispatch:
   push:
+    # For the release
     tags:
       - "*"
+    # For the docker image
     branches:
       - main
 

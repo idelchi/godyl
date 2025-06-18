@@ -7,6 +7,7 @@ package goc
 import (
 	"fmt"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 
@@ -25,11 +26,23 @@ type Go struct {
 	github  *github.GitHub
 	Data    common.Metadata `yaml:"-"`
 	Command string          `yaml:"command"`
+	Base    string          `yaml:"base"`
 }
 
 // Initialize sets up the Go project configuration from the given name.
 // Uses the associated GitHub repository for initialization.
+//
+// TODO(Idelchi): This should be ignored if the version is already set.
+// As a workaround, just return nil for now.
 func (g *Go) Initialize(name string) error {
+	if g.Base != "github.com" {
+		g.github.Repo = name
+
+		g.Data.Set("exe", name)
+
+		return nil
+	}
+
 	return g.github.Initialize(name)
 }
 
@@ -38,14 +51,19 @@ func (g *Go) Version(name string) error {
 	return g.github.Version(name)
 }
 
-// Path constructs and stores the Go module path in metadata.
+// URL constructs and stores the Go module path in metadata.
 // Uses the format github.com/{owner}/{repo}@{version}.
 func (g *Go) URL(_ string, _ []string, version string, _ match.Requirements) error {
-	g.github.Data.Set("url", fmt.Sprintf("github.com/%s/%s@%s", g.github.Owner, g.github.Repo, version))
+	parts := []string{g.Base, g.github.Owner, g.github.Repo}
+
+	parts = slices.DeleteFunc(parts, func(s string) bool { return s == "" })
+
+	g.github.Data.Set("url", fmt.Sprintf("%s@%s", strings.Join(parts, "/"), version))
 
 	return nil
 }
 
+// TODO(Idelchi): Remove this at some point - why do we need it?
 var mu sync.Mutex
 
 // Install downloads and builds the Go project using 'go install'.
@@ -80,20 +98,22 @@ func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output str
 
 	name := strings.TrimSuffix(d.Exe, filepath.Ext(d.Exe))
 
+	mod, version, ok := strings.Cut(d.Path, "@")
+	if !ok {
+		// fallback or panic, depending on your context
+		return "", "", fmt.Errorf("invalid module path: %s", d.Path)
+	}
+
 	paths := []string{
-		d.Path,
-		strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/cmd/%s@", name, name), 1),
-		strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/cmd@", name), 1),
+		fmt.Sprintf("%s@%s", mod, version),
+		fmt.Sprintf("%s/cmd/%s@%s", mod, name, version),
+		fmt.Sprintf("%s/cmd@%s", mod, version),
 	}
 
 	if g.Command != "" {
 		paths = []string{
-			strings.Replace(d.Path, fmt.Sprintf("/%s@", name), fmt.Sprintf("/%s/%s@", name, g.Command), 1),
+			fmt.Sprintf("%s/%s@%s", mod, g.Command, version),
 		}
-	}
-
-	for i, path := range paths {
-		paths[i] = strings.ToLower(path)
 	}
 
 	defer func() {

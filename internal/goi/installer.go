@@ -28,7 +28,11 @@ func (i *Installer) Install(path string) (output string, err error) {
 
 	// Run the command
 	if err := cmd.Run(); err != nil {
-		return stdoutBuf.String() + "\n" + stderrBuf.String(), fmt.Errorf("go install: %w", err)
+		return stdoutBuf.String() + "\n" + stderrBuf.String(), fmt.Errorf(
+			"go install: %w: %s",
+			err,
+			stdoutBuf.String()+"\n"+stderrBuf.String(),
+		)
 	}
 
 	// Return both stdout and stderr as the output

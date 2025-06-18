@@ -30,8 +30,13 @@ type Go struct {
 
 // Initialize sets up the Go project configuration from the given name.
 // Uses the associated GitHub repository for initialization.
+//
+// TODO(Idelchi): This should be ignored if the version is already set.
+// As a workaround, just return nil for now.
 func (g *Go) Initialize(name string) error {
-	return g.github.Initialize(name)
+	g.github.Initialize(name)
+
+	return nil
 }
 
 // Version fetches the latest release version and stores it in metadata.

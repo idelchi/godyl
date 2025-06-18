@@ -5,6 +5,10 @@ import (
 	"strings"
 )
 
+// TODO(Idelchi): This doesn't work so well for "pure" Go installations where the version has already been given. If the
+// version is given,
+// it should be ignored.
+
 // SplitName splits a repository name into owner and repository components.
 // Expects input in the format "owner/repo" and returns an error if not properly formatted.
 func SplitName(name string) (first, second string, err error) {

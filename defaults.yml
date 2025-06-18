@@ -68,6 +68,11 @@ default:
     - pattern: .txt
       type: endswith
       match: excluded
+
+    # Avoid files ending with .sha256 (commonly the checksum file)
+    - pattern: .sha256
+      type: endswith
+      match: excluded
   source:
     type: github
     go:

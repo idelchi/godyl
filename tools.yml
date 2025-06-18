@@ -509,6 +509,9 @@
   tags:
     - terminal
 
+- name: hadolint/hadolint
+  description: Dockerfile linter
+
 - name: jesseduffield/lazygit
   description: simple terminal UI for git commands
   aliases: lg

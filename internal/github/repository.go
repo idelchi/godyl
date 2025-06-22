@@ -28,8 +28,8 @@ func NewRepository(owner, repo string, client *github.Client) *Repository {
 }
 
 // LatestRelease retrieves the latest release for the repository.
-func (g *Repository) LatestRelease() (*Release, error) {
-	repositoryRelease, _, err := g.client.Repositories.GetLatestRelease(g.ctx, g.Owner, g.Repo)
+func (r *Repository) LatestRelease() (*Release, error) {
+	repositoryRelease, _, err := r.client.Repositories.GetLatestRelease(r.ctx, r.Owner, r.Repo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get latest release: %w", err)
 	}
@@ -43,8 +43,8 @@ func (g *Repository) LatestRelease() (*Release, error) {
 }
 
 // GetRelease retrieves a specific release for the repository based on the provided tag.
-func (g *Repository) GetRelease(tag string) (*Release, error) {
-	repositoryRelease, _, err := g.client.Repositories.GetReleaseByTag(g.ctx, g.Owner, g.Repo, tag)
+func (r *Repository) GetRelease(tag string) (*Release, error) {
+	repositoryRelease, _, err := r.client.Repositories.GetReleaseByTag(r.ctx, r.Owner, r.Repo, tag)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get assets for release tag %q: %w", tag, err)
 	}
@@ -57,22 +57,22 @@ func (g *Repository) GetRelease(tag string) (*Release, error) {
 	return release, nil
 }
 
-// GetLatestIncludingPreRelease retrieves the most recently published release for the repository,
+// LatestIncludingPreRelease retrieves the most recently published release for the repository,
 // including pre-releases. This returns the newest release by published date, regardless of
 // whether it's a regular release or pre-release.
-func (g *Repository) GetLatestIncludingPreRelease(perPage int) (*Release, error) {
+func (r *Repository) LatestIncludingPreRelease(perPage int) (*Release, error) {
 	// List all releases including pre-releases
 	opts := &github.ListOptions{
 		PerPage: perPage,
 	}
 
-	repositoryReleases, _, err := g.client.Repositories.ListReleases(g.ctx, g.Owner, g.Repo, opts)
+	repositoryReleases, _, err := r.client.Repositories.ListReleases(r.ctx, r.Owner, r.Repo, opts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list releases: %w", err)
 	}
 
 	if len(repositoryReleases) == 0 {
-		return nil, fmt.Errorf("no releases found for %s/%s", g.Owner, g.Repo)
+		return nil, fmt.Errorf("no releases found for %s/%s", r.Owner, r.Repo)
 	}
 
 	// Find the most recent release by published date

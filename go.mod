@@ -6,6 +6,7 @@ require (
 	dario.cat/mergo v1.0.1
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
 	github.com/Masterminds/semver/v3 v3.3.1
+	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/bmatcuk/doublestar/v4 v4.8.1
 	github.com/dustin/go-humanize v1.0.1
 	github.com/fatih/color v1.18.0
@@ -38,13 +39,14 @@ require (
 	github.com/spf13/pflag v1.0.6
 	github.com/zalando/go-keyring v0.2.6
 	gitlab.com/gitlab-org/api/client-go v0.127.0
-	golang.org/x/sync v0.11.0
+	golang.org/x/sync v0.13.0
 	golang.org/x/term v0.31.0
 	mvdan.cc/sh/v3 v3.10.0
 )
 
 require (
 	al.essio.dev/pkg/shellescape v1.5.1 // indirect
+	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/danieljoos/wincred v1.2.2 // indirect
 	github.com/dmarkham/enumer v1.5.11 // indirect
@@ -79,12 +81,12 @@ require (
 	github.com/tklauser/numcpus v0.8.0 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	golang.org/x/crypto v0.33.0 // indirect
+	golang.org/x/crypto v0.37.0 // indirect
 	golang.org/x/mod v0.23.0 // indirect
-	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/net v0.39.0 // indirect
 	golang.org/x/oauth2 v0.25.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/text v0.24.0 // indirect
 	golang.org/x/time v0.10.0 // indirect
 	golang.org/x/tools v0.30.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect

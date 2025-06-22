@@ -14,11 +14,11 @@ import (
 
 // GitHub represents a GitHub repository configuration and state.
 type GitHub struct {
-	Data                common.Metadata `yaml:"-" mapstructure:"-""`
+	Data                common.Metadata `mapstructure:"-"     yaml:"-"`
 	latestStoredRelease *github.Release
 	Repo                string `mapstructure:"repo"  yaml:"repo"`
 	Owner               string `mapstructure:"owner" yaml:"owner"`
-	Token               string `mapstructure:"token" mask:"fixed" yaml:"token"`
+	Token               string `mapstructure:"token" yaml:"token" mask:"fixed"`
 	Pre                 bool   `mapstructure:"pre"   yaml:"pre"`
 }
 
@@ -91,14 +91,23 @@ func (g *GitHub) LatestVersion() (string, error) {
 	if g.Pre {
 		const PerPage = 1000
 
-		release, err = repository.GetLatestIncludingPreRelease(PerPage)
+		release, err = repository.LatestIncludingPreRelease(PerPage)
 	} else {
-		release, err = repository.LatestRelease()
-		if err != nil {
-			if tag, err := repository.LatestVersionFromWeb(); err == nil {
+		if g.Token == "" {
+			if tag, err := repository.LatestVersionFromWebJSON(); err == nil {
 				return tag, nil
 			}
 		}
+
+		release, err = repository.LatestRelease()
+
+		// Old:
+		// release, err = repository.LatestRelease()
+		// if err != nil {
+		// 	if tag, err := repository.LatestVersionFromWeb(); err == nil {
+		// 		return tag, nil
+		// 	}
+		// }
 	}
 
 	if err != nil {
@@ -128,7 +137,14 @@ func (g *GitHub) MatchAssetsToRequirements(
 	if g.latestStoredRelease == nil {
 		var err error
 
-		release, err = repository.GetRelease(version)
+		if g.Token == "" {
+			release, err = repository.GetReleaseFromWeb(version)
+		}
+
+		if err != nil {
+			release, err = repository.GetRelease(version)
+		}
+
 		if err != nil {
 			return "", fmt.Errorf("failed to get release: %w", err)
 		}

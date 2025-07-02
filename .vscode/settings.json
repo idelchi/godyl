@@ -3,9 +3,14 @@
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
     "editor.formatOnSave": true,
+    "files.eol": "\n",
+    /* ****** ****** ****** */
+    /* ****** GitHub ****** */
+    "[github-actions-workflow]": { "editor.autoIndent": "advanced" },
     /* ****** ****** ****** */
     /* ****** JSON ****** */
     "[json][jsonc]": {
+        // [extension] esbenp.prettier-vscode
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     /* ****** ****** ****** */
@@ -13,10 +18,12 @@
     "[yaml]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 2,
-        "editor.autoIndent": "advanced"
+        "editor.autoIndent": "advanced",
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "yaml.format.bracketSpacing": false,
-    "yaml.format.singleQuote": true,
+    /* ****** PRETTIER ****** */
+    // [extension] esbenp.prettier-vscode
+    "prettier.configPath": ".devenv/settings/.prettierrc.yml",
     /* ****** ****** ****** */
     /* ****** DOCKER ****** */
     "[dockercompose]": {
@@ -24,6 +31,7 @@
     },
     /* ****** ****** ****** */
     /* ****** SHELL ****** */
+    // [extension] timonwong.shellcheck
     "shellcheck.enable": true,
     "shellcheck.run": "onSave",
     "shellcheck.useWorkspaceRootAsCwd": true,
@@ -39,19 +47,13 @@
         "editor.autoIndent": "advanced"
     },
     /* ****** ****** ****** */
-    /* ****** OTHER ****** */
-    "prettier.configPath": ".devenv/settings/.prettierrc.yml",
-    "[github-actions-workflow]": {
-        "editor.autoIndent": "advanced"
-    },
-    /* ****** ****** ****** */
     /* ****** GO ****** */
+    // [extension] golang.go
     "go.lintOnSave": "package",
     "go.lintTool": "golangci-lint",
     "go.lintFlags": [
         "--config=${workspaceFolder}/.golangci.yml",
         "--path-mode=abs"
-        // "--fast-only"
     ],
     "go.formatTool": "custom",
     "go.alternateTools": {
@@ -64,46 +66,16 @@
         "ui.semanticTokens": true
     },
     /* ****** ****** ****** */
+    /* ****** TOML ****** */
+    // [extension] bungcip.better-toml
+    "evenBetterToml.formatter.indentEntries": false,
+    "evenBetterToml.formatter.indentTables": false,
+    /* ****** ****** ****** */
     /* ****** TODOs ****** */
+    // [extension] gruntfuggly.todo-tree
     "todo-tree.filtering.includeHiddenFiles": true,
     "todo-tree.highlights.defaultHighlight": {
         "type": "text"
-    },
+    }
     /* ****** ****** ****** */
-    /* ****** CONSOLE ****** */
-    "terminal.integrated.env.windows": {
-        "PWD": "${workspaceFolder}",
-        "DEVENV": ".devenv"
-    },
-    "terminal.integrated.env.linux": {
-        "PWD": "${workspaceFolder}",
-        "DEVENV": ".devenv"
-    },
-    "terminal.integrated.enableMultiLinePasteWarning": "never",
-    /* ****** ****** ****** */
-    /* ****** SYSTEM ****** */
-    "files.eol": "\n",
-    /* ****** ****** ****** */
-    /* ****** COPILOT ****** */
-    "editor.inlineSuggest.enabled": true,
-    "github.copilot.enable": {
-        "*": true,
-        "plaintext": true,
-        "markdown": true,
-        "yaml": true,
-        "python": true,
-        "go": true,
-        "rust": true,
-        "groovy": true,
-        "dockerfile": true,
-        "dockercompose": true,
-        "json": true,
-        "jsonc": true,
-        "csharp": true
-    },
-    "cline.enableCheckpoints": false
 }
-// Note that environment variables might not work in config path
-// TODO: https://code.visualstudio.com/docs/editor/intellisense
-// Export a list of extensions:
-// code --list-extensions | xargs -L 1 echo code --install-extension

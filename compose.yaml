@@ -92,21 +92,9 @@ services:
       - --watch
 
   code:
-    build:
-      dockerfile: ${DOTAI}/Dockerfile
-      context: ${DOTAI}
-    image: idelchi/code:latest
-    container_name: claude
-    hostname: claude
-    volumes:
-      - ${PWD}:/home/user/ws
-      - ${DOTAI}/claude/.claude:/home/user/.claude
-      - ${DOTAI}/claude/.claude.json:/home/user/.claude.json
-      - ${DOTAI}/codex/.codex:/home/user/.codex
-      - ${DOTAI}/gemini/.gemini:/home/user/.gemini
-      - ${DOTAI}/tasks:/home/user/tasks
-      - ${DOTFILES}:/home/user/.dotfiles
-    working_dir: /home/user/ws
+    extends:
+      file: ${DOTAI}/compose.yaml
+      service: code
     networks:
       - godyl
 

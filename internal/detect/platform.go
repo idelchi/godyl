@@ -34,16 +34,19 @@ func (p *Platform) Parse() error {
 		return err
 	}
 
+	p.Extension.ParseFrom(p.OS)
+
+	// Choose the default library if GOOS is overridden and clear the distribution.
+	if p.OS.String() != runtime.GOOS {
+		p.Library = p.Library.Default(p.OS, p.Distribution)
+		p.Distribution = platform.Distribution{}
+
+		return nil
+	}
+
 	if err := p.Library.Parse(); err != nil {
 		p.Library = p.Library.Default(p.OS, p.Distribution)
 	}
-
-	// Choose the default library if GOOS is overridden
-	if p.OS.String() != runtime.GOOS {
-		p.Library = p.Library.Default(p.OS, p.Distribution)
-	}
-
-	p.Extension.ParseFrom(p.OS)
 
 	return nil
 }

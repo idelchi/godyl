@@ -23,9 +23,11 @@ func (i *Installer) Install(path string) (output string, err error) {
 	cmd := exec.Command(i.Binary.File.Path(), "install", path)
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, i.Binary.Env.ToSlice()...)
+
 	if i.GOOS != "" {
 		cmd.Env = append(cmd.Env, "GOOS="+i.GOOS)
 	}
+
 	if i.GOARCH != "" {
 		cmd.Env = append(cmd.Env, "GOARCH="+i.GOARCH)
 	}

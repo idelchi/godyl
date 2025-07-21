@@ -26,7 +26,7 @@ type Install struct {
 	// Dry indicates whether the installation should be performed in dry-run mode
 	Dry bool `mapstructure:"dry" yaml:"dry"`
 
-	Source sources.Type `mapstructure:"source" yaml:"source" validate:"oneof=github gitlab url none go"`
+	Source sources.Type `mapstructure:"source" validate:"oneof=github gitlab url none go" yaml:"source"`
 
 	// Tracker embed the common tracker configuration, allowing to tracker
 	// whether configuration values have been explicitly set or defaulted

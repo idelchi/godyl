@@ -100,14 +100,14 @@ func (g *GitHub) LatestVersion() (string, error) {
 		}
 
 		release, err = repository.LatestRelease()
-
 		// Old:
 		// release, err = repository.LatestRelease()
-		// if err != nil {
-		// 	if tag, err := repository.LatestVersionFromWeb(); err == nil {
-		// 		return tag, nil
-		// 	}
-		// }
+		//
+		//	if err != nil {
+		//		if tag, err := repository.LatestVersionFromWeb(); err == nil {
+		//			return tag, nil
+		//		}
+		//	}
 	}
 
 	if err != nil {

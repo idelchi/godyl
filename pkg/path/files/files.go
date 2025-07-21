@@ -54,5 +54,6 @@ func (es Files) AsSlice() []string {
 	for i, f := range es {
 		slice[i] = f.String()
 	}
+
 	return slice
 }

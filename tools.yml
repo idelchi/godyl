@@ -820,6 +820,13 @@
 - name: StyraInc/regal
   description: A tool for managing and validating Rego policies.
 
+- name: tsl0922/ttyd
+  description: A command-line tool for sharing terminal sessions over the web.
+  hints:
+    - pattern: win32
+      match: '{{ if eq .OS "windows" }}required{{ else }}excluded{{ end }}'
+      type: contains
+
 - name: crate-ci/typos
   description: A tool for detecting and correcting typos in source code.
 
@@ -846,3 +853,92 @@
   tags:
     - terminal
   inherit: gitlab
+
+- name: lfaoro/ssm
+  description: Streamline SSH connections with a simple Terminal UI
+  skip:
+    reason: "ssm is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
+
+- name: doganarif/portfinder
+  description: A modern CLI tool to identify and manage processes using network ports
+  exe: pf
+  tags:
+    - terminal
+
+- name: peltho/tufw
+  description: A terminal user interface for ufw
+  skip:
+    reason: "tufw is only available for Linux"
+    condition: '{{ ne .OS "linux" }}'
+  tags:
+    - terminal
+
+- name: crumbyte/noxdir
+  description: A command-line tool for visualizing and exploring your file system usage.
+  tags:
+    - terminal
+
+- name: JinmuGo/sls
+  description: sls is a smart fuzzy CLI selector for SSH config hosts
+  tags:
+    - automation
+
+- name: zix99/rare
+  description: A fast text scanner/regex extractor and realtime summarizer
+  tags:
+    - terminal
+
+- name: mr-karan/doggo
+  description: Command-line DNS client for humans
+  tags:
+    - terminal
+
+- name: Timmoth/aid-cli
+  description: A CLI toolkit featuring a variety of helpful utilities
+  aliases: aid
+  tags:
+    - terminal
+
+- name: swsnr/mdcat
+  description: Fancy cat for Markdown
+  skip:
+    - reason: "mdcat is not available on darwin"
+      condition: '{{ eq .OS "darwin" }}'
+    - reason: "mdcat is only available for amd64 architecture"
+      condition: '{{ ne .ARCH "amd64" }}'
+  tags:
+    - terminal
+
+- name: alexpasmantier/television
+  description: A cross-platform, fast and extensible general purpose fuzzy finder for the terminal.
+  exe: tv
+  hints:
+    - pattern: .zip
+      match: '{{ if eq .OS "windows" }}required{{ else }}excluded{{ end }}'
+      type: endswith
+  tags:
+    - terminal
+
+- name: yassinebenaid/bunster
+  description: A shell compiler that converts shell scripts into secure, portable and static binaries
+  skip:
+    condition: '{{ eq .OS "windows" }}'
+    reason: "bunster is not available on windows"
+  tags:
+    - scripts
+
+- name: vaibhav-mattoo/cxt
+  description: Command-line tool that aggregates file and directory contents into your clipboard
+  tags:
+    - terminal
+
+- name: getsavvyinc/savvy-cli
+  description: Automatically capture and surface your team's tribal knowledge
+  skip:
+    reason: "savvy-cli is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal

@@ -28,6 +28,8 @@ type InstallData struct {
 	Patterns         []string
 	Aliases          []string
 	NoVerifySSL      bool
+	OS               string // Target operating system for cross-compilation.
+	Arch             string // Target architecture for cross-compilation.
 }
 
 // Download retrieves files according to the InstallData configuration.
@@ -117,9 +119,10 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 
 		if !found {
 			return destination, fmt.Errorf(
-				"finding executable: no executable matching patterns %v found in %q",
+				"finding executable: no executable matching patterns %v found in %q: found\n%v",
 				d.Patterns,
 				searchDir,
+				files,
 			)
 		}
 	}

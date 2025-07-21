@@ -47,3 +47,12 @@ func (es Files) Exists() (file.File, bool) {
 
 	return file.File(""), false
 }
+
+// AsSlice converts the Files collection to a slice of strings.
+func (es Files) AsSlice() []string {
+	slice := make([]string, len(es))
+	for i, f := range es {
+		slice[i] = f.String()
+	}
+	return slice
+}

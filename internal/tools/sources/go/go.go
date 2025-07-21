@@ -83,6 +83,8 @@ func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output str
 
 	installer := goi.Installer{
 		Binary: binary,
+		GOOS:   d.OS,
+		GOARCH: d.Arch,
 	}
 
 	folder, err := tmp.GodylCreateRandomDir()

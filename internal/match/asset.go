@@ -50,6 +50,9 @@ func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 
 	if req.Platform.Architecture.IsCompatibleWith(a.Platform.Architecture) {
 		score++
+		// Special case: on Windows, 32bit binaries can run on 64-bit systems
+	} else if req.Platform.OS.Type() == "windows" && req.Platform.Architecture.Is64Bit() && a.Platform.Architecture.IsX86() {
+		score--
 	} else if a.Platform.Architecture.IsSet() && req.Platform.Architecture.IsSet() {
 		qualified = false
 	} else {

@@ -235,6 +235,10 @@ func (t *Tool) Download(progressListener getter.ProgressTracker) result.Result {
 		Mode:        t.Mode.String(),
 		Env:         t.Env,
 		NoVerifySSL: t.NoVerifySSL,
+		// TODO(Idelchi): Pass OS and Architecture as they are and let downstream decide if they want Type(), or
+		// String(), or whatever.
+		OS:   t.Platform.OS.Type(),
+		Arch: t.Platform.Architecture.Type(),
 	}
 
 	// Pass the progress listener to the specific source's Install method

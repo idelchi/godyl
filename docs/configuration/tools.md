@@ -230,7 +230,7 @@ The name of the tool to download. Used as display name and for inferring other f
 name: idelchi/envprof
 ```
 
-Used for inferrence in [`exe`](#exe) and [`source`](#source)
+Used for inference in [`exe`](#exe) and [`source`](#source)
 
 ### `description`
 

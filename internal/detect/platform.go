@@ -15,8 +15,10 @@ type Platform struct {
 	Architecture platform.Architecture
 }
 
-// Parse extracts platform information from a string identifier.
+// ParseFrom extracts platform information from a string identifier.
 // Attempts to determine OS, architecture, and library details from the input.
+//
+//nolint:errcheck,gosec 		// This method intentionally suppresses/ignores errors.
 func (p *Platform) ParseFrom(name string) {
 	p.OS.ParseFrom(name)
 	p.Architecture.ParseFrom(name)

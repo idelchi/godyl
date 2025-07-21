@@ -511,6 +511,9 @@
 
 - name: hadolint/hadolint
   description: Dockerfile linter
+  skip:
+    reason: "hadolint is not available darwin arm64"
+    condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
 
 - name: jesseduffield/lazygit
   description: simple terminal UI for git commands

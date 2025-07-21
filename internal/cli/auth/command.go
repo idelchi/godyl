@@ -17,8 +17,8 @@ func Command(global *root.Config, local any) *cobra.Command {
 		Short: "Store or remove authentication tokens.",
 		Long:  "Store or remove authentication tokens, either in the configuration file or in the keyring",
 		Example: heredoc.Doc(`
-			$ godyl auth set
-			$ godyl --keyring auth set
+			$ godyl auth store
+			$ godyl --keyring auth store
 			$ godyl auth remove
 		`),
 		Args: cobra.NoArgs,

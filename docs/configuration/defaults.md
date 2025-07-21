@@ -153,7 +153,7 @@ The example below shows how to inherit from `default` and override the `gitlab` 
 supporting both the `gitlab` source type and optionally the `url` source type, passing the `PRIVATE-TOKEN` header.
 
 ```yaml
-gitlab:selfhosted:
+gitlab-selfhosted:
   inherit: default
   source:
     type: gitlab

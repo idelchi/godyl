@@ -66,7 +66,7 @@ godyl -ss
 
 If you get a lot of error messages for a run, use `error-file` to log them to a file for inspection.
 
-> **Note**: Commands that write to the `yaml` configuration file (such as `config set`, `config remove`, `auth set` and `auth remove`) will lead to loss of order and newlines.
+> **Note**: Commands that write to the `yaml` configuration file (such as `config set`, `config remove`, `auth store` and `auth remove`) will lead to loss of order and newlines.
 
 ### Authentication
 

@@ -23,7 +23,7 @@
     },
     /* ****** PRETTIER ****** */
     // [extension] esbenp.prettier-vscode
-    "prettier.configPath": "${workspaceFolder}/.devenv/settings/.prettierrc.yml",
+    "prettier.configPath": ".devenv/settings/.prettierrc.yml",
     /* ****** ****** ****** */
     /* ****** DOCKER ****** */
     "[dockercompose]": {

@@ -12,7 +12,8 @@ import (
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
-// TODO(Idelchi): Change all to be .Config instead of .Dump, .Update, etc.
+// TODO(Idelchi): Change all to be .Config instead of .Dump, .Update, etc. //nolint:godox // TODO comment provides
+// valuable context for future development
 
 // Config holds the root level configuration options.
 // It is split into sub-structs for each command.
@@ -116,7 +117,7 @@ type Tokens struct {
 }
 
 // AllTokensSet checks if all of the tokens are set.
-func (c Config) AllTokensSet() bool {
+func (c *Config) AllTokensSet() bool {
 	return c.IsSet("github-token") && c.IsSet("gitlab-token") && c.IsSet("url-token")
 }
 

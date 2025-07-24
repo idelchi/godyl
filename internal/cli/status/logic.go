@@ -12,6 +12,7 @@ import (
 )
 
 // TODO(Idelchi): Presentation must look different for status (green -> yellow, yellow -> green, red -> red).
+// //nolint:godox // TODO comment provides valuable context for future development
 
 // run executes the `status` command.
 func run(input common.Input) error {

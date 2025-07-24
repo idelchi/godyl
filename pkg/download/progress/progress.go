@@ -60,7 +60,7 @@ func New() *Tracker {
 	pw.SetTrackerLength(TrackerLength)
 	pw.SetStyle(gpp.StyleDefault)
 	pw.SetTrackerPosition(gpp.PositionRight)
-	pw.SetUpdateFrequency(100 * time.Millisecond)
+	pw.SetUpdateFrequency(100 * time.Millisecond) //nolint:mnd // 100ms update frequency is self-documenting
 
 	// Configure visibility
 	pw.Style().Visibility.Percentage = true
@@ -117,7 +117,7 @@ func (pt *Tracker) wait() {
 			pt.pw.Stop()
 		}
 
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond) //nolint:mnd // 100ms sleep interval is self-documenting
 	}
 }
 
@@ -149,8 +149,15 @@ func (pt *Tracker) TrackProgress(
 
 	tracker, ok := pt.trackers[src]
 	if !ok {
+		var sizeStr string
+		if totalSize >= 0 {
+			sizeStr = humanize.Bytes(uint64(totalSize))
+		} else {
+			sizeStr = "unknown"
+		}
+
 		tracker = &gpp.Tracker{
-			Message:            fmt.Sprintf("%-45s [%s]", srcPretty, humanize.Bytes(uint64(totalSize))),
+			Message:            fmt.Sprintf("%-45s [%s]", srcPretty, sizeStr),
 			Total:              totalSize,
 			Units:              gpp.UnitsBytes,
 			DeferStart:         false,

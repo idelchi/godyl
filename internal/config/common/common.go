@@ -1,3 +1,5 @@
+// Package common provides shared configuration structures and utilities used across different commands.
+// Package common provides shared configuration types and validation logic.
 package common
 
 import (
@@ -5,6 +7,9 @@ import (
 	"github.com/idelchi/godyl/internal/tools/strategy"
 )
 
+// Common contains configuration fields shared across multiple commands.
+// Common represents a shared configuration structure that provides
+// command-line arguments, show functionality, and validation.
 type Common struct {
 	Tracker  `mapstructure:"-" yaml:"-"`
 	Output   string

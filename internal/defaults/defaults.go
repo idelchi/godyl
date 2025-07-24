@@ -37,14 +37,14 @@ func (d *Defaults) Load(data []byte) error {
 
 // Get returns the default with the given name from the defaults map.
 // If the default is not found, it returns nil.
-func (d Defaults) Get(name string) *Default {
+func (d *Defaults) Get(name string) *Default {
 	t, _ := d.get(name)
 
 	return t
 }
 
 // Pick returns a slice of defaults from the defaults map based on the provided names.
-func (d Defaults) Pick(names ...string) (tools []*Default, err error) {
+func (d *Defaults) Pick(names ...string) (tools []*Default, err error) {
 	for _, name := range names {
 		t, err := d.get(name)
 		if err != nil {
@@ -60,8 +60,8 @@ func (d Defaults) Pick(names ...string) (tools []*Default, err error) {
 }
 
 // get returns the default with the given name from the defaults map.
-func (d Defaults) get(name string) (*Default, error) {
-	t, ok := d[name]
+func (d *Defaults) get(name string) (*Default, error) {
+	t, ok := (*d)[name]
 	if !ok {
 		return nil, fmt.Errorf("%q not found in defaults", name)
 	}

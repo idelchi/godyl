@@ -120,7 +120,8 @@ func Build[K comparable](
 				Node: node,
 				Path: cyclePath,
 			}
-		case 2: // black - already processed
+		case 2: //nolint:mnd // Constant 2 represents DFS black state
+			// black - already processed
 			return nil
 		}
 

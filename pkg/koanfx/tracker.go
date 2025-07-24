@@ -42,16 +42,6 @@ func (dt *Tracker) IsSet(key string) bool {
 	return dt.track[key]
 }
 
-// set marks a key as set in the tracker.
-func (dt *Tracker) set(key string) {
-	dt.track[key] = true
-}
-
-// add adds a key to the tracker without marking it as set.
-func (dt *Tracker) add(key string) {
-	dt.track[key] = false
-}
-
 // TrackAll tracks all keys from the koanf instance.
 func (dt *Tracker) TrackAll(k *koanf.Koanf) {
 	for key := range k.All() {
@@ -70,5 +60,16 @@ func (dt *Tracker) TrackFlags(flags *pflag.FlagSet) {
 	})
 }
 
+// set marks a key as set in the tracker.
+func (dt *Tracker) set(key string) {
+	dt.track[key] = true
+}
+
+// add adds a key to the tracker without marking it as set.
+func (dt *Tracker) add(key string) {
+	dt.track[key] = false
+}
+
 // TODO(Idelchi): Implement an additional tracking "FromWhere" method that tracks where the key was set from (e.g.,
+// //nolint:godox // TODO comment provides valuable context for future development
 // command line, config file, etc.)

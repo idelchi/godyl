@@ -16,10 +16,10 @@ func (e *Extension) ParseFrom(os OS) {
 }
 
 // String returns the extension value including the leading dot.
-func (e Extension) String() string {
-	return string(e)
+func (e *Extension) String() string {
+	return string(*e)
 }
 
-func (e Extension) IsNil() bool {
-	return e == ""
+func (e *Extension) IsNil() bool {
+	return *e == ""
 }

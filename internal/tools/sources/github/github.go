@@ -1,6 +1,7 @@
 package github
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -36,7 +37,9 @@ func (g *GitHub) Initialize(name string) error {
 
 // Version fetches the latest release version and stores it in metadata.
 func (g *GitHub) Version(_ string) error {
-	version, err := g.LatestVersion()
+	ctx := context.Background()
+
+	version, err := g.LatestVersion(ctx)
 	if err != nil {
 		return err
 	}
@@ -49,7 +52,9 @@ func (g *GitHub) Version(_ string) error {
 // Path finds a matching release asset and stores its URL in metadata.
 // Uses version, extensions, and requirements to find the appropriate asset.
 func (g *GitHub) URL(_ string, extensions []string, version string, requirements match.Requirements) error {
-	url, err := g.MatchAssetsToRequirements(extensions, version, requirements)
+	ctx := context.Background()
+
+	url, err := g.MatchAssetsToRequirements(ctx, extensions, version, requirements)
 	if err != nil {
 		return err
 	}
@@ -80,7 +85,7 @@ func (g *GitHub) Get(attribute string) string {
 
 // LatestVersion fetches the latest release version from GitHub.
 // Returns the tag name of the latest release, respecting the Pre flag setting.
-func (g *GitHub) LatestVersion() (string, error) {
+func (g *GitHub) LatestVersion(ctx context.Context) (string, error) {
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
@@ -91,15 +96,18 @@ func (g *GitHub) LatestVersion() (string, error) {
 	if g.Pre {
 		const PerPage = 1000
 
-		release, err = repository.LatestIncludingPreRelease(PerPage)
+		release, err = repository.LatestIncludingPreRelease(
+			ctx,
+			PerPage,
+		)
 	} else {
 		if g.Token == "" {
-			if tag, err := repository.LatestVersionFromWebJSON(); err == nil {
+			if tag, webErr := repository.LatestVersionFromWebJSON(ctx); webErr == nil {
 				return tag, nil
 			}
 		}
 
-		release, err = repository.LatestRelease()
+		release, err = repository.LatestRelease(ctx)
 		// Old:
 		// release, err = repository.LatestRelease()
 		//
@@ -125,6 +133,7 @@ func (g *GitHub) LatestVersion() (string, error) {
 // Returns the download URL of the best matching asset, considering platform,
 // architecture, and other specified requirements.
 func (g *GitHub) MatchAssetsToRequirements(
+	ctx context.Context,
 	_ []string,
 	version string,
 	requirements match.Requirements,
@@ -138,11 +147,11 @@ func (g *GitHub) MatchAssetsToRequirements(
 		var err error
 
 		if g.Token == "" {
-			release, err = repository.GetReleaseFromWeb(version)
+			release, err = repository.GetReleaseFromWeb(ctx, version)
 		}
 
 		if err != nil {
-			release, err = repository.GetRelease(version)
+			release, err = repository.GetRelease(ctx, version)
 		}
 
 		if err != nil {

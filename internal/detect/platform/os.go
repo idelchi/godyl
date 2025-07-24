@@ -31,7 +31,7 @@ func (o *OS) UnmarshalYAML(node ast.Node) error {
 	return nil
 }
 
-func (o OS) MarshalYAML() (any, error) {
+func (o *OS) MarshalYAML() (any, error) {
 	return o.Name, nil
 }
 
@@ -130,6 +130,6 @@ func (o *OS) IsCompatibleWith(other OS) bool {
 }
 
 // String returns the canonical name of the operating system.
-func (o OS) String() string {
+func (o *OS) String() string {
 	return o.canonical
 }

@@ -2,6 +2,7 @@
 package updater
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -186,7 +187,7 @@ func (u *Updater) downloadTool(tool *tool.Tool) (string, error) {
 	// := progress.New()
 	// tracker.Start()
 
-	res := tool.Download(progress.NewNoop())
+	res := tool.Download(context.TODO(), progress.NewNoop())
 
 	// tracker.Wait()
 

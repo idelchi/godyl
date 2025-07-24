@@ -34,7 +34,7 @@ func (d *Distribution) UnmarshalYAML(node ast.Node) error {
 	return nil
 }
 
-func (d Distribution) MarshalYAML() (any, error) {
+func (d *Distribution) MarshalYAML() (any, error) {
 	return d.Name, nil
 }
 
@@ -110,19 +110,19 @@ func (d *Distribution) Parse() error {
 }
 
 // IsUnset checks if the distribution type is empty.
-func (d Distribution) IsUnset() bool {
+func (d *Distribution) IsUnset() bool {
 	return d.canonical == ""
 }
 
 // Is checks for exact distribution match including raw string.
 // Returns true only if both distributions are set and identical.
-func (d Distribution) Is(other Distribution) bool {
+func (d *Distribution) Is(other Distribution) bool {
 	return other.alias == d.alias && !d.IsUnset() && !other.IsUnset()
 }
 
 // IsCompatibleWith checks if this distribution can run binaries built for another.
 // Currently checks only for exact type matches between distributions.
-func (d Distribution) IsCompatibleWith(other Distribution) bool {
+func (d *Distribution) IsCompatibleWith(other Distribution) bool {
 	if d.IsUnset() || other.IsUnset() {
 		return false
 	}
@@ -131,7 +131,7 @@ func (d Distribution) IsCompatibleWith(other Distribution) bool {
 }
 
 // String returns the canonical name of the distribution.
-func (d Distribution) String() string {
+func (d *Distribution) String() string {
 	return d.canonical
 }
 

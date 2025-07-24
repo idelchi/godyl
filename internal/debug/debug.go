@@ -9,10 +9,12 @@ import (
 
 func Debug(format string, args ...any) {
 	if os.Getenv("DEBUG") != "" {
-		fmt.Printf("DEBUG: "+format+"\n", args...)
+		fmt.Printf( //nolint:forbidigo // Debug package is meant for printing
+			"DEBUG: "+format+"\n",
+			args...)
 	}
 }
 
 func Print(a ...any) {
-	pretty.Print(a)
+	pretty.Print(a) //nolint:errcheck // Debug print functions do not need error handling
 }

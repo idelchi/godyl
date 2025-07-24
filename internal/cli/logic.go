@@ -1,8 +1,8 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/MakeNowJust/heredoc/v2"
@@ -24,8 +24,10 @@ import (
 	pfile "github.com/idelchi/godyl/pkg/path/file"
 )
 
-// TODO(Idelchi): Some subcommands should NOT validate the config file, such as `auth`, `config`.
+// TODO(Idelchi): Some subcommands should NOT validate the config file, such as `auth`, `config`. //nolint:godox // TODO
+// comment provides valuable context for future development
 
+//nolint:gocognit,gocyclo // Complex function - necessarily handles multiple configuration sources and validation steps
 func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error {
 	debug.Debug("[PersistentPreRunE root] Current command: %s\n", cmd.CommandPath())
 	debug.Debug("[PersistentPreRunE root] Called from: %s\n", calledFrom.CommandPath())
@@ -59,11 +61,16 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		posflag.Provider(flags, "", k),
 		nil,
 	); err != nil {
-		log.Fatalf("error loading config: %v", err)
+		return fmt.Errorf("loading config: %w", err)
 	}
 
 	// configFile := tmproot.ConfigFile
-	configFile := pfile.New(k.Get("config-file").(string))
+	configFileValue, ok := k.Get("config-file").(string)
+	if !ok {
+		return errors.New("config-file value is not a string")
+	}
+
+	configFile := pfile.New(configFileValue)
 	isSet := k.IsSet("config-file")
 
 	// We fail if:
@@ -134,7 +141,7 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		posflag.Provider(flags, "", k),
 		nil,
 	); err != nil {
-		log.Fatalf("error loading config: %v", err)
+		return fmt.Errorf("loading config: %w", err)
 	}
 
 	// At this point, the location of the `.env` file(s) can be determined through either
@@ -163,9 +170,9 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 
 		if failureCriteria(err) {
 			return err
-		} else {
-			dotenvs = dotenvs.MergedWith(dotenv)
 		}
+
+		dotenvs = dotenvs.MergedWith(dotenv)
 	}
 
 	// If the config file or env-file was set in the .env file,
@@ -225,7 +232,8 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	// Default values for tokens are deferred such that they can be
 	// set with .env files or the keyring without unnecessary checks
 
-	// TODO(Idelchi): Allow also GITHUB_TOKEN_FILE, GITLAB_TOKEN_FILE, URL_TOKEN_FILE
+	// TODO(Idelchi): Allow also GITHUB_TOKEN_FILE, GITLAB_TOKEN_FILE, URL_TOKEN_FILE //nolint:godox // TODO comment
+	// provides valuable context for future development
 	githubToken := menv.GetAny("GITHUB_TOKEN", "GH_TOKEN")
 	gitlabToken := menv.GetAny("GITLAB_TOKEN", "CI_JOB_TOKEN")
 	urlToken := menv.GetAny("URL_TOKEN")

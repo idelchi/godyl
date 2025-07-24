@@ -1,6 +1,7 @@
 package gitlab
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -43,7 +44,9 @@ func (g *GitLab) Initialize(name string) error {
 
 // Version fetches the latest release version and stores it in metadata.
 func (g *GitLab) Version(_ string) error {
-	version, err := g.LatestVersion()
+	ctx := context.Background()
+
+	version, err := g.LatestVersion(ctx)
 	if err != nil {
 		return err
 	}
@@ -56,7 +59,9 @@ func (g *GitLab) Version(_ string) error {
 // Path finds a matching release asset and stores its URL in metadata.
 // Uses version, extensions, and requirements to find the appropriate asset.
 func (g *GitLab) URL(_ string, extensions []string, version string, requirements match.Requirements) error {
-	url, err := g.MatchAssetsToRequirements(extensions, version, requirements)
+	ctx := context.Background()
+
+	url, err := g.MatchAssetsToRequirements(ctx, extensions, version, requirements)
 	if err != nil {
 		return err
 	}
@@ -88,7 +93,7 @@ func (g *GitLab) Get(attribute string) string {
 
 // LatestVersion fetches the latest release version from GitLab.
 // Returns the tag name of the latest release, respecting the Pre flag setting.
-func (g *GitLab) LatestVersion() (string, error) {
+func (g *GitLab) LatestVersion(ctx context.Context) (string, error) {
 	client, err := gitlab.NewClient(g.Token, g.Server)
 	if err != nil {
 		return "", fmt.Errorf("failed to create GitLab client: %w", err)
@@ -100,9 +105,9 @@ func (g *GitLab) LatestVersion() (string, error) {
 
 	if g.Pre {
 		const PerPage = 1000
-		release, err = repository.GetLatestIncludingPreRelease(PerPage)
+		release, err = repository.GetLatestIncludingPreRelease(ctx, PerPage)
 	} else {
-		release, err = repository.LatestRelease()
+		release, err = repository.LatestRelease(ctx)
 	}
 
 	if err != nil {
@@ -119,6 +124,7 @@ func (g *GitLab) LatestVersion() (string, error) {
 // Returns the download URL of the best matching asset, considering platform,
 // architecture, and other specified requirements.
 func (g *GitLab) MatchAssetsToRequirements(
+	ctx context.Context,
 	_ []string,
 	version string,
 	requirements match.Requirements,
@@ -133,11 +139,11 @@ func (g *GitLab) MatchAssetsToRequirements(
 	var release *gitlab.Release
 
 	if g.latestStoredRelease == nil {
-		var err error
+		var releaseErr error
 
-		release, err = repository.GetRelease(version)
-		if err != nil {
-			return "", fmt.Errorf("failed to get release: %w", err)
+		release, releaseErr = repository.GetRelease(ctx, version)
+		if releaseErr != nil {
+			return "", fmt.Errorf("failed to get release: %w", releaseErr)
 		}
 	} else {
 		release = g.latestStoredRelease

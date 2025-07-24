@@ -25,6 +25,12 @@ func New(dir string, paths ...string) (fs Files) {
 	return fs
 }
 
+// Add adds a new file to the collection.
+// Joins the provided path with the directory to create a full path.
+func (es *Files) Add(dir, path string) {
+	*es = append(*es, file.New(dir, path))
+}
+
 // LinksFor creates links for each file in the collection.
 // Creates a link at each path in the collection,
 // pointing to the specified target file.

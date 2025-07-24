@@ -2,6 +2,7 @@
 package tool
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -219,7 +220,7 @@ func (t *Tool) CheckSkipConditions(tags tags.IncludeTags) result.Result {
 // Download retrieves and installs the tool using its configured source and installer.
 // It handles progress tracking and executes any post-installation commands.
 // Returns a Result indicating success or failure with detailed messages.
-func (t *Tool) Download(progressListener getter.ProgressTracker) result.Result {
+func (t *Tool) Download(ctx context.Context, progressListener getter.ProgressTracker) result.Result {
 	installer, err := t.Source.Installer()
 	if err != nil {
 		return result.WithFailed("getting installer").Wrap(err)
@@ -236,6 +237,7 @@ func (t *Tool) Download(progressListener getter.ProgressTracker) result.Result {
 		Env:         t.Env,
 		NoVerifySSL: t.NoVerifySSL,
 		// TODO(Idelchi): Pass OS and Architecture as they are and let downstream decide if they want Type(), or
+		// //nolint:godox // TODO comment provides valuable context for future development
 		// String(), or whatever.
 		OS:   t.Platform.OS.Type(),
 		Arch: t.Platform.Architecture.Type(),
@@ -249,7 +251,7 @@ func (t *Tool) Download(progressListener getter.ProgressTracker) result.Result {
 
 	// Execute post-installation commands if any exist
 	if len(t.Commands.Commands) > 0 {
-		if output, err := t.Commands.Run(t.Env); err != nil {
+		if output, err := t.Commands.Run(context.Background(), t.Env); err != nil {
 			return result.WithFailed("executing post-installation commands").Wrap(err).Wrapped(output)
 		}
 	}

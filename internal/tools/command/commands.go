@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -67,11 +68,11 @@ func (c *Commands) Combined() Command {
 
 // Run executes the combined commands with the provided environment variables.
 // Returns the command output and any execution errors, respecting AllowFailure setting.
-func (c *Commands) Run(env env.Env) (output string, err error) {
+func (c *Commands) Run(ctx context.Context, env env.Env) (output string, err error) {
 	cmd := c.Combined()
 
 	// Execute the combined command
-	output, err = cmd.Shell(env.AsSlice()...)
+	output, err = cmd.Shell(ctx, env.AsSlice()...)
 	if err != nil && (!c.AllowFailure || !errors.Is(err, ErrRun)) {
 		return output, fmt.Errorf("running combined commands: %w", err)
 	}

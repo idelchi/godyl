@@ -8,10 +8,13 @@ import (
 	"fmt"
 )
 
-// TODO(Idelchi): Make more sane functions. Wrap and Wrapped are confusing.
+// TODO(Idelchi): Make more sane functions. Wrap and Wrapped are confusing. //nolint:godox // TODO comment provides
+// valuable context for future development
 
 // Result represents the outcome of a tool installation operation.
 // It combines a status code with a descriptive message and an optional error.
+//
+//nolint:errname // Result is not an error type, it's a result type that can contain errors
 type Result struct {
 	err     error
 	Message string

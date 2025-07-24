@@ -39,3 +39,8 @@
   inherit:
     - gitlab:selfhosted
     # - custom
+
+- name: apps/agg
+  inherit:
+    - gitlab:selfhosted
+    # - custom

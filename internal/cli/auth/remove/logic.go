@@ -10,6 +10,8 @@ import (
 )
 
 // run executes the `auth remove` command.
+//
+//nolint:gocognit // Complex function - refactoring into smaller functions is a separate improvement task
 func run(input common.Input) error {
 	cfg, _, context, _, args := input.Unpack()
 

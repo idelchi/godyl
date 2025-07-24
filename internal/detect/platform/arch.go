@@ -50,7 +50,7 @@ func (a *Architecture) UnmarshalYAML(node ast.Node) error {
 	return nil
 }
 
-func (a Architecture) MarshalYAML() (any, error) {
+func (a *Architecture) MarshalYAML() (any, error) {
 	return a.Name, nil
 }
 
@@ -104,6 +104,8 @@ func (ArchInfo) Supported() []ArchInfo {
 // Parse extracts architecture information from a string identifier.
 // Matches against known architecture types and aliases, setting type,
 // version, and raw values. Returns an error if parsing fails.
+//
+//nolint:gocognit // Complex function - refactoring into smaller functions is a separate improvement task
 func (a *Architecture) ParseFrom(name string, comparisons ...func(string, string) bool) error {
 	if len(comparisons) == 0 {
 		comparisons = append(comparisons, strings.Contains)
@@ -189,7 +191,7 @@ func (a *Architecture) IsCompatibleWith(other Architecture) bool {
 
 // String returns the canonical string representation of the architecture.
 // Includes version information for ARM architectures (e.g., "armv7").
-func (a Architecture) String() string {
+func (a *Architecture) String() string {
 	if a.version != 0 {
 		if a.canonical == armString {
 			return fmt.Sprintf("armv%d", a.version)

@@ -58,7 +58,5 @@ func (h *Hints) Reduced() *Hints {
 		return hint.Pattern == ""
 	})
 
-	result := Hints(reduced)
-
-	return &result
+	return &reduced
 }

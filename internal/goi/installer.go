@@ -20,7 +20,11 @@ func (i *Installer) Install(path string) (output string, err error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 
 	// Prepare the command
-	cmd := exec.Command(i.Binary.File.Path(), "install", path)
+	cmd := exec.Command( //nolint:gosec // Path is validated by upstream tool configuration
+		i.Binary.File.Path(),
+		"install",
+		path,
+	)
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, i.Binary.Env.ToSlice()...)
 

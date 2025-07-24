@@ -15,12 +15,18 @@ import (
 type Level int
 
 const (
-	SILENT Level = iota - 1 // no logging
-	DEBUG                   // detailed debug information
-	INFO                    // normal operational messages
-	WARN                    // potentially harmful situations
-	ERROR                   // error events
-	ALWAYS                  // always shown regardless of current log level
+	// SILENT indicates no logging output.
+	SILENT Level = iota - 1
+	// DEBUG indicates detailed debug information.
+	DEBUG
+	// INFO indicates normal operational messages.
+	INFO
+	// WARN indicates potentially harmful situations.
+	WARN
+	// ERROR indicates error events.
+	ERROR
+	// ALWAYS indicates messages always shown regardless of current log level.
+	ALWAYS
 )
 
 // Logger holds the configuration for logging.

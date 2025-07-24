@@ -32,17 +32,23 @@ func (t *Type) From(name string) {
 	*t = Type(name)
 }
 
-// TODO(Idelchi): go generate the source type strings
+// TODO(Idelchi): go generate the source type strings //nolint:godox // TODO comment provides valuable context for
+// future development
 
 const (
-	GITHUB Type = "github" // GitHub source type
-	GITLAB Type = "gitlab" // GitLab source type
-	URL    Type = "url"    // URL source type
-	NONE   Type = "none"   // No source type
-	GO     Type = "go"     // Go source type
+	// GITHUB indicates GitHub as the source type.
+	GITHUB Type = "github"
+	// GITLAB indicates GitLab as the source type.
+	GITLAB Type = "gitlab"
+	// URL indicates a direct URL as the source type.
+	URL Type = "url"
+	// NONE indicates no source type.
+	NONE Type = "none"
+	// GO indicates Go modules as the source type.
+	GO Type = "go"
 )
 
-// TODO(Idelchi): Add validation.
+// TODO(Idelchi): Add validation. //nolint:godox // TODO comment provides valuable context for future development.
 type Source struct {
 	GitHub github.GitHub
 	URL    url.URL
@@ -64,6 +70,8 @@ type Populator interface {
 
 // Installer returns the appropriate Populator implementation for the source Type.
 // Returns an error if the source type is unknown or unsupported.
+//
+//nolint:ireturn // Returning interface is intentional for factory pattern
 func (s *Source) Installer() (Populator, error) {
 	switch s.Type {
 	case GITHUB:

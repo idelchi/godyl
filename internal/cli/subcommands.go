@@ -17,7 +17,9 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Subcommands adds all subcommands to the root command.
+// subcommands adds all subcommands to the root command.
+//
+
 func subcommands(cmd *cobra.Command, global *root.Config, embedded *common.Embedded) {
 	cmd.AddCommand(
 		install.Command(global, &global.Install, embedded),

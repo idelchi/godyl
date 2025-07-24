@@ -17,17 +17,17 @@ import (
 type Type string
 
 const (
-	// TypeGlob indicates that the hint is a glob pattern.
+	// Glob indicates that the hint is a glob pattern.
 	Glob Type = "glob"
-	// TypeRegex indicates that the hint is a regular expression.
+	// Regex indicates that the hint is a regular expression.
 	Regex Type = "regex"
-	// TypeGlobStar indicates that the hint is a globstar pattern.
+	// GlobStar indicates that the hint is a globstar pattern.
 	GlobStar Type = "globstar"
-	// TypeStartsWith indicates that the hint is a startswith pattern.
+	// StartsWith indicates that the hint is a startswith pattern.
 	StartsWith Type = "startswith"
-	// TypeEndsWith indicates that the hint is an endswith pattern.
+	// EndsWith indicates that the hint is an endswith pattern.
 	EndsWith Type = "endswith"
-	// TypeContains indicates that the hint is a contains pattern.
+	// Contains indicates that the hint is a contains pattern.
 	Contains Type = "contains"
 )
 
@@ -102,11 +102,11 @@ func (h *Hint) Parse() (err error) {
 		h.Type = Glob
 	}
 
-	if err := h.Weight.Parse(); err != nil {
+	if err := h.Weight.Parse(); err != nil { //nolint:govet // Shadow variable naming is intentional
 		return fmt.Errorf("parsing weight: %w", err)
 	}
 
-	if err := h.Match.Parse(); err != nil {
+	if err := h.Match.Parse(); err != nil { //nolint:govet // Shadow variable naming is intentional
 		return fmt.Errorf("parsing match: %w", err)
 	}
 

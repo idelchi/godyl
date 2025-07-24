@@ -35,7 +35,7 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 	binary.noVerifySSL = noVerifySSL
 
 	// 1: Search for go binary on system
-	if path, err := exec.LookPath("go"); err == nil {
+	if path, err := exec.LookPath("go"); err == nil { //nolint:govet // Shadow variable naming is intentional
 		binary.File = file.New(path)
 		binary.Env = Env{}
 		binary.Dir = folder.New(binary.File.Dir())
@@ -51,7 +51,7 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 	}
 
 	binary.Dir = tmp.GodylDir("go")
-	if err := binary.Dir.Create(); err != nil {
+	if err := binary.Dir.Create(); err != nil { //nolint:govet // Shadow variable naming is intentional
 		return binary, fmt.Errorf("creating dir: %w", err)
 	}
 

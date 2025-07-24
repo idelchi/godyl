@@ -5,6 +5,7 @@
 package goc
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"slices"
@@ -32,7 +33,8 @@ type Go struct {
 // Initialize sets up the Go project configuration from the given name.
 // Uses the associated GitHub repository for initialization.
 //
-// TODO(Idelchi): This should be ignored if the version is already set.
+// TODO(Idelchi): This should be ignored if the version is already set. //nolint:godox // TODO comment provides valuable
+// context for future development
 // As a workaround, just return nil for now.
 func (g *Go) Initialize(name string) error {
 	if g.Base != "github.com" {
@@ -63,8 +65,9 @@ func (g *Go) URL(_ string, _ []string, version string, _ match.Requirements) err
 	return nil
 }
 
-// TODO(Idelchi): Remove this at some point - why do we need it?
-var mu sync.Mutex
+// TODO(Idelchi): Remove this at some point - why do we need it? //nolint:godox // TODO comment provides valuable
+// context for future development.
+var mu sync.Mutex //nolint:gochecknoglobals // Global mutex for thread-safe access across package
 
 // Install downloads and builds the Go project using 'go install'.
 // Handles temporary directory creation, environment setup, and file linking.
@@ -119,8 +122,8 @@ func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output str
 	}
 
 	defer func() {
-		if err == nil {
-			folder.Remove() //nolint:gosec 		// TODO(Idelchi): Address this later.
+		if removeErr := folder.Remove(); removeErr != nil {
+			err = errors.Join(err, removeErr)
 		}
 	}()
 
@@ -129,9 +132,12 @@ func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output str
 
 		if err == nil {
 			d.Path = path
-			found, err := common.FindAndSymlink(file.New(folder.Path()), d)
+			found, findErr := common.FindAndSymlink(
+				file.New(folder.Path()),
+				d,
+			)
 
-			return output, found, err
+			return output, found, findErr
 		}
 	}
 

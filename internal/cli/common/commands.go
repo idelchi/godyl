@@ -1,3 +1,4 @@
+// Package common provides shared utilities and types for CLI command handling.
 package common
 
 import (
@@ -14,11 +15,16 @@ import (
 	"github.com/idelchi/godyl/pkg/validator"
 )
 
+// Trackable defines the interface for configuration objects that can track and validate their state.
 type Trackable interface {
 	Store(tracker *koanfx.Tracker)
 	Validate() error
 }
 
+// KCreateSubcommandPreRunE creates a PreRunE function for Cobra commands that handles configuration loading,
+// environment variable processing, flag parsing, and validation.
+//
+//nolint:gocognit // Complex function - refactoring into smaller functions is a separate improvement task
 func KCreateSubcommandPreRunE(
 	cmd *cobra.Command,
 	cfg Trackable,

@@ -10,8 +10,8 @@ import (
 )
 
 type Latest struct {
-	Version   string
-	Changelog string
+	Version   string `json:"version"`
+	Changelog string `json:"changelog"`
 }
 
 // Get reaches out to https://idelchi.github.io/godyl to check if there's a new version available.

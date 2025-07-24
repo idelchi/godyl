@@ -27,7 +27,7 @@ func (c *Command) From(command string) {
 // Shell executes the Command using mvdan/sh shell interpreter.
 // It captures both stdout and stderr output, supports environment variables,
 // and returns the stdout output or an error if execution fails.
-func (c *Command) Shell(env ...string) (string, error) {
+func (c *Command) Shell(ctx context.Context, env ...string) (string, error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 
 	// Parse the command string into a shell script
@@ -48,7 +48,7 @@ func (c *Command) Shell(env ...string) (string, error) {
 	}
 
 	// Execute the parsed command
-	err = runner.Run(context.TODO(), file)
+	err = runner.Run(ctx, file)
 	if err != nil {
 		return "", fmt.Errorf(
 			"%w: %w: stdout: %s: stderr: %s",

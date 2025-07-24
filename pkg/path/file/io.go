@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"strings"
 )
 
 // createFolder creates the directory for this file if it does not exist.
@@ -111,6 +112,25 @@ func (f File) Read() ([]byte, error) {
 	}
 
 	return file, nil
+}
+
+// Lines retrieves the file contents as a slice of strings.
+func (f File) Lines() ([]string, error) {
+	data, err := os.ReadFile(f.String())
+	if err != nil {
+		return nil, fmt.Errorf("reading file %q: %w", f, err)
+	}
+
+	// Count lines for pre-allocation
+	lineCount := strings.Count(string(data), "\n") + 1
+
+	returns := make([]string, 0, lineCount)
+
+	for line := range strings.SplitSeq(string(data), "\n") {
+		returns = append(returns, strings.TrimRight(line, "\r"))
+	}
+
+	return returns, nil
 }
 
 // Remove deletes the file from the filesystem.

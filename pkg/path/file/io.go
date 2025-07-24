@@ -116,7 +116,7 @@ func (f File) Read() ([]byte, error) {
 
 // Lines retrieves the file contents as a slice of strings.
 func (f File) Lines() ([]string, error) {
-	data, err := os.ReadFile(f.String())
+	data, err := f.Read()
 	if err != nil {
 		return nil, fmt.Errorf("reading file %q: %w", f, err)
 	}

@@ -306,3 +306,23 @@ func (f File) Size() (int64, error) {
 
 	return info.Size(), nil
 }
+
+// LargerThan checks if the file is larger than the specified size in bytes.
+func (f File) LargerThan(size int64) (bool, error) {
+	currentSize, err := f.Size()
+	if err != nil {
+		return false, fmt.Errorf("checking if file %q is larger than %d bytes: %w", f, size, err)
+	}
+
+	return currentSize > size, nil
+}
+
+// SmallerThan checks if the file is smaller than the specified size in bytes.
+func (f File) SmallerThan(size int64) (bool, error) {
+	currentSize, err := f.Size()
+	if err != nil {
+		return false, fmt.Errorf("checking if file %q is smaller than %d bytes: %w", f, size, err)
+	}
+
+	return currentSize < size, nil
+}

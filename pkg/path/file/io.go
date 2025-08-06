@@ -296,3 +296,13 @@ func (f File) Info() (fs.FileInfo, error) {
 
 	return info, nil
 }
+
+// Size returns the size of the file in bytes.
+func (f File) Size() (int64, error) {
+	info, err := f.Info()
+	if err != nil {
+		return 0, fmt.Errorf("getting file size for %q: %w", f, err)
+	}
+
+	return info.Size(), nil
+}

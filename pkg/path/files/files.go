@@ -2,6 +2,7 @@ package files
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/idelchi/godyl/pkg/path/file"
 )
@@ -62,4 +63,9 @@ func (es Files) AsSlice() []string {
 	}
 
 	return slice
+}
+
+// Contains checks if the collection contains a specified file.
+func (es Files) Contains(file file.File) bool {
+	return slices.Contains(es, file)
 }

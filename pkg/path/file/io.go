@@ -304,6 +304,10 @@ func (f File) Size() (int64, error) {
 		return 0, fmt.Errorf("getting file size for %q: %w", f, err)
 	}
 
+	if !f.IsFile() {
+		return 0, fmt.Errorf("file %q is not a regular file", f)
+	}
+
 	return info.Size(), nil
 }
 

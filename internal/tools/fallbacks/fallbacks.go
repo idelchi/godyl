@@ -3,7 +3,6 @@ package fallbacks
 
 import (
 	"fmt"
-	"slices"
 
 	"github.com/goccy/go-yaml/ast"
 
@@ -27,8 +26,20 @@ func (f *Fallbacks) UnmarshalYAML(node ast.Node) (err error) {
 	return nil
 }
 
+func Compact[T comparable](s []T) []T {
+	seen := make(map[T]bool)
+	result := make([]T, 0, len(s))
+	for _, v := range s {
+		if !seen[v] {
+			seen[v] = true
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
 func (f Fallbacks) Compacted() Fallbacks {
-	return slices.Compact(f)
+	return Compact(f)
 }
 
 func (f Fallbacks) Build(sourceType sources.Type) []sources.Type {

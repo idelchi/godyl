@@ -69,3 +69,16 @@ func (es Files) AsSlice() []string {
 func (es Files) Contains(file file.File) bool {
 	return slices.Contains(es, file)
 }
+
+// Remove removes a file from the collection.
+// Returns true if the file was found and removed, false otherwise.
+func (es *Files) Remove(file file.File) bool {
+	index := slices.Index(*es, file)
+	if index == -1 {
+		return false
+	}
+
+	*es = append((*es)[:index], (*es)[index+1:]...)
+
+	return true
+}

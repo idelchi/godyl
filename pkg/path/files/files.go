@@ -32,6 +32,14 @@ func (es *Files) Add(dir, path string) {
 	*es = append(*es, file.New(dir, path))
 }
 
+// AddFile adds a file to the collection.
+// If the file already exists in the collection, it is not added again.
+func (es *Files) AddFile(f file.File) {
+	if !slices.Contains(*es, f) {
+		*es = append(*es, f)
+	}
+}
+
 // LinksFor creates links for each file in the collection.
 // Creates a link at each path in the collection,
 // pointing to the specified target file.

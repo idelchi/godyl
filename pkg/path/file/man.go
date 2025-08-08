@@ -159,6 +159,30 @@ func (f File) HasExtension() bool {
 	return f.Extension() != ""
 }
 
+// WithoutFolder strips the leading folder path from f if it matches as a full
+// path prefix (on a segment boundary). It never leaves a leading "/" behind.
+func (f File) WithoutFolder(prefix string) File {
+	fp := strings.TrimPrefix(f.Path(), "./")
+
+	// Normalize the prefix: slashes, drop leading "./", and strip trailing "/"
+	p := filepath.ToSlash(prefix)
+	p = strings.TrimPrefix(p, "./")
+	p = strings.Trim(p, "/") // handles both "" and trailing "/"
+
+	if p == "" {
+		return f
+	}
+
+	// Only strip when the prefix is a full segment: "p/"
+	if rest, ok := strings.CutPrefix(fp, p+"/"); ok {
+		return New(rest)
+	}
+
+	// Exact dir match or no match -> leave unchanged
+	// (If you prefer stripping exact match to "", return New("") here.)
+	return f
+}
+
 // Unescape decodes URL-escaped characters in the path.
 // Returns the original path if unescaping fails.
 func (f File) Unescape() File {

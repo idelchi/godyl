@@ -1,0 +1,2 @@
+<UTF-8 BOM>#!/usr/bin/env python3
+print("Hello, UTF-8 with BOM!")

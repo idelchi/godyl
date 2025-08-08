@@ -1,18 +1,14 @@
 package file
 
 import (
-	"bytes"
-	"crypto/sha256"
 	"fmt"
 	"io/fs"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/bmatcuk/doublestar/v4"
-	"github.com/gabriel-vasile/mimetype"
 
 	"github.com/idelchi/godyl/pkg/utils"
 )
@@ -197,75 +193,4 @@ func (f File) Size() (int64, error) {
 	}
 
 	return info.Size(), nil
-}
-
-// LargerThan checks if the file is larger than the specified size in bytes.
-func (f File) LargerThan(size int64) (bool, error) {
-	currentSize, err := f.Size()
-	if err != nil {
-		return false, fmt.Errorf("checking if file %q is larger than %d bytes: %w", f, size, err)
-	}
-
-	return currentSize > size, nil
-}
-
-// SmallerThan checks if the file is smaller than the specified size in bytes.
-func (f File) SmallerThan(size int64) (bool, error) {
-	currentSize, err := f.Size()
-	if err != nil {
-		return false, fmt.Errorf("checking if file %q is smaller than %d bytes: %w", f, size, err)
-	}
-
-	return currentSize < size, nil
-}
-
-// Hash computes the hash of the file's contents.
-func (f File) Hash() (string, error) {
-	data, err := f.Read()
-	if err != nil {
-		return "", fmt.Errorf("reading file %q: %w", f, err)
-	}
-
-	hash := sha256.Sum256(data)
-
-	return fmt.Sprintf("%x", hash), nil
-}
-
-// IsBinaryLike checks if the file is binary-like.
-func (f File) IsBinaryLike() bool {
-	// Skip if not a file or not existing
-	if !f.IsFile() || !f.Exists() {
-		return false
-	}
-
-	m, err := mimetype.DetectFile(f.Path())
-	if err == nil {
-		for p := m; p != nil; p = p.Parent() {
-			if p.Is("text/plain") ||
-				p.Is("application/json") || p.Is("application/xml") || p.Is("image/svg+xml") {
-				return false
-			}
-
-			s := p.String()
-
-			if strings.HasSuffix(s, "+json") || strings.HasSuffix(s, "+xml") {
-				return false
-			}
-		}
-	}
-
-	// Tiny content-based fallback
-	r, err := f.Open()
-	if err == nil {
-		defer r.Close()
-		buf := make([]byte, 128<<10) // 128 KiB cap
-		n, _ := r.Read(buf)
-		b := buf[:n]
-
-		if utf8.Valid(b) && !bytes.Contains(b, []byte{0}) {
-			return false
-		}
-	}
-
-	return true
 }

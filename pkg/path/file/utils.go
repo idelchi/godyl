@@ -44,10 +44,7 @@ func (f File) Hash() (string, error) {
 
 // IsBinaryLike checks if the file is binary-like.
 func (f File) IsBinaryLike() bool {
-	if !f.Exists() {
-		return false
-	}
-	if !f.IsFile() {
+	if !f.Exists() || !f.IsFile() {
 		return false
 	}
 

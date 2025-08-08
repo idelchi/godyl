@@ -1,6 +1,7 @@
 package file
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"fmt"
 	"io/fs"
@@ -8,8 +9,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/bmatcuk/doublestar/v4"
+	"github.com/gabriel-vasile/mimetype"
 
 	"github.com/idelchi/godyl/pkg/utils"
 )
@@ -226,4 +229,43 @@ func (f File) Hash() (string, error) {
 	hash := sha256.Sum256(data)
 
 	return fmt.Sprintf("%x", hash), nil
+}
+
+// IsBinaryLike checks if the file is binary-like.
+func (f File) IsBinaryLike() bool {
+	// Skip if not a file or not existing
+	if !f.IsFile() || !f.Exists() {
+		return false
+	}
+
+	m, err := mimetype.DetectFile(f.Path())
+	if err == nil {
+		for p := m; p != nil; p = p.Parent() {
+			if p.Is("text/plain") ||
+				p.Is("application/json") || p.Is("application/xml") || p.Is("image/svg+xml") {
+				return false
+			}
+
+			s := p.String()
+
+			if strings.HasSuffix(s, "+json") || strings.HasSuffix(s, "+xml") {
+				return false
+			}
+		}
+	}
+
+	// Tiny content-based fallback
+	r, err := f.Open()
+	if err == nil {
+		defer r.Close()
+		buf := make([]byte, 128<<10) // 128 KiB cap
+		n, _ := r.Read(buf)
+		b := buf[:n]
+
+		if utf8.Valid(b) && !bytes.Contains(b, []byte{0}) {
+			return false
+		}
+	}
+
+	return true
 }

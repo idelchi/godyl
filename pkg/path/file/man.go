@@ -224,5 +224,6 @@ func (f File) Hash() (string, error) {
 	}
 
 	hash := sha256.Sum256(data)
+
 	return fmt.Sprintf("%x", hash), nil
 }

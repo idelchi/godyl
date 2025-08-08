@@ -3,6 +3,7 @@ package file
 import (
 	"bytes"
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"strings"
 	"unicode/utf8"
@@ -39,7 +40,7 @@ func (f File) Hash() (string, error) {
 
 	hash := sha256.Sum256(data)
 
-	return fmt.Sprintf("%x", hash), nil
+	return hex.EncodeToString(hash[:]), nil
 }
 
 // IsBinaryLike checks if the file is binary-like.

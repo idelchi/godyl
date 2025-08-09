@@ -41,6 +41,27 @@ func main() {
 
 	// os.Exit(0)
 
+	// fs := files.New("include/lib/headers", "a.h", "b.h")
+	// fs = append(fs, files.New("include/src/bin", "a.exe", "b.exe")...)
+
+	// for _, file := range fs {
+	// 	// fmt.Println(file.WithoutFolder("include/lib/headers"))
+	// 	// fmt.Println(file.WithoutFolder("include/lib/headers/"))
+	// 	relative, err := file.RelativeTo("include")
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 	} else {
+	// 		fmt.Println(relative)
+	// 	}
+	// 	// relative, err = file.RelativeTo("include/lib/headers/")
+	// 	// if err != nil {
+	// 	// 	fmt.Println(err)
+	// 	// } else {
+	// 	// 	fmt.Println(relative)
+	// 	// }
+	// }
+
+	// os.Exit(0)
 	now := time.Now()
 	// Execute the application
 	if err := app.Execute(version, embeds); err != nil {

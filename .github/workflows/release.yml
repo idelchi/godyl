@@ -12,7 +12,7 @@ on:
 
 jobs:
   release:
-    uses: idelchi/devenv/.github/workflows/gorelease.yml@dev
+    uses: idelchi/devenv/.github/workflows/gorelease.yml@main
     if: startsWith(github.ref, 'refs/tags/') && !endsWith(github.ref, '-beta')
     permissions:
       contents: write
@@ -20,7 +20,7 @@ jobs:
       config: .devenv/settings/.goreleaser.yaml
 
   docker:
-    uses: idelchi/devenv/.github/workflows/docker.yml@dev
+    uses: idelchi/devenv/.github/workflows/docker.yml@main
     if: ${{ !startsWith(github.ref, 'refs/tags/') }}
     permissions:
       contents: write

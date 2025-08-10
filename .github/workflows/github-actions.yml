@@ -11,10 +11,10 @@ on:
 
 jobs:
   info:
-    uses: idelchi/devenv/.github/workflows/info.yml@dev
+    uses: idelchi/devenv/.github/workflows/info.yml@main
 
   lint:
-    uses: idelchi/devenv/.github/workflows/task.yml@dev
+    uses: idelchi/devenv/.github/workflows/task.yml@main
     needs: info
 
   test:

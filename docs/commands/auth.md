@@ -12,14 +12,14 @@ The `auth` command provides a convenient way of adding or removing tokens from e
 ## Syntax
 
 ```sh
-godyl auth [remove|set] [flags]
+godyl auth [store|remove] [flags]
 ```
 
 ## Subcommands
 
 | Subcommand                           | Description                                |
 | :----------------------------------- | :----------------------------------------- |
-| `set [token]...`                     | Store tokens from the parsed configuration |
+| `store [token]...`                   | Store tokens from the parsed configuration |
 | `remove [token]...`, `rm [token]...` | Remove authentication tokens               |
 
 ## Examples
@@ -27,13 +27,13 @@ godyl auth [remove|set] [flags]
 ### Set all values from the `tokens.env` file
 
 ```sh
-godyl --env-file=tokens.env auth set
+godyl --env-file=tokens.env auth store
 ```
 
 ### Set a specific token in the keyring
 
 ```sh
-GODYL_GITHUB_TOKEN=token godyl --keyring auth set github-token
+GODYL_GITHUB_TOKEN=token godyl --keyring auth store github-token
 ```
 
 ### Remove all authentication tokens

@@ -26,20 +26,20 @@ This is the simplest form to download the latest release of `envprof` from the t
 For more complex configurations, you can use the extended form:
 
 ```yaml
-name: idelchi/envprof
-description: Environment profile manager
-exe:
-  name: envprof
-  patterns:
-    - "**/{{ .Exe }}{{ .EXTENSION }}"
-aliases:
-  - ep
-source:
-  type: github
-tags:
-  - cli
-  - env
-strategy: sync
+- name: idelchi/envprof
+  description: Environment profile manager
+  exe:
+    name: envprof
+    patterns:
+      - "**/{{ .Exe }}{{ .EXTENSION }}"
+  aliases:
+    - ep
+  source:
+    type: github
+  tags:
+    - cli
+    - env
+  strategy: sync
 ```
 
 A complete reference for all fields is available below.
@@ -47,135 +47,137 @@ A complete reference for all fields is available below.
 ### Full form
 
 ```yaml
-# Name of the tool to download. Used as display name and for inferring other fields.
-name: idelchi/envprof
-# Optional description of the tool, for documentation purposes.
-description: Profile-based environment variable manager
-# Version tracking of the tool. Specifies the target version, as well as how to parse the current version.
-version:
-  # For `github` and `gitlab` sources, leave empty to fetch the latest release from the API.
-  # The version is always available as {{ .Version }}, expect when not set.
-  # It is then only available after the API call has been made.
-  version: v0.1.0
-  # Commands to run to get the current installed version (for syncs),
-  # whenever not available in the cache.
-  commands:
-    - --version
-    - version
-  # Regex patterns to extract the version from command output (for syncs),
-  # whenever not available in the cache.
-  patterns:
-    - '.*?(\d+\.\d+\.\d+).*'
-# The download url. For `github` and `gitlab` sources,
-# leave empty to populate from the API.
-url: "https://github.com/idelchi/envprof/releases/download/v0.0.1/envprof_{{ .OS }}_{{ .ARCH }}.tar.gz"
-# The output directory where the tool will be placed.
-output: ~/.local/bin # [`--output`]
-# The executable name. Specifies the desired output name of the executable,
-# as well as the patterns to find it in the downloads.
-exe:
-  # The name to use for the executable.
-  # Will be inferred from `name` using source-specific rules if not provided.
+  # Name of the tool to download. Used as display name and for inferring other fields.
+- name: idelchi/envprof
+  # Optional description of the tool, for documentation purposes.
+  description: Profile-based environment variable manager
+  # Version tracking of the tool. Specifies the target version, as well as how to parse the current version.
+  version:
+    # For `github` and `gitlab` sources, leave empty to fetch the latest release from the API.
+    # The version is always available as {{ .Version }}, expect when not set.
+    # It is then only available after the API call has been made.
+    version: v0.1.0
+    # Commands to run to get the current installed version (for syncs),
+    # whenever not available in the cache.
+    commands:
+      - --version
+      - version
+    # Regex patterns to extract the version from command output (for syncs),
+    # whenever not available in the cache.
+    patterns:
+      - '.*?(\d+\.\d+\.\d+).*'
+  # The download url. For `github` and `gitlab` sources,
+  # leave empty to populate from the API.
+  url: "https://github.com/idelchi/envprof/releases/download/v0.0.1/envprof_{{ .OS }}_{{ .ARCH }}.tar.gz"
+  # The output directory where the tool will be placed.
+  output: ~/.local/bin # [`--output`]
+  # The executable name. Specifies the desired output name of the executable,
+  # as well as the patterns to find it in the downloads.
+  exe:
+    # The name to use for the executable.
+    # Will be inferred from `name` using source-specific rules if not provided.
+    # If no suffix is provided, the platform-specific suffix will be added.
+    name: envprof
+    # Glob patterns to find the executable in the downloads.
+    # Uses globstar, so you can use `**` to match any number of directories.
+    patterns:
+      - "**/{{ .OS }}-{{ .Exe }}*{{ .EXTENSION }}"
+  # A list of aliases for the tool. Will create symlinks (or copies on Windows).
   # If no suffix is provided, the platform-specific suffix will be added.
-  name: envprof
-  # Glob patterns to find the executable in the downloads.
-  # Uses globstar, so you can use `**` to match any number of directories.
-  patterns:
-    - "**/{{ .OS }}-{{ .Exe }}*{{ .EXTENSION }}"
-# A list of aliases for the tool. Will create symlinks (or copies on Windows).
-# If no suffix is provided, the platform-specific suffix will be added.
-aliases:
-  - gd
-# A list of fallback strategies to try if the main source strategy fails.
-# Will be used in the order they are defined.
-fallbacks:
-  - go
-# Hints to find the correct asset to download.
-hints:
-  # Pattern to match the asset name. See `type` for allowed syntax.
-  - pattern: "*amd64*"
-    # Weight of the hint. Defaults to 1 if not provided.
-    weight: |-
-      {{- if eq .ARCH "amd64" -}}
-      1
-      {{- else -}}
-      0
-      {{- end -}}
-    # Method to use for matching the pattern.
-    type: glob|regex|globstar|startswith|endswith|contains
-    # Whether to use the weight for matches, require the match, or exclude the match.
-    match: weighted|required|excluded
-source:
-  type: github|gitlab|url|go|none # [`--source`]
-  github:
-    # Inferred from first part of `name` if not provided
-    owner: idelchi
-    # Inferred from last part of `name` if not provided
-    repo: envprof
-    token: secret # [`--github-token`]
-  gitlab:
-    # Inferred from first part of `name` if not provided
-    namespace: idelchi/go-projects
-    # Inferred from last part of `name` if not provided
-    project: envprof
-    token: secret # [`--gitlab-token`]
-    server: https://gitlab.self-hosted.com
-    no-token: false # Suppress usage of token
-  url:
-    token: secret # [`--url-token`]
-    headers:
-      Authorization:
-        - "Bearer {{ .Tokens.URL }}"
-      Content-Type:
-        - application/json
-        - application/x-www-form-urlencoded
-  go:
-    # Specifies the path for the `go install` command.
-    # Useful when the installable is not in the default path (e.g `cmd/<tool>` or `.`).
-    command: cmd/envprof
-# Run custom commands after the installation (or only commands if `source.type` is `none`).
-commands:
-  # The list of commands to run.
+  aliases:
+    - gd
+  # A list of fallback strategies to try if the main source strategy fails.
+  # Will be used in the order they are defined.
+  fallbacks:
+    - go
+  # Hints to find the correct asset to download.
+  hints:
+    # Pattern to match the asset name. See `type` for allowed syntax.
+    - pattern: "*amd64*"
+      # Weight of the hint. Defaults to 1 if not provided.
+      weight: |-
+        {{- if eq .ARCH "amd64" -}}
+        1
+        {{- else -}}
+        0
+        {{- end -}}
+      # Method to use for matching the pattern.
+      type: glob|regex|globstar|startswith|endswith|contains
+      # Whether to use the weight for matches, require the match, or exclude the match.
+      match: weighted|required|excluded
+  source:
+    type: github|gitlab|url|go|none # [`--source`]
+    github:
+      # Inferred from first part of `name` if not provided
+      owner: idelchi
+      # Inferred from last part of `name` if not provided
+      repo: envprof
+      token: secret # [`--github-token`]
+    gitlab:
+      # Inferred from first part of `name` if not provided
+      namespace: idelchi/go-projects
+      # Inferred from last part of `name` if not provided
+      project: envprof
+      token: secret # [`--gitlab-token`]
+      server: https://gitlab.self-hosted.com
+      no-token: false # Suppress usage of token
+    url:
+      token: secret # [`--url-token`]
+      headers:
+        Authorization:
+          - "Bearer {{ .Tokens.URL }}"
+        Content-Type:
+          - application/json
+          - application/x-www-form-urlencoded
+    go:
+      # Specifies the base url of go projects.
+      base: github.com
+      # Specifies the path for the `go install` command.
+      # Useful when the installable is not in the default path (e.g `cmd/<tool>` or `.`).
+      command: cmd/envprof
+  # Run custom commands after the installation (or only commands if `source.type` is `none`).
   commands:
-    - "mkdir -p {{ .Output }}"
-  # Whether to suppress failures in the commands.
-  allow_failure: true
-  # Whether to exit immediately on error.
-  exit_on_error: false
-# List of tags to filter tools.
-tags:
-  - env
-# Strategy for updating existing tools.
-strategy: none|sync|force
-# Skip the tool if the condition is met.
-skip:
-  - reason: "envprof is not available for Darwin"
-    condition: '{{ eq .OS "darwin" }}'
-# The mode for downloading and installing the tool.
-# `find` will download, extract, and find the executable.
-# `extract` will download and extract directly to the output directory.
-mode: find|extract
-# A collection of arbitrary values.
-# Will be available as `{{ .Values.<name> }}` anywhere templating is supported.
-values:
-  customScalar: scalarValue
-  customMap:
-    key1: value1
-    key2: value2
-  customList:
-    - item1
-    - item2
-# A collection of environment variables.
-# Will be accessible as `{{ .Env.<ENV_VAR> }}` anywhere templating is supported.
-env:
-  GH_TOKEN: $GODYL_GITHUB_TOKEN
-# Disable SSL verification.
-no_verify_ssl: false
-# Disable cache usage
-no_cache: false
-# A list of defaults to inherit from.
-inherit:
-  - default
+    # The list of commands to run.
+    commands:
+      - "mkdir -p {{ .Output }}"
+    # Whether to suppress failures in the commands.
+    allow_failure: true
+    # Whether to exit immediately on error.
+    exit_on_error: false
+  # List of tags to filter tools.
+  tags:
+    - env
+  # Strategy for updating existing tools.
+  strategy: none|sync|force
+  # Skip the tool if the condition is met.
+  skip:
+    - reason: "envprof is not available for Darwin"
+      condition: '{{ eq .OS "darwin" }}'
+  # The mode for downloading and installing the tool.
+  # `find` will download, extract, and find the executable.
+  # `extract` will download and extract directly to the output directory.
+  mode: find|extract
+  # A collection of arbitrary values.
+  # Will be available as `{{ .Values.<name> }}` anywhere templating is supported.
+  values:
+    customScalar: scalarValue
+    customMap:
+      key1: value1
+      key2: value2
+    customList:
+      - item1
+      - item2
+  # A collection of environment variables.
+  # Will be accessible as `{{ .Env.<ENV_VAR> }}` anywhere templating is supported.
+  env:
+    GH_TOKEN: $GODYL_GITHUB_TOKEN
+  # Disable SSL verification.
+  no_verify_ssl: false
+  # Disable cache usage
+  no_cache: false
+  # A list of defaults to inherit from.
+  inherit:
+    - default
 ```
 
 Most of the fields also support simplified forms which is described below.

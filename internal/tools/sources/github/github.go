@@ -14,11 +14,11 @@ import (
 
 // GitHub represents a GitHub repository configuration and state.
 type GitHub struct {
-	Data                common.Metadata `yaml:"-" mapstructure:"-""`
+	Data                common.Metadata `mapstructure:"-"     yaml:"-"`
 	latestStoredRelease *github.Release
 	Repo                string `mapstructure:"repo"  yaml:"repo"`
 	Owner               string `mapstructure:"owner" yaml:"owner"`
-	Token               string `mapstructure:"token" mask:"fixed" yaml:"token"`
+	Token               string `mapstructure:"token" yaml:"token" mask:"fixed"`
 	Pre                 bool   `mapstructure:"pre"   yaml:"pre"`
 }
 
@@ -133,12 +133,16 @@ func (g *GitHub) MatchAssetsToRequirements(
 			release, err = repository.GetReleaseFromWeb(version)
 		}
 
-		if err != nil {
+		if err != nil || release == nil {
 			release, err = repository.GetRelease(version)
 		}
 
 		if err != nil {
 			return "", fmt.Errorf("failed to get release: %w", err)
+		}
+
+		if release == nil {
+			return "", fmt.Errorf("failed to get release: is nil")
 		}
 	} else {
 		release = g.latestStoredRelease

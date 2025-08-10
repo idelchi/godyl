@@ -523,6 +523,7 @@
 
 - name: Byron/dua-cli
   description: View disk space usage and delete unwanted data
+  version: v2.30.1
   exe: dua
   skip:
     reason: "dua-cli is for the Darwin platform only supporting amd64"
@@ -784,6 +785,7 @@
 - idelchi/go-next-tag
 - idelchi/tcisd
 - idelchi/envprof
+- idelchi/aggr
 - name: idelchi/wslint
   version:
     commands: -v
@@ -943,5 +945,10 @@
   skip:
     reason: "savvy-cli is not available on windows"
     condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
+
+- name: stefanlogue/meteor
+  description: A highly configurable CLI tool for writing conventional commits
   tags:
     - terminal

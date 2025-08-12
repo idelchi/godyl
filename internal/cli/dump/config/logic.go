@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/idelchi/godyl/internal/cli/common"
 	"github.com/idelchi/godyl/internal/iutils"
@@ -13,7 +14,7 @@ func run(input common.Input) error {
 	cfg, _, _, _, args := input.Unpack()
 
 	if len(args) == 0 {
-		pretty.PrintYAML(cfg)
+		pretty.PrintYAMLMasked(cfg)
 
 		return nil
 	}
@@ -31,6 +32,10 @@ func run(input common.Input) error {
 
 		if len(args) > 1 {
 			fmt.Printf(" ---- %s ----\n", key)
+		}
+
+		if strings.HasSuffix(key, "-token") {
+			val = "********"
 		}
 
 		iutils.Print(iutils.YAML, val)

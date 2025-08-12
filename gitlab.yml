@@ -28,19 +28,11 @@
 - name: apps/tokens
   inherit:
     - gitlab:selfhosted
-    # - custom
 
 - name: apps/tuna
   inherit:
     - gitlab:selfhosted
-    # - custom
 
 - name: apps/gocom
   inherit:
     - gitlab:selfhosted
-    # - custom
-
-- name: apps/agg
-  inherit:
-    - gitlab:selfhosted
-    # - custom

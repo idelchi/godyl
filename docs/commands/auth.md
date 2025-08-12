@@ -12,7 +12,7 @@ The `auth` command provides a convenient way of adding or removing tokens from e
 ## Syntax
 
 ```sh
-godyl auth [store|remove] [flags]
+godyl auth [store|remove|status] [flags]
 ```
 
 ## Subcommands
@@ -21,6 +21,7 @@ godyl auth [store|remove] [flags]
 | :----------------------------------- | :----------------------------------------- |
 | `store [token]...`                   | Store tokens from the parsed configuration |
 | `remove [token]...`, `rm [token]...` | Remove authentication tokens               |
+| `status`                             | Show the status of authentication tokens   |
 
 ## Examples
 
@@ -46,4 +47,10 @@ godyl auth rm
 
 ```sh
 godyl auth rm github-token
+```
+
+### Show the status of authentication tokens
+
+```sh
+godyl auth status
 ```

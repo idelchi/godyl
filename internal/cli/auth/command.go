@@ -14,12 +14,16 @@ import (
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auth",
-		Short: "Store or remove authentication tokens.",
-		Long:  "Store or remove authentication tokens, either in the configuration file or in the keyring",
+		Short: "Interact with authentication tokens.",
+		Long: heredoc.Doc(`
+			Store or remove authentication tokens, either in the configuration file or in the keyring.
+			Check status of authentication tokens.
+		`),
 		Example: heredoc.Doc(`
 			$ godyl auth store
 			$ godyl --keyring auth store
 			$ godyl auth remove
+			# godyl auth status
 		`),
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {

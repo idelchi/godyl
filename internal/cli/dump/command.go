@@ -14,7 +14,7 @@ func Command(global *root.Config, local any, embedded *common.Embedded) *cobra.C
 	cmd := &cobra.Command{
 		Use:     "dump",
 		Short:   "Dump configuration information",
-		Aliases: []string{"ls"},
+		Aliases: []string{"ls", "show"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Since the command is allowed to run with `--show/-s` flag,
 			// we should suppress the default error message for unknown subcommands.

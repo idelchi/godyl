@@ -2,9 +2,7 @@ package file
 
 import (
 	"fmt"
-	"io/fs"
 	"net/url"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -77,17 +75,6 @@ func (f File) Absolute() File {
 	return New(absPath)
 }
 
-// IsExecutable checks if the file has execute permissions.
-// Returns true if any execute bit (user/group/other) is set.
-func (f File) IsExecutable() (bool, error) {
-	info, err := os.Stat(f.String())
-	if err != nil {
-		return false, fmt.Errorf("getting file info: %w", err)
-	}
-
-	return info.Mode()&0o111 != 0, nil
-}
-
 // MakeExecutable sets the file as executable for user, group, and others.
 func (f File) MakeExecutable() error {
 	// Get the current file info
@@ -107,41 +94,6 @@ func (f File) MakeExecutable() error {
 	}
 
 	return nil
-}
-
-// Exists checks if the path exists in the filesystem.
-// Returns true if the path exists, false otherwise.
-func (f File) Exists() bool {
-	_, err := os.Stat(f.String())
-
-	return err == nil
-}
-
-// IsFile checks if the path is a regular file.
-// Returns false for directories, symlinks, and special files.
-func (f File) IsFile() bool {
-	info, err := os.Stat(f.String())
-	if err != nil {
-		return false // File does not exist or error accessing it
-	}
-
-	return info.Mode().IsRegular()
-}
-
-// IsDir checks if the path is a directory.
-// Returns false for regular files and non-existent paths.
-func (f File) IsDir() bool {
-	info, err := os.Stat(f.String())
-	if err != nil {
-		return false // File does not exist or error accessing it
-	}
-
-	return info.Mode().IsDir()
-}
-
-// Extension returns the file's extension as a string, without the leading dot.
-func (f File) Extension() string {
-	return strings.TrimPrefix(filepath.Ext(f.String()), ".")
 }
 
 // WithExtension returns a new File with the specified suffix added to the original file name.
@@ -192,28 +144,4 @@ func (f File) Unescape() File {
 	}
 
 	return File(unescapedPath)
-}
-
-// Info retrieves the file information.
-func (f File) Info() (fs.FileInfo, error) {
-	info, err := os.Stat(f.String())
-	if err != nil {
-		return nil, fmt.Errorf("getting file info for %q: %w", f, err)
-	}
-
-	return info, nil
-}
-
-// Size returns the size of the file in bytes.
-func (f File) Size() (int64, error) {
-	info, err := f.Info()
-	if err != nil {
-		return 0, fmt.Errorf("getting file size for %q: %w", f, err)
-	}
-
-	if !f.IsFile() {
-		return 0, fmt.Errorf("file %q is not a regular file", f)
-	}
-
-	return info.Size(), nil
 }

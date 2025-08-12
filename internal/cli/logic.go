@@ -238,20 +238,23 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	gitlabToken := menv.GetAny("GITLAB_TOKEN", "CI_JOB_TOKEN")
 	urlToken := menv.GetAny("URL_TOKEN")
 
-	if !cfg.AllTokensSet() && !strings.HasPrefix(calledFrom.CommandPath(), "godyl auth") && cfg.Keyring {
-		store := tokenstore.New()
+	if !cfg.AllTokensSet() && cfg.Keyring {
+		commandPath := calledFrom.CommandPath()
+		if !strings.HasPrefix(commandPath, "godyl auth store") {
+			store := tokenstore.New()
 
-		if ok, err := store.Available(); !ok {
-			return err
+			if ok, err := store.Available(); !ok {
+				return err
+			}
+
+			ghToken, _ := store.Get("github-token")
+			glToken, _ := store.Get("gitlab-token")
+			uToken, _ := store.Get("url-token")
+
+			githubToken = iutils.Any(ghToken, githubToken)
+			gitlabToken = iutils.Any(glToken, gitlabToken)
+			urlToken = iutils.Any(uToken, urlToken)
 		}
-
-		ghToken, _ := store.Get("github-token")
-		glToken, _ := store.Get("gitlab-token")
-		uToken, _ := store.Get("url-token")
-
-		githubToken = iutils.Any(ghToken, githubToken)
-		gitlabToken = iutils.Any(glToken, gitlabToken)
-		urlToken = iutils.Any(uToken, urlToken)
 	}
 
 	if err := cobraext.SetFlagIfNotSet(flags.Lookup("github-token"), githubToken); err != nil {

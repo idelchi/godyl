@@ -2,46 +2,11 @@ package file
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
-	"fmt"
 	"strings"
 	"unicode/utf8"
 
 	"github.com/gabriel-vasile/mimetype"
 )
-
-// LargerThan checks if the file is larger than the specified size in bytes.
-func (f File) LargerThan(size int64) (bool, error) {
-	currentSize, err := f.Size()
-	if err != nil {
-		return false, fmt.Errorf("checking if file %q is larger than %d bytes: %w", f, size, err)
-	}
-
-	return currentSize > size, nil
-}
-
-// SmallerThan checks if the file is smaller than the specified size in bytes.
-func (f File) SmallerThan(size int64) (bool, error) {
-	currentSize, err := f.Size()
-	if err != nil {
-		return false, fmt.Errorf("checking if file %q is smaller than %d bytes: %w", f, size, err)
-	}
-
-	return currentSize < size, nil
-}
-
-// Hash computes the hash of the file's contents.
-func (f File) Hash() (string, error) {
-	data, err := f.Read()
-	if err != nil {
-		return "", fmt.Errorf("reading file %q: %w", f, err)
-	}
-
-	hash := sha256.Sum256(data)
-
-	return hex.EncodeToString(hash[:]), nil
-}
 
 // IsBinaryLike checks if the file is binary-like.
 func (f File) IsBinaryLike() bool {

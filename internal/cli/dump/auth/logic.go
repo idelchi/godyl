@@ -15,6 +15,8 @@ func run(input common.Input) error {
 
 	tokens, _ := iutils.StructToKoanf(cfg.Tokens)
 
+	var output any
+
 	switch cfg.Keyring {
 	case true:
 		store := tokenstore.New()
@@ -34,12 +36,15 @@ func run(input common.Input) error {
 			return nil
 		}
 
-		pretty.PrintYAML(values)
+		output = values
+
 	case false:
 		configuration := context.Config.Filtered(tokens.Keys()...)
 
-		pretty.PrintYAML(configuration.Map())
+		output = configuration.Map()
 	}
+
+	pretty.PrintYAML(output)
 
 	return nil
 }

@@ -23,7 +23,7 @@ func Command(global *root.Config, local any) *cobra.Command {
 			$ godyl auth store
 			$ godyl --keyring auth store
 			$ godyl auth remove
-			# godyl auth status
+			$ godyl auth status
 		`),
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {

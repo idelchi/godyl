@@ -4,7 +4,6 @@ package defaults
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/tools/tool"
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
@@ -51,7 +50,7 @@ func (d *Defaults) Pick(names ...string) (tools []*Default, err error) {
 			return nil, err
 		}
 
-		debug.Debug("Found %q in defaults", name)
+		// debug.Debug("Found %q in defaults", name)
 
 		tools = append(tools, t)
 	}
@@ -66,7 +65,7 @@ func (d *Defaults) get(name string) (*Default, error) {
 		return nil, fmt.Errorf("%q not found in defaults", name)
 	}
 
-	debug.Debug("Found %q in defaults", name)
+	// debug.Debug("Found %q in defaults", name)
 
 	return t, nil
 }

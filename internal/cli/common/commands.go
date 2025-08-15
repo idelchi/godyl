@@ -31,7 +31,7 @@ func KCreateSubcommandPreRunE(
 	show root.ShowFuncType,
 ) func(_ *cobra.Command, _ []string) error {
 	return func(_ *cobra.Command, _ []string) error {
-		debug.Debug("[PersistentPreRunE] Current command: %s\n", cmd.CommandPath())
+		debug.Debug("[PersistentPreRunE] Current command: %s", cmd.CommandPath())
 
 		commandPath := BuildCommandPath(cmd)
 		envPrefix := commandPath.Env().Scoped()

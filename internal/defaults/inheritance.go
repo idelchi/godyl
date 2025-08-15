@@ -59,7 +59,7 @@ func (d Defaults) ResolveInheritance() error {
 		slices.Reverse(*t.Inherit)
 
 		for _, p := range *t.Inherit { // direct parents, in declared order
-			debug.Debug("constructing merge %q -> %q", name, p)
+			debug.Debug("  - constructing merge %q -> %q", name, p)
 
 			if err := t.MergeInto(d[p]); err != nil {
 				return fmt.Errorf("merging %q into %q: %w", p, name, err)

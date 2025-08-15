@@ -919,6 +919,7 @@
 
 - name: alexpasmantier/television
   description: A cross-platform, fast and extensible general purpose fuzzy finder for the terminal.
+  version: 0.13.2
   exe: tv
   hints:
     - pattern: .zip

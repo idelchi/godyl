@@ -84,6 +84,8 @@ func (ts Tools) ResolveInheritance(d *defaults.Defaults) error {
 			return fmt.Errorf("resolving inheritance for %q: %w", t.Name, err)
 		}
 
+		debug.Debug("Inherits for %q: %v\n", t.Name, *t.Inherit)
+
 		// Construct the default from the inherits
 		toolDefault, err := tool.MergeRightToLeft(inherits...)
 		if err != nil {

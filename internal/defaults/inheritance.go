@@ -2,6 +2,7 @@ package defaults
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/pkg/dag"
@@ -53,7 +54,9 @@ func (d Defaults) ResolveInheritance() error {
 			continue
 		}
 
-		debug.Debug("Processing %q with inheritance: %v", name, t.Inherit)
+		debug.Debug("Processing %q with inheritance: %v", name, *t.Inherit)
+
+		slices.Reverse(*t.Inherit)
 
 		for _, p := range *t.Inherit { // direct parents, in declared order
 			debug.Debug("constructing merge %q -> %q", name, p)

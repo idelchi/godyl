@@ -919,6 +919,7 @@
 
 - name: alexpasmantier/television
   description: A cross-platform, fast and extensible general purpose fuzzy finder for the terminal.
+  version: 0.13.2
   exe: tv
   hints:
     - pattern: .zip
@@ -950,5 +951,23 @@
 
 - name: stefanlogue/meteor
   description: A highly configurable CLI tool for writing conventional commits
+  tags:
+    - terminal
+
+- name: regclient/regclient
+  description: Docker and OCI Registry Client in Go and tooling using those libraries.
+  exe: regctl
+  tags:
+    - terminal
+
+- name: regclient/regclient
+  description: Docker and OCI Registry Client in Go and tooling using those libraries.
+  exe: regsync
+  tags:
+    - terminal
+
+- name: regclient/regclient
+  description: Docker and OCI Registry Client in Go and tooling using those libraries.
+  exe: regbot
   tags:
     - terminal

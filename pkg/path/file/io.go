@@ -76,7 +76,7 @@ func (f File) OpenForWriting() (*os.File, error) {
 func (f File) Write(data []byte) (err error) {
 	file, err := f.OpenForWriting()
 	if err != nil {
-		return fmt.Errorf("opening file %q for writing: %w", f, err)
+		return err
 	}
 
 	defer func() {

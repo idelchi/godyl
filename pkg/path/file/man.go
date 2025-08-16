@@ -3,6 +3,7 @@ package file
 import (
 	"fmt"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -50,8 +51,13 @@ func (f File) Join(paths ...string) File {
 
 // Expanded resolves home directory references.
 // Replaces ~ with the user's home directory path.
-func (f File) Expanded() File {
+func (f File) ExpandedX() File {
 	return New(utils.ExpandHome(f.String()))
+}
+
+// Expanded resolves environment variables including `~` home directory references.
+func (f File) Expanded() File {
+	return New(os.ExpandEnv(utils.ExpandHome(f.String())))
 }
 
 // Dir returns the containing directory path.

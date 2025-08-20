@@ -118,3 +118,13 @@ func (f File) InPath() bool {
 
 	return err == nil
 }
+
+// NumberOfLines returns the number of lines in the file.
+func (f File) NumberOfLines() (int, error) {
+	data, err := f.Read()
+	if err != nil {
+		return 0, fmt.Errorf("reading file %q: %w", f, err)
+	}
+
+	return len(strings.Split(string(data), "\n")), nil
+}

@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+// Set checks if the path is non-empty.
+func (f File) Set() bool {
+	return f.String() != ""
+}
+
 // IsExecutable checks if the file has execute permissions.
 // Returns true if any execute bit (user/group/other) is set.
 func (f File) IsExecutable() (bool, error) {

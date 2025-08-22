@@ -14,7 +14,16 @@ type Files []file.File
 // New creates a Files collection from path strings.
 // Joins each path with the provided directory to create full paths.
 // Empty paths are skipped, and an empty directory uses paths as-is.
+// When called with only one argument, assumes:
+//
+//	dir = ""
+//	paths = []string{dir}
 func New(dir string, paths ...string) (fs Files) {
+	if len(paths) == 0 {
+		paths = []string{dir}
+		dir = ""
+	}
+
 	for _, path := range paths {
 		if path == "" {
 			continue

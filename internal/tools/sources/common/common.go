@@ -145,7 +145,11 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 	}
 
 	// Create symlinks for the aliases
-	aliases := files.New(d.Output, d.Aliases...)
+	if len(d.Aliases) > 0 {
+		aliases := files.New(d.Output, d.Aliases...)
 
-	return destination, aliases.LinksFor(target)
+		return destination, aliases.LinksFor(target)
+	}
+
+	return destination, nil
 }

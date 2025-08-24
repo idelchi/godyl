@@ -502,8 +502,6 @@
   description: recursively searches directories for a regex pattern
   exe: rg
   skip:
-    - reason: "ripgrep is only available for Linux"
-      condition: '{{ ne .OS "linux" }}'
     - reason: "ripgrep is not available for armv6"
       condition: '{{ and (eq .ARCH "arm") (eq .ARCH_VERSION 6) }}'
   tags:

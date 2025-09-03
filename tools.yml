@@ -776,18 +776,6 @@
   tags:
     - kubernetes
 
-- idelchi/gocry
-- idelchi/gogen
-- idelchi/go-match
-- idelchi/gonc
-- idelchi/go-next-tag
-- idelchi/tcisd
-- idelchi/envprof
-- idelchi/aggr
-- name: idelchi/wslint
-  version:
-    commands: -v
-
 - name: argoproj/argo-cd
   description: Declarative continuous deployment for Kubernetes.
 
@@ -969,3 +957,16 @@
   exe: regbot
   tags:
     - terminal
+
+- idelchi/gocry
+- idelchi/gogen
+- idelchi/go-match
+- idelchi/gonc
+- idelchi/go-next-tag
+- idelchi/tcisd
+- idelchi/envprof
+- idelchi/aggr
+- idelchi/slot
+- name: idelchi/wslint
+  version:
+    commands: -v

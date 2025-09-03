@@ -967,6 +967,7 @@
 - idelchi/envprof
 - idelchi/aggr
 - idelchi/slot
+- idelchi/pwgen
 - name: idelchi/wslint
   version:
     commands: -v

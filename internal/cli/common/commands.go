@@ -1,4 +1,3 @@
-// Package common provides shared utilities and types for CLI command handling.
 package common
 
 import (
@@ -24,7 +23,7 @@ type Trackable interface {
 // KCreateSubcommandPreRunE creates a PreRunE function for Cobra commands that handles configuration loading,
 // environment variable processing, flag parsing, and validation.
 //
-//nolint:gocognit // Complex function - refactoring into smaller functions is a separate improvement task
+//nolint:gocognit // Complex setup function
 func KCreateSubcommandPreRunE(
 	cmd *cobra.Command,
 	cfg Trackable,

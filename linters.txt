@@ -1,21 +1,14 @@
-[go:lint] internal\tools\tool\tool.go:193:1: GetPopulator returns interface (github.com/idelchi/godyl/internal/tools/sources.Populator) (ireturn)
-[go:lint] // GetPopulator returns the last successful populator used by the tool.
-[go:lint] ^
-[go:lint] internal\tools\tool\tool.go:194:1: GetPopulator returns interface (github.com/idelchi/godyl/internal/tools/sources.Populator) (ireturn)
-[go:lint] func (t Tool) GetPopulator() sources.Populator {
-[go:lint] ^
-[go:lint] internal\cli\common\doc.go:2:9: var-naming: avoid meaningless package names (revive)
+[go:lint] internal/cli/common/context.go:1:9: var-naming: avoid meaningless package names (revive)
 [go:lint] package common
 [go:lint]         ^
-[go:lint] internal\config\common\common.go:3:9: var-naming: avoid meaningless package names (revive)
+[go:lint] internal/config/common/trackable.go:1:9: var-naming: avoid meaningless package names (revive)
 [go:lint] package common
 [go:lint]         ^
-[go:lint] internal\tools\sources\common\split.go:1:9: var-naming: avoid meaningless package names (revive)
+[go:lint] internal/tools/sources/common/common.go:1:9: var-naming: avoid meaningless package names (revive)
 [go:lint] package common
 [go:lint]         ^
-[go:lint] pkg\utils\utils.go:3:9: var-naming: avoid meaningless package names (revive)
+[go:lint] pkg/utils/utils.go:3:9: var-naming: avoid meaningless package names (revive)
 [go:lint] package utils
 [go:lint]         ^
-[go:lint] 6 issues:
-[go:lint] * ireturn: 2
+[go:lint] 4 issues:
 [go:lint] * revive: 4

@@ -14,7 +14,7 @@ type Default = tool.Tool
 // Defaults represents a collection of default values for tools.
 type Defaults map[string]*Default
 
-// NewDefaults initializes a new Defaults instance from the provided data.
+// NewDefaultsFromBytes initializes a new Defaults instance from the provided data.
 func NewDefaultsFromBytes(data []byte) (*Defaults, error) {
 	var defaults Defaults
 
@@ -25,7 +25,7 @@ func NewDefaultsFromBytes(data []byte) (*Defaults, error) {
 	return &defaults, nil
 }
 
-// NewDefaults initializes the Defaults instance from the provided file.
+// Load initializes the Defaults instance from the provided file.
 func (d *Defaults) Load(data []byte) error {
 	if err := unmarshal.Strict(data, d); err != nil {
 		return fmt.Errorf("defaults: %w", err)

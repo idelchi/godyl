@@ -221,7 +221,7 @@ func (t *Tool) CheckSkipConditions(tags tags.IncludeTags) result.Result {
 // Download retrieves and installs the tool using its configured source and installer.
 // It handles progress tracking and executes any post-installation commands.
 // Returns a Result indicating success or failure with detailed messages.
-func (t *Tool) Download(ctx context.Context, progressListener getter.ProgressTracker) result.Result {
+func (t *Tool) Download(_ context.Context, progressListener getter.ProgressTracker) result.Result {
 	installer, err := t.Source.Installer()
 	if err != nil {
 		return result.WithFailed("getting installer").Wrap(err)

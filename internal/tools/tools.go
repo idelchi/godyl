@@ -15,6 +15,7 @@ import (
 // Tools represents a collection of Tool configurations.
 type Tools []*tool.Tool
 
+// Append adds a tool to the collection.
 func (ts *Tools) Append(t *tool.Tool) {
 	if t == nil {
 		panic("nil tool in tools collection")
@@ -41,6 +42,7 @@ func (ts Tools) MergeWith(others ...*tool.Tool) error {
 	return nil
 }
 
+// Get retrieves a tool by name from the collection.
 func (ts Tools) Get(name string) *tool.Tool {
 	for _, t := range ts {
 		if t.Name == name {
@@ -51,6 +53,7 @@ func (ts Tools) Get(name string) *tool.Tool {
 	return nil
 }
 
+// GetFirst returns the first tool in the collection.
 func (ts Tools) GetFirst() *tool.Tool {
 	if len(ts) > 0 {
 		return ts[0]
@@ -59,6 +62,7 @@ func (ts Tools) GetFirst() *tool.Tool {
 	panic("no tools in collection")
 }
 
+// DefaultInheritance sets default inheritance for tools that don't have it specified.
 func (ts Tools) DefaultInheritance(inheritance string) {
 	for _, t := range ts {
 		if t.Inherit == nil {
@@ -67,6 +71,7 @@ func (ts Tools) DefaultInheritance(inheritance string) {
 	}
 }
 
+// ResolveInheritance processes tool inheritance using the provided defaults.
 func (ts Tools) ResolveInheritance(d *defaults.Defaults) error {
 	for _, t := range ts {
 		if t == nil {
@@ -101,6 +106,7 @@ func (ts Tools) ResolveInheritance(d *defaults.Defaults) error {
 	return nil
 }
 
+// ResolveNilPointers ensures all tools have non-nil pointer fields.
 func (ts Tools) ResolveNilPointers() error {
 	for _, t := range ts {
 		emptyTool := tool.NewEmptyTool()
@@ -113,6 +119,7 @@ func (ts Tools) ResolveNilPointers() error {
 	return nil
 }
 
+// MergePlatform merges detected platform information into all tools.
 func (ts Tools) MergePlatform() error {
 	platform := detect.Platform{}
 	if err := platform.Detect(); err != nil {
@@ -126,6 +133,7 @@ func (ts Tools) MergePlatform() error {
 	return nil
 }
 
+// Copy performs deep copying of all tools in the collection.
 func (ts Tools) Copy() error {
 	for _, t := range ts {
 		err := t.Copy()

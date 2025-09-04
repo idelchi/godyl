@@ -44,7 +44,7 @@ var ErrInvalidLogLevel = errors.New("invalid log level")
 // If an invalid log level is provided, it defaults to INFO.
 func NewCustom(level Level, output io.Writer) (*Logger, error) {
 	if !level.IsALevel() {
-		return nil, fmt.Errorf("%w: %q, setting to %q\n", ErrInvalidLogLevel, level, INFO)
+		return nil, fmt.Errorf("%w: %q, setting to %q", ErrInvalidLogLevel, level, INFO)
 	}
 
 	return &Logger{

@@ -131,7 +131,7 @@ func (f *TableFormatter) renderTable(results []runner.Result) string {
 	rowNum := 0
 
 	// Set up row painter
-	t.SetRowPainter(func(row table.Row, attr table.RowAttributes) text.Colors {
+	t.SetRowPainter(func(_ table.Row, attr table.RowAttributes) text.Colors {
 		if colors, exists := rowColors[attr.Number]; exists {
 			return colors
 		}

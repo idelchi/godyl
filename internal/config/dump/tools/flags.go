@@ -2,6 +2,7 @@ package tools
 
 import "github.com/spf13/cobra"
 
+// Flags configures the command-line flags for the dump tools command.
 func Flags(cmd *cobra.Command) {
 	cmd.Flags().SortFlags = false
 

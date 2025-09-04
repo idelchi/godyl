@@ -26,6 +26,7 @@ func (f *Fallbacks) UnmarshalYAML(node ast.Node) (err error) {
 	return nil
 }
 
+// Compact removes duplicate elements from a slice while preserving order.
 func Compact[T comparable](s []T) []T {
 	seen := make(map[T]bool)
 
@@ -40,10 +41,12 @@ func Compact[T comparable](s []T) []T {
 	return result
 }
 
+// Compacted returns a new Fallbacks slice with duplicates removed.
 func (f Fallbacks) Compacted() Fallbacks {
 	return Compact(f)
 }
 
+// Build creates a source type list by prepending the given type to fallbacks.
 func (f Fallbacks) Build(sourceType sources.Type) []sources.Type {
 	// Prepend sourceType to the existing fallbacks and remove duplicates
 	return append(Fallbacks{sourceType}, f...).Compacted()

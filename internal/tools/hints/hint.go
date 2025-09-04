@@ -14,6 +14,7 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
+// Type represents different pattern matching types for hints.
 type Type string
 
 const (
@@ -31,14 +32,15 @@ const (
 	Contains Type = "contains"
 )
 
+// Match represents different matching strategies for hints.
 type Match string
 
 const (
 	// Weighted indicates that the hint is a weighted match.
 	Weighted Match = "weighted"
-	// Require indicates that the hint is a required match.
+	// Required indicates that the hint is a required match.
 	Required Match = "required"
-	// Exclude indicates that the hint is an excluded match.
+	// Excluded indicates that the hint is an excluded match.
 	Excluded Match = "excluded"
 )
 
@@ -55,6 +57,7 @@ type Hint struct {
 	Match unmarshal.Templatable[Match]
 }
 
+// Matches evaluates whether the hint pattern matches the given string.
 func (h Hint) Matches(s string) (match bool, err error) {
 	switch h.Type {
 	case Glob:
@@ -79,6 +82,7 @@ func (h Hint) Matches(s string) (match bool, err error) {
 	}
 }
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface for Hint.
 func (h *Hint) UnmarshalYAML(node ast.Node) error {
 	type raw Hint
 
@@ -89,6 +93,7 @@ func (h *Hint) UnmarshalYAML(node ast.Node) error {
 	return nil
 }
 
+// Parse validates and prepares the hint for matching operations.
 func (h *Hint) Parse() (err error) {
 	if h.Weight.IsUnset() {
 		h.Weight.Set("1")

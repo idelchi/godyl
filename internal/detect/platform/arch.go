@@ -36,10 +36,12 @@ type Architecture struct {
 	is32BitUserLand bool
 }
 
+// IsNil returns true if the Architecture pointer is nil.
 func (a *Architecture) IsNil() bool {
 	return a.Name == ""
 }
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface for Architecture.
 func (a *Architecture) UnmarshalYAML(node ast.Node) error {
 	type raw Architecture
 
@@ -50,6 +52,7 @@ func (a *Architecture) UnmarshalYAML(node ast.Node) error {
 	return nil
 }
 
+// MarshalYAML implements the yaml.Marshaler interface for Architecture.
 func (a *Architecture) MarshalYAML() (any, error) {
 	return a.Name, nil
 }
@@ -101,7 +104,7 @@ func (ArchInfo) Supported() []ArchInfo {
 	}
 }
 
-// Parse extracts architecture information from a string identifier.
+// ParseFrom extracts architecture information from a string identifier.
 // Matches against known architecture types and aliases, setting type,
 // version, and raw values. Returns an error if parsing fails.
 //
@@ -218,10 +221,12 @@ func (a *Architecture) To32BitUserLand() {
 	}
 }
 
+// Type returns the canonical architecture type name.
 func (a *Architecture) Type() string {
 	return a.canonical
 }
 
+// Version returns the architecture version number.
 func (a *Architecture) Version() int {
 	return a.version
 }

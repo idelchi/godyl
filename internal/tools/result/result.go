@@ -98,7 +98,7 @@ func (r Result) Wrap(err error) Result {
 	}
 }
 
-// UnsIsFaileduccessful returns true if the Result status is Failed.
+// IsFailed returns true if the Result status is Failed.
 func (r Result) IsFailed() bool {
 	return r.Status == Failed
 }

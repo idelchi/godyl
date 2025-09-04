@@ -1,3 +1,4 @@
+// Package debug provides debugging utilities for development and troubleshooting.
 package debug
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/kr/pretty"
 )
 
+// Debug prints formatted debug messages when DEBUG environment variable is set.
 func Debug(format string, args ...any) {
 	if os.Getenv("DEBUG") != "" {
 		fmt.Printf( //nolint:forbidigo // Debug package is meant for printing
@@ -15,6 +17,7 @@ func Debug(format string, args ...any) {
 	}
 }
 
+// Print outputs debug information using pretty printing when DEBUG environment variable is set.
 func Print(a ...any) {
 	pretty.Print(a) //nolint:errcheck // Debug print functions do not need error handling
 }

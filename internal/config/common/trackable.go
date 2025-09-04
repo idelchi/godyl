@@ -38,8 +38,6 @@ func (t *Tracker) IsSet(name string) bool {
 		for _, n := range t.tracker.Names() {
 			debug.Debug("- %s", n)
 		}
-	} else {
-		// debug.Debug("name %s found in tracker", name)
 	}
 
 	return t.tracker.IsSet(name)

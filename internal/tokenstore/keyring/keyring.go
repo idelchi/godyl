@@ -10,8 +10,10 @@ import (
 )
 
 var (
+	// ErrNotFound indicates that a secret was not found in the keyring.
 	ErrNotFound = errors.New("secret not found in keyring")
-	ErrTimeout  = errors.New("timeout while accessing keyring")
+	// ErrTimeout indicates a timeout occurred while accessing the keyring.
+	ErrTimeout = errors.New("timeout while accessing keyring")
 )
 
 // Set secret in keyring for user.
@@ -79,6 +81,7 @@ func Delete(service, user string, timeout time.Duration) error {
 	}
 }
 
+// DeleteAll removes all secrets for the specified service from the keyring.
 func DeleteAll(service string, timeout time.Duration) error {
 	ch := make(chan error, 1)
 

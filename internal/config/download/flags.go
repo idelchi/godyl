@@ -2,6 +2,7 @@ package download
 
 import "github.com/spf13/cobra"
 
+// Flags configures the command-line flags for the download command.
 func Flags(cmd *cobra.Command) {
 	cmd.Flags().SortFlags = false
 

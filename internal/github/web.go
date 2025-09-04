@@ -28,7 +28,7 @@ func newHTTPClient() *http.Client {
 
 	return &http.Client{
 		Timeout: Timeout,
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 			// Don't follow redirects, we just want the Location header
 			return http.ErrUseLastResponse
 		},
@@ -200,7 +200,7 @@ func parseGitHubReleaseAssets(html string) ([]Asset, error) {
 	var assets []Asset
 
 	// Find all list items in the assets box
-	doc.Find("li.Box-row").Each(func(i int, s *goquery.Selection) {
+	doc.Find("li.Box-row").Each(func(_ int, s *goquery.Selection) {
 		// Find the download link
 		link := s.Find("a[href*='/releases/download/']")
 		if link.Length() > 0 {

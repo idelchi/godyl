@@ -26,7 +26,7 @@ func NewRepository(namespace, repo string, client *gitlab.Client) *Repository {
 }
 
 // GetRelease retrieves a specific release for the repository based on the provided tag.
-func (g *Repository) GetRelease(ctx context.Context, tag string) (*Release, error) {
+func (g *Repository) GetRelease(_ context.Context, tag string) (*Release, error) {
 	path := fmt.Sprintf("%s/%s", g.Namespace, g.Repo)
 
 	gitlabRelease, _, err := g.client.Releases.GetRelease(path, tag)
@@ -90,7 +90,7 @@ func (g *Repository) GetLatestIncludingPreRelease(ctx context.Context, perPage i
 }
 
 // getReleasesWithOptions retrieves releases for the repository using the provided options.
-func (g *Repository) getReleasesWithOptions(ctx context.Context, perPage int) ([]*gitlab.Release, error) {
+func (g *Repository) getReleasesWithOptions(_ context.Context, perPage int) ([]*gitlab.Release, error) {
 	path := fmt.Sprintf("%s/%s", g.Namespace, g.Repo)
 
 	releases, _, err := g.client.Releases.ListReleases(

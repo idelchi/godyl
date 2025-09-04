@@ -1,3 +1,4 @@
+// Package install provides configuration for the install command.
 package install
 
 import (
@@ -6,7 +7,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/strategy"
 )
 
-// Package install provides the configuration for the `install` command.
+// Install provides the configuration for the `install` command.
 type Install struct {
 	// Strategy defines how the installation should be performed
 	Strategy strategy.Strategy `mapstructure:"strategy" validate:"oneof=none sync force" yaml:"strategy"`

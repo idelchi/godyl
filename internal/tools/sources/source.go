@@ -48,6 +48,7 @@ const (
 	GO Type = "go"
 )
 
+// Source represents the configuration for various source types used to retrieve tools.
 // TODO(Idelchi): Add validation. //nolint:godox // TODO comment provides valuable context for future development.
 type Source struct {
 	GitHub github.GitHub

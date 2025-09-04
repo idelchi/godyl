@@ -170,11 +170,12 @@ func (t Tool) GetCurrentVersion() string {
 		Commands: *t.Version.Commands,
 	}
 
-	if parsed, err := exe.Parse(parser); err != nil {
+	parsed, err := exe.Parse(parser)
+	if err != nil {
 		return ""
-	} else {
-		return parsed
 	}
+
+	return parsed
 }
 
 // GetStrategy returns the tool's strategy.

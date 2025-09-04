@@ -28,7 +28,7 @@ func Parse(name string) *semver.Version {
 	return nil
 }
 
-// Compare compares two version strings for equality.
+// Equal compares two version strings for equality.
 // A failure will always return false.
 func Equal(a, b string) bool {
 	// Compare the two versions.

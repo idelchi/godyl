@@ -20,10 +20,12 @@ type Distribution struct {
 	alias string
 }
 
+// IsNil returns true if the Distribution pointer is nil.
 func (d *Distribution) IsNil() bool {
 	return d.Name == ""
 }
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface for Distribution.
 func (d *Distribution) UnmarshalYAML(node ast.Node) error {
 	type raw Distribution
 
@@ -34,6 +36,7 @@ func (d *Distribution) UnmarshalYAML(node ast.Node) error {
 	return nil
 }
 
+// MarshalYAML implements the yaml.Marshaler interface for Distribution.
 func (d *Distribution) MarshalYAML() (any, error) {
 	return d.Name, nil
 }
@@ -75,7 +78,7 @@ func (DistroInfo) Supported() []DistroInfo {
 	}
 }
 
-// Parse extracts distribution information from a string identifier.
+// ParseFrom extracts distribution information from a string identifier.
 // Matches against known distribution types and aliases, setting type
 // and raw values. Returns an error if parsing fails.
 func (d *Distribution) ParseFrom(name string, comparisons ...func(string, string) bool) error {

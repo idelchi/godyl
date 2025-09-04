@@ -7,6 +7,7 @@ import (
 	sprig "github.com/go-task/slim-sprig/v3"
 )
 
+// Apply processes a template field with the provided values.
 func Apply(field string, values any) (string, error) {
 	var buf bytes.Buffer
 
@@ -22,6 +23,7 @@ func Apply(field string, values any) (string, error) {
 	return buf.String(), nil
 }
 
+// ApplyAndSet processes a template field and updates the field in place.
 func ApplyAndSet(field *string, values any) (err error) {
 	*field, err = Apply(*field, values)
 

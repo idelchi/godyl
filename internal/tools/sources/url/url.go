@@ -31,7 +31,7 @@ func (u *URL) Version(_ string) error {
 	return nil
 }
 
-// Path stores the provided URL in the metadata.
+// URL stores the provided URL in the metadata.
 // The URL will be used as the download source during installation.
 func (u *URL) URL(name string, _ []string, _ string, _ match.Requirements) error {
 	u.Data.Set("url", name)

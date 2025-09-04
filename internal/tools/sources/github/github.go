@@ -49,7 +49,7 @@ func (g *GitHub) Version(_ string) error {
 	return nil
 }
 
-// Path finds a matching release asset and stores its URL in metadata.
+// URL finds a matching release asset and stores its URL in metadata.
 // Uses version, extensions, and requirements to find the appropriate asset.
 func (g *GitHub) URL(_ string, extensions []string, version string, requirements match.Requirements) error {
 	ctx := context.Background()

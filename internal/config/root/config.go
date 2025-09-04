@@ -1,3 +1,4 @@
+// Package root provides the root configuration structure for the application.
 package root
 
 import (
@@ -132,7 +133,7 @@ func (c *Config) ToTool(forced bool) *tool.Tool {
 
 	isSet := func(settable Settable) func(name string) bool {
 		if forced {
-			return func(name string) bool {
+			return func(_ string) bool {
 				return true
 			}
 		}

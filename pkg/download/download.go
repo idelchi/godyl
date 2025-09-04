@@ -61,6 +61,7 @@ func New(opts ...Option) *Downloader {
 	return downloader
 }
 
+// ErrDownload indicates a download operation failed.
 var ErrDownload = errors.New("download error")
 
 // Download fetches url to output (archives auto‑extracted).

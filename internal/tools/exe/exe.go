@@ -13,6 +13,7 @@ type Exe struct {
 	Name     string `single:"true"`
 }
 
+// Patterns represents executable pattern matching rules.
 type Patterns = unmarshal.SingleOrSliceType[string]
 
 // UnmarshalYAML implements custom YAML unmarshaling for Exe configuration.

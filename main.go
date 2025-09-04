@@ -1,3 +1,4 @@
+// Package main is the entry point for the godyl tool manager application.
 package main
 
 import (

@@ -1,3 +1,4 @@
+// Package none provides a no-op source implementation for tools that don't require external sources.
 package none
 
 import (
@@ -27,7 +28,7 @@ func (n *None) Version(_ string) error {
 	return nil
 }
 
-// Path is a no-op implementation of the Populator interface.
+// URL is a no-op implementation of the Populator interface.
 func (n *None) URL(_ string, _ []string, _ string, _ match.Requirements) error {
 	return nil
 }

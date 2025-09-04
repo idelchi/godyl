@@ -19,10 +19,12 @@ type Library struct {
 	alias string
 }
 
+// IsNil returns true if the Library pointer is nil.
 func (l *Library) IsNil() bool {
 	return l.Name == ""
 }
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface for Library.
 func (l *Library) UnmarshalYAML(node ast.Node) error {
 	type raw Library
 
@@ -33,6 +35,7 @@ func (l *Library) UnmarshalYAML(node ast.Node) error {
 	return nil
 }
 
+// MarshalYAML implements the yaml.Marshaler interface for Library.
 func (l *Library) MarshalYAML() (any, error) {
 	return l.Name, nil
 }
@@ -68,7 +71,7 @@ func (LibraryInfo) Supported() []LibraryInfo {
 	}
 }
 
-// Parse extracts library information from a string identifier.
+// ParseFrom extracts library information from a string identifier.
 // Matches against known library types and aliases, setting type
 // and raw values. Returns an error if parsing fails.
 func (l *Library) ParseFrom(name string, comparisons ...func(string, string) bool) error {

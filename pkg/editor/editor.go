@@ -12,7 +12,7 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
-// Editor is a struct that provides methods to edit YAML files while preserving comments.
+// YAML is a struct that provides methods to edit YAML files while preserving comments.
 type YAML struct {
 	File file.File
 

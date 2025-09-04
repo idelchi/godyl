@@ -1,3 +1,4 @@
+// Package tools provides configuration for dumping tool information.
 package tools
 
 import (

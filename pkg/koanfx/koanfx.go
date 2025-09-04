@@ -12,6 +12,7 @@ import (
 // Koanf is a wrapper around koanf.Koanf that tracks the keys that have been set.
 type Koanf struct {
 	*koanf.Koanf
+
 	flags   *pflag.FlagSet
 	Tracker *Tracker
 
@@ -128,7 +129,10 @@ func (kwt *Koanf) Filtered(keys ...string) *Koanf {
 		// Only copy keys that exist in the original
 		if kwt.Exists(key) {
 			// Get the value and set it in the new instance
-			filtered.Set(key, kwt.Get(key))
+			if err := filtered.Set(key, kwt.Get(key)); err != nil {
+				// Skip this key if setting fails
+				continue
+			}
 		}
 	}
 

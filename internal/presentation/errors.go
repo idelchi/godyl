@@ -53,12 +53,35 @@ func (f *ErrorFormatter) FormatErrors(errors []results.ErrorDetail) (string, err
 	}
 }
 
+// FormatSummary formats a summary message.
+func (f *ErrorFormatter) FormatSummary(summary results.Summary) string {
+	var parts []string
+
+	if summary.Successful > 0 {
+		parts = append(parts, fmt.Sprintf("%d successful", summary.Successful))
+	}
+
+	if summary.Failed > 0 {
+		parts = append(parts, fmt.Sprintf("%d failed", summary.Failed))
+	}
+
+	if summary.Skipped > 0 {
+		parts = append(parts, fmt.Sprintf("%d skipped", summary.Skipped))
+	}
+
+	if len(parts) == 0 {
+		return "No tools processed"
+	}
+
+	return fmt.Sprintf("Processed %d tools: %s", summary.Total, strings.Join(parts, ", "))
+}
+
 // formatJSON formats errors as JSON.
 func (f *ErrorFormatter) formatJSON(errors []results.ErrorDetail) (string, error) {
 	type jsonError struct {
-		Tool    string `yaml:"tool"`
-		Message string `yaml:"message"`
-		Error   string `yaml:"error,omitempty"`
+		Tool    string `json:"tool"`
+		Message string `json:"message"`
+		Error   string `json:"error,omitempty"`
 	}
 
 	jsonErrors := make([]jsonError, 0, len(errors))
@@ -102,27 +125,4 @@ func (f *ErrorFormatter) formatText(errors []results.ErrorDetail) string {
 	}
 
 	return sb.String()
-}
-
-// FormatSummary formats a summary message.
-func (f *ErrorFormatter) FormatSummary(summary results.Summary) string {
-	var parts []string
-
-	if summary.Successful > 0 {
-		parts = append(parts, fmt.Sprintf("%d successful", summary.Successful))
-	}
-
-	if summary.Failed > 0 {
-		parts = append(parts, fmt.Sprintf("%d failed", summary.Failed))
-	}
-
-	if summary.Skipped > 0 {
-		parts = append(parts, fmt.Sprintf("%d skipped", summary.Skipped))
-	}
-
-	if len(parts) == 0 {
-		return "No tools processed"
-	}
-
-	return fmt.Sprintf("Processed %d tools: %s", summary.Total, strings.Join(parts, ", "))
 }

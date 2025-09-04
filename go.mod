@@ -1,6 +1,6 @@
 module github.com/idelchi/godyl
 
-go 1.24.4
+go 1.25
 
 require (
 	dario.cat/mergo v1.0.1
@@ -11,6 +11,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/fatih/color v1.18.0
 	github.com/fatih/structs v1.1.0
+	github.com/gabriel-vasile/mimetype v1.4.6
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.23.0
@@ -52,7 +53,6 @@ require (
 	github.com/danieljoos/wincred v1.2.2 // indirect
 	github.com/dmarkham/enumer v1.5.11 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.6 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect

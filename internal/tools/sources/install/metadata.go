@@ -1,4 +1,4 @@
-package common
+package install
 
 // Metadata stores arbitrary key-value pairs as string attributes.
 // It provides a safe interface for storing and retrieving metadata information.

@@ -3,7 +3,7 @@ package download
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/processor"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/hints"
@@ -13,12 +13,12 @@ import (
 	"github.com/idelchi/godyl/internal/tools/tags"
 	"github.com/idelchi/godyl/internal/tools/tool"
 	"github.com/idelchi/godyl/internal/tools/version"
+	"github.com/idelchi/godyl/pkg/generic"
 	"github.com/idelchi/godyl/pkg/path/file"
-	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // run executes the `download` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, embedded, _, _, args := input.Unpack()
 
 	if cfg.Download.Dry {
@@ -36,7 +36,7 @@ func run(input common.Input) error {
 			},
 		}
 
-		if utils.IsURL(name) {
+		if generic.IsURL(name) {
 			tool.Name = file.New(name).Base()
 			tool.URL = name
 			tool.Source.Type = sources.URL
@@ -53,7 +53,7 @@ func run(input common.Input) error {
 
 	cfg.Cache.Disabled = true
 
-	runner := common.NewHandler(*cfg, *embedded)
+	runner := core.NewHandler(*cfg, *embedded)
 	if err := runner.SetupLogger(cfg.LogLevel); err != nil {
 		return fmt.Errorf("setting up logger: %w", err)
 	}

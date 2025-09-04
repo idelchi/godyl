@@ -9,7 +9,7 @@ import (
 
 	"github.com/bmatcuk/doublestar/v4"
 
-	"github.com/idelchi/godyl/pkg/utils"
+	"github.com/idelchi/godyl/pkg/generic"
 )
 
 // Matches checks if the file path matches the given (extended glob) pattern.
@@ -49,10 +49,15 @@ func (f File) Join(paths ...string) File {
 	return New(append([]string{f.String()}, paths...)...)
 }
 
-// Expanded resolves home directory references.
+// ExpandedX resolves home directory references.
 // Replaces ~ with the user's home directory path.
+func (f File) ExpandedX() File {
+	return New(generic.ExpandHome(f.String()))
+}
+
+// Expanded resolves environment variables including `~` home directory references.
 func (f File) Expanded() File {
-	return New(utils.ExpandHome(f.String()))
+	return New(os.ExpandEnv(generic.ExpandHome(f.String())))
 }
 
 // Dir returns the containing directory path.
@@ -76,17 +81,6 @@ func (f File) Absolute() File {
 	return New(absPath)
 }
 
-// IsExecutable checks if the file has execute permissions.
-// Returns true if any execute bit (user/group/other) is set.
-func (f File) IsExecutable() (bool, error) {
-	info, err := os.Stat(f.String())
-	if err != nil {
-		return false, fmt.Errorf("getting file info: %w", err)
-	}
-
-	return info.Mode()&0o111 != 0, nil
-}
-
 // MakeExecutable sets the file as executable for user, group, and others.
 func (f File) MakeExecutable() error {
 	// Get the current file info
@@ -108,41 +102,6 @@ func (f File) MakeExecutable() error {
 	return nil
 }
 
-// Exists checks if the path exists in the filesystem.
-// Returns true if the path exists, false otherwise.
-func (f File) Exists() bool {
-	_, err := os.Stat(f.String())
-
-	return err == nil
-}
-
-// IsFile checks if the path is a regular file.
-// Returns false for directories, symlinks, and special files.
-func (f File) IsFile() bool {
-	info, err := os.Stat(f.String())
-	if err != nil {
-		return false // File does not exist or error accessing it
-	}
-
-	return info.Mode().IsRegular()
-}
-
-// IsDir checks if the path is a directory.
-// Returns false for regular files and non-existent paths.
-func (f File) IsDir() bool {
-	info, err := os.Stat(f.String())
-	if err != nil {
-		return false // File does not exist or error accessing it
-	}
-
-	return info.Mode().IsDir()
-}
-
-// Extension returns the file's extension as a string, without the leading dot.
-func (f File) Extension() string {
-	return strings.TrimPrefix(filepath.Ext(f.String()), ".")
-}
-
 // WithExtension returns a new File with the specified suffix added to the original file name.
 func (f File) WithExtension(extension string) File {
 	return New(fmt.Sprintf("%s.%s", f.WithoutExtension().Path(), extension))
@@ -156,6 +115,30 @@ func (f File) WithoutExtension() File {
 // HasExtension checks if the file has an extension.
 func (f File) HasExtension() bool {
 	return f.Extension() != ""
+}
+
+// WithoutFolder strips the leading folder path from f if it matches as a full
+// path prefix (on a segment boundary). It never leaves a leading "/" behind.
+func (f File) WithoutFolder(prefix string) File {
+	fp := strings.TrimPrefix(f.Path(), "./")
+
+	// Normalize the prefix: slashes, drop leading "./", and strip trailing "/"
+	p := filepath.ToSlash(prefix)
+
+	p = strings.TrimPrefix(p, "./")
+	p = strings.Trim(p, "/") // handles both "" and trailing "/"
+
+	if p == "" {
+		return f
+	}
+
+	// Only strip when the prefix is a full segment: "p/"
+	if rest, ok := strings.CutPrefix(fp, p+"/"); ok {
+		return New(rest)
+	}
+
+	// Exact dir match or no match -> leave unchanged
+	return f
 }
 
 // Unescape decodes URL-escaped characters in the path.

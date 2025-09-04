@@ -4,6 +4,7 @@ package presentation
 import (
 	"fmt"
 
+	"github.com/fatih/color"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 
@@ -29,8 +30,57 @@ func NewTableFormatter(config TableConfig) *TableFormatter {
 	}
 }
 
-// RenderResults renders a collection of results as a formatted table.
+// RenderResults renders a collection of results as formatted tables split by status.
 func (f *TableFormatter) RenderResults(results []runner.Result) string {
+	if len(results) == 0 {
+		return ""
+	}
+
+	// Split results by status
+	var errors, warnings, successes []runner.Result
+
+	for _, result := range results {
+		switch result.Status {
+		case runner.StatusFailed:
+			errors = append(errors, result)
+		case runner.StatusSkipped:
+			warnings = append(warnings, result)
+		case runner.StatusOK:
+			successes = append(successes, result)
+		}
+	}
+
+	var output string
+
+	// Render errors first (highest priority)
+	if len(errors) > 0 {
+		errorHeader := color.RedString("\n=== ERRORS (%d tools requiring attention) ===\n", len(errors))
+
+		output += errorHeader
+		output += f.renderTable(errors)
+	}
+
+	// Render warnings second (medium priority)
+	if len(warnings) > 0 {
+		warningHeader := color.YellowString("\n=== WARNINGS (%d skipped tools) ===\n", len(warnings))
+
+		output += warningHeader
+		output += f.renderTable(warnings)
+	}
+
+	// Render successes last (lowest priority)
+	if len(successes) > 0 {
+		successHeader := color.GreenString("\n=== SUCCESS (%d tools) ===\n", len(successes))
+
+		output += successHeader
+		output += f.renderTable(successes)
+	}
+
+	return output
+}
+
+// renderTable renders a single table for a set of results.
+func (f *TableFormatter) renderTable(results []runner.Result) string {
 	if len(results) == 0 {
 		return ""
 	}
@@ -53,6 +103,7 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 
 	for i, h := range headers {
 		headerRow = append(headerRow, h.Name)
+
 		config := table.ColumnConfig{
 			Number:   i + 1,
 			WidthMax: h.WidthMax,
@@ -80,7 +131,7 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 	rowNum := 0
 
 	// Set up row painter
-	t.SetRowPainter(func(row table.Row, attr table.RowAttributes) text.Colors {
+	t.SetRowPainter(func(_ table.Row, attr table.RowAttributes) text.Colors {
 		if colors, exists := rowColors[attr.Number]; exists {
 			return colors
 		}
@@ -91,7 +142,9 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 	// Add results
 	for _, result := range results {
 		rowNum++
+
 		color := f.getColorForStatus(result.Status)
+
 		rowColors[rowNum] = color
 
 		row := f.formatResultRow(result)
@@ -107,6 +160,7 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 
 	// Format file/URL
 	fileDisplay := "Not Applicable"
+
 	if tool.URL != "" {
 		fileDisplay = file.File(tool.URL).Unescape().Base()
 	}

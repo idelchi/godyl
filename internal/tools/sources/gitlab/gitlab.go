@@ -1,6 +1,7 @@
 package gitlab
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -9,13 +10,13 @@ import (
 
 	"github.com/idelchi/godyl/internal/gitlab"
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // GitLab represents a GitLab project configuration and state.
 type GitLab struct {
-	Data                common.Metadata `mapstructure:"-"         yaml:"-"`
+	Data                install.Metadata `mapstructure:"-"         yaml:"-"`
 	latestStoredRelease *gitlab.Release
 	Project             string `mapstructure:"project"   yaml:"project"`
 	Namespace           string `mapstructure:"namespace" yaml:"namespace"`
@@ -43,7 +44,9 @@ func (g *GitLab) Initialize(name string) error {
 
 // Version fetches the latest release version and stores it in metadata.
 func (g *GitLab) Version(_ string) error {
-	version, err := g.LatestVersion()
+	ctx := context.Background()
+
+	version, err := g.LatestVersion(ctx)
 	if err != nil {
 		return err
 	}
@@ -53,10 +56,12 @@ func (g *GitLab) Version(_ string) error {
 	return nil
 }
 
-// Path finds a matching release asset and stores its URL in metadata.
+// URL finds a matching release asset and stores its URL in metadata.
 // Uses version, extensions, and requirements to find the appropriate asset.
 func (g *GitLab) URL(_ string, extensions []string, version string, requirements match.Requirements) error {
-	url, err := g.MatchAssetsToRequirements(extensions, version, requirements)
+	ctx := context.Background()
+
+	url, err := g.MatchAssetsToRequirements(ctx, extensions, version, requirements)
 	if err != nil {
 		return err
 	}
@@ -69,14 +74,14 @@ func (g *GitLab) URL(_ string, extensions []string, version string, requirements
 // Install downloads the GitLab release asset using the provided configuration.
 // Returns the operation output, downloaded file information, and any errors.
 func (g *GitLab) Install(
-	d common.InstallData,
+	d install.Data,
 	progressListener getter.ProgressTracker,
 ) (output string, found file.File, err error) {
 	d.Header = g.GetHeaders()
 	// Pass the progress listener down
 	d.ProgressListener = progressListener
 
-	found, err = common.Download(d)
+	found, err = install.Download(d)
 
 	return "", found, err
 }
@@ -88,7 +93,7 @@ func (g *GitLab) Get(attribute string) string {
 
 // LatestVersion fetches the latest release version from GitLab.
 // Returns the tag name of the latest release, respecting the Pre flag setting.
-func (g *GitLab) LatestVersion() (string, error) {
+func (g *GitLab) LatestVersion(ctx context.Context) (string, error) {
 	client, err := gitlab.NewClient(g.Token, g.Server)
 	if err != nil {
 		return "", fmt.Errorf("failed to create GitLab client: %w", err)
@@ -100,9 +105,10 @@ func (g *GitLab) LatestVersion() (string, error) {
 
 	if g.Pre {
 		const PerPage = 1000
-		release, err = repository.GetLatestIncludingPreRelease(PerPage)
+
+		release, err = repository.GetLatestIncludingPreRelease(ctx, PerPage)
 	} else {
-		release, err = repository.LatestRelease()
+		release, err = repository.LatestRelease(ctx)
 	}
 
 	if err != nil {
@@ -119,6 +125,7 @@ func (g *GitLab) LatestVersion() (string, error) {
 // Returns the download URL of the best matching asset, considering platform,
 // architecture, and other specified requirements.
 func (g *GitLab) MatchAssetsToRequirements(
+	ctx context.Context,
 	_ []string,
 	version string,
 	requirements match.Requirements,
@@ -133,11 +140,11 @@ func (g *GitLab) MatchAssetsToRequirements(
 	var release *gitlab.Release
 
 	if g.latestStoredRelease == nil {
-		var err error
+		var releaseErr error
 
-		release, err = repository.GetRelease(version)
-		if err != nil {
-			return "", fmt.Errorf("failed to get release: %w", err)
+		release, releaseErr = repository.GetRelease(ctx, version)
+		if releaseErr != nil {
+			return "", fmt.Errorf("failed to get release: %w", releaseErr)
 		}
 	} else {
 		release = g.latestStoredRelease
@@ -174,11 +181,11 @@ func (g *GitLab) PopulateNamespaceAndRepo(name string) (err error) {
 	// If exactly one of Owner or Repo is set (but not both), that's invalid
 	if (g.Namespace == "") != (g.Project == "") {
 		return errors.New(
-			"Either both `namespace` and `repo` must be set or `name` must be in the format `namespace/repo`",
+			"either both `namespace` and `repo` must be set or `name` must be in the format `namespace/repo`",
 		)
 	}
 
-	g.Namespace, g.Project, err = common.CutName(name)
+	g.Namespace, g.Project, err = install.CutName(name)
 	if err != nil {
 		return err
 	}

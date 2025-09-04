@@ -8,9 +8,8 @@ import (
 )
 
 // Repository represents a GitLab repository with its owner and name.
-// It contains a GitLab client and context for making API calls.
+// It contains a GitLab client for making API calls.
 type Repository struct {
-	ctx       context.Context
 	client    *gitlab.Client
 	Namespace string
 	Repo      string
@@ -23,12 +22,11 @@ func NewRepository(namespace, repo string, client *gitlab.Client) *Repository {
 		Namespace: namespace,
 		Repo:      repo,
 		client:    client,
-		ctx:       context.Background(),
 	}
 }
 
 // GetRelease retrieves a specific release for the repository based on the provided tag.
-func (g *Repository) GetRelease(tag string) (*Release, error) {
+func (g *Repository) GetRelease(_ context.Context, tag string) (*Release, error) {
 	path := fmt.Sprintf("%s/%s", g.Namespace, g.Repo)
 
 	gitlabRelease, _, err := g.client.Releases.GetRelease(path, tag)
@@ -44,30 +42,11 @@ func (g *Repository) GetRelease(tag string) (*Release, error) {
 	return release, nil
 }
 
-// getReleasesWithOptions retrieves releases for the repository using the provided options.
-func (g *Repository) getReleasesWithOptions(perPage int) ([]*gitlab.Release, error) {
-	path := fmt.Sprintf("%s/%s", g.Namespace, g.Repo)
-
-	releases, _, err := g.client.Releases.ListReleases(
-		path,
-		&gitlab.ListReleasesOptions{ListOptions: gitlab.ListOptions{PerPage: perPage}},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to list releases: %w", err)
-	}
-
-	if len(releases) == 0 {
-		return nil, fmt.Errorf("no releases found for %s/%s", g.Namespace, g.Repo)
-	}
-
-	return releases, nil
-}
-
 // LatestRelease retrieves the latest release for the repository.
-func (g *Repository) LatestRelease() (*Release, error) {
+func (g *Repository) LatestRelease(ctx context.Context) (*Release, error) {
 	const PerPage = 1000
 
-	releases, err := g.getReleasesWithOptions(PerPage)
+	releases, err := g.getReleasesWithOptions(ctx, PerPage)
 	if err != nil {
 		return nil, err
 	}
@@ -86,14 +65,15 @@ func (g *Repository) LatestRelease() (*Release, error) {
 // GetLatestIncludingPreRelease retrieves the most recently published release for the repository,
 // including pre-releases. This returns the newest release by published date, regardless of
 // whether it's a regular release or pre-release.
-func (g *Repository) GetLatestIncludingPreRelease(perPage int) (*Release, error) {
-	releases, err := g.getReleasesWithOptions(perPage)
+func (g *Repository) GetLatestIncludingPreRelease(ctx context.Context, perPage int) (*Release, error) {
+	releases, err := g.getReleasesWithOptions(ctx, perPage)
 	if err != nil {
 		return nil, err
 	}
 
 	// Find the most recent release by published date
 	var latestRelease *gitlab.Release
+
 	for i, release := range releases {
 		if i == 0 || latestRelease.CreatedAt.Before(*release.CreatedAt) {
 			latestRelease = release
@@ -107,4 +87,23 @@ func (g *Repository) GetLatestIncludingPreRelease(perPage int) (*Release, error)
 	}
 
 	return release, nil
+}
+
+// getReleasesWithOptions retrieves releases for the repository using the provided options.
+func (g *Repository) getReleasesWithOptions(_ context.Context, perPage int) ([]*gitlab.Release, error) {
+	path := fmt.Sprintf("%s/%s", g.Namespace, g.Repo)
+
+	releases, _, err := g.client.Releases.ListReleases(
+		path,
+		&gitlab.ListReleasesOptions{ListOptions: gitlab.ListOptions{PerPage: perPage}},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list releases: %w", err)
+	}
+
+	if len(releases) == 0 {
+		return nil, fmt.Errorf("no releases found for %s/%s", g.Namespace, g.Repo)
+	}
+
+	return releases, nil
 }

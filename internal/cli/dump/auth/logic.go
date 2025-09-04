@@ -3,17 +3,19 @@ package auth
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/internal/tokenstore"
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
 // run executes the `dump auth` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, _, context, _, _ := input.Unpack()
 
 	tokens, _ := iutils.StructToKoanf(cfg.Tokens)
+
+	var output any
 
 	switch cfg.Keyring {
 	case true:
@@ -34,12 +36,15 @@ func run(input common.Input) error {
 			return nil
 		}
 
-		pretty.PrintYAML(values)
+		output = values
+
 	case false:
 		configuration := context.Config.Filtered(tokens.Keys()...)
 
-		pretty.PrintYAML(configuration.Map())
+		output = configuration.Map()
 	}
+
+	pretty.PrintYAML(output)
 
 	return nil
 }

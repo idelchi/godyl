@@ -2,9 +2,10 @@
 package cache
 
 import (
-	"github.com/idelchi/godyl/internal/config/common"
+	"github.com/idelchi/godyl/internal/config/shared"
 )
 
+// Cache represents the configuration for cache-related commands.
 type Cache struct {
-	common.Tracker `mapstructure:"-" yaml:"-"`
+	shared.Tracker `mapstructure:"-" yaml:"-"`
 }

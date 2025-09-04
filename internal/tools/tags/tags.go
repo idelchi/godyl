@@ -7,6 +7,7 @@ import (
 	"github.com/goccy/go-yaml/ast"
 
 	"github.com/idelchi/godyl/pkg/unmarshal"
+	"github.com/idelchi/godyl/pkg/wildcard"
 )
 
 // IncludeTags is a struct that defines the tags to include or exclude.
@@ -50,6 +51,12 @@ func (t Tags) Include(tags Tags) bool {
 
 	for _, tag := range tags {
 		if slices.Contains(t, tag) {
+			return true
+		}
+	}
+
+	for _, tag := range tags {
+		if wildcard.Match(tag, t...) {
 			return true
 		}
 	}

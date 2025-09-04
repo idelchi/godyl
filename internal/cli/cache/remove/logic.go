@@ -5,15 +5,15 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/cache"
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/tmp"
 )
 
 // run executes the `cache remove` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, _, _, _, args := input.Unpack()
 
-	logger, err := common.SetupLogger(cfg.LogLevel)
+	logger, err := core.SetupLogger(cfg.LogLevel)
 	if err != nil {
 		return err
 	}

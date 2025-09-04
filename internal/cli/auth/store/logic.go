@@ -3,7 +3,7 @@ package store
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/ierrors"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/internal/tokenstore"
@@ -11,7 +11,7 @@ import (
 )
 
 // run executes the `auth store` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, _, _, _, args := input.Unpack()
 
 	kTokens, _ := iutils.StructToKoanf(cfg.Tokens)
@@ -37,7 +37,7 @@ func run(input common.Input) error {
 		return fmt.Errorf("%w: no token values provided", ierrors.ErrUsage)
 	}
 
-	logger, err := common.SetupLogger(cfg.LogLevel)
+	logger, err := core.SetupLogger(cfg.LogLevel)
 	if err != nil {
 		return err
 	}

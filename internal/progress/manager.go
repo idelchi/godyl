@@ -25,6 +25,7 @@ type DefaultManager struct {
 // NewDefaultManager creates a new DefaultManager.
 func NewDefaultManager(noProgress bool) *DefaultManager {
 	var trackable progress.Trackable
+
 	if noProgress {
 		trackable = progress.NewNoop()
 	} else {
@@ -47,6 +48,8 @@ func (m *DefaultManager) Wait() {
 }
 
 // Tracker returns the underlying progress tracker.
+//
+//nolint:ireturn // Returns interface for flexibility - allows different progress tracker implementations
 func (m *DefaultManager) Tracker() getter.ProgressTracker {
 	return m.trackable
 }

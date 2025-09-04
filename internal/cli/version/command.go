@@ -4,7 +4,7 @@ package version
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
@@ -18,15 +18,15 @@ func Command(global *root.Config, local any) *cobra.Command {
 		Args:    cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			// Exit early if the command is run with `--show/-s` flag.
-			if common.ExitOnShow(global.ShowFunc) {
+			if core.ExitOnShow(global.ShowFunc) {
 				return
 			}
 
-			run(common.Input{Global: global, Cmd: cmd, Args: args})
+			run(core.Input{Global: global, Cmd: cmd, Args: args})
 		},
 	}
 
-	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
+	core.SetSubcommandDefaults(cmd, local, global.ShowFunc)
 
 	return cmd
 }

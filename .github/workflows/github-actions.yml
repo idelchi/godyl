@@ -2,12 +2,11 @@ name: godyl
 
 on:
   workflow_dispatch:
-  # Only run manually for now
-  # pull_request:
-  # push:
-  #   branches:
-  #     - dev
-  #     - main
+  pull_request:
+  push:
+    branches:
+      - dev
+      - main
 
 jobs:
   info:
@@ -34,11 +33,16 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.24.4"
+          go-version: "1.25.0"
           check-latest: true
 
+      - name: Build the application
+        run: go build -o godyl .
+
       - name: Dump out platform
-        run: go run . dump platform
+        shell: bash
+        run: ./godyl dump platform
 
       - name: Dry install tools
-        run: go run . dump tools -e | go run . -v i - --dry
+        shell: bash
+        run: ./godyl dump tools -e | ./godyl -j 1 -v i - --dry

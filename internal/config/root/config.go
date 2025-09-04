@@ -1,10 +1,11 @@
+// Package root provides the root configuration structure for the application.
 package root
 
 import (
-	"github.com/idelchi/godyl/internal/config/common"
 	"github.com/idelchi/godyl/internal/config/download"
 	"github.com/idelchi/godyl/internal/config/dump"
 	"github.com/idelchi/godyl/internal/config/install"
+	"github.com/idelchi/godyl/internal/config/shared"
 	"github.com/idelchi/godyl/internal/config/status"
 	"github.com/idelchi/godyl/internal/config/update"
 	"github.com/idelchi/godyl/internal/tools/tool"
@@ -12,11 +13,16 @@ import (
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
-// TODO(Idelchi): Change all to be .Config instead of .Dump, .Update, etc.
+// TODO(Idelchi): Change all to be .Config instead of .Dump, .Update, etc. //nolint:godox // TODO comment provides
+// valuable context for future development
 
 // Config holds the root level configuration options.
 // It is split into sub-structs for each command.
 type Config struct {
+	// Tracker embed the common tracker configuration, allowing to tracker
+	// whether configuration values have been explicitly set or defaulted
+	shared.Tracker `mapstructure:"-" yaml:"-"`
+
 	/* Subcommands */
 	// Dump contains the configuration for the `godyl dump` command
 	Dump dump.Dump `mapstructure:"dump" validate:"-" yaml:"dump"`
@@ -87,11 +93,7 @@ type Config struct {
 
 	/* Other Options */
 	// Common contains a subset of common configuration options
-	Common common.Common `mapstructure:"-" yaml:"-"`
-
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `mapstructure:"-" yaml:"-"`
+	Common shared.Common `mapstructure:"-" yaml:"-"`
 }
 
 // Cache holds the configuration options for caching.
@@ -116,7 +118,7 @@ type Tokens struct {
 }
 
 // AllTokensSet checks if all of the tokens are set.
-func (c Config) AllTokensSet() bool {
+func (c *Config) AllTokensSet() bool {
 	return c.IsSet("github-token") && c.IsSet("gitlab-token") && c.IsSet("url-token")
 }
 
@@ -131,7 +133,7 @@ func (c *Config) ToTool(forced bool) *tool.Tool {
 
 	isSet := func(settable Settable) func(name string) bool {
 		if forced {
-			return func(name string) bool {
+			return func(_ string) bool {
 				return true
 			}
 		}
@@ -181,6 +183,11 @@ func (c *Config) ToTool(forced bool) *tool.Tool {
 
 	if isSet(&c.Common)("arch") {
 		tool.Platform.Architecture.Name = c.Common.Arch
+	}
+
+	if isSet(&c.Common)("pre") {
+		tool.Source.GitHub.Pre = c.Common.Pre
+		tool.Source.GitLab.Pre = c.Common.Pre
 	}
 
 	return &tool

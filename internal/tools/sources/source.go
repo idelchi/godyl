@@ -10,10 +10,10 @@ import (
 	"github.com/hashicorp/go-getter/v2"
 
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/internal/tools/sources/gitlab"
 	goc "github.com/idelchi/godyl/internal/tools/sources/go"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/internal/tools/sources/none"
 	"github.com/idelchi/godyl/internal/tools/sources/url"
 	"github.com/idelchi/godyl/pkg/path/file"
@@ -32,17 +32,24 @@ func (t *Type) From(name string) {
 	*t = Type(name)
 }
 
-// TODO(Idelchi): go generate the source type strings
+// TODO(Idelchi): go generate the source type strings //nolint:godox // TODO comment provides valuable context for
+// future development
 
 const (
-	GITHUB Type = "github" // GitHub source type
-	GITLAB Type = "gitlab" // GitLab source type
-	URL    Type = "url"    // URL source type
-	NONE   Type = "none"   // No source type
-	GO     Type = "go"     // Go source type
+	// GITHUB indicates GitHub as the source type.
+	GITHUB Type = "github"
+	// GITLAB indicates GitLab as the source type.
+	GITLAB Type = "gitlab"
+	// URL indicates a direct URL as the source type.
+	URL Type = "url"
+	// NONE indicates no source type.
+	NONE Type = "none"
+	// GO indicates Go modules as the source type.
+	GO Type = "go"
 )
 
-// TODO(Idelchi): Add validation.
+// Source represents the configuration for various source types used to retrieve tools.
+// TODO(Idelchi): Add validation. //nolint:godox // TODO comment provides valuable context for future development.
 type Source struct {
 	GitHub github.GitHub
 	URL    url.URL
@@ -58,12 +65,14 @@ type Populator interface {
 	Initialize(repo string) error
 	Version(version string) error
 	URL(name string, extensions []string, version string, requirements match.Requirements) error
-	Install(data common.InstallData, progressListener getter.ProgressTracker) (string, file.File, error)
+	Install(data install.Data, progressListener getter.ProgressTracker) (string, file.File, error)
 	Get(key string) string
 }
 
 // Installer returns the appropriate Populator implementation for the source Type.
 // Returns an error if the source type is unknown or unsupported.
+//
+//nolint:ireturn // Returning interface is intentional for factory pattern
 func (s *Source) Installer() (Populator, error) {
 	switch s.Type {
 	case GITHUB:

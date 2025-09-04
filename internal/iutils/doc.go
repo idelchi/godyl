@@ -1,2 +1,2 @@
-// Package utils specific helpers for internal use.
+// Package iutils provides specific helpers for internal use.
 package iutils

@@ -1,6 +1,6 @@
-// Package utils provides lightweight, generic helpers for slices, zero checks,
+// Package generic provides lightweight, generic helpers for slices, zero checks,
 // path expansion, deep copying, and basic filtering.
-package utils
+package generic
 
 import (
 	"fmt"
@@ -92,7 +92,7 @@ func DeepCopy[T any](src T) (dst T, err error) {
 // DeepCopyPtr copies a pointer type object and returns a new pointer to the copied object.
 func DeepCopyPtr[T any](src *T) (*T, error) {
 	if src == nil {
-		return nil, nil // Return nil if source is nil
+		return nil, nil //nolint:nilnil 	// Return nil if source is nil
 	}
 
 	dst := new(T) // Create a new non-nil destination

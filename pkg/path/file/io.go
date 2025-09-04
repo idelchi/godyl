@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"strings"
 )
 
 // createFolder creates the directory for this file if it does not exist.
@@ -75,7 +76,7 @@ func (f File) OpenForWriting() (*os.File, error) {
 func (f File) Write(data []byte) (err error) {
 	file, err := f.OpenForWriting()
 	if err != nil {
-		return fmt.Errorf("opening file %q for writing: %w", f, err)
+		return err
 	}
 
 	defer func() {
@@ -111,6 +112,25 @@ func (f File) Read() ([]byte, error) {
 	}
 
 	return file, nil
+}
+
+// Lines retrieves the file contents as a slice of strings.
+func (f File) Lines() ([]string, error) {
+	data, err := f.Read()
+	if err != nil {
+		return nil, fmt.Errorf("reading file %q: %w", f, err)
+	}
+
+	// Count lines for pre-allocation
+	lineCount := strings.Count(string(data), "\n") + 1
+
+	returns := make([]string, 0, lineCount)
+
+	for line := range strings.SplitSeq(string(data), "\n") {
+		returns = append(returns, strings.TrimRight(line, "\r"))
+	}
+
+	return returns, nil
 }
 
 // Remove deletes the file from the filesystem.
@@ -265,14 +285,4 @@ func (f File) Links(links ...File) error {
 	}
 
 	return nil
-}
-
-// Info retrieves the file information.
-func (f File) Info() (fs.FileInfo, error) {
-	info, err := os.Stat(f.String())
-	if err != nil {
-		return nil, fmt.Errorf("getting file info for %q: %w", f, err)
-	}
-
-	return info, nil
 }

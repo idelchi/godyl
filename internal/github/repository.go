@@ -8,9 +8,8 @@ import (
 )
 
 // Repository represents a GitHub repository with its owner and name.
-// It contains a GitHub client and context for making API calls.
+// It contains a GitHub client for making API calls.
 type Repository struct {
-	ctx    context.Context
 	client *github.Client
 	Owner  string
 	Repo   string
@@ -23,13 +22,12 @@ func NewRepository(owner, repo string, client *github.Client) *Repository {
 		Owner:  owner,
 		Repo:   repo,
 		client: client,
-		ctx:    context.Background(),
 	}
 }
 
 // LatestRelease retrieves the latest release for the repository.
-func (r *Repository) LatestRelease() (*Release, error) {
-	repositoryRelease, _, err := r.client.Repositories.GetLatestRelease(r.ctx, r.Owner, r.Repo)
+func (r *Repository) LatestRelease(ctx context.Context) (*Release, error) {
+	repositoryRelease, _, err := r.client.Repositories.GetLatestRelease(ctx, r.Owner, r.Repo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get latest release: %w", err)
 	}
@@ -43,8 +41,8 @@ func (r *Repository) LatestRelease() (*Release, error) {
 }
 
 // GetRelease retrieves a specific release for the repository based on the provided tag.
-func (r *Repository) GetRelease(tag string) (*Release, error) {
-	repositoryRelease, _, err := r.client.Repositories.GetReleaseByTag(r.ctx, r.Owner, r.Repo, tag)
+func (r *Repository) GetRelease(ctx context.Context, tag string) (*Release, error) {
+	repositoryRelease, _, err := r.client.Repositories.GetReleaseByTag(ctx, r.Owner, r.Repo, tag)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get assets for release tag %q: %w", tag, err)
 	}
@@ -60,13 +58,13 @@ func (r *Repository) GetRelease(tag string) (*Release, error) {
 // LatestIncludingPreRelease retrieves the most recently published release for the repository,
 // including pre-releases. This returns the newest release by published date, regardless of
 // whether it's a regular release or pre-release.
-func (r *Repository) LatestIncludingPreRelease(perPage int) (*Release, error) {
+func (r *Repository) LatestIncludingPreRelease(ctx context.Context, perPage int) (*Release, error) {
 	// List all releases including pre-releases
 	opts := &github.ListOptions{
 		PerPage: perPage,
 	}
 
-	repositoryReleases, _, err := r.client.Repositories.ListReleases(r.ctx, r.Owner, r.Repo, opts)
+	repositoryReleases, _, err := r.client.Repositories.ListReleases(ctx, r.Owner, r.Repo, opts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list releases: %w", err)
 	}
@@ -77,6 +75,7 @@ func (r *Repository) LatestIncludingPreRelease(perPage int) (*Release, error) {
 
 	// Find the most recent release by published date
 	var latestRelease *github.RepositoryRelease
+
 	for i, release := range repositoryReleases {
 		if i == 0 || release.PublishedAt == nil || latestRelease.PublishedAt == nil {
 			latestRelease = release

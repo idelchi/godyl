@@ -5,7 +5,7 @@ import (
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/spf13/cobra"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
@@ -31,11 +31,11 @@ func Command(global *root.Config, local any) *cobra.Command {
 				return nil
 			}
 
-			return run(common.Input{Global: global, Cmd: cmd, Args: args})
+			return run(core.Input{Global: global, Cmd: cmd, Args: args})
 		},
 	}
 
-	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
+	core.SetSubcommandDefaults(cmd, local, global.ShowFunc)
 
 	return cmd
 }

@@ -55,8 +55,8 @@ func (gt Targets) Match() (match.Results, error) {
 	for _, tt := range gt.Files {
 		asset := match.Asset{Name: tt.FileName}
 
-		asset.Platform.OS.ParseFrom(tt.OS)
-		asset.Platform.Architecture.ParseFrom(tt.Arch)
+		asset.Platform.OS.ParseFrom(tt.OS)             //nolint:errcheck,gosec	// Errors are intentionally ignored
+		asset.Platform.Architecture.ParseFrom(tt.Arch) //nolint:errcheck,gosec	// Errors are intentionally ignored
 
 		assets = append(assets, asset)
 	}
@@ -76,7 +76,7 @@ func (gt Targets) Match() (match.Results, error) {
 	switch {
 	case !matches.HasQualified():
 		err = fmt.Errorf("%w: no qualified file found", ErrMatch)
-	case matches.IsAmbigious():
+	case matches.IsAmbiguous():
 		err = fmt.Errorf("%w: ambiguous file selection", ErrMatch)
 	case !matches.Success():
 		err = fmt.Errorf("%w: no matching file found", ErrMatch)

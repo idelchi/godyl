@@ -5,8 +5,8 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/auth"
 	"github.com/idelchi/godyl/internal/cli/cache"
-	"github.com/idelchi/godyl/internal/cli/common"
 	cconfig "github.com/idelchi/godyl/internal/cli/config"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/cli/download"
 	"github.com/idelchi/godyl/internal/cli/dump"
 	"github.com/idelchi/godyl/internal/cli/install"
@@ -17,8 +17,8 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Subcommands adds all subcommands to the root command.
-func subcommands(cmd *cobra.Command, global *root.Config, embedded *common.Embedded) {
+// subcommands adds all subcommands to the root command.
+func subcommands(cmd *cobra.Command, global *root.Config, embedded *core.Embedded) {
 	cmd.AddCommand(
 		install.Command(global, &global.Install, embedded),
 		download.Command(global, &global.Download, embedded),

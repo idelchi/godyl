@@ -30,6 +30,8 @@ The `status` command checks the status of the tools defined in the provided YAML
 | :------------- | :------------------- | :------ | :------------------------------------------ |
 | `--tags`, `-t` | `GODYL_STATUS_TAGS`  | `[]`    | Tags to filter tools by. Use `!` to exclude |
 
+`tags` may use wildcards `*` which matches any sequence of characters.
+
 ## Examples
 
 ### Check the status of all tools

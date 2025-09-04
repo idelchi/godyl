@@ -1,4 +1,4 @@
-package common
+package install
 
 import (
 	"errors"
@@ -15,8 +15,8 @@ import (
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
-// InstallData contains configuration for downloading and installing tools.
-type InstallData struct {
+// Data contains configuration for downloading and installing tools.
+type Data struct {
 	ProgressListener getter.ProgressTracker
 	Env              env.Env
 	Header           http.Header
@@ -35,11 +35,7 @@ type InstallData struct {
 // Download retrieves files according to the InstallData configuration.
 // Creates temporary directories when needed, manages the download process,
 // and returns the download output and file information.
-func Download(data InstallData) (file.File, error) {
-	var err error
-
-	var found file.File
-
+func Download(data Data) (found file.File, err error) {
 	dir := folder.New(data.Output)
 
 	if data.Mode == "find" {
@@ -48,7 +44,7 @@ func Download(data InstallData) (file.File, error) {
 		}
 
 		defer func() {
-			dir.Remove() //nolint:gosec 		// TODO(Idelchi): Address this later.
+			err = errors.Join(err, dir.Remove())
 		}()
 	}
 
@@ -71,59 +67,61 @@ func Download(data InstallData) (file.File, error) {
 	return found, err
 }
 
+// findExecutableInDir searches for an executable file in a directory using the provided patterns.
+func findExecutableInDir(destination file.File, patterns []string) (file.File, error) {
+	searchDir := folder.New(destination.Dir())
+
+	folders, err := searchDir.ListFolders()
+	if err != nil {
+		return destination, fmt.Errorf("listing folders in %q: %w", searchDir, err)
+	}
+
+	files, err := searchDir.ListFiles()
+	if err != nil {
+		return destination, fmt.Errorf("listing files in %q: %w", searchDir, err)
+	}
+
+	// If there's only one folder and no files, search within that folder
+	if len(folders) == 1 && len(files) == 0 {
+		searchDir = folders[0]
+	}
+
+	// Try each pattern in order
+	for _, pattern := range patterns {
+		match := func(file file.File) (bool, error) {
+			return file.Matches(pattern)
+		}
+
+		found, err := searchDir.FindFile(match)
+		if err != nil {
+			if !errors.Is(err, folder.ErrNotFound) {
+				return destination, fmt.Errorf("finding executable: %w", err)
+			}
+
+			continue
+		}
+
+		return found, nil
+	}
+
+	return destination, fmt.Errorf(
+		"finding executable: no executable matching patterns %v found in %q: found\n%v",
+		patterns,
+		searchDir,
+		files,
+	)
+}
+
 // FindAndSymlink locates an executable in the downloaded content and sets up symlinks.
 // It searches directories recursively using provided patterns, copies the executable
 // to the output location, and creates symlinks for any configured aliases.
-//
-//nolint:gocognit   // TODO(Idelchi): Address this later.
-func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
+func FindAndSymlink(destination file.File, d Data) (file.File, error) {
 	if destination.IsDir() {
-		searchDir := folder.New(destination.Dir())
+		var err error
 
-		folders, err := searchDir.ListFolders()
+		destination, err = findExecutableInDir(destination, d.Patterns)
 		if err != nil {
-			return destination, fmt.Errorf("listing folders in %q: %w", searchDir, err)
-		}
-
-		files, err := searchDir.ListFiles()
-		if err != nil {
-			return destination, fmt.Errorf("listing files in %q: %w", searchDir, err)
-		}
-
-		if len(folders) == 1 && len(files) == 0 {
-			searchDir = folders[0]
-		}
-
-		var found bool
-		// Match patterns in order of priority
-		for _, pattern := range d.Patterns {
-			match := func(file file.File) (bool, error) {
-				return file.Matches(pattern)
-			}
-
-			var err error
-
-			destination, err = searchDir.FindFile(match)
-			if err != nil {
-				if !errors.Is(err, folder.ErrNotFound) {
-					return destination, fmt.Errorf("finding executable: %w", err)
-				}
-
-				continue
-			} else {
-				found = true
-
-				break
-			}
-		}
-
-		if !found {
-			return destination, fmt.Errorf(
-				"finding executable: no executable matching patterns %v found in %q: found\n%v",
-				d.Patterns,
-				searchDir,
-				files,
-			)
+			return destination, err
 		}
 	}
 
@@ -147,7 +145,11 @@ func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
 	}
 
 	// Create symlinks for the aliases
-	aliases := files.New(d.Output, d.Aliases...)
+	if len(d.Aliases) > 0 {
+		aliases := files.New(d.Output, d.Aliases...)
 
-	return destination, aliases.LinksFor(target)
+		return destination, aliases.LinksFor(target)
+	}
+
+	return destination, nil
 }

@@ -54,9 +54,9 @@ func WithMaxRetries(retries int) Option {
 }
 
 // WithRetryWaits returns an option that sets the min and max retry wait durations.
-func WithRetryWaits(min, max time.Duration) Option {
+func WithRetryWaits(minWait, maxWait time.Duration) Option {
 	return func(d *Downloader) {
-		d.retryWaitMin = min
-		d.retryWaitMax = max
+		d.retryWaitMin = minWait
+		d.retryWaitMax = maxWait
 	}
 }

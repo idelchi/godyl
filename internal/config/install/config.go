@@ -1,13 +1,18 @@
+// Package install provides configuration for the install command.
 package install
 
 import (
-	"github.com/idelchi/godyl/internal/config/common"
+	"github.com/idelchi/godyl/internal/config/shared"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/strategy"
 )
 
-// Package install provides the configuration for the `install` command.
+// Install provides the configuration for the `install` command.
 type Install struct {
+	// Tracker embed the common tracker configuration, allowing to tracker
+	// whether configuration values have been explicitly set or defaulted
+	shared.Tracker `mapstructure:"-" yaml:"-"`
+
 	// Strategy defines how the installation should be performed
 	Strategy strategy.Strategy `mapstructure:"strategy" validate:"oneof=none sync force" yaml:"strategy"`
 
@@ -26,21 +31,21 @@ type Install struct {
 	// Dry indicates whether the installation should be performed in dry-run mode
 	Dry bool `mapstructure:"dry" yaml:"dry"`
 
-	Source sources.Type `mapstructure:"source" yaml:"source" validate:"oneof=github gitlab url none go"`
+	// Pre indicates whether pre-releases should be considered during installation
+	Pre bool `mapstructure:"pre" yaml:"pre"`
 
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `mapstructure:"-" yaml:"-"`
+	Source sources.Type `mapstructure:"source" validate:"oneof=github gitlab url none go" yaml:"source"`
 }
 
-// ToCommon converts the Install configuration to a common.Common instance.
-func (i Install) ToCommon() common.Common {
-	return common.Common{
+// ToCommon converts the Install configuration to a shared.Common instance.
+func (i Install) ToCommon() shared.Common {
+	return shared.Common{
 		Output:   i.Output,
 		Strategy: i.Strategy,
 		OS:       i.OS,
 		Arch:     i.Arch,
 		Source:   i.Source,
+		Pre:      i.Pre,
 
 		Tracker: i.Tracker,
 	}

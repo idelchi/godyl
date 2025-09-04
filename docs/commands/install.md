@@ -40,6 +40,9 @@ Additionally, it will respect the `GODYL_TOOLS` environment variable, as well as
 | `--source`       | `GODYL_INSTALL_SOURCE`   | `github` | Source from which to install the tools                                |
 | `--strategy`     | `GODYL_INSTALL_STRATEGY` | `none`   | Strategy to use for updating tools                                    |
 | `--dry`          | `GODYL_INSTALL_DRY`      | `false`  | Dry run. Will not download, but show what would be done. Implies `-v` |
+| `--pre`          | `GODYL_INSTALL_PRE`      | `false`  | Consider pre-releases when installing tools                           |
+
+`tags` may use wildcards `*` which matches any sequence of characters.
 
 ## Examples
 

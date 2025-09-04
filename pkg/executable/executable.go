@@ -30,7 +30,11 @@ func (e Executable) String() string {
 func (e Executable) Command(ctx context.Context, cmdArgs []string) (string, error) {
 	var out bytes.Buffer
 
-	cmd := exec.CommandContext(ctx, e.String(), cmdArgs...)
+	cmd := exec.CommandContext( //nolint:gosec // Executable paths are validated before use
+		ctx,
+		e.String(),
+		cmdArgs...)
+
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 	cmd.Stdin = os.Stdin

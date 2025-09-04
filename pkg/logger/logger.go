@@ -15,12 +15,18 @@ import (
 type Level int
 
 const (
-	SILENT Level = iota - 1 // no logging
-	DEBUG                   // detailed debug information
-	INFO                    // normal operational messages
-	WARN                    // potentially harmful situations
-	ERROR                   // error events
-	ALWAYS                  // always shown regardless of current log level
+	// SILENT indicates no logging output.
+	SILENT Level = iota - 1
+	// DEBUG indicates detailed debug information.
+	DEBUG
+	// INFO indicates normal operational messages.
+	INFO
+	// WARN indicates potentially harmful situations.
+	WARN
+	// ERROR indicates error events.
+	ERROR
+	// ALWAYS indicates messages always shown regardless of current log level.
+	ALWAYS
 )
 
 // Logger holds the configuration for logging.
@@ -38,7 +44,7 @@ var ErrInvalidLogLevel = errors.New("invalid log level")
 // If an invalid log level is provided, it defaults to INFO.
 func NewCustom(level Level, output io.Writer) (*Logger, error) {
 	if !level.IsALevel() {
-		return nil, fmt.Errorf("%w: %q, setting to %q\n", ErrInvalidLogLevel, level, INFO)
+		return nil, fmt.Errorf("%w: %q, setting to %q", ErrInvalidLogLevel, level, INFO)
 	}
 
 	return &Logger{
@@ -108,6 +114,7 @@ func (l *Logger) log(level Level, format string, args ...any) {
 	}
 
 	message := fmt.Sprintf(format, args...)
+
 	if c, ok := l.colors[level]; ok {
 		_, _ = c.Fprintln(l.output, message)
 	} else {

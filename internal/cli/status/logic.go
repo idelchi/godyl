@@ -3,7 +3,7 @@ package status
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/internal/processor"
 	"github.com/idelchi/godyl/internal/tools"
@@ -12,9 +12,10 @@ import (
 )
 
 // TODO(Idelchi): Presentation must look different for status (green -> yellow, yellow -> green, red -> red).
+// //nolint:godox // TODO comment provides valuable context for future development
 
 // run executes the `status` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, embedded, _, _, args := input.Unpack()
 
 	// Always set the verbose level to 1 for the status command
@@ -35,7 +36,7 @@ func run(input common.Input) error {
 	// Generate a common configuration for the command
 	cfg.Common = cfg.Status.ToCommon()
 
-	runner := common.NewHandler(*cfg, *embedded)
+	runner := core.NewHandler(*cfg, *embedded)
 	if err := runner.SetupLogger(cfg.LogLevel); err != nil {
 		return fmt.Errorf("setting up logger: %w", err)
 	}
@@ -45,6 +46,7 @@ func run(input common.Input) error {
 	}
 	// At this point, all tools have been resolved and can be processed by the processor
 	proc := processor.New(tools, *cfg, runner.Logger())
+
 	proc.NoDownload = true
 	proc.Options = []tool.ResolveOption{tool.WithoutURL()}
 

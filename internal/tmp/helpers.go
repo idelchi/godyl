@@ -1,3 +1,4 @@
+// Package tmp provides utilities for temporary file and directory management.
 package tmp
 
 import (
@@ -96,6 +97,7 @@ func Prefix() string {
 	return "godyl-*"
 }
 
+// UserRuntimeDir returns the user's runtime directory path for the current operating system.
 func UserRuntimeDir() (string, error) {
 	var dir string
 

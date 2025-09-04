@@ -89,6 +89,7 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 		g.Go(func() error {
 			// Build run options
 			var runOpts []runner.RunOption
+
 			runOpts = append(runOpts, runner.WithProgressTracker(p.progress.Tracker()))
 
 			if p.NoDownload {
@@ -148,6 +149,7 @@ func (p *Processor) updateCache(result runner.Result) {
 	item := &cache.Item{
 		ID: result.Tool.ID(),
 		// TODO(Idelchi): Name is too ambiguous and can be used for several tools (especially repos that store multiple
+		// //nolint:godox // TODO comment provides valuable context for future development
 		// tools), consider using something else.
 		Name:       result.Tool.Name,
 		Version:    result.Tool.Version,
@@ -164,11 +166,13 @@ func (p *Processor) updateCache(result runner.Result) {
 
 // presentResults formats and displays the results.
 func (p *Processor) presentResults() {
+	const tableMaxWidth = 100
+
 	summary := p.results.Summary()
 
 	// Create table formatter
 	tableFormatter := presentation.NewTableFormatter(presentation.TableConfig{
-		MaxWidth: 100,
+		MaxWidth: tableMaxWidth,
 		Verbose:  p.config.Verbose > 0,
 	})
 
@@ -202,13 +206,16 @@ func (p *Processor) presentResults() {
 func (p *Processor) presentErrors(summary results.Summary) {
 	// Determine error format
 	format := presentation.ErrorFormatText
+
 	if p.config.ErrorFile.Path() != "" {
 		format = presentation.ErrorFormatJSON
 	}
 
+	const errorWrapWidth = 120
+
 	// Create error formatter
 	errorFormatter := presentation.NewErrorFormatter(presentation.ErrorConfig{
-		WrapWidth: 120,
+		WrapWidth: errorWrapWidth,
 		Format:    format,
 	})
 

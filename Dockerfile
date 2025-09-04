@@ -2,7 +2,7 @@
 # Description : Docker image containing the godyl binary
 #]=======================================================================]
 
-ARG GO_VERSION=1.24.4
+ARG GO_VERSION=1.25.0
 ARG DISTRO=bookworm
 
 #### ---- Build ---- ####
@@ -15,13 +15,18 @@ ARG TARGETOS
 
 USER root
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     git \
     jq \
     yq \
     nano \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gnome-keyring \
+    dbus-x11 \
     && rm -rf /var/lib/apt/lists/*
 
 ARG TASK_VERSION=v3.41.0
@@ -66,11 +71,13 @@ ENV XDG_CACHE_HOME=/home/${USER}/.cache
 
 RUN mkdir -p /home/${USER}/.local/bin
 RUN cp bin/godyl /home/${USER}/.local/bin
+RUN mkdir -p $XDG_RUNTIME_DIR && chmod 700 $XDG_RUNTIME_DIR
 
 WORKDIR /home/${USER}
 
 USER root
 RUN rm -rf /tmp/go
+
 USER ${USER}
 
 # Timezone

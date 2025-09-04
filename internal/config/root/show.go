@@ -8,7 +8,7 @@ import (
 type ShowFuncType func() func(any)
 
 // NoShow is a constant that represents a ShowFuncType that returns nil, meaning no output will be shown.
-var NoShow = ShowFuncType(func() func(any) {
+var NoShow = ShowFuncType(func() func(any) { //nolint:gochecknoglobals // Package-level functional option is acceptable
 	return nil
 })
 

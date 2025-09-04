@@ -1,3 +1,11 @@
+/*
+Godyl batch-downloads and installs statically compiled binaries from:
+
+- GitHub releases
+- GitLab releases
+- URLs
+- Go projects
+*/
 package main
 
 import (
@@ -18,6 +26,7 @@ func main() {
 	// Execute the application
 	if err := app.Execute(version, embeds); err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
+
 		os.Exit(1)
 	}
 }

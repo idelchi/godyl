@@ -20,10 +20,12 @@ type Distribution struct {
 	alias string
 }
 
+// IsNil returns true if the Distribution pointer is nil.
 func (d *Distribution) IsNil() bool {
 	return d.Name == ""
 }
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface for Distribution.
 func (d *Distribution) UnmarshalYAML(node ast.Node) error {
 	type raw Distribution
 
@@ -34,7 +36,8 @@ func (d *Distribution) UnmarshalYAML(node ast.Node) error {
 	return nil
 }
 
-func (d Distribution) MarshalYAML() (any, error) {
+// MarshalYAML implements the yaml.Marshaler interface for Distribution.
+func (d *Distribution) MarshalYAML() (any, error) {
 	return d.Name, nil
 }
 
@@ -75,7 +78,7 @@ func (DistroInfo) Supported() []DistroInfo {
 	}
 }
 
-// Parse extracts distribution information from a string identifier.
+// ParseFrom extracts distribution information from a string identifier.
 // Matches against known distribution types and aliases, setting type
 // and raw values. Returns an error if parsing fails.
 func (d *Distribution) ParseFrom(name string, comparisons ...func(string, string) bool) error {
@@ -110,19 +113,19 @@ func (d *Distribution) Parse() error {
 }
 
 // IsUnset checks if the distribution type is empty.
-func (d Distribution) IsUnset() bool {
+func (d *Distribution) IsUnset() bool {
 	return d.canonical == ""
 }
 
 // Is checks for exact distribution match including raw string.
 // Returns true only if both distributions are set and identical.
-func (d Distribution) Is(other Distribution) bool {
+func (d *Distribution) Is(other Distribution) bool {
 	return other.alias == d.alias && !d.IsUnset() && !other.IsUnset()
 }
 
 // IsCompatibleWith checks if this distribution can run binaries built for another.
 // Currently checks only for exact type matches between distributions.
-func (d Distribution) IsCompatibleWith(other Distribution) bool {
+func (d *Distribution) IsCompatibleWith(other Distribution) bool {
 	if d.IsUnset() || other.IsUnset() {
 		return false
 	}
@@ -131,7 +134,7 @@ func (d Distribution) IsCompatibleWith(other Distribution) bool {
 }
 
 // String returns the canonical name of the distribution.
-func (d Distribution) String() string {
+func (d *Distribution) String() string {
 	return d.canonical
 }
 

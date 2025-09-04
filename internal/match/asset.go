@@ -14,9 +14,9 @@ type Asset struct {
 	Platform detect.Platform // Platform describes the OS, architecture, and other relevant details for compatibility.
 }
 
-// NameLower returns the asset's name in lowercase.
+// Lower returns the asset's name in lowercase.
 // This is useful for case-insensitive matching operations.
-func (a Asset) Lower() string {
+func (a *Asset) Lower() string {
 	return strings.ToLower(a.Name)
 }
 
@@ -28,7 +28,7 @@ func (a *Asset) Parse() {
 
 // PlatformMatch evaluates whether the asset's platform matches the required platform.
 // It calculates a score based on the degree of compatibility and returns whether the asset is qualified.
-func (a Asset) PlatformMatch(req Requirements) (int, bool) {
+func (a *Asset) PlatformMatch(req Requirements) (int, bool) {
 	var score int
 
 	qualified := true
@@ -48,14 +48,15 @@ func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 		score++
 	}
 
-	if req.Platform.Architecture.IsCompatibleWith(a.Platform.Architecture) {
+	switch {
+	case req.Platform.Architecture.IsCompatibleWith(a.Platform.Architecture):
 		score++
+	case req.Platform.OS.Type() == "windows" && req.Platform.Architecture.Is64Bit() && a.Platform.Architecture.IsX86():
 		// Special case: on Windows, 32bit binaries can run on 64-bit systems
-	} else if req.Platform.OS.Type() == "windows" && req.Platform.Architecture.Is64Bit() && a.Platform.Architecture.IsX86() {
 		score--
-	} else if a.Platform.Architecture.IsSet() && req.Platform.Architecture.IsSet() {
+	case a.Platform.Architecture.IsSet() && req.Platform.Architecture.IsSet():
 		qualified = false
-	} else {
+	default:
 		score--
 	}
 
@@ -74,7 +75,7 @@ func (a Asset) PlatformMatch(req Requirements) (int, bool) {
 
 // Match evaluates if the asset satisfies the given requirements.
 // It aggregates scores from both platform compatibility and matching hints.
-func (a Asset) Match(req Requirements) (int, bool, error) {
+func (a *Asset) Match(req Requirements) (int, bool, error) {
 	// Check mandatory hints
 	for _, hint := range req.Hints {
 		match, err := hint.Matches(a.Lower())

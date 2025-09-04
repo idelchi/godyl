@@ -41,7 +41,6 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 		binary.Dir = folder.New(binary.File.Dir())
 
 		return binary, nil
-
 		// 2: Else search in the (possibly) previously created directory
 	} else if path, err := binary.Find(tmp.GodylDir("go").Path()); err == nil {
 		binary.File = path
@@ -103,6 +102,7 @@ func (b *Binary) Download(path string) error {
 	url := "https://go.dev/dl/" + path
 
 	options := []download.Option{}
+
 	if b.noVerifySSL {
 		options = append(options, download.WithInsecureSkipVerify())
 	}

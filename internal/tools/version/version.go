@@ -15,10 +15,13 @@ type Version struct {
 }
 
 type (
+	// Patterns represents version pattern matching rules.
 	Patterns = unmarshal.SingleOrSliceType[string]
+	// Commands represents version extraction commands.
 	Commands = unmarshal.SingleOrSliceType[string]
 )
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface for Version.
 func (v *Version) UnmarshalYAML(node ast.Node) error {
 	type raw Version
 

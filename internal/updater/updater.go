@@ -2,6 +2,7 @@
 package updater
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -26,15 +27,13 @@ import (
 	vversion "github.com/idelchi/godyl/pkg/version"
 )
 
+// Godyl represents the godyl tool configuration for self-updating.
 type Godyl struct {
 	Tool    *tool.Tool
 	Version string
 }
 
-func (g *Godyl) IsUpToDate() bool {
-	return vversion.Equal(g.Version, g.Tool.Version.Version)
-}
-
+// NewGodyl creates a new Godyl instance with the provided version and configuration.
 func NewGodyl(v string, cfg *root.Config) Godyl {
 	path := "idelchi/godyl" // Default
 
@@ -67,6 +66,11 @@ func NewGodyl(v string, cfg *root.Config) Godyl {
 	}
 }
 
+// IsUpToDate checks if the current version matches the available version.
+func (g *Godyl) IsUpToDate() bool {
+	return vversion.Equal(g.Version, g.Tool.Version.Version)
+}
+
 // Updater manages the self-update process for the godyl tool.
 type Updater struct {
 	godyl    *Godyl
@@ -84,6 +88,7 @@ func New(godyl *Godyl, template []byte, log *logger.Logger) *Updater {
 	}
 }
 
+// IsForced checks if the update strategy is set to force updates.
 func (u *Updater) IsForced() bool {
 	return u.godyl.Tool.Strategy == strategy.Force
 }
@@ -186,7 +191,7 @@ func (u *Updater) downloadTool(tool *tool.Tool) (string, error) {
 	// := progress.New()
 	// tracker.Start()
 
-	res := tool.Download(progress.NewNoop())
+	res := tool.Download(context.TODO(), progress.NewNoop())
 
 	// tracker.Wait()
 

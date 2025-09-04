@@ -15,8 +15,10 @@ type Platform struct {
 	Architecture platform.Architecture
 }
 
-// Parse extracts platform information from a string identifier.
+// ParseFrom extracts platform information from a string identifier.
 // Attempts to determine OS, architecture, and library details from the input.
+//
+//nolint:errcheck,gosec 		// This method intentionally suppresses/ignores errors.
 func (p *Platform) ParseFrom(name string) {
 	p.OS.ParseFrom(name)
 	p.Architecture.ParseFrom(name)
@@ -38,7 +40,8 @@ func (p *Platform) Parse() error {
 
 	// Choose the default library if GOOS is overridden and clear the distribution,
 	// since it's impossible to determine the distribution in that case.
-	// TODO(Idelchi): Add flags for --library and --distribution to override these defaults.
+	// TODO(Idelchi): Add flags for --library and --distribution to override these defaults. //nolint:godox // TODO
+	// comment provides valuable context for future development
 	if p.OS.String() != runtime.GOOS {
 		p.Library = p.Library.Default(p.OS, p.Distribution)
 		p.Distribution = platform.Distribution{}
@@ -80,8 +83,9 @@ func (p *Platform) Merge(other Platform) (changed bool) {
 
 // ToMap converts the Platform configuration into a map for templating.
 // Includes derived values like architecture type, version, and capability flags.
-func (p Platform) ToMap() map[string]any {
+func (p *Platform) ToMap() map[string]any {
 	platformMap := make(map[string]any)
+
 	platformMap["OS"] = p.OS.String()
 	platformMap["ARCH"] = p.Architecture.Type()
 	platformMap["ARCH_VERSION"] = p.Architecture.Version()

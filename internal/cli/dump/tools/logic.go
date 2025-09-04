@@ -3,16 +3,16 @@ package tools
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/tags"
+	"github.com/idelchi/godyl/pkg/generic"
 	"github.com/idelchi/godyl/pkg/unmarshal"
-	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // run executes the `dump tools` command.
-func run(input common.Input) (err error) {
+func run(input core.Input) (err error) {
 	cfg, embedded, _, _, args := input.Unpack()
 
 	tags := iutils.SplitTags(cfg.Dump.Tools.Tags)
@@ -66,8 +66,8 @@ func getTools(embeddedTools []byte, rendered bool, tags tags.IncludeTags) (any, 
 			return nil, err
 		}
 
-		return utils.PickByIndices(tools, included), nil
+		return generic.PickByIndices(tools, included), nil
 	}
 
-	return utils.PickByIndices(tools, included), nil
+	return generic.PickByIndices(tools, included), nil
 }

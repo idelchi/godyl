@@ -27,6 +27,7 @@ func Validate(validations ...any) error {
 
 	// Create a bulleted list for the errors
 	var errList strings.Builder
+
 	for _, err := range allErrors {
 		errList.WriteString(fmt.Sprintf("  • %s\n", err))
 	}

@@ -60,6 +60,7 @@ func (c *Collector) collect(v any, prefix string) map[string]any {
 	}
 
 	val = val.Elem()
+
 	typ := val.Type()
 
 	for i := range typ.NumField() {
@@ -87,6 +88,7 @@ func (c *Collector) collect(v any, prefix string) map[string]any {
 
 		if field.CanAddr() {
 			key := name
+
 			if prefix != "" {
 				key = prefix + "." + name
 			}

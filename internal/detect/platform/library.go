@@ -19,10 +19,12 @@ type Library struct {
 	alias string
 }
 
+// IsNil returns true if the Library pointer is nil.
 func (l *Library) IsNil() bool {
 	return l.Name == ""
 }
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface for Library.
 func (l *Library) UnmarshalYAML(node ast.Node) error {
 	type raw Library
 
@@ -33,7 +35,8 @@ func (l *Library) UnmarshalYAML(node ast.Node) error {
 	return nil
 }
 
-func (l Library) MarshalYAML() (any, error) {
+// MarshalYAML implements the yaml.Marshaler interface for Library.
+func (l *Library) MarshalYAML() (any, error) {
 	return l.Name, nil
 }
 
@@ -68,7 +71,7 @@ func (LibraryInfo) Supported() []LibraryInfo {
 	}
 }
 
-// Parse extracts library information from a string identifier.
+// ParseFrom extracts library information from a string identifier.
 // Matches against known library types and aliases, setting type
 // and raw values. Returns an error if parsing fails.
 func (l *Library) ParseFrom(name string, comparisons ...func(string, string) bool) error {
@@ -103,22 +106,22 @@ func (l *Library) Parse() error {
 }
 
 // IsUnset checks if the library type is empty.
-func (l Library) IsUnset() bool {
+func (l *Library) IsUnset() bool {
 	return l.canonical == ""
 }
 
 // IsSet checks if the library type has been configured.
-func (l Library) IsSet() bool {
+func (l *Library) IsSet() bool {
 	return l.canonical != ""
 }
 
 // Is checks for exact library match including raw string.
 // Returns true only if both libraries are set and identical.
-func (l Library) Is(other Library) bool {
+func (l *Library) Is(other Library) bool {
 	return other.alias == l.alias && !l.IsUnset() && !other.IsUnset()
 }
 
-var compatibilityMatrix = map[string]map[string]bool{
+var compatibilityMatrix = map[string]map[string]bool{ //nolint:gochecknoglobals,lll // Compatibility matrix lookup table is appropriate as global
 	"gnu": {
 		"gnu":  true,
 		"musl": true,
@@ -144,7 +147,7 @@ var compatibilityMatrix = map[string]map[string]bool{
 // IsCompatibleWith checks if binaries built against this library can run
 // with another library. Uses a compatibility matrix to determine binary
 // compatibility between different library implementations.
-func (l Library) IsCompatibleWith(other Library) bool {
+func (l *Library) IsCompatibleWith(other Library) bool {
 	// Early return if either library is unset
 	if l.IsUnset() || other.IsUnset() {
 		return false
@@ -164,7 +167,7 @@ func (l Library) IsCompatibleWith(other Library) bool {
 }
 
 // String returns the canonical name of the library.
-func (l Library) String() string {
+func (l *Library) String() string {
 	return l.canonical
 }
 

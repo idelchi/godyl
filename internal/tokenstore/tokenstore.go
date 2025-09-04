@@ -1,3 +1,4 @@
+// Package tokenstore provides secure token storage and retrieval functionality.
 package tokenstore
 
 import (

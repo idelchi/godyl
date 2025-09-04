@@ -44,6 +44,7 @@ func (r *Release) FromRepositoryRelease(release *github.RepositoryRelease) error
 
 	// Get release name, defaulting to empty string if nil
 	var name string
+
 	if release.Name != nil {
 		name = *release.Name
 	}

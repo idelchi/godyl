@@ -2,6 +2,7 @@ package files
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/idelchi/godyl/pkg/path/file"
 )
@@ -23,6 +24,20 @@ func New(dir string, paths ...string) (fs Files) {
 	}
 
 	return fs
+}
+
+// Add adds a new file to the collection.
+// Joins the provided path with the directory to create a full path.
+func (es *Files) Add(dir, path string) {
+	*es = append(*es, file.New(dir, path))
+}
+
+// AddFile adds a file to the collection.
+// If the file already exists in the collection, it is not added again.
+func (es *Files) AddFile(f file.File) {
+	if !slices.Contains(*es, f) {
+		*es = append(*es, f)
+	}
 }
 
 // LinksFor creates links for each file in the collection.
@@ -54,5 +69,24 @@ func (es Files) AsSlice() []string {
 	for i, f := range es {
 		slice[i] = f.String()
 	}
+
 	return slice
+}
+
+// Contains checks if the collection contains a specified file.
+func (es Files) Contains(file file.File) bool {
+	return slices.Contains(es, file)
+}
+
+// Remove removes a file from the collection.
+// Returns true if the file was found and removed, false otherwise.
+func (es *Files) Remove(file file.File) bool {
+	index := slices.Index(*es, file)
+	if index == -1 {
+		return false
+	}
+
+	*es = append((*es)[:index], (*es)[index+1:]...)
+
+	return true
 }

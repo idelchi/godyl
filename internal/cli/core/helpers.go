@@ -1,4 +1,4 @@
-package common
+package core
 
 import (
 	"reflect"
@@ -8,6 +8,9 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
+// ExitOnShow checks if the command should exit early based on the show function and arguments.
+// Returns true if the command should exit without further processing.
+// ExitOnShow determines if the command should exit early when show function is active and no arguments are provided.
 func ExitOnShow(show root.ShowFuncType, args ...string) bool {
 	if show() != nil && len(args) == 0 {
 		return true
@@ -16,6 +19,9 @@ func ExitOnShow(show root.ShowFuncType, args ...string) bool {
 	return false
 }
 
+// SetSubcommandDefaults configures default behavior for a subcommand, including setting up
+// the PersistentPreRunE function with the provided configuration and show function.
+// SetSubcommandDefaults configures default settings for subcommands including pre-run hooks and configuration handling.
 func SetSubcommandDefaults(cmd *cobra.Command, local any, show root.ShowFuncType) {
 	var config Trackable
 

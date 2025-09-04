@@ -1,6 +1,7 @@
 package github
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -8,13 +9,13 @@ import (
 
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // GitHub represents a GitHub repository configuration and state.
 type GitHub struct {
-	Data                common.Metadata `mapstructure:"-"     yaml:"-"`
+	Data                install.Metadata `mapstructure:"-"     yaml:"-"`
 	latestStoredRelease *github.Release
 	Repo                string `mapstructure:"repo"  yaml:"repo"`
 	Owner               string `mapstructure:"owner" yaml:"owner"`
@@ -36,7 +37,9 @@ func (g *GitHub) Initialize(name string) error {
 
 // Version fetches the latest release version and stores it in metadata.
 func (g *GitHub) Version(_ string) error {
-	version, err := g.LatestVersion()
+	ctx := context.Background()
+
+	version, err := g.LatestVersion(ctx)
 	if err != nil {
 		return err
 	}
@@ -46,10 +49,12 @@ func (g *GitHub) Version(_ string) error {
 	return nil
 }
 
-// Path finds a matching release asset and stores its URL in metadata.
+// URL finds a matching release asset and stores its URL in metadata.
 // Uses version, extensions, and requirements to find the appropriate asset.
 func (g *GitHub) URL(_ string, extensions []string, version string, requirements match.Requirements) error {
-	url, err := g.MatchAssetsToRequirements(extensions, version, requirements)
+	ctx := context.Background()
+
+	url, err := g.MatchAssetsToRequirements(ctx, extensions, version, requirements)
 	if err != nil {
 		return err
 	}
@@ -62,13 +67,13 @@ func (g *GitHub) URL(_ string, extensions []string, version string, requirements
 // Install downloads the GitHub release asset using the provided configuration.
 // Returns the operation output, downloaded file information, and any errors.
 func (g *GitHub) Install(
-	d common.InstallData,
+	d install.Data,
 	progressListener getter.ProgressTracker,
 ) (output string, found file.File, err error) {
 	// Pass the progress listener down to the common download function
 	d.ProgressListener = progressListener
 
-	found, err = common.Download(d)
+	found, err = install.Download(d)
 
 	return "", found, err
 }
@@ -80,7 +85,7 @@ func (g *GitHub) Get(attribute string) string {
 
 // LatestVersion fetches the latest release version from GitHub.
 // Returns the tag name of the latest release, respecting the Pre flag setting.
-func (g *GitHub) LatestVersion() (string, error) {
+func (g *GitHub) LatestVersion(ctx context.Context) (string, error) {
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
@@ -91,15 +96,26 @@ func (g *GitHub) LatestVersion() (string, error) {
 	if g.Pre {
 		const PerPage = 1000
 
-		release, err = repository.LatestIncludingPreRelease(PerPage)
+		release, err = repository.LatestIncludingPreRelease(
+			ctx,
+			PerPage,
+		)
 	} else {
 		if g.Token == "" {
-			if tag, err := repository.LatestVersionFromWebJSON(); err == nil {
+			if tag, webErr := repository.LatestVersionFromWebJSON(ctx); webErr == nil {
 				return tag, nil
 			}
 		}
 
-		release, err = repository.LatestRelease()
+		release, err = repository.LatestRelease(ctx)
+		// Old:
+		// release, err = repository.LatestRelease()
+		//
+		//	if err != nil {
+		//		if tag, err := repository.LatestVersionFromWeb(); err == nil {
+		//			return tag, nil
+		//		}
+		//	}
 	}
 
 	if err != nil {
@@ -117,6 +133,7 @@ func (g *GitHub) LatestVersion() (string, error) {
 // Returns the download URL of the best matching asset, considering platform,
 // architecture, and other specified requirements.
 func (g *GitHub) MatchAssetsToRequirements(
+	ctx context.Context,
 	_ []string,
 	version string,
 	requirements match.Requirements,
@@ -126,15 +143,15 @@ func (g *GitHub) MatchAssetsToRequirements(
 
 	var release *github.Release
 
-	if g.latestStoredRelease == nil {
+	if g.latestStoredRelease == nil { //nolint:nestif // Multiple checks are necessary
 		var err error
 
 		if g.Token == "" {
-			release, err = repository.GetReleaseFromWeb(version)
+			release, err = repository.GetReleaseFromWeb(ctx, version)
 		}
 
 		if err != nil || release == nil {
-			release, err = repository.GetRelease(version)
+			release, err = repository.GetRelease(ctx, version)
 		}
 
 		if err != nil {
@@ -142,7 +159,7 @@ func (g *GitHub) MatchAssetsToRequirements(
 		}
 
 		if release == nil {
-			return "", fmt.Errorf("failed to get release: is nil")
+			return "", errors.New("failed to get release: release is nil")
 		}
 	} else {
 		release = g.latestStoredRelease
@@ -183,10 +200,10 @@ func (g *GitHub) PopulateOwnerAndRepo(name string) (err error) {
 
 	// If exactly one of Owner or Repo is set (but not both), that's invalid
 	if (g.Owner == "") != (g.Repo == "") {
-		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
+		return errors.New("either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
 	}
 
-	g.Owner, g.Repo, err = common.SplitName(name)
+	g.Owner, g.Repo, err = install.SplitName(name)
 	if err != nil {
 		return err
 	}

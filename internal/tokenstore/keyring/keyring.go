@@ -10,17 +10,22 @@ import (
 )
 
 var (
+	// ErrNotFound indicates that a secret was not found in the keyring.
 	ErrNotFound = errors.New("secret not found in keyring")
-	ErrTimeout  = errors.New("timeout while accessing keyring")
+	// ErrTimeout indicates a timeout occurred while accessing the keyring.
+	ErrTimeout = errors.New("timeout while accessing keyring")
 )
 
 // Set secret in keyring for user.
 func Set(service, user, secret string, timeout time.Duration) error {
 	ch := make(chan error, 1)
+
 	go func() {
 		defer close(ch)
+
 		ch <- keyring.Set(service, user, secret)
 	}()
+
 	select {
 	case err := <-ch:
 		return err
@@ -35,6 +40,7 @@ func Get(service, user string, timeout time.Duration) (string, error) {
 		val string
 		err error
 	}, 1)
+
 	go func() {
 		defer close(ch)
 
@@ -44,6 +50,7 @@ func Get(service, user string, timeout time.Duration) (string, error) {
 			err error
 		}{val, err}
 	}()
+
 	select {
 	case res := <-ch:
 		if errors.Is(res.err, keyring.ErrNotFound) {
@@ -59,10 +66,13 @@ func Get(service, user string, timeout time.Duration) (string, error) {
 // Delete secret from keyring.
 func Delete(service, user string, timeout time.Duration) error {
 	ch := make(chan error, 1)
+
 	go func() {
 		defer close(ch)
+
 		ch <- keyring.Delete(service, user)
 	}()
+
 	select {
 	case err := <-ch:
 		return err
@@ -71,12 +81,16 @@ func Delete(service, user string, timeout time.Duration) error {
 	}
 }
 
+// DeleteAll removes all secrets for the specified service from the keyring.
 func DeleteAll(service string, timeout time.Duration) error {
 	ch := make(chan error, 1)
+
 	go func() {
 		defer close(ch)
+
 		ch <- keyring.DeleteAll(service)
 	}()
+
 	select {
 	case err := <-ch:
 		return err

@@ -1,8 +1,8 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/MakeNowJust/heredoc/v2"
@@ -12,7 +12,7 @@ import (
 	"github.com/knadh/koanf/providers/posflag"
 	"github.com/spf13/cobra"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/iutils"
@@ -26,12 +26,13 @@ import (
 
 // TODO(Idelchi): Some subcommands should NOT validate the config file, such as `auth`, `config`.
 
+//nolint:maintidx,funlen,gocognit,gocyclo // Handles multiple configuration sources and validation steps
 func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error {
 	debug.Debug("[PersistentPreRunE root] Current command: %s\n", cmd.CommandPath())
 	debug.Debug("[PersistentPreRunE root] Called from: %s\n", calledFrom.CommandPath())
 
 	// Extract some commonly used strings
-	commandPath := common.BuildCommandPath(cmd)
+	commandPath := core.BuildCommandPath(cmd)
 	envPrefix := commandPath.Env().Scoped()
 	sectionPrefix := commandPath.Section().String()
 
@@ -59,11 +60,16 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		posflag.Provider(flags, "", k),
 		nil,
 	); err != nil {
-		log.Fatalf("error loading config: %v", err)
+		return fmt.Errorf("loading config: %w", err)
 	}
 
 	// configFile := tmproot.ConfigFile
-	configFile := pfile.New(k.Get("config-file").(string))
+	configFileValue, ok := k.Get("config-file").(string)
+	if !ok {
+		return errors.New("config-file value is not a string")
+	}
+
+	configFile := pfile.New(configFileValue)
 	isSet := k.IsSet("config-file")
 
 	// We fail if:
@@ -134,7 +140,7 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		posflag.Provider(flags, "", k),
 		nil,
 	); err != nil {
-		log.Fatalf("error loading config: %v", err)
+		return fmt.Errorf("loading config: %w", err)
 	}
 
 	// At this point, the location of the `.env` file(s) can be determined through either
@@ -163,9 +169,9 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 
 		if failureCriteria(err) {
 			return err
-		} else {
-			dotenvs = dotenvs.MergedWith(dotenv)
 		}
+
+		dotenvs = dotenvs.MergedWith(dotenv)
 	}
 
 	// If the config file or env-file was set in the .env file,
@@ -208,16 +214,16 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	}
 
 	// Store the various processed values in the global context.
-	common.GlobalContext.Config = configuration
-	common.GlobalContext.Env = &env
-	common.GlobalContext.DotEnv = &dotenvs
+	core.GlobalContext.Config = configuration
+	core.GlobalContext.Env = &env
+	core.GlobalContext.DotEnv = &dotenvs
 
 	// 3rd Pass
 	//  - Load the config file
 	//	- Load environment variables
 	// 	- Load flags
 	// Fully populate the configuration struct for this command.
-	if err := common.KCreateSubcommandPreRunE(cmd, cfg, root.NoShow)(cmd, []string{}); err != nil {
+	if err := core.KCreateSubcommandPreRunE(cmd, cfg, root.NoShow)(cmd, []string{}); err != nil {
 		return err
 	}
 
@@ -225,25 +231,29 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	// Default values for tokens are deferred such that they can be
 	// set with .env files or the keyring without unnecessary checks
 
-	// TODO(Idelchi): Allow also GITHUB_TOKEN_FILE, GITLAB_TOKEN_FILE, URL_TOKEN_FILE
+	// TODO(Idelchi): Allow also GITHUB_TOKEN_FILE, GITLAB_TOKEN_FILE, URL_TOKEN_FILE //nolint:godox // TODO comment
+	// provides valuable context for future development
 	githubToken := menv.GetAny("GITHUB_TOKEN", "GH_TOKEN")
 	gitlabToken := menv.GetAny("GITLAB_TOKEN", "CI_JOB_TOKEN")
 	urlToken := menv.GetAny("URL_TOKEN")
 
-	if !cfg.AllTokensSet() && !strings.HasPrefix(calledFrom.CommandPath(), "godyl auth") && cfg.Keyring {
-		store := tokenstore.New()
+	if !cfg.AllTokensSet() && cfg.Keyring {
+		commandPath := calledFrom.CommandPath()
+		if !strings.HasPrefix(commandPath, "godyl auth store") {
+			store := tokenstore.New()
 
-		if ok, err := store.Available(); !ok {
-			return err
+			if ok, err := store.Available(); !ok {
+				return err
+			}
+
+			ghToken, _ := store.Get("github-token")
+			glToken, _ := store.Get("gitlab-token")
+			uToken, _ := store.Get("url-token")
+
+			githubToken = iutils.Any(ghToken, githubToken)
+			gitlabToken = iutils.Any(glToken, gitlabToken)
+			urlToken = iutils.Any(uToken, urlToken)
 		}
-
-		ghToken, _ := store.Get("github-token")
-		glToken, _ := store.Get("gitlab-token")
-		uToken, _ := store.Get("url-token")
-
-		githubToken = iutils.Any(ghToken, githubToken)
-		gitlabToken = iutils.Any(glToken, gitlabToken)
-		urlToken = iutils.Any(uToken, urlToken)
 	}
 
 	if err := cobraext.SetFlagIfNotSet(flags.Lookup("github-token"), githubToken); err != nil {
@@ -259,7 +269,7 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	}
 
 	// Parse again with the new defaults
-	if err := common.KCreateSubcommandPreRunE(cmd, cfg, cfg.ShowFunc)(cmd, []string{}); err != nil {
+	if err := core.KCreateSubcommandPreRunE(cmd, cfg, cfg.ShowFunc)(cmd, []string{}); err != nil {
 		return err
 	}
 

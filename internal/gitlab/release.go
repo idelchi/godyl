@@ -15,7 +15,7 @@ type Release struct {
 	// Name is the name of the release.
 	Name string `json:"name"`
 	// Tag is the tag associated with the release (e.g., version number).
-	Tag string `json:"tag_name"` //nolint:tagliatelle
+	Tag string `json:"tag_name"` //nolint:tagliatelle // GitLab API uses snake_case field names
 	// Assets is a collection of assets attached to the release.
 	Assets Assets `json:"assets"`
 }

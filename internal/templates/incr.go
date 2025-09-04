@@ -1,3 +1,4 @@
+// Package templates provides template processing utilities for configuration and content generation.
 package templates
 
 import (
@@ -62,6 +63,7 @@ func New(opts ...Option) *Processor {
 	return p
 }
 
+// WithOptions adds options to the processor configuration.
 func (p *Processor) WithOptions(opts ...Option) *Processor {
 	for _, opt := range opts {
 		opt(p)
@@ -70,6 +72,7 @@ func (p *Processor) WithOptions(opts ...Option) *Processor {
 	return p
 }
 
+// WithValues adds value maps to the processor.
 func (p *Processor) WithValues(values ...map[string]any) *Processor {
 	p.AddValues(values...)
 
@@ -81,6 +84,7 @@ func (p *Processor) AddValue(key string, value any) {
 	p.values[key] = value
 }
 
+// Values returns the merged values map from the processor.
 func (p *Processor) Values() map[string]any {
 	return p.values
 }
@@ -117,9 +121,9 @@ func (p *Processor) Apply(templateStr string) (string, error) {
 	return buf.String(), nil
 }
 
+// ApplyAndSet processes a template field and updates it in place.
 func (p *Processor) ApplyAndSet(field *string) error {
 	tmpl, err := p.Apply(*field)
-
 	if err == nil {
 		*field = tmpl
 	}

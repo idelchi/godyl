@@ -9,6 +9,7 @@ import (
 // Otherwise, an unauthenticated client is returned.
 func NewClient(token string) *github.Client {
 	c := github.NewClient(nil)
+
 	if token != "" {
 		return c.WithAuthToken(token) // Authenticate the client with the provided token.
 	}

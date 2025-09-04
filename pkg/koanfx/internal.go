@@ -1,4 +1,4 @@
-//nolint:all		// This is a copy-paste from the internals of the Koanf library.
+//nolint:gocognit // This is a copy-paste from the internals of the Koanf library.
 package koanfx
 
 import (
@@ -20,7 +20,9 @@ func textUnmarshalerHookFunc() mapstructure.DecodeHookFuncType {
 		if f.Kind() != reflect.String {
 			return data, nil
 		}
+
 		result := reflect.New(t).Interface()
+
 		unmarshaller, ok := result.(encoding.TextUnmarshaler)
 		if !ok {
 			return data, nil
@@ -31,19 +33,23 @@ func textUnmarshalerHookFunc() mapstructure.DecodeHookFuncType {
 			dataVal = reflect.ValueOf(data)
 			text    = []byte(dataVal.String())
 		)
-		if f.Kind() == t.Kind() {
+
+		if f.Kind() == t.Kind() { //nolint:nestif // Necessary nesting to handle both cases
 			// source and target are of underlying type string
 			var (
 				err    error
 				ptrVal = reflect.New(dataVal.Type())
 			)
+
 			if !ptrVal.Elem().CanSet() {
 				// cannot set, skip, this should not happen
 				if err := unmarshaller.UnmarshalText(text); err != nil {
 					return nil, err
 				}
+
 				return result, nil
 			}
+
 			ptrVal.Elem().Set(dataVal)
 
 			// We need to assert that both, the value type and the pointer type
@@ -58,6 +64,7 @@ func textUnmarshalerHookFunc() mapstructure.DecodeHookFuncType {
 					if err != nil {
 						return nil, err
 					}
+
 					break
 				}
 			}
@@ -68,6 +75,7 @@ func textUnmarshalerHookFunc() mapstructure.DecodeHookFuncType {
 		if err := unmarshaller.UnmarshalText(text); err != nil {
 			return nil, err
 		}
+
 		return result, nil
 	}
 }

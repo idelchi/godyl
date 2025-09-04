@@ -12,7 +12,7 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
-// Editor is a struct that provides methods to edit YAML files while preserving comments.
+// YAML is a struct that provides methods to edit YAML files while preserving comments.
 type YAML struct {
 	File file.File
 
@@ -60,7 +60,7 @@ func (y *YAML) Load() error {
 
 // Save writes the current data back to the YAML file, preserving comments.
 func (y *YAML) Save() error {
-	result, err := yaml.MarshalWithOptions(y.data, append(pretty.YAMLOptions, yaml.WithComment(y.comments))...)
+	result, err := yaml.MarshalWithOptions(y.data, append(pretty.DefaultYAMLOptions(), yaml.WithComment(y.comments))...)
 	if err != nil {
 		return err
 	}

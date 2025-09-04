@@ -4,7 +4,7 @@ package platform
 // Used primarily for executable files and archive formats.
 type Extension string
 
-// Default returns the platform's standard executable extension.
+// ParseFrom returns the platform's standard executable extension.
 // Returns ".exe" for Windows systems and empty string for Unix-like systems.
 func (e *Extension) ParseFrom(os OS) {
 	switch os.Type() {
@@ -16,10 +16,11 @@ func (e *Extension) ParseFrom(os OS) {
 }
 
 // String returns the extension value including the leading dot.
-func (e Extension) String() string {
-	return string(e)
+func (e *Extension) String() string {
+	return string(*e)
 }
 
-func (e Extension) IsNil() bool {
-	return e == ""
+// IsNil returns true if the Extension is empty.
+func (e *Extension) IsNil() bool {
+	return *e == ""
 }

@@ -18,10 +18,12 @@ type Condition struct {
 	Condition unmarshal.Templatable[bool]
 }
 
+// True evaluates whether the condition is satisfied.
 func (c Condition) True() bool {
 	return c.Condition.Value
 }
 
+// Parse validates and prepares the condition for evaluation.
 func (c *Condition) Parse() error {
 	// Parse the condition string into a boolean value.
 	err := c.Condition.Parse()
@@ -32,6 +34,7 @@ func (c *Condition) Parse() error {
 	return nil
 }
 
+// Has returns true if there are skip conditions defined.
 func (s Skip) Has() bool {
 	return len(s) > 0
 }

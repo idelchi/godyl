@@ -2,6 +2,7 @@ package goi
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -20,12 +21,19 @@ func (i *Installer) Install(path string) (output string, err error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 
 	// Prepare the command
-	cmd := exec.Command(i.Binary.File.Path(), "install", path)
+	cmd := exec.CommandContext(context.Background(), //nolint:gosec // Path is validated by upstream tool configuration
+		i.Binary.File.Path(),
+		"install",
+		path,
+	)
+
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, i.Binary.Env.ToSlice()...)
+
 	if i.GOOS != "" {
 		cmd.Env = append(cmd.Env, "GOOS="+i.GOOS)
 	}
+
 	if i.GOARCH != "" {
 		cmd.Env = append(cmd.Env, "GOARCH="+i.GOARCH)
 	}

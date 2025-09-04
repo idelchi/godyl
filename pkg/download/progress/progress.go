@@ -25,6 +25,7 @@ type Trackable interface {
 type readCloserWithProgress struct {
 	io.Reader
 	io.Closer
+
 	Tracker   *gpp.Tracker // associated tracker
 	totalRead int64        // number of bytes read so far
 }
@@ -60,7 +61,7 @@ func New() *Tracker {
 	pw.SetTrackerLength(TrackerLength)
 	pw.SetStyle(gpp.StyleDefault)
 	pw.SetTrackerPosition(gpp.PositionRight)
-	pw.SetUpdateFrequency(100 * time.Millisecond)
+	pw.SetUpdateFrequency(100 * time.Millisecond) //nolint:mnd // 100ms update frequency is self-documenting
 
 	// Configure visibility
 	pw.Style().Visibility.Percentage = true
@@ -108,19 +109,6 @@ func (pt *Tracker) Start() {
 	go pt.pw.Render()
 }
 
-// wait waits for all tracked readers to finish and stops rendering once done.
-func (pt *Tracker) wait() {
-	pt.wg.Wait()
-
-	for pt.pw.IsRenderInProgress() {
-		if pt.pw.LengthActive() == 0 {
-			pt.pw.Stop()
-		}
-
-		time.Sleep(100 * time.Millisecond)
-	}
-}
-
 // Wait waits for all tracked readers to finish and stops rendering once done.
 func (pt *Tracker) Wait() {
 	const DelayTime = 50 * time.Millisecond
@@ -149,13 +137,22 @@ func (pt *Tracker) TrackProgress(
 
 	tracker, ok := pt.trackers[src]
 	if !ok {
+		var sizeStr string
+
+		if totalSize >= 0 {
+			sizeStr = humanize.Bytes(uint64(totalSize))
+		} else {
+			sizeStr = "unknown"
+		}
+
 		tracker = &gpp.Tracker{
-			Message:            fmt.Sprintf("%-45s [%s]", srcPretty, humanize.Bytes(uint64(totalSize))),
+			Message:            fmt.Sprintf("%-45s [%s]", srcPretty, sizeStr),
 			Total:              totalSize,
 			Units:              gpp.UnitsBytes,
 			DeferStart:         false,
 			RemoveOnCompletion: false,
 		}
+
 		if currentSize > 0 {
 			tracker.SetValue(currentSize)
 		}
@@ -174,6 +171,7 @@ func (pt *Tracker) TrackProgress(
 // closeWrapper wraps an io.Closer to mark a tracker as done and signal completion.
 type closeWrapper struct {
 	io.Closer
+
 	wg      *sync.WaitGroup
 	tracker *gpp.Tracker
 }

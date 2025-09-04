@@ -17,10 +17,12 @@ type OS struct {
 	alias     string
 }
 
+// IsNil returns true if the OS pointer is nil.
 func (o *OS) IsNil() bool {
 	return o.Name == ""
 }
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface for OS.
 func (o *OS) UnmarshalYAML(node ast.Node) error {
 	type raw OS
 
@@ -31,7 +33,8 @@ func (o *OS) UnmarshalYAML(node ast.Node) error {
 	return nil
 }
 
-func (o OS) MarshalYAML() (any, error) {
+// MarshalYAML implements the yaml.Marshaler interface for OS.
+func (o *OS) MarshalYAML() (any, error) {
 	return o.Name, nil
 }
 
@@ -73,6 +76,7 @@ func (OSInfo) Supported() []OSInfo {
 	}
 }
 
+// ParseFrom extracts OS information from a string identifier.
 func (o *OS) ParseFrom(name string, comparisons ...func(string, string) bool) error {
 	if len(comparisons) == 0 {
 		comparisons = append(comparisons, strings.Contains)
@@ -104,6 +108,7 @@ func (o *OS) Parse() error {
 	return o.ParseFrom(o.Name, strings.EqualFold)
 }
 
+// Type returns the canonical OS type name.
 func (o *OS) Type() string {
 	return o.canonical
 }
@@ -130,6 +135,6 @@ func (o *OS) IsCompatibleWith(other OS) bool {
 }
 
 // String returns the canonical name of the operating system.
-func (o OS) String() string {
+func (o *OS) String() string {
 	return o.canonical
 }

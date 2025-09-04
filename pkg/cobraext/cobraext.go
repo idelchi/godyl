@@ -25,6 +25,7 @@ func UnknownSubcommandAction(cmd *cobra.Command, args []string) error {
 
 	if suggestions := cmd.SuggestionsFor(args[0]); len(suggestions) > 0 {
 		err += "\n\nDid you mean this?\n"
+
 		for _, s := range suggestions {
 			err += fmt.Sprintf("\t%v\n", s)
 		}

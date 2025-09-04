@@ -10,7 +10,7 @@ import (
 
 // ToTemplateMap converts the Tool struct to a map suitable for templating.
 // It adds any additional maps provided in the flatten argument to the template map.
-func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
+func (t *Tool) ToTemplateMap(_ ...map[string]any) map[string]any {
 	templateMap := map[string]any{
 		"Name":   t.Name,
 		"Env":    t.Env,

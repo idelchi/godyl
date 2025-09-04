@@ -78,8 +78,7 @@ func (t *Tool) MergeWithOther(other *Tool) error {
 	return nil
 }
 
-// MergeRightToLeft merges the provided tools into a new tool,
-// right to left.
+// MergeRightToLeft merges the provided tools into a new tool, right to left.
 func MergeRightToLeft(others ...*Tool) (*Tool, error) {
 	if len(others) == 0 {
 		return nil, errors.New("no defaults to merge")

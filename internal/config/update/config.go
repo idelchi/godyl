@@ -2,12 +2,16 @@
 package update
 
 import (
-	"github.com/idelchi/godyl/internal/config/common"
+	"github.com/idelchi/godyl/internal/config/shared"
 	"github.com/idelchi/godyl/internal/tools/strategy"
 )
 
 // Update represents the configuration for the `update` command.
 type Update struct {
+	// Tracker embed the common tracker configuration, allowing to tracker
+	// whether configuration values have been explicitly set or defaulted
+	shared.Tracker `mapstructure:"-" yaml:"-"`
+
 	// Version is the version to update to
 	Version string `mapstructure:"version" yaml:"version"`
 
@@ -22,20 +26,17 @@ type Update struct {
 
 	// Force indicates whether to force the update, ignoring any checks
 	Force bool `mapstructure:"force" yaml:"force"`
-
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `mapstructure:"-" yaml:"-"`
 }
 
-// ToCommon converts the Update configuration to a common.Common instance.
-func (u Update) ToCommon() common.Common {
+// ToCommon converts the Update configuration to a shared.Common instance.
+func (u Update) ToCommon() shared.Common {
 	s := strategy.Sync
+
 	if u.Force {
 		s = strategy.Force
 	}
 
-	return common.Common{
+	return shared.Common{
 		Strategy: s,
 
 		Tracker: u.Tracker,

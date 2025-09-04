@@ -119,7 +119,7 @@
   version:
     commands: version
   exe:
-    patterns: minikube*{{ .EXTENSION }}
+    patterns: "{{ .Exe }}*{{ .EXTENSION }}"
   hints:
     pattern: .tar.gz
     match: required
@@ -185,7 +185,7 @@
 - name: mikefarah/yq
   description: YAML, JSON, and XML processor
   exe:
-    patterns: yq_*
+    patterns: "{{ .Exe }}_*"
   hints:
     - pattern: .zip
       match: '{{ if eq .OS "windows" }}required{{ else }}weighted{{ end }}'
@@ -502,8 +502,6 @@
   description: recursively searches directories for a regex pattern
   exe: rg
   skip:
-    - reason: "ripgrep is only available for Linux"
-      condition: '{{ ne .OS "linux" }}'
     - reason: "ripgrep is not available for armv6"
       condition: '{{ and (eq .ARCH "arm") (eq .ARCH_VERSION 6) }}'
   tags:
@@ -523,6 +521,7 @@
 
 - name: Byron/dua-cli
   description: View disk space usage and delete unwanted data
+  # TODO: Release the tagged version once the windows build is fixed in the repo
   version: v2.30.1
   exe: dua
   skip:
@@ -542,7 +541,7 @@
 - name: jarun/nnn
   description: The missing terminal file manager for X
   exe:
-    patterns: nnn*
+    patterns: "{{ .Exe }}*"
   skip:
     - reason: "nnn is only available for linux"
       condition: '{{ ne .OS "linux" }}'
@@ -594,7 +593,7 @@
 - name: hairyhenderson/gomplate
   description: A versatile Go template processor
   exe:
-    patterns: gomplate_*
+    patterns: "{{ .Exe }}_*"
   hints:
     # gomplate releases both the `.exe` and `.zip` which would have identical scores
     - pattern: .zip
@@ -778,18 +777,6 @@
   tags:
     - kubernetes
 
-- idelchi/gocry
-- idelchi/gogen
-- idelchi/go-match
-- idelchi/gonc
-- idelchi/go-next-tag
-- idelchi/tcisd
-- idelchi/envprof
-- idelchi/aggr
-- name: idelchi/wslint
-  version:
-    commands: -v
-
 - name: argoproj/argo-cd
   description: Declarative continuous deployment for Kubernetes.
 
@@ -919,6 +906,8 @@
 
 - name: alexpasmantier/television
   description: A cross-platform, fast and extensible general purpose fuzzy finder for the terminal.
+  # TODO: Release the tagged version once the windows build is fixed in the repo
+  version: 0.13.2
   exe: tv
   hints:
     - pattern: .zip
@@ -952,3 +941,42 @@
   description: A highly configurable CLI tool for writing conventional commits
   tags:
     - terminal
+
+- name: regclient/regclient
+  description: Docker and OCI Registry Client in Go and tooling using those libraries.
+  exe: regctl
+  tags:
+    - terminal
+
+- name: regclient/regclient
+  description: Docker and OCI Registry Client in Go and tooling using those libraries.
+  exe: regsync
+  tags:
+    - terminal
+
+- name: regclient/regclient
+  description: Docker and OCI Registry Client in Go and tooling using those libraries.
+  exe: regbot
+  tags:
+    - terminal
+
+- name: openai/codex
+  description: A CLI tool for interacting with OpenAI's Codex models.
+  exe:
+    patterns: "{{ .Exe }}*{{ .EXTENSION }}"
+  tags:
+    - terminal
+
+- idelchi/gocry
+- idelchi/gogen
+- idelchi/go-match
+- idelchi/gonc
+- idelchi/go-next-tag
+- idelchi/tcisd
+- idelchi/envprof
+- idelchi/aggr
+- idelchi/slot
+- idelchi/pwgen
+- name: idelchi/wslint
+  version:
+    commands: -v

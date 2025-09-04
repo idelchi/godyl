@@ -1,4 +1,4 @@
-package common
+package core
 
 import (
 	"fmt"
@@ -14,18 +14,23 @@ import (
 	"github.com/idelchi/godyl/pkg/validator"
 )
 
+// Trackable defines the interface for configuration objects that can track and validate their state.
 type Trackable interface {
 	Store(tracker *koanfx.Tracker)
 	Validate() error
 }
 
+// KCreateSubcommandPreRunE creates a PreRunE function for Cobra commands that handles configuration loading,
+// environment variable processing, flag parsing, and validation.
+//
+//nolint:gocognit // Complex setup function
 func KCreateSubcommandPreRunE(
 	cmd *cobra.Command,
 	cfg Trackable,
 	show root.ShowFuncType,
 ) func(_ *cobra.Command, _ []string) error {
 	return func(_ *cobra.Command, _ []string) error {
-		debug.Debug("[PersistentPreRunE] Current command: %s\n", cmd.CommandPath())
+		debug.Debug("[PersistentPreRunE] Current command: %s", cmd.CommandPath())
 
 		commandPath := BuildCommandPath(cmd)
 		envPrefix := commandPath.Env().Scoped()

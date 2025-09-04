@@ -5,13 +5,13 @@ import (
 	"embed"
 
 	"github.com/idelchi/godyl/internal/cli"
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 )
 
 // Execute runs the root command.
 func Execute(version string, files embed.FS) error {
 	// Get the embedded files
-	embedded, err := common.NewEmbeddedFiles(files)
+	embedded, err := core.NewEmbeddedFiles(files)
 	if err != nil {
 		return err
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"path/filepath"
 )
 
 // CreateRandomInDir creates a uniquely named directory.
@@ -55,4 +56,28 @@ func (f Folder) Info() (fs.FileInfo, error) {
 	}
 
 	return info, nil
+}
+
+// Size returns the size of the folder in bytes.
+func (f Folder) Size() (int64, error) {
+	var size int64
+
+	err := filepath.WalkDir(f.Path(), func(_ string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !d.IsDir() {
+			info, err := d.Info()
+			if err != nil {
+				return err
+			}
+
+			size += info.Size()
+		}
+
+		return nil
+	})
+
+	return size, err
 }

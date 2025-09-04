@@ -12,10 +12,12 @@ import (
 // Hints represents a collection of Hint objects used to evaluate asset matches.
 type Hints unmarshal.SingleOrSliceType[Hint]
 
+// Has returns true if the Hints collection contains any hints.
 func (h *Hints) Has() bool {
 	return h != nil && len(*h) > 0
 }
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface for Hints.
 func (h *Hints) UnmarshalYAML(node ast.Node) (err error) {
 	*h, err = unmarshal.SingleOrSlice[Hint](node)
 	if err != nil {
@@ -35,6 +37,7 @@ func (h *Hints) Add(hints ...Hint) {
 	h.Append(hints)
 }
 
+// Parse validates and prepares all hints in the collection.
 func (h *Hints) Parse() error {
 	for i, hint := range *h {
 		if err := hint.Parse(); err != nil {
@@ -58,7 +61,5 @@ func (h *Hints) Reduced() *Hints {
 		return hint.Pattern == ""
 	})
 
-	result := Hints(reduced)
-
-	return &result
+	return &reduced
 }

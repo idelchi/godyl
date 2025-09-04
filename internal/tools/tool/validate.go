@@ -2,6 +2,7 @@
 package tool
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -11,13 +12,13 @@ import (
 	"github.com/idelchi/godyl/internal/templates"
 	"github.com/idelchi/godyl/internal/tools/result"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/internal/tools/strategy"
 	"github.com/idelchi/godyl/internal/tools/tags"
 	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/pkg/generic"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
-	"github.com/idelchi/godyl/pkg/utils"
 	"github.com/idelchi/godyl/pkg/validator"
 )
 
@@ -74,6 +75,7 @@ func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.R
 
 		// Get the installer for the current source type.
 		populator, err := t.Source.Installer()
+
 		t.populator = populator
 
 		if err != nil {
@@ -86,8 +88,8 @@ func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.R
 		}
 
 		// Set the executable name according the source type's rules.
-		utils.SetIfZero(&t.Exe.Name, populator.Get("exe"))
-		utils.SetIfZero(&t.Exe.Name, t.Name)
+		generic.SetIfZero(&t.Exe.Name, populator.Get("exe"))
+		generic.SetIfZero(&t.Exe.Name, t.Name)
 
 		// Update the template engine with .exe
 		tmpl.AddValue("Exe", t.Exe.Name)
@@ -113,7 +115,7 @@ func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.R
 
 func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, opts resolveOptions) result.Result {
 	// Retrieve the tool's version from the installer if it is not already set.
-	if utils.IsZero(t.Version.Version) {
+	if generic.IsZero(t.Version.Version) {
 		if err := populator.Version(t.Name); err != nil {
 			return result.WithFailed(fmt.Sprintf("getting version: %s", err))
 		}
@@ -148,7 +150,7 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 	}
 
 	// Determine the tool's path if not already set.
-	if utils.IsZero(t.URL) {
+	if generic.IsZero(t.URL) {
 		if err := t.Hints.Parse(); err != nil {
 			return result.WithFailed(fmt.Sprintf("parsing hints: %s", err))
 		}
@@ -219,13 +221,13 @@ func (t *Tool) CheckSkipConditions(tags tags.IncludeTags) result.Result {
 // Download retrieves and installs the tool using its configured source and installer.
 // It handles progress tracking and executes any post-installation commands.
 // Returns a Result indicating success or failure with detailed messages.
-func (t *Tool) Download(progressListener getter.ProgressTracker) result.Result {
+func (t *Tool) Download(_ context.Context, progressListener getter.ProgressTracker) result.Result {
 	installer, err := t.Source.Installer()
 	if err != nil {
 		return result.WithFailed("getting installer").Wrap(err)
 	}
 
-	data := common.InstallData{
+	data := install.Data{
 		Path:        t.URL,
 		Name:        t.Name,
 		Exe:         t.Exe.Name,
@@ -236,6 +238,7 @@ func (t *Tool) Download(progressListener getter.ProgressTracker) result.Result {
 		Env:         t.Env,
 		NoVerifySSL: t.NoVerifySSL,
 		// TODO(Idelchi): Pass OS and Architecture as they are and let downstream decide if they want Type(), or
+		// //nolint:godox // TODO comment provides valuable context for future development
 		// String(), or whatever.
 		OS:   t.Platform.OS.Type(),
 		Arch: t.Platform.Architecture.Type(),
@@ -249,7 +252,8 @@ func (t *Tool) Download(progressListener getter.ProgressTracker) result.Result {
 
 	// Execute post-installation commands if any exist
 	if len(t.Commands.Commands) > 0 {
-		if output, err := t.Commands.Run(t.Env); err != nil {
+		//nolint:contextcheck 	// TODO(Idelchi): Address this later
+		if output, err := t.Commands.Run(context.Background(), t.Env); err != nil {
 			return result.WithFailed("executing post-installation commands").Wrap(err).Wrapped(output)
 		}
 	}

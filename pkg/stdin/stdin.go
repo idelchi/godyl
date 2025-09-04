@@ -52,3 +52,18 @@ func Read() (string, error) {
 
 	return strings.TrimSuffix(string(bytes), "\n"), err
 }
+
+// ReadAll consumes stdin and returns the trimmed string plus a flag that
+// tells whether any bytes were actually read.
+func ReadAll() (data string, read bool, err error) {
+	b, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		return "", false, err
+	}
+
+	if len(b) == 0 {
+		return "", false, nil
+	}
+
+	return strings.TrimSuffix(string(b), "\n"), true, nil
+}

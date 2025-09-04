@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/cache"
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // run executes the `dump cache` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, _, _, _, args := input.Unpack()
 
 	cacheFile := tmp.CacheFile(cfg.Cache.Dir)
@@ -21,6 +21,7 @@ func run(input common.Input) error {
 	}
 
 	var name string
+
 	if len(args) > 0 {
 		name = args[0]
 	}

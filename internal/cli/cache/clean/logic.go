@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/idelchi/godyl/internal/cache"
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/executable"
@@ -15,7 +15,7 @@ import (
 )
 
 // run executes the `cache clean` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, _, _, _, _ := input.Unpack()
 
 	logger, cacheHandler, err := setup(cfg)
@@ -41,7 +41,7 @@ func run(input common.Input) error {
 
 // setup initializes the logger and cache handler.
 func setup(cfg *root.Config) (*logger.Logger, *cache.Cache, error) {
-	logger, err := common.SetupLogger(cfg.LogLevel)
+	logger, err := core.SetupLogger(cfg.LogLevel)
 	if err != nil {
 		return nil, nil, err
 	}

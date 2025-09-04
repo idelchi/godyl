@@ -1,10 +1,11 @@
+// Package none provides a no-op source implementation for tools that don't require external sources.
 package none
 
 import (
 	"github.com/hashicorp/go-getter/v2"
 
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
@@ -27,13 +28,13 @@ func (n *None) Version(_ string) error {
 	return nil
 }
 
-// Path is a no-op implementation of the Populator interface.
+// URL is a no-op implementation of the Populator interface.
 func (n *None) URL(_ string, _ []string, _ string, _ match.Requirements) error {
 	return nil
 }
 
 // Install is a no-op implementation of the Populator interface.
 // Returns empty values as no actual installation is performed.
-func (n *None) Install(_ common.InstallData, _ getter.ProgressTracker) (string, file.File, error) {
+func (n *None) Install(_ install.Data, _ getter.ProgressTracker) (string, file.File, error) {
 	return "", file.File(""), nil
 }

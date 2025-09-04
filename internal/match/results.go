@@ -31,6 +31,7 @@ type Results []Result
 // ToString converts the results into a formatted string for output.
 func (m Results) ToString() string {
 	var result string
+
 	for _, res := range m {
 		result += fmt.Sprintf("	- %s\n", res.Asset.Name)
 		result += fmt.Sprintf("		score: %d\n", res.Score)
@@ -73,11 +74,11 @@ func (m Results) Best() Results {
 // Status evaluates the state of the results and returns an appropriate error if needed.
 func (m Results) Status() (err error) {
 	m = m.Sorted()
-	if !m.HasQualified() {
+	if !m.HasQualified() { //nolint:gocritic // If-else chain is more readable than switch for this logic
 		err = ErrNoQualified
 
 		return fmt.Errorf("%w: \n%s%s", err, m.ToString(), "  ** check settings **")
-	} else if m.IsAmbigious() {
+	} else if m.IsAmbiguous() {
 		err = ErrAmbiguous
 
 		return fmt.Errorf("%w: \n%s%s", err, m.Best().ToString(), "  ** try to tune weights **")
@@ -95,8 +96,8 @@ func (m Results) Success() bool {
 	return len(m) == 1
 }
 
-// IsAmbigious returns true if there are multiple qualified results.
-func (m Results) IsAmbigious() bool {
+// IsAmbiguous returns true if there are multiple qualified results.
+func (m Results) IsAmbiguous() bool {
 	return len(m) > 1
 }
 
@@ -111,9 +112,9 @@ func (m Results) HasQualified() bool {
 	return false
 }
 
-// Error returns a combined error from all results.
+// Errors returns a combined error from all results.
 func (m Results) Errors() []error {
-	var errs []error
+	var errs []error //nolint:prealloc // Size unknown as it depends on error count
 
 	for _, result := range m {
 		if result.Error == nil {

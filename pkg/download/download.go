@@ -15,8 +15,8 @@ import (
 	retryablehttp "github.com/hashicorp/go-retryablehttp"
 
 	"github.com/idelchi/godyl/internal/debug"
+	"github.com/idelchi/godyl/pkg/generic"
 	"github.com/idelchi/godyl/pkg/path/file"
-	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // Downloader manages download settings.
@@ -61,6 +61,7 @@ func New(opts ...Option) *Downloader {
 	return downloader
 }
 
+// ErrDownload indicates a download operation failed.
 var ErrDownload = errors.New("download error")
 
 // Download fetches url to output (archives auto‑extracted).
@@ -70,6 +71,7 @@ func (d Downloader) Download(url, output string, header ...http.Header) (file.Fi
 
 	// retryable HTTP client
 	client := retryablehttp.NewClient()
+
 	client.Logger = nil // silence default logging
 	client.RetryMax = d.maxRetries
 	client.RetryWaitMin = d.retryWaitMin
@@ -104,7 +106,7 @@ func (d Downloader) Download(url, output string, header ...http.Header) (file.Fi
 		Header:                headers,
 	}
 
-	if !utils.IsURL(url) {
+	if !generic.IsURL(url) {
 		return file.New(), fmt.Errorf("%w: invalid URL: %q", ErrDownload, url)
 	}
 

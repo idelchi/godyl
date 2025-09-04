@@ -3,17 +3,17 @@ package remove
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/pkg/editor"
 )
 
 // run executes the `config remove` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, _, context, _, args := input.Unpack()
 
 	configuration := context.Config
 
-	logger, err := common.SetupLogger(cfg.LogLevel)
+	logger, err := core.SetupLogger(cfg.LogLevel)
 	if err != nil {
 		return err
 	}

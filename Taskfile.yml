@@ -9,9 +9,6 @@ vars:
   # This environment variable must exist (i.e it's not enough that it's set in the .env file)
   DEVENV: .devenv
 
-env:
-  CSPELL_CONFIG: ./settings/cspell.yaml
-
 includes:
   aux: "{{.DEVENV}}/taskfiles/Taskfile.aux.yml"
   git: "{{.DEVENV}}/taskfiles/Taskfile.git.yml"
@@ -38,8 +35,8 @@ tasks:
         - `task docker -- task <task> -f` to run a task/command inside the container
     cmds:
       - docker rm -f devenv > /dev/null 2>&1 || true
-      - docker compose -f {{.DEVENV}}/docker-compose.yml build --build-arg CACHEBUST=$(date +%s) devenv
-      - docker compose -f {{.DEVENV}}/docker-compose.yml run --rm devenv {{.CLI_ARGS}}
+      - docker compose -f {{.DEVENV}}/compose.yaml build --build-arg CACHEBUST=$(date +%s) devenv
+      - docker compose -f {{.DEVENV}}/compose.yaml run --user root --rm devenv {{.CLI_ARGS}}
     interactive: true
 
   push:
@@ -56,6 +53,8 @@ tasks:
   clean:
     - task: aux:clean
     - task: go:clean
+    - cmd: |
+        rm -rf .bin-*
 
   info:
     - task: git
@@ -68,19 +67,22 @@ tasks:
   format:
     deps:
       - generate
+      - task: yaml
+      - task: json
+      - task: docker
+      - task: md
+      - task: ws
     cmds:
-      - task: format:default
       - task: go:format
 
   lint:
     deps:
       - generate
+      - task: lint:ws
+      - task: lint:yaml
+      - task: lint:json
     cmds:
-      # TODO(Idelchi): Move as `deps` when fixed.
-      - cmd: task lint:default
-        ignore_error: true
-      - cmd: task go:lint
-        ignore_error: true
+      - task: go:lint
 
   build:
     deps:

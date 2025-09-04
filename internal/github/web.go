@@ -28,16 +28,15 @@ func newHTTPClient() *http.Client {
 
 	return &http.Client{
 		Timeout: Timeout,
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 			// Don't follow redirects, we just want the Location header
 			return http.ErrUseLastResponse
 		},
 	}
 }
 
-// GetRelease retrieves a specific release for the repository based on the provided tag.
-func (r *Repository) GetReleaseFromWeb(tag string) (*Release, error) {
-	ctx := context.Background()
+// GetReleaseFromWeb retrieves a specific release for the repository based on the provided tag.
+func (r *Repository) GetReleaseFromWeb(ctx context.Context, tag string) (*Release, error) {
 	url := fmt.Sprintf("https://github.com/%s/%s/releases/expanded_assets/%s", r.Owner, r.Repo, tag)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
@@ -49,6 +48,7 @@ func (r *Repository) GetReleaseFromWeb(tag string) (*Release, error) {
 	req.Header.Set("Accept", "application/json")
 
 	client := newHTTPClient()
+
 	client.CheckRedirect = nil // Allow redirects for this request
 
 	res, err := client.Do(req)
@@ -84,10 +84,10 @@ func (r *Repository) GetReleaseFromWeb(tag string) (*Release, error) {
 	return release, nil
 }
 
-// LatestVersionFromWeb retrieves the latest release for the repository using the GitHub website
+// LatestVersionFromWebHTML retrieves the latest release for the repository using the GitHub website
 // instead of the API, avoiding rate limits.
-func (r *Repository) LatestVersionFromWebHTML() (string, error) {
-	webReleaseInfo, err := r.getLatestReleaseFromWebHTML(r.ctx)
+func (r *Repository) LatestVersionFromWebHTML(ctx context.Context) (string, error) {
+	webReleaseInfo, err := r.getLatestReleaseFromWebHTML(ctx)
 	if err != nil {
 		return "", fmt.Errorf("failed to get latest release info from web: %w", err)
 	}
@@ -97,10 +97,10 @@ func (r *Repository) LatestVersionFromWebHTML() (string, error) {
 	return webReleaseInfo.Tag, nil
 }
 
-// LatestVersionFromWeb2 retrieves the latest release for the repository using the GitHub website
+// LatestVersionFromWebJSON retrieves the latest release for the repository using the GitHub website
 // instead of the API, avoiding rate limits.
-func (r *Repository) LatestVersionFromWebJSON() (string, error) {
-	webReleaseInfo, err := r.getLatestReleaseInfoFromWebJSON(r.ctx)
+func (r *Repository) LatestVersionFromWebJSON(ctx context.Context) (string, error) {
+	webReleaseInfo, err := r.getLatestReleaseInfoFromWebJSON(ctx)
 	if err != nil {
 		return "", fmt.Errorf("failed to get latest release info from web: %w", err)
 	}
@@ -200,7 +200,7 @@ func parseGitHubReleaseAssets(html string) ([]Asset, error) {
 	var assets []Asset
 
 	// Find all list items in the assets box
-	doc.Find("li.Box-row").Each(func(i int, s *goquery.Selection) {
+	doc.Find("li.Box-row").Each(func(_ int, s *goquery.Selection) {
 		// Find the download link
 		link := s.Find("a[href*='/releases/download/']")
 		if link.Length() > 0 {

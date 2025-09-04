@@ -5,6 +5,7 @@
 package goc
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"slices"
@@ -16,23 +17,24 @@ import (
 	"github.com/idelchi/godyl/internal/goi"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tmp"
-	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Go represents a Go project configuration that can be installed from GitHub.
 type Go struct {
 	github  *github.GitHub
-	Data    common.Metadata `yaml:"-"`
-	Command string          `yaml:"command"`
-	Base    string          `yaml:"base"`
+	Data    install.Metadata `yaml:"-"`
+	Command string           `yaml:"command"`
+	Base    string           `yaml:"base"`
 }
 
 // Initialize sets up the Go project configuration from the given name.
 // Uses the associated GitHub repository for initialization.
 //
-// TODO(Idelchi): This should be ignored if the version is already set.
+// TODO(Idelchi): This should be ignored if the version is already set. //nolint:godox // TODO comment provides valuable
+// context for future development
 // As a workaround, just return nil for now.
 func (g *Go) Initialize(name string) error {
 	if g.Base != "github.com" {
@@ -63,14 +65,15 @@ func (g *Go) URL(_ string, _ []string, version string, _ match.Requirements) err
 	return nil
 }
 
-// TODO(Idelchi): Remove this at some point - why do we need it?
-var mu sync.Mutex
+// TODO(Idelchi): Remove this at some point - why do we need it? //nolint:godox // TODO comment provides valuable
+// context for future development.
+var mu sync.Mutex //nolint:gochecknoglobals // Global mutex for thread-safe access across package
 
 // Install downloads and builds the Go project using 'go install'.
 // Handles temporary directory creation, environment setup, and file linking.
 // Progress listener is accepted but not used as go install doesn't support it.
 // Returns the installation output, installed file information, and any errors.
-func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output string, found file.File, err error) {
+func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, found file.File, err error) {
 	mu.Lock()
 
 	binary, err := goi.New(d.NoVerifySSL)
@@ -79,6 +82,7 @@ func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output str
 
 		return "", "", err
 	}
+
 	mu.Unlock()
 
 	installer := goi.Installer{
@@ -119,19 +123,22 @@ func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output str
 	}
 
 	defer func() {
-		if err == nil {
-			folder.Remove() //nolint:gosec 		// TODO(Idelchi): Address this later.
+		if removeErr := folder.Remove(); removeErr != nil {
+			err = errors.Join(err, removeErr)
 		}
 	}()
 
 	for _, path := range paths {
 		output, err = installer.Install(path)
-
 		if err == nil {
 			d.Path = path
-			found, err := common.FindAndSymlink(file.New(folder.Path()), d)
 
-			return output, found, err
+			found, findErr := install.FindAndSymlink(
+				file.New(folder.Path()),
+				d,
+			)
+
+			return output, found, findErr
 		}
 	}
 

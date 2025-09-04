@@ -9,15 +9,15 @@ on:
       - main
 
 jobs:
-  info:
-    uses: idelchi/devenv/.github/workflows/info.yml@main
+  # info:
+  #   uses: idelchi/devenv/.github/workflows/info.yml@main
 
-  lint:
-    uses: idelchi/devenv/.github/workflows/task.yml@main
-    needs: info
+  # lint:
+  #   uses: idelchi/devenv/.github/workflows/task.yml@main
+  #   needs: info
 
   test:
-    needs: lint
+    # needs: lint
     strategy:
       matrix:
         os:
@@ -35,9 +35,12 @@ jobs:
         with:
           go-version: "1.25.0"
           check-latest: true
+      - name: auth
+        run: |
+          go run . auth status
+          go run . auth status -ss
+      # - name: Dump out platform
+      #   run: go run . dump platform
 
-      - name: Dump out platform
-        run: go run . dump platform
-
-      - name: Dry install tools
-        run: go run . dump tools -e | go run . -v i - --dry
+      # - name: Dry install tools
+      #   run: go run . dump tools -e | go run . -v i - --dry

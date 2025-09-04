@@ -37,7 +37,7 @@ jobs:
           check-latest: true
 
       - name: Build the application
-        run: go build . -o godyl
+        run: go build -o godyl .
 
       - name: Dump out platform
         run: ./godyl dump platform

@@ -9,9 +9,6 @@ vars:
   # This environment variable must exist (i.e it's not enough that it's set in the .env file)
   DEVENV: .devenv
 
-env:
-  CSPELL_CONFIG: ./settings/cspell.yaml
-
 includes:
   aux: "{{.DEVENV}}/taskfiles/Taskfile.aux.yml"
   git: "{{.DEVENV}}/taskfiles/Taskfile.git.yml"
@@ -70,15 +67,21 @@ tasks:
   format:
     deps:
       - generate
+      - task: yaml
+      - task: json
+      - task: docker
+      - task: md
+      - task: ws
     cmds:
-      - task: format:default
       - task: go:format
 
   lint:
     deps:
       - generate
+      - task: lint:ws
+      - task: lint:yaml
+      - task: lint:json
     cmds:
-      - task: lint:default
       - task: go:lint
 
   build:

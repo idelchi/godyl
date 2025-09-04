@@ -76,7 +76,7 @@ func (gt Targets) Match() (match.Results, error) {
 	switch {
 	case !matches.HasQualified():
 		err = fmt.Errorf("%w: no qualified file found", ErrMatch)
-	case matches.IsAmbigious():
+	case matches.IsAmbiguous():
 		err = fmt.Errorf("%w: ambiguous file selection", ErrMatch)
 	case !matches.Success():
 		err = fmt.Errorf("%w: no matching file found", ErrMatch)

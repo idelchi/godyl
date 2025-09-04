@@ -15,7 +15,7 @@ ARG TARGETOS
 
 USER root
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     git \
@@ -79,8 +79,6 @@ USER root
 RUN rm -rf /tmp/go
 
 USER ${USER}
-
-RUN echo 'alias gr="go run ."' >> /home/${USER}/.bashrc
 
 # Timezone
 ENV TZ=Europe/Zurich

@@ -78,7 +78,7 @@ func (m Results) Status() (err error) {
 		err = ErrNoQualified
 
 		return fmt.Errorf("%w: \n%s%s", err, m.ToString(), "  ** check settings **")
-	} else if m.IsAmbigious() {
+	} else if m.IsAmbiguous() {
 		err = ErrAmbiguous
 
 		return fmt.Errorf("%w: \n%s%s", err, m.Best().ToString(), "  ** try to tune weights **")
@@ -96,8 +96,8 @@ func (m Results) Success() bool {
 	return len(m) == 1
 }
 
-// IsAmbigious returns true if there are multiple qualified results.
-func (m Results) IsAmbigious() bool {
+// IsAmbiguous returns true if there are multiple qualified results.
+func (m Results) IsAmbiguous() bool {
 	return len(m) > 1
 }
 

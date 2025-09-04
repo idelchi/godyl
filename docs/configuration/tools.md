@@ -47,7 +47,7 @@ A complete reference for all fields is available below.
 ### Full form
 
 ```yaml
-  # Name of the tool to download. Used as display name and for inferring other fields.
+# Name of the tool to download. Used as display name and for inferring other fields.
 - name: idelchi/envprof
   # Optional description of the tool, for documentation purposes.
   description: Profile-based environment variable manager

@@ -46,7 +46,7 @@ func (c *Handler) Resolve(defaultFile file.File, tools *tools.Tools) (err error)
 	9. Resolve the inheritance scheme of all the tools. Important is to do the final
 	   merge with the defaults as a "UnmarshalYAML", to have the custom unmarshalling mechanisms kick in.
 	10. Finally, ensure that no nil points are left in the tools
-	11. Now we can merge the plaform settings
+	11. Now we can merge the platform settings
 	12. Finally, we can merge the platform settings
 	*/
 	// Continue with setting up the defaults

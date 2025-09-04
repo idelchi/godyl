@@ -43,4 +43,5 @@ jobs:
         run: ./godyl dump platform
 
       - name: Dry install tools
+        shell: bash
         run: ./godyl dump tools -e | ./godyl -j 1 -v i - --dry

@@ -35,12 +35,9 @@ jobs:
         with:
           go-version: "1.25.0"
           check-latest: true
-      - name: auth
-        run: |
-          go run . auth status
-          go run . auth status -ss
+
       # - name: Dump out platform
       #   run: go run . dump platform
 
-      # - name: Dry install tools
-      #   run: go run . dump tools -e | go run . -v i - --dry
+      - name: Dry install tools
+        run: go run . dump tools -e | go run . -v i - --dry

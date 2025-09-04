@@ -14,7 +14,7 @@ type Asset struct {
 	Platform detect.Platform // Platform describes the OS, architecture, and other relevant details for compatibility.
 }
 
-// NameLower returns the asset's name in lowercase.
+// Lower returns the asset's name in lowercase.
 // This is useful for case-insensitive matching operations.
 func (a *Asset) Lower() string {
 	return strings.ToLower(a.Name)

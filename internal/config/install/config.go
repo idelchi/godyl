@@ -9,6 +9,10 @@ import (
 
 // Install provides the configuration for the `install` command.
 type Install struct {
+	// Tracker embed the common tracker configuration, allowing to tracker
+	// whether configuration values have been explicitly set or defaulted
+	common.Tracker `mapstructure:"-" yaml:"-"`
+
 	// Strategy defines how the installation should be performed
 	Strategy strategy.Strategy `mapstructure:"strategy" validate:"oneof=none sync force" yaml:"strategy"`
 
@@ -31,10 +35,6 @@ type Install struct {
 	Pre bool `mapstructure:"pre" yaml:"pre"`
 
 	Source sources.Type `mapstructure:"source" validate:"oneof=github gitlab url none go" yaml:"source"`
-
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `mapstructure:"-" yaml:"-"`
 }
 
 // ToCommon converts the Install configuration to a common.Common instance.

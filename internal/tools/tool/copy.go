@@ -9,6 +9,8 @@ import (
 	"github.com/idelchi/godyl/pkg/utils"
 )
 
+// CopyYAML performs a YAML-based copy operation on the tool.
+// It marshals the tool to YAML and then unmarshals it back.
 func (t *Tool) CopyYAML() error {
 	bytes, err := yaml.Marshal(*t)
 	if err != nil {
@@ -23,6 +25,8 @@ func (t *Tool) CopyYAML() error {
 	return nil
 }
 
+// CopiedYAML creates a new Tool instance by marshaling to YAML and unmarshaling.
+// Returns a new Tool instance created through YAML serialization.
 func (t *Tool) CopiedYAML() (*Tool, error) {
 	bytes, err := yaml.Marshal(*t)
 	if err != nil {
@@ -49,7 +53,7 @@ func (t *Tool) Copied() (*Tool, error) {
 	return &copied, nil
 }
 
-// Copied copies the Tool instance and sets it to itself.
+// Copy copies the Tool instance and sets it to itself.
 func (t *Tool) Copy() error {
 	copied, err := utils.DeepCopy(*t)
 	if err != nil {

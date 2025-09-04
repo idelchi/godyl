@@ -35,7 +35,7 @@ func newHTTPClient() *http.Client {
 	}
 }
 
-// GetRelease retrieves a specific release for the repository based on the provided tag.
+// GetReleaseFromWeb retrieves a specific release for the repository based on the provided tag.
 func (r *Repository) GetReleaseFromWeb(ctx context.Context, tag string) (*Release, error) {
 	url := fmt.Sprintf("https://github.com/%s/%s/releases/expanded_assets/%s", r.Owner, r.Repo, tag)
 
@@ -84,7 +84,7 @@ func (r *Repository) GetReleaseFromWeb(ctx context.Context, tag string) (*Releas
 	return release, nil
 }
 
-// LatestVersionFromWeb retrieves the latest release for the repository using the GitHub website
+// LatestVersionFromWebHTML retrieves the latest release for the repository using the GitHub website
 // instead of the API, avoiding rate limits.
 func (r *Repository) LatestVersionFromWebHTML(ctx context.Context) (string, error) {
 	webReleaseInfo, err := r.getLatestReleaseFromWebHTML(ctx)
@@ -97,7 +97,7 @@ func (r *Repository) LatestVersionFromWebHTML(ctx context.Context) (string, erro
 	return webReleaseInfo.Tag, nil
 }
 
-// LatestVersionFromWeb2 retrieves the latest release for the repository using the GitHub website
+// LatestVersionFromWebJSON retrieves the latest release for the repository using the GitHub website
 // instead of the API, avoiding rate limits.
 func (r *Repository) LatestVersionFromWebJSON(ctx context.Context) (string, error) {
 	webReleaseInfo, err := r.getLatestReleaseInfoFromWebJSON(ctx)

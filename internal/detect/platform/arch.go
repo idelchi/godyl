@@ -2,6 +2,7 @@ package platform
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"os/exec"
@@ -252,7 +253,7 @@ func (a *Architecture) IsARM() bool {
 // Is32Bit detects if the system is running in 32-bit mode.
 // Uses getconf to determine the system's bit width.
 func Is32Bit() (bool, error) {
-	cmd := exec.Command("getconf", "LONG_BIT")
+	cmd := exec.CommandContext(context.Background(), "getconf", "LONG_BIT")
 
 	var out bytes.Buffer
 

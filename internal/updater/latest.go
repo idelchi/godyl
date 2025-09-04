@@ -9,6 +9,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
+// Latest represents the latest version information including version and changelog.
 type Latest struct {
 	Version   string `json:"version"`
 	Changelog string `json:"changelog"`

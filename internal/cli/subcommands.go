@@ -18,8 +18,6 @@ import (
 )
 
 // subcommands adds all subcommands to the root command.
-//
-
 func subcommands(cmd *cobra.Command, global *root.Config, embedded *common.Embedded) {
 	cmd.AddCommand(
 		install.Command(global, &global.Install, embedded),

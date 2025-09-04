@@ -1,4 +1,4 @@
-//nolint:gocyclo,funlen // This is a copy-paste from the internals of the Koanf library.
+//nolint:gocognit // This is a copy-paste from the internals of the Koanf library.
 package koanfx
 
 import (
@@ -34,7 +34,7 @@ func textUnmarshalerHookFunc() mapstructure.DecodeHookFuncType {
 			text    = []byte(dataVal.String())
 		)
 
-		if f.Kind() == t.Kind() {
+		if f.Kind() == t.Kind() { //nolint:nestif // Necessary nesting to handle both cases
 			// source and target are of underlying type string
 			var (
 				err    error

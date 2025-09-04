@@ -83,8 +83,7 @@ func (e *Env) MergedWith(envs ...Env) Env {
 	return merged
 }
 
-// Or?
-// MergedWith creates a new environment by combining multiple environments.
+// MergedWithX creates a new environment by combining multiple environments.
 // Returns a new Env containing all values from this environment plus
 // any non-conflicting values from the provided environments.
 // Does not modify the original environment.

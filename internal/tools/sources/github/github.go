@@ -143,7 +143,7 @@ func (g *GitHub) MatchAssetsToRequirements(
 
 	var release *github.Release
 
-	if g.latestStoredRelease == nil {
+	if g.latestStoredRelease == nil { //nolint:nestif // Multiple checks are necessary
 		var err error
 
 		if g.Token == "" {
@@ -200,7 +200,7 @@ func (g *GitHub) PopulateOwnerAndRepo(name string) (err error) {
 
 	// If exactly one of Owner or Repo is set (but not both), that's invalid
 	if (g.Owner == "") != (g.Repo == "") {
-		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
+		return errors.New("either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
 	}
 
 	g.Owner, g.Repo, err = common.SplitName(name)

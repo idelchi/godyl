@@ -109,19 +109,6 @@ func (pt *Tracker) Start() {
 	go pt.pw.Render()
 }
 
-// wait waits for all tracked readers to finish and stops rendering once done.
-func (pt *Tracker) wait() {
-	pt.wg.Wait()
-
-	for pt.pw.IsRenderInProgress() {
-		if pt.pw.LengthActive() == 0 {
-			pt.pw.Stop()
-		}
-
-		time.Sleep(100 * time.Millisecond) //nolint:mnd // 100ms sleep interval is self-documenting
-	}
-}
-
 // Wait waits for all tracked readers to finish and stops rendering once done.
 func (pt *Tracker) Wait() {
 	const DelayTime = 50 * time.Millisecond

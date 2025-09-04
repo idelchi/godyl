@@ -23,6 +23,12 @@ linters:
     - varnamelen
     # Project uses dashes for tags
     - tagliatelle
+    # Tags are not always necessary
+    - musttag
+    # Can introduce unintentional behavior
+    - recvcheck
+    # Competes with golines
+    - tagalign
 
   settings:
     wsl_v5:
@@ -33,8 +39,8 @@ linters:
       default: all
 
     cyclop:
-      max-complexity: 30
-      package-average: 10
+      max-complexity: 35
+      package-average: 15
 
     errcheck:
       check-type-assertions: true

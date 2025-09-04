@@ -7,6 +7,10 @@ import (
 
 // Tools holds the configuration for the `dump tools` subcommand.
 type Tools struct {
+	// Tracker embed the common tracker configuration, allowing to tracker
+	// whether configuration values have been explicitly set or defaulted
+	common.Tracker `mapstructure:"-" yaml:"-"`
+
 	// Tags are the tags to consider when dumping tools
 	Tags []string `mapstructure:"tags" yaml:"tags"`
 
@@ -15,8 +19,4 @@ type Tools struct {
 
 	// Embedded indicates whether to dump the embedded tools
 	Embedded bool `mapstructure:"embedded" yaml:"embedded"`
-
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `mapstructure:"-" yaml:"-"`
 }

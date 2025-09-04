@@ -19,6 +19,10 @@ import (
 // Config holds the root level configuration options.
 // It is split into sub-structs for each command.
 type Config struct {
+	// Tracker embed the common tracker configuration, allowing to tracker
+	// whether configuration values have been explicitly set or defaulted
+	common.Tracker `mapstructure:"-" yaml:"-"`
+
 	/* Subcommands */
 	// Dump contains the configuration for the `godyl dump` command
 	Dump dump.Dump `mapstructure:"dump" validate:"-" yaml:"dump"`
@@ -90,10 +94,6 @@ type Config struct {
 	/* Other Options */
 	// Common contains a subset of common configuration options
 	Common common.Common `mapstructure:"-" yaml:"-"`
-
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `mapstructure:"-" yaml:"-"`
 }
 
 // Cache holds the configuration options for caching.

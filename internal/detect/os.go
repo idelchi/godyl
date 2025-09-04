@@ -33,7 +33,7 @@ func (p *Platform) Detect() error {
 	}
 
 	// Determine the Linux distribution from system information
-	distro.ParseFrom(info.Platform) //nolint:errcheck 	// Ignore error as it's not critical
+	distro.ParseFrom(info.Platform) //nolint:gosec,errcheck 	// Ignore error as it's not critical
 
 	// Determine the architecture from the system's kernel architecture
 	if err := architecture.ParseFrom(info.KernelArch); err != nil {

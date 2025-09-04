@@ -8,6 +8,10 @@ import (
 
 // Update represents the configuration for the `update` command.
 type Update struct {
+	// Tracker embed the common tracker configuration, allowing to tracker
+	// whether configuration values have been explicitly set or defaulted
+	common.Tracker `mapstructure:"-" yaml:"-"`
+
 	// Version is the version to update to
 	Version string `mapstructure:"version" yaml:"version"`
 
@@ -22,10 +26,6 @@ type Update struct {
 
 	// Force indicates whether to force the update, ignoring any checks
 	Force bool `mapstructure:"force" yaml:"force"`
-
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `mapstructure:"-" yaml:"-"`
 }
 
 // ToCommon converts the Update configuration to a common.Common instance.

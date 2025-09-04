@@ -9,6 +9,8 @@ import (
 )
 
 // IsBinaryLike checks if the file is binary-like.
+//
+//nolint:gocognit // Complex logic to determine if a file is binary-like
 func (f File) IsBinaryLike() bool {
 	if !f.Exists() || !f.IsFile() {
 		return false
@@ -39,10 +41,12 @@ func (f File) IsBinaryLike() bool {
 
 	// Always run content sanity check
 	r, err := f.Open()
-	if err == nil {
+	if err == nil { //nolint:nestif  	// Necessary nesting to handle all cases
 		defer r.Close()
 
-		buf := make([]byte, 128<<10) // read up to 128 KiB
+		const maxReadSize = 128 << 10 // 128 KiB
+
+		buf := make([]byte, maxReadSize)
 		n, _ := r.Read(buf)
 		b := buf[:n]
 
@@ -79,16 +83,18 @@ func (f File) IsBinaryLike() bool {
 	return true
 }
 
-// --- Helpers ---.
+// hasUTF16BOM checks for UTF-16 BOM.
 func hasUTF16BOM(b []byte) bool {
 	return len(b) >= 2 && ((b[0] == 0xFE && b[1] == 0xFF) || (b[0] == 0xFF && b[1] == 0xFE))
 }
 
+// hasUTF32BOM checks for UTF-32 BOM.
 func hasUTF32BOM(b []byte) bool {
 	return len(b) >= 4 && ((b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF) ||
 		(b[0] == 0xFF && b[1] == 0xFE && b[2] == 0x00 && b[3] == 0x00))
 }
 
+// looksLikeUTF16 performs a heuristic check for UTF-16 encoding.
 func looksLikeUTF16(b []byte) bool {
 	// crude check: every other byte is NUL in first few KB
 	limit := len(b)

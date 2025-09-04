@@ -9,6 +9,8 @@ import (
 
 // Download represents configuration options for file download operations.
 type Download struct {
+	common.Tracker `mapstructure:"-" yaml:"-"`
+
 	Version string       `mapstructure:"version" yaml:"version"`
 	Source  sources.Type `mapstructure:"source"  yaml:"source"  validate:"oneof=github gitlab url none go"`
 	OS      string       `mapstructure:"os"      yaml:"os"`
@@ -17,8 +19,6 @@ type Download struct {
 	Hints   []string     `mapstructure:"hints"   yaml:"hints"`
 	Dry     bool         `mapstructure:"dry"     yaml:"dry"`
 	Pre     bool         `mapstructure:"pre"     yaml:"pre"`
-
-	common.Tracker `mapstructure:"-" yaml:"-"`
 }
 
 // ToCommon converts Download configuration to a common configuration structure.

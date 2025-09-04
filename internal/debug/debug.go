@@ -19,5 +19,5 @@ func Debug(format string, args ...any) {
 
 // Print outputs debug information using pretty printing when DEBUG environment variable is set.
 func Print(a ...any) {
-	pretty.Print(a) //nolint:errcheck // Debug print functions do not need error handling
+	pretty.Print(a) //nolint:gosec,errcheck // Debug print functions do not need error handling
 }

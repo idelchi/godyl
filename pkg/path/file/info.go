@@ -118,6 +118,8 @@ func (f File) Hash() (string, error) {
 	return hex.EncodeToString(hash[:]), nil
 }
 
+// InPath checks if the file can be found in the system PATH.
+// Returns true if the file is found in PATH, false otherwise.
 func (f File) InPath() bool {
 	_, err := exec.LookPath(f.Path())
 

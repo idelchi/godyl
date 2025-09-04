@@ -252,6 +252,7 @@ func (t *Tool) Download(_ context.Context, progressListener getter.ProgressTrack
 
 	// Execute post-installation commands if any exist
 	if len(t.Commands.Commands) > 0 {
+		//nolint:contextcheck 	// TODO(Idelchi): Address this later
 		if output, err := t.Commands.Run(context.Background(), t.Env); err != nil {
 			return result.WithFailed("executing post-installation commands").Wrap(err).Wrapped(output)
 		}

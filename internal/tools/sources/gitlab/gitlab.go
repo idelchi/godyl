@@ -56,7 +56,7 @@ func (g *GitLab) Version(_ string) error {
 	return nil
 }
 
-// Path finds a matching release asset and stores its URL in metadata.
+// URL finds a matching release asset and stores its URL in metadata.
 // Uses version, extensions, and requirements to find the appropriate asset.
 func (g *GitLab) URL(_ string, extensions []string, version string, requirements match.Requirements) error {
 	ctx := context.Background()
@@ -181,7 +181,7 @@ func (g *GitLab) PopulateNamespaceAndRepo(name string) (err error) {
 	// If exactly one of Owner or Repo is set (but not both), that's invalid
 	if (g.Namespace == "") != (g.Project == "") {
 		return errors.New(
-			"Either both `namespace` and `repo` must be set or `name` must be in the format `namespace/repo`",
+			"either both `namespace` and `repo` must be set or `name` must be in the format `namespace/repo`",
 		)
 	}
 

@@ -49,7 +49,7 @@ func (f File) Join(paths ...string) File {
 	return New(append([]string{f.String()}, paths...)...)
 }
 
-// Expanded resolves home directory references.
+// ExpandedX resolves home directory references.
 // Replaces ~ with the user's home directory path.
 func (f File) ExpandedX() File {
 	return New(utils.ExpandHome(f.String()))

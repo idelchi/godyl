@@ -11,11 +11,13 @@ import (
 
 const indent = 2
 
-// YAMLOptions defines the default YAML encoding options for pretty printing.
-var YAMLOptions = []yaml.EncodeOption{
-	yaml.Indent(indent),                   // Set indentation to 2 spaces
-	yaml.UseSingleQuote(true),             // Use single quotes for strings
-	yaml.UseLiteralStyleIfMultiline(true), // Use literal style for multiline strings
+// DefaultYAMLOptions defines the default YAML encoding options for pretty printing.
+func DefaultYAMLOptions() []yaml.EncodeOption {
+	return []yaml.EncodeOption{
+		yaml.Indent(indent),                   // Set indentation to 2 spaces
+		yaml.UseSingleQuote(true),             // Use single quotes for strings
+		yaml.UseLiteralStyleIfMultiline(true), // Use literal style for multiline strings
+	}
 }
 
 // YAML formats data as indented YAML.
@@ -25,7 +27,7 @@ func YAML(obj any) string {
 	// Use MarshalWithOptions to set the indent
 	yamlBytes, err := yaml.MarshalWithOptions(
 		obj,
-		YAMLOptions...,
+		DefaultYAMLOptions()...,
 	)
 	if err != nil {
 		return err.Error()

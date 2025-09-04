@@ -49,7 +49,7 @@
     /* ****** ****** ****** */
     /* ****** GO ****** */
     // [extension] golang.go
-    "go.lintOnSave": "package",
+    "go.lintOnSave": "workspace",
     "go.lintTool": "golangci-lint",
     "go.lintFlags": [
         "--config=${workspaceFolder}/.golangci.yml",

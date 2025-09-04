@@ -33,6 +33,8 @@ import (
 // Tool represents a single tool configuration.
 // It contains various fields that specify details such as the tool's name, version, path, execution settings,
 // platform-specific settings, environment variables, and custom strategies for downloading, testing, or deploying.
+//
+//nolint:lll 	// Demanded by the formatter
 type Tool struct {
 	// Name of the tool, usually a short identifier or title.
 	Name string `json:"name"          mapstructure:"name"          single:"true" validate:"required" yaml:"name"`
@@ -104,7 +106,7 @@ func (t *Tool) EnableCache(cache *cache.Cache) {
 	t.cache = cache
 }
 
-// EnableCache sets the cache for the Tool instance.
+// DisableCache removes the cache from the Tool instance.
 func (t *Tool) DisableCache() {
 	t.cache = nil
 }

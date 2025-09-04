@@ -21,6 +21,8 @@ type Commands struct {
 	ExitOnError  bool                                 `yaml:"exit-on-error"`
 }
 
+// UnmarshalYAML implements custom YAML unmarshaling for Commands.
+// It supports both single command strings and command arrays.
 func (e *Commands) UnmarshalYAML(node ast.Node) error {
 	e.ExitOnError = true
 

@@ -9,7 +9,13 @@ linters:
     - exhaustruct
     # Use named returns when it makes sense
     - nonamedreturns
-    # Introduces too much noise
+    # Favor inline errors
+    - noinlineerr
+    # Deprecated
+    - wsl
+    # Occasional dynamic errors are fine
+    - err113
+    # Most errors don't need additional wrapping
     - wrapcheck
     # Used wherever it makes sense
     - dogsled
@@ -17,10 +23,15 @@ linters:
     - varnamelen
     # Project uses dashes for tags
     - tagliatelle
-    # Not useful for this project
-    - err113
 
   settings:
+    wsl_v5:
+      allow-first-in-block: false
+      allow-whole-block: false
+      # branch-max-lines: 4
+      # case-max-lines: 2
+      default: all
+
     cyclop:
       max-complexity: 30
       package-average: 10
@@ -113,9 +124,19 @@ linters:
           - forbidigo
         path: internal/cli
 
+      # Ignore varnamelen for test files
+      - linters:
+          - varnamelen
+        path: _test.go$
+
       # EXC0001 errcheck: Almost all programs ignore errors on these functions and in most cases it's ok
       - path: (.+)\.go$
         text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
+
+      - linters:
+          - govet
+        text: 'shadow: declaration of "(err|ctx)" shadows declaration at'
+
     paths:
       - third_party$
       - builtin$

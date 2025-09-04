@@ -2,10 +2,10 @@
 package root
 
 import (
-	"github.com/idelchi/godyl/internal/config/common"
 	"github.com/idelchi/godyl/internal/config/download"
 	"github.com/idelchi/godyl/internal/config/dump"
 	"github.com/idelchi/godyl/internal/config/install"
+	"github.com/idelchi/godyl/internal/config/shared"
 	"github.com/idelchi/godyl/internal/config/status"
 	"github.com/idelchi/godyl/internal/config/update"
 	"github.com/idelchi/godyl/internal/tools/tool"
@@ -21,7 +21,7 @@ import (
 type Config struct {
 	// Tracker embed the common tracker configuration, allowing to tracker
 	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `mapstructure:"-" yaml:"-"`
+	shared.Tracker `mapstructure:"-" yaml:"-"`
 
 	/* Subcommands */
 	// Dump contains the configuration for the `godyl dump` command
@@ -93,7 +93,7 @@ type Config struct {
 
 	/* Other Options */
 	// Common contains a subset of common configuration options
-	Common common.Common `mapstructure:"-" yaml:"-"`
+	Common shared.Common `mapstructure:"-" yaml:"-"`
 }
 
 // Cache holds the configuration options for caching.

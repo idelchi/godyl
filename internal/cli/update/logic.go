@@ -3,13 +3,13 @@ package update
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/updater"
 )
 
 // run executes the `update` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, embedded, _, cmd, _ := input.Unpack()
 
 	// Generate a common configuration for the command
@@ -20,7 +20,7 @@ func run(input common.Input) error {
 
 	cfg.Inherit = "default"
 
-	handler := common.NewHandler(*cfg, *embedded)
+	handler := core.NewHandler(*cfg, *embedded)
 	if err := handler.SetupLogger(cfg.LogLevel); err != nil {
 		return fmt.Errorf("setting up logger: %w", err)
 	}

@@ -1,14 +1,5 @@
-[go:lint] internal/cli/common/context.go:1:9: var-naming: avoid meaningless package names (revive)
-[go:lint] package common
-[go:lint]         ^
-[go:lint] internal/config/common/trackable.go:1:9: var-naming: avoid meaningless package names (revive)
-[go:lint] package common
-[go:lint]         ^
-[go:lint] internal/tools/sources/common/common.go:1:9: var-naming: avoid meaningless package names (revive)
-[go:lint] package common
-[go:lint]         ^
-[go:lint] pkg/utils/utils.go:3:9: var-naming: avoid meaningless package names (revive)
-[go:lint] package utils
-[go:lint]         ^
-[go:lint] 4 issues:
-[go:lint] * revive: 4
+[go:lint] internal\tools\sources\install\common.go:19:6: exported: type name will be used as install.Data by other packages, and that stutters; consider calling this Data (revive)
+[go:lint] type InstallData struct {
+[go:lint]      ^
+[go:lint] 1 issues:
+[go:lint] * revive: 1

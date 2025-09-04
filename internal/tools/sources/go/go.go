@@ -17,17 +17,17 @@ import (
 	"github.com/idelchi/godyl/internal/goi"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tmp"
-	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Go represents a Go project configuration that can be installed from GitHub.
 type Go struct {
 	github  *github.GitHub
-	Data    common.Metadata `yaml:"-"`
-	Command string          `yaml:"command"`
-	Base    string          `yaml:"base"`
+	Data    install.Metadata `yaml:"-"`
+	Command string           `yaml:"command"`
+	Base    string           `yaml:"base"`
 }
 
 // Initialize sets up the Go project configuration from the given name.
@@ -73,7 +73,7 @@ var mu sync.Mutex //nolint:gochecknoglobals // Global mutex for thread-safe acce
 // Handles temporary directory creation, environment setup, and file linking.
 // Progress listener is accepted but not used as go install doesn't support it.
 // Returns the installation output, installed file information, and any errors.
-func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output string, found file.File, err error) {
+func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, found file.File, err error) {
 	mu.Lock()
 
 	binary, err := goi.New(d.NoVerifySSL)
@@ -133,7 +133,7 @@ func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output str
 		if err == nil {
 			d.Path = path
 
-			found, findErr := common.FindAndSymlink(
+			found, findErr := install.FindAndSymlink(
 				file.New(folder.Path()),
 				d,
 			)

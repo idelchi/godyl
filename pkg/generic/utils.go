@@ -1,6 +1,6 @@
-// Package utils provides lightweight, generic helpers for slices, zero checks,
+// Package generic provides lightweight, generic helpers for slices, zero checks,
 // path expansion, deep copying, and basic filtering.
-package utils
+package generic
 
 import (
 	"fmt"

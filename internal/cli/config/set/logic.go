@@ -3,7 +3,7 @@ package set
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/pkg/editor"
 	"github.com/idelchi/godyl/pkg/koanfx"
@@ -11,7 +11,7 @@ import (
 )
 
 // run executes the `config set` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, _, context, _, args := input.Unpack()
 
 	koanf := context.Config

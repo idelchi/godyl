@@ -5,12 +5,12 @@ import (
 
 	"github.com/goccy/go-yaml"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/iutils"
 )
 
 // run executes the `dump defaults` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	_, embedded, _, _, args := input.Unpack()
 
 	c, err := getDefaults(*embedded, args)
@@ -24,7 +24,7 @@ func run(input common.Input) error {
 }
 
 // getDefaults loads and returns the application's default settings.
-func getDefaults(files common.Embedded, defaultNames []string) (any, error) {
+func getDefaults(files core.Embedded, defaultNames []string) (any, error) {
 	var defaults map[string]any
 
 	err := yaml.Unmarshal(files.Defaults, &defaults)

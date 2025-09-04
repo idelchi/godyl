@@ -3,14 +3,14 @@ package auth
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/internal/tokenstore"
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
 // run executes the `dump auth` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, _, context, _, _ := input.Unpack()
 
 	tokens, _ := iutils.StructToKoanf(cfg.Tokens)

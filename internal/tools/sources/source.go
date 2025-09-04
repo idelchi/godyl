@@ -10,10 +10,10 @@ import (
 	"github.com/hashicorp/go-getter/v2"
 
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/internal/tools/sources/common"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/internal/tools/sources/gitlab"
 	goc "github.com/idelchi/godyl/internal/tools/sources/go"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/internal/tools/sources/none"
 	"github.com/idelchi/godyl/internal/tools/sources/url"
 	"github.com/idelchi/godyl/pkg/path/file"
@@ -65,7 +65,7 @@ type Populator interface {
 	Initialize(repo string) error
 	Version(version string) error
 	URL(name string, extensions []string, version string, requirements match.Requirements) error
-	Install(data common.InstallData, progressListener getter.ProgressTracker) (string, file.File, error)
+	Install(data install.Data, progressListener getter.ProgressTracker) (string, file.File, error)
 	Get(key string) string
 }
 

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
 // run executes the `dump config` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, _, _, _, args := input.Unpack()
 
 	if len(args) == 0 {

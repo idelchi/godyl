@@ -1,4 +1,4 @@
-package common
+package core
 
 import (
 	"github.com/idelchi/godyl/pkg/env"

@@ -12,7 +12,7 @@ import (
 	"github.com/knadh/koanf/providers/posflag"
 	"github.com/spf13/cobra"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/iutils"
@@ -32,7 +32,7 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	debug.Debug("[PersistentPreRunE root] Called from: %s\n", calledFrom.CommandPath())
 
 	// Extract some commonly used strings
-	commandPath := common.BuildCommandPath(cmd)
+	commandPath := core.BuildCommandPath(cmd)
 	envPrefix := commandPath.Env().Scoped()
 	sectionPrefix := commandPath.Section().String()
 
@@ -214,16 +214,16 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	}
 
 	// Store the various processed values in the global context.
-	common.GlobalContext.Config = configuration
-	common.GlobalContext.Env = &env
-	common.GlobalContext.DotEnv = &dotenvs
+	core.GlobalContext.Config = configuration
+	core.GlobalContext.Env = &env
+	core.GlobalContext.DotEnv = &dotenvs
 
 	// 3rd Pass
 	//  - Load the config file
 	//	- Load environment variables
 	// 	- Load flags
 	// Fully populate the configuration struct for this command.
-	if err := common.KCreateSubcommandPreRunE(cmd, cfg, root.NoShow)(cmd, []string{}); err != nil {
+	if err := core.KCreateSubcommandPreRunE(cmd, cfg, root.NoShow)(cmd, []string{}); err != nil {
 		return err
 	}
 
@@ -269,7 +269,7 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	}
 
 	// Parse again with the new defaults
-	if err := common.KCreateSubcommandPreRunE(cmd, cfg, cfg.ShowFunc)(cmd, []string{}); err != nil {
+	if err := core.KCreateSubcommandPreRunE(cmd, cfg, cfg.ShowFunc)(cmd, []string{}); err != nil {
 		return err
 	}
 

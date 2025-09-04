@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/tools/inherit"
 	"github.com/idelchi/godyl/internal/tools/tool"
-	"github.com/idelchi/godyl/pkg/utils"
+	"github.com/idelchi/godyl/pkg/generic"
 )
 
 // Tools represents a collection of Tool configurations.
@@ -78,7 +78,7 @@ func (ts Tools) ResolveInheritance(d *defaults.Defaults) error {
 			panic("nil tool in tools collection")
 		}
 
-		if utils.IsSliceNilOrEmpty(t.Inherit) {
+		if generic.IsSliceNilOrEmpty(t.Inherit) {
 			debug.Debug("No inheritance for %q", t.Name)
 
 			continue

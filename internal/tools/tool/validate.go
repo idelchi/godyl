@@ -12,13 +12,13 @@ import (
 	"github.com/idelchi/godyl/internal/templates"
 	"github.com/idelchi/godyl/internal/tools/result"
 	"github.com/idelchi/godyl/internal/tools/sources"
-	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/internal/tools/strategy"
 	"github.com/idelchi/godyl/internal/tools/tags"
 	"github.com/idelchi/godyl/pkg/env"
+	"github.com/idelchi/godyl/pkg/generic"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
-	"github.com/idelchi/godyl/pkg/utils"
 	"github.com/idelchi/godyl/pkg/validator"
 )
 
@@ -88,8 +88,8 @@ func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.R
 		}
 
 		// Set the executable name according the source type's rules.
-		utils.SetIfZero(&t.Exe.Name, populator.Get("exe"))
-		utils.SetIfZero(&t.Exe.Name, t.Name)
+		generic.SetIfZero(&t.Exe.Name, populator.Get("exe"))
+		generic.SetIfZero(&t.Exe.Name, t.Name)
 
 		// Update the template engine with .exe
 		tmpl.AddValue("Exe", t.Exe.Name)
@@ -115,7 +115,7 @@ func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.R
 
 func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, opts resolveOptions) result.Result {
 	// Retrieve the tool's version from the installer if it is not already set.
-	if utils.IsZero(t.Version.Version) {
+	if generic.IsZero(t.Version.Version) {
 		if err := populator.Version(t.Name); err != nil {
 			return result.WithFailed(fmt.Sprintf("getting version: %s", err))
 		}
@@ -150,7 +150,7 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 	}
 
 	// Determine the tool's path if not already set.
-	if utils.IsZero(t.URL) {
+	if generic.IsZero(t.URL) {
 		if err := t.Hints.Parse(); err != nil {
 			return result.WithFailed(fmt.Sprintf("parsing hints: %s", err))
 		}
@@ -227,7 +227,7 @@ func (t *Tool) Download(_ context.Context, progressListener getter.ProgressTrack
 		return result.WithFailed("getting installer").Wrap(err)
 	}
 
-	data := common.InstallData{
+	data := install.Data{
 		Path:        t.URL,
 		Name:        t.Name,
 		Exe:         t.Exe.Name,

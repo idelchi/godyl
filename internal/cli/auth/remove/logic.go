@@ -3,7 +3,7 @@ package remove
 import (
 	"errors"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/internal/tokenstore"
 	"github.com/idelchi/godyl/pkg/editor"
@@ -12,10 +12,10 @@ import (
 // run executes the `auth remove` command.
 //
 //nolint:gocognit // Complex function - refactoring into smaller functions is a separate improvement task
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, _, context, _, args := input.Unpack()
 
-	logger, err := common.SetupLogger(cfg.LogLevel)
+	logger, err := core.SetupLogger(cfg.LogLevel)
 	if err != nil {
 		return err
 	}

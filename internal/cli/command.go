@@ -4,13 +4,13 @@ import (
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/spf13/cobra"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
 // Command returns the root `godyl` command.
-func Command(files *common.Embedded, version string) *cobra.Command {
+func Command(files *core.Embedded, version string) *cobra.Command {
 	cfg := &root.Config{}
 
 	cobra.EnableTraverseRunHooks = true
@@ -40,7 +40,7 @@ func Command(files *common.Embedded, version string) *cobra.Command {
 		// 	return run(cmd, cfg)
 		// },
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if common.ExitOnShow(cfg.ShowFunc, args...) {
+			if core.ExitOnShow(cfg.ShowFunc, args...) {
 				return nil
 			}
 

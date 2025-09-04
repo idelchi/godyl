@@ -1,4 +1,4 @@
-package common
+package install
 
 import (
 	"errors"
@@ -15,8 +15,8 @@ import (
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
-// InstallData contains configuration for downloading and installing tools.
-type InstallData struct {
+// Data contains configuration for downloading and installing tools.
+type Data struct {
 	ProgressListener getter.ProgressTracker
 	Env              env.Env
 	Header           http.Header
@@ -35,7 +35,7 @@ type InstallData struct {
 // Download retrieves files according to the InstallData configuration.
 // Creates temporary directories when needed, manages the download process,
 // and returns the download output and file information.
-func Download(data InstallData) (found file.File, err error) {
+func Download(data Data) (found file.File, err error) {
 	dir := folder.New(data.Output)
 
 	if data.Mode == "find" {
@@ -115,7 +115,7 @@ func findExecutableInDir(destination file.File, patterns []string) (file.File, e
 // FindAndSymlink locates an executable in the downloaded content and sets up symlinks.
 // It searches directories recursively using provided patterns, copies the executable
 // to the output location, and creates symlinks for any configured aliases.
-func FindAndSymlink(destination file.File, d InstallData) (file.File, error) {
+func FindAndSymlink(destination file.File, d Data) (file.File, error) {
 	if destination.IsDir() {
 		var err error
 

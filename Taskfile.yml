@@ -78,11 +78,8 @@ tasks:
     deps:
       - generate
     cmds:
-      # TODO(Idelchi): Move as `deps` when fixed.
-      - cmd: task lint:default
-        ignore_error: true
-      - cmd: task go:lint
-        ignore_error: true
+      - task: lint:default
+      - task: go:lint
 
   build:
     deps:

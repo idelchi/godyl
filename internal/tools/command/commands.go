@@ -8,14 +8,14 @@ import (
 
 	"github.com/goccy/go-yaml/ast"
 
-	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
 // Commands represents a collection of shell commands that can be executed together.
 type Commands struct {
-	Data         common.Metadata                      `yaml:"-"`
+	Data         install.Metadata                     `yaml:"-"`
 	Commands     unmarshal.SingleOrSliceType[Command] `yaml:"commands"`
 	AllowFailure bool                                 `yaml:"allow-failure"`
 	ExitOnError  bool                                 `yaml:"exit-on-error"`

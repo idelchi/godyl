@@ -9,13 +9,13 @@ import (
 
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // GitHub represents a GitHub repository configuration and state.
 type GitHub struct {
-	Data                common.Metadata `mapstructure:"-"     yaml:"-"`
+	Data                install.Metadata `mapstructure:"-"     yaml:"-"`
 	latestStoredRelease *github.Release
 	Repo                string `mapstructure:"repo"  yaml:"repo"`
 	Owner               string `mapstructure:"owner" yaml:"owner"`
@@ -67,13 +67,13 @@ func (g *GitHub) URL(_ string, extensions []string, version string, requirements
 // Install downloads the GitHub release asset using the provided configuration.
 // Returns the operation output, downloaded file information, and any errors.
 func (g *GitHub) Install(
-	d common.InstallData,
+	d install.Data,
 	progressListener getter.ProgressTracker,
 ) (output string, found file.File, err error) {
 	// Pass the progress listener down to the common download function
 	d.ProgressListener = progressListener
 
-	found, err = common.Download(d)
+	found, err = install.Download(d)
 
 	return "", found, err
 }
@@ -203,7 +203,7 @@ func (g *GitHub) PopulateOwnerAndRepo(name string) (err error) {
 		return errors.New("either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
 	}
 
-	g.Owner, g.Repo, err = common.SplitName(name)
+	g.Owner, g.Repo, err = install.SplitName(name)
 	if err != nil {
 		return err
 	}

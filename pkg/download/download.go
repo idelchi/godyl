@@ -15,8 +15,8 @@ import (
 	retryablehttp "github.com/hashicorp/go-retryablehttp"
 
 	"github.com/idelchi/godyl/internal/debug"
+	"github.com/idelchi/godyl/pkg/generic"
 	"github.com/idelchi/godyl/pkg/path/file"
-	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // Downloader manages download settings.
@@ -106,7 +106,7 @@ func (d Downloader) Download(url, output string, header ...http.Header) (file.Fi
 		Header:                headers,
 	}
 
-	if !utils.IsURL(url) {
+	if !generic.IsURL(url) {
 		return file.New(), fmt.Errorf("%w: invalid URL: %q", ErrDownload, url)
 	}
 

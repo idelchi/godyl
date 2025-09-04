@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/idelchi/godyl/pkg/generic"
 	"github.com/idelchi/godyl/pkg/path/file"
-	"github.com/idelchi/godyl/pkg/utils"
 )
 
 // WithFile creates a File path within this directory.
@@ -28,7 +28,7 @@ func (f Folder) Join(paths ...string) Folder {
 
 // Expanded resolves environment variables including `~` home directory references.
 func (f Folder) Expanded() Folder {
-	return New(os.ExpandEnv(utils.ExpandHome(f.String())))
+	return New(os.ExpandEnv(generic.ExpandHome(f.String())))
 }
 
 // String returns the folder path as a string.

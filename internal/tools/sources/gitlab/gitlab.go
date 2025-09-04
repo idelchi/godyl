@@ -10,13 +10,13 @@ import (
 
 	"github.com/idelchi/godyl/internal/gitlab"
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/internal/tools/sources/common"
+	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // GitLab represents a GitLab project configuration and state.
 type GitLab struct {
-	Data                common.Metadata `mapstructure:"-"         yaml:"-"`
+	Data                install.Metadata `mapstructure:"-"         yaml:"-"`
 	latestStoredRelease *gitlab.Release
 	Project             string `mapstructure:"project"   yaml:"project"`
 	Namespace           string `mapstructure:"namespace" yaml:"namespace"`
@@ -74,14 +74,14 @@ func (g *GitLab) URL(_ string, extensions []string, version string, requirements
 // Install downloads the GitLab release asset using the provided configuration.
 // Returns the operation output, downloaded file information, and any errors.
 func (g *GitLab) Install(
-	d common.InstallData,
+	d install.Data,
 	progressListener getter.ProgressTracker,
 ) (output string, found file.File, err error) {
 	d.Header = g.GetHeaders()
 	// Pass the progress listener down
 	d.ProgressListener = progressListener
 
-	found, err = common.Download(d)
+	found, err = install.Download(d)
 
 	return "", found, err
 }
@@ -185,7 +185,7 @@ func (g *GitLab) PopulateNamespaceAndRepo(name string) (err error) {
 		)
 	}
 
-	g.Namespace, g.Project, err = common.CutName(name)
+	g.Namespace, g.Project, err = install.CutName(name)
 	if err != nil {
 		return err
 	}

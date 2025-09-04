@@ -6,7 +6,7 @@ import (
 
 	"github.com/goccy/go-yaml"
 
-	"github.com/idelchi/godyl/pkg/utils"
+	"github.com/idelchi/godyl/pkg/generic"
 )
 
 // CopyYAML performs a YAML-based copy operation on the tool.
@@ -45,7 +45,7 @@ func (t *Tool) CopiedYAML() (*Tool, error) {
 
 // Copied creates and returns a deep copy of the Tool instance.
 func (t *Tool) Copied() (*Tool, error) {
-	copied, err := utils.DeepCopy(*t)
+	copied, err := generic.DeepCopy(*t)
 	if err != nil {
 		return nil, fmt.Errorf("copying tool %q: %w", t.Name, err)
 	}
@@ -55,7 +55,7 @@ func (t *Tool) Copied() (*Tool, error) {
 
 // Copy copies the Tool instance and sets it to itself.
 func (t *Tool) Copy() error {
-	copied, err := utils.DeepCopy(*t)
+	copied, err := generic.DeepCopy(*t)
 	if err != nil {
 		return fmt.Errorf("copying tool %q: %w", t.Name, err)
 	}

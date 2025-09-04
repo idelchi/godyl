@@ -1,6 +1,6 @@
-// Package common provides shared configuration structures and utilities used across different commands.
-// Package common provides shared configuration types and validation logic.
-package common
+// Package shared provides shared configuration structures and utilities used across different commands.
+// Package shared provides shared configuration types and validation logic.
+package shared
 
 import (
 	"github.com/idelchi/godyl/internal/tools/sources"

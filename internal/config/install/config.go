@@ -2,7 +2,7 @@
 package install
 
 import (
-	"github.com/idelchi/godyl/internal/config/common"
+	"github.com/idelchi/godyl/internal/config/shared"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/strategy"
 )
@@ -11,7 +11,7 @@ import (
 type Install struct {
 	// Tracker embed the common tracker configuration, allowing to tracker
 	// whether configuration values have been explicitly set or defaulted
-	common.Tracker `mapstructure:"-" yaml:"-"`
+	shared.Tracker `mapstructure:"-" yaml:"-"`
 
 	// Strategy defines how the installation should be performed
 	Strategy strategy.Strategy `mapstructure:"strategy" validate:"oneof=none sync force" yaml:"strategy"`
@@ -37,9 +37,9 @@ type Install struct {
 	Source sources.Type `mapstructure:"source" validate:"oneof=github gitlab url none go" yaml:"source"`
 }
 
-// ToCommon converts the Install configuration to a common.Common instance.
-func (i Install) ToCommon() common.Common {
-	return common.Common{
+// ToCommon converts the Install configuration to a shared.Common instance.
+func (i Install) ToCommon() shared.Common {
+	return shared.Common{
 		Output:   i.Output,
 		Strategy: i.Strategy,
 		OS:       i.OS,

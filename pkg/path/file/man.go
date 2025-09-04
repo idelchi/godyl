@@ -9,7 +9,7 @@ import (
 
 	"github.com/bmatcuk/doublestar/v4"
 
-	"github.com/idelchi/godyl/pkg/utils"
+	"github.com/idelchi/godyl/pkg/generic"
 )
 
 // Matches checks if the file path matches the given (extended glob) pattern.
@@ -52,12 +52,12 @@ func (f File) Join(paths ...string) File {
 // ExpandedX resolves home directory references.
 // Replaces ~ with the user's home directory path.
 func (f File) ExpandedX() File {
-	return New(utils.ExpandHome(f.String()))
+	return New(generic.ExpandHome(f.String()))
 }
 
 // Expanded resolves environment variables including `~` home directory references.
 func (f File) Expanded() File {
-	return New(os.ExpandEnv(utils.ExpandHome(f.String())))
+	return New(os.ExpandEnv(generic.ExpandHome(f.String())))
 }
 
 // Dir returns the containing directory path.

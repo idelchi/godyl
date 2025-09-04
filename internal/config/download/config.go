@@ -2,14 +2,14 @@
 package download
 
 import (
-	"github.com/idelchi/godyl/internal/config/common"
+	"github.com/idelchi/godyl/internal/config/shared"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/strategy"
 )
 
 // Download represents configuration options for file download operations.
 type Download struct {
-	common.Tracker `mapstructure:"-" yaml:"-"`
+	shared.Tracker `mapstructure:"-" yaml:"-"`
 
 	Version string       `mapstructure:"version" yaml:"version"`
 	Source  sources.Type `mapstructure:"source"  yaml:"source"  validate:"oneof=github gitlab url none go"`
@@ -22,8 +22,8 @@ type Download struct {
 }
 
 // ToCommon converts Download configuration to a common configuration structure.
-func (d Download) ToCommon() common.Common {
-	return common.Common{
+func (d Download) ToCommon() shared.Common {
+	return shared.Common{
 		Output:   d.Output,
 		Strategy: strategy.Force,
 		Source:   d.Source,

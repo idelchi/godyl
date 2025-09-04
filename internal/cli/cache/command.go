@@ -5,7 +5,7 @@ import (
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/spf13/cobra"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
@@ -35,7 +35,7 @@ func Command(global *root.Config, local any) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Since the command is allowed to run with `--show/-s` flag,
 			// we should suppress the default error message for unknown subcommands.
-			if common.ExitOnShow(global.ShowFunc, args...) {
+			if core.ExitOnShow(global.ShowFunc, args...) {
 				return nil
 			}
 
@@ -43,7 +43,7 @@ func Command(global *root.Config, local any) *cobra.Command {
 		},
 	}
 
-	common.SetSubcommandDefaults(cmd, local, global.ShowFunc)
+	core.SetSubcommandDefaults(cmd, local, global.ShowFunc)
 
 	subcommands(cmd, global)
 

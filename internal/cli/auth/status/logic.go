@@ -5,12 +5,12 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/iutils"
 )
 
 // run executes the `auth status` command.
-func run(input common.Input) error {
+func run(input core.Input) error {
 	cfg, _, _, _, _ := input.Unpack()
 
 	kTokens, _ := iutils.StructToKoanf(cfg.Tokens)

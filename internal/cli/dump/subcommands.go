@@ -4,7 +4,7 @@ package dump
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/idelchi/godyl/internal/cli/common"
+	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/cli/dump/auth"
 	"github.com/idelchi/godyl/internal/cli/dump/cache"
 	cconfig "github.com/idelchi/godyl/internal/cli/dump/config"
@@ -16,7 +16,7 @@ import (
 )
 
 // subcommands for the `dump` command.
-func subcommands(cmd *cobra.Command, global *root.Config, embedded *common.Embedded) {
+func subcommands(cmd *cobra.Command, global *root.Config, embedded *core.Embedded) {
 	cmd.AddCommand(
 		defaults.Command(global, nil, embedded),
 		env.Command(global, nil),

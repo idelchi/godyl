@@ -7,7 +7,7 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/idelchi/godyl/pkg/utils"
+	"github.com/idelchi/godyl/pkg/generic"
 )
 
 // Parse attempts to extract the semantic version from a complete string.
@@ -43,7 +43,7 @@ func LessThan(a, b string) bool {
 	bVersion := Parse(b)
 
 	// If either version is nil, return true.
-	if utils.AnyNil(aVersion, bVersion) {
+	if generic.AnyNil(aVersion, bVersion) {
 		return true
 	}
 

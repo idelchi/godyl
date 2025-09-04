@@ -3,7 +3,7 @@ package iutils
 import (
 	"fmt"
 
-	"github.com/idelchi/godyl/pkg/utils"
+	"github.com/idelchi/godyl/pkg/generic"
 
 	"dario.cat/mergo"
 )
@@ -22,7 +22,7 @@ func Merge[T any](dst, src *T, opts ...func(*mergo.Config)) (err error) {
 	}
 
 	// Avoid pointers being copied. As such, we can always "copy" both the source and destination.
-	src, err = utils.DeepCopyPtr(src)
+	src, err = generic.DeepCopyPtr(src)
 	if err != nil {
 		return fmt.Errorf("copying source in preparation for merge: %w", err)
 	}

@@ -1,21 +1,21 @@
-[go:lint] pkg\path\file\binary.go:101:13: Magic number: 4096, in <condition> detected (mnd)
-[go:lint] 	if limit > 4096 {
-[go:lint] 	           ^
-[go:lint] internal\cli\common\helpers.go:1:9: var-naming: avoid meaningless package names (revive)
-[go:lint] package common
-[go:lint]         ^
-[go:lint] internal\config\common\trackable.go:1:9: var-naming: avoid meaningless package names (revive)
-[go:lint] package common
-[go:lint]         ^
-[go:lint] internal\tools\sources\common\doc.go:4:9: var-naming: avoid meaningless package names (revive)
-[go:lint] package common
-[go:lint]         ^
-[go:lint] internal\tools\tool\tool.go:193:1: exported: exported method Tool.GetPopulator should have comment or be unexported (revive)
+[go:lint] internal\tools\tool\tool.go:193:1: GetPopulator returns interface (github.com/idelchi/godyl/internal/tools/sources.Populator) (ireturn)
+[go:lint] // GetPopulator returns the last successful populator used by the tool.
+[go:lint] ^
+[go:lint] internal\tools\tool\tool.go:194:1: GetPopulator returns interface (github.com/idelchi/godyl/internal/tools/sources.Populator) (ireturn)
 [go:lint] func (t Tool) GetPopulator() sources.Populator {
 [go:lint] ^
+[go:lint] internal\cli\common\doc.go:2:9: var-naming: avoid meaningless package names (revive)
+[go:lint] package common
+[go:lint]         ^
+[go:lint] internal\config\common\common.go:3:9: var-naming: avoid meaningless package names (revive)
+[go:lint] package common
+[go:lint]         ^
+[go:lint] internal\tools\sources\common\split.go:1:9: var-naming: avoid meaningless package names (revive)
+[go:lint] package common
+[go:lint]         ^
 [go:lint] pkg\utils\utils.go:3:9: var-naming: avoid meaningless package names (revive)
 [go:lint] package utils
 [go:lint]         ^
 [go:lint] 6 issues:
-[go:lint] * mnd: 1
-[go:lint] * revive: 5
+[go:lint] * ireturn: 2
+[go:lint] * revive: 4

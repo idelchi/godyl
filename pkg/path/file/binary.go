@@ -96,11 +96,10 @@ func hasUTF32BOM(b []byte) bool {
 
 // looksLikeUTF16 performs a heuristic check for UTF-16 encoding.
 func looksLikeUTF16(b []byte) bool {
+	const maxBytes = 4096
+
 	// crude check: every other byte is NUL in first few KB
-	limit := len(b)
-	if limit > 4096 {
-		limit = 4096
-	}
+	limit := min(len(b), maxBytes)
 
 	nullCount := 0
 

@@ -17,7 +17,7 @@ main() {
   need_cmd curl
 
   # Call the installation script with the provided arguments
-  curl ${DISABLE_SSL:+-k} -sSL https://raw.githubusercontent.com/idelchi/scripts/refs/heads/dev/install.sh | INSTALLER_TOOL=${TOOL} sh -s -- "$@"
+  curl ${DISABLE_SSL:+-k} -sSL https://raw.githubusercontent.com/idelchi/scripts/refs/heads/main/install.sh | INSTALLER_TOOL=${TOOL} sh -s -- "$@"
 }
 
 main "$@"

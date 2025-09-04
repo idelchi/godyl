@@ -12,6 +12,7 @@ import (
 // Koanf is a wrapper around koanf.Koanf that tracks the keys that have been set.
 type Koanf struct {
 	*koanf.Koanf
+
 	flags   *pflag.FlagSet
 	Tracker *Tracker
 

@@ -25,6 +25,7 @@ type DefaultManager struct {
 // NewDefaultManager creates a new DefaultManager.
 func NewDefaultManager(noProgress bool) *DefaultManager {
 	var trackable progress.Trackable
+
 	if noProgress {
 		trackable = progress.NewNoop()
 	} else {

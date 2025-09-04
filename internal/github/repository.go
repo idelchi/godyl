@@ -75,6 +75,7 @@ func (r *Repository) LatestIncludingPreRelease(ctx context.Context, perPage int)
 
 	// Find the most recent release by published date
 	var latestRelease *github.RepositoryRelease
+
 	for i, release := range repositoryReleases {
 		if i == 0 || release.PublishedAt == nil || latestRelease.PublishedAt == nil {
 			latestRelease = release

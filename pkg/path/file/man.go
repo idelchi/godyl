@@ -124,6 +124,7 @@ func (f File) WithoutFolder(prefix string) File {
 
 	// Normalize the prefix: slashes, drop leading "./", and strip trailing "/"
 	p := filepath.ToSlash(prefix)
+
 	p = strings.TrimPrefix(p, "./")
 	p = strings.Trim(p, "/") // handles both "" and trailing "/"
 

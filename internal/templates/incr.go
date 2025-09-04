@@ -119,7 +119,6 @@ func (p *Processor) Apply(templateStr string) (string, error) {
 
 func (p *Processor) ApplyAndSet(field *string) error {
 	tmpl, err := p.Apply(*field)
-
 	if err == nil {
 		*field = tmpl
 	}

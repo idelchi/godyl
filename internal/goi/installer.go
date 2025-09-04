@@ -25,6 +25,7 @@ func (i *Installer) Install(path string) (output string, err error) {
 		"install",
 		path,
 	)
+
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, i.Binary.Env.ToSlice()...)
 

@@ -91,6 +91,7 @@ func Build[K comparable](
 		p := parentsFn(n)
 		cp := make([]K, len(p))
 		copy(cp, p)
+
 		graph.parents[n] = cp
 	}
 
@@ -108,6 +109,7 @@ func Build[K comparable](
 	var currentPath []K // Current DFS path
 
 	var dfs func(K) error
+
 	dfs = func(node K) error {
 		switch color[node] {
 		case 1: // gray - we found a cycle

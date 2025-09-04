@@ -19,6 +19,7 @@ func (l *Latest) Get(pre bool) error {
 	client := resty.New()
 
 	url := "https://idelchi.github.io/godyl/_versions/latest"
+
 	if pre {
 		url = "https://idelchi.github.io/godyl/_versions/pre"
 	}

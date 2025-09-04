@@ -28,6 +28,7 @@ func (f *Fallbacks) UnmarshalYAML(node ast.Node) (err error) {
 
 func Compact[T comparable](s []T) []T {
 	seen := make(map[T]bool)
+
 	result := make([]T, 0, len(s))
 	for _, v := range s {
 		if !seen[v] {
@@ -35,6 +36,7 @@ func Compact[T comparable](s []T) []T {
 			result = append(result, v)
 		}
 	}
+
 	return result
 }
 

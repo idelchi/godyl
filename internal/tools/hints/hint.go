@@ -102,11 +102,11 @@ func (h *Hint) Parse() (err error) {
 		h.Type = Glob
 	}
 
-	if err := h.Weight.Parse(); err != nil { //nolint:govet // Shadow variable naming is intentional
+	if err := h.Weight.Parse(); err != nil {
 		return fmt.Errorf("parsing weight: %w", err)
 	}
 
-	if err := h.Match.Parse(); err != nil { //nolint:govet // Shadow variable naming is intentional
+	if err := h.Match.Parse(); err != nil {
 		return fmt.Errorf("parsing match: %w", err)
 	}
 

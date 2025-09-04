@@ -14,6 +14,7 @@ func allSubCommands(cmd *cobra.Command) []*cobra.Command {
 	var cmds []*cobra.Command
 
 	var collect func(*cobra.Command)
+
 	collect = func(c *cobra.Command) {
 		for _, sub := range c.Commands() {
 			cmds = append(cmds, sub)

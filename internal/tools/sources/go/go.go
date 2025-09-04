@@ -82,6 +82,7 @@ func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output str
 
 		return "", "", err
 	}
+
 	mu.Unlock()
 
 	installer := goi.Installer{
@@ -129,9 +130,9 @@ func (g *Go) Install(d common.InstallData, _ getter.ProgressTracker) (output str
 
 	for _, path := range paths {
 		output, err = installer.Install(path)
-
 		if err == nil {
 			d.Path = path
+
 			found, findErr := common.FindAndSymlink(
 				file.New(folder.Path()),
 				d,

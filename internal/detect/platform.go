@@ -85,6 +85,7 @@ func (p *Platform) Merge(other Platform) (changed bool) {
 // Includes derived values like architecture type, version, and capability flags.
 func (p *Platform) ToMap() map[string]any {
 	platformMap := make(map[string]any)
+
 	platformMap["OS"] = p.OS.String()
 	platformMap["ARCH"] = p.Architecture.Type()
 	platformMap["ARCH_VERSION"] = p.Architecture.Version()

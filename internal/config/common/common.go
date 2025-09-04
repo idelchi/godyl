@@ -11,7 +11,8 @@ import (
 // Common represents a shared configuration structure that provides
 // command-line arguments, show functionality, and validation.
 type Common struct {
-	Tracker  `mapstructure:"-" yaml:"-"`
+	Tracker `mapstructure:"-" yaml:"-"`
+
 	Output   string
 	Strategy strategy.Strategy
 	Source   sources.Type

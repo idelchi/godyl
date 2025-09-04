@@ -27,6 +27,7 @@ func run(input common.Input) error {
 
 	for key, value := range tokens {
 		set := "set"
+
 		if value == "" {
 			set = "unset"
 		}

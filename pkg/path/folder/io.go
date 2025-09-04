@@ -61,6 +61,7 @@ func (f Folder) Info() (fs.FileInfo, error) {
 // Size returns the size of the folder in bytes.
 func (f Folder) Size() (int64, error) {
 	var size int64
+
 	err := filepath.WalkDir(f.Path(), func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err

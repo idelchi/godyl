@@ -75,6 +75,7 @@ func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.R
 
 		// Get the installer for the current source type.
 		populator, err := t.Source.Installer()
+
 		t.populator = populator
 
 		if err != nil {

@@ -44,6 +44,7 @@ func run(input common.Input) error {
 
 	// At this point, all tools have been resolved and can be processed by the processor
 	proc := processor.New(tools, *cfg, runner.Logger())
+
 	proc.NoDownload = cfg.Install.Dry
 
 	if err := proc.Process(iutils.SplitTags(cfg.Install.Tags)); err != nil {

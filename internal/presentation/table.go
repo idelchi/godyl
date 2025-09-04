@@ -38,6 +38,7 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 
 	// Split results by status
 	var errors, warnings, successes []runner.Result
+
 	for _, result := range results {
 		switch result.Status {
 		case runner.StatusFailed:
@@ -54,6 +55,7 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 	// Render errors first (highest priority)
 	if len(errors) > 0 {
 		errorHeader := color.RedString("\n=== ERRORS (%d tools requiring attention) ===\n", len(errors))
+
 		output += errorHeader
 		output += f.renderTable(errors)
 	}
@@ -61,6 +63,7 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 	// Render warnings second (medium priority)
 	if len(warnings) > 0 {
 		warningHeader := color.YellowString("\n=== WARNINGS (%d skipped tools) ===\n", len(warnings))
+
 		output += warningHeader
 		output += f.renderTable(warnings)
 	}
@@ -68,6 +71,7 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 	// Render successes last (lowest priority)
 	if len(successes) > 0 {
 		successHeader := color.GreenString("\n=== SUCCESS (%d tools) ===\n", len(successes))
+
 		output += successHeader
 		output += f.renderTable(successes)
 	}
@@ -99,6 +103,7 @@ func (f *TableFormatter) renderTable(results []runner.Result) string {
 
 	for i, h := range headers {
 		headerRow = append(headerRow, h.Name)
+
 		config := table.ColumnConfig{
 			Number:   i + 1,
 			WidthMax: h.WidthMax,
@@ -137,7 +142,9 @@ func (f *TableFormatter) renderTable(results []runner.Result) string {
 	// Add results
 	for _, result := range results {
 		rowNum++
+
 		color := f.getColorForStatus(result.Status)
+
 		rowColors[rowNum] = color
 
 		row := f.formatResultRow(result)
@@ -153,6 +160,7 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 
 	// Format file/URL
 	fileDisplay := "Not Applicable"
+
 	if tool.URL != "" {
 		fileDisplay = file.File(tool.URL).Unescape().Base()
 	}

@@ -34,6 +34,7 @@ func NewCollector() *DefaultCollector {
 func (c *DefaultCollector) Add(result runner.Result) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+
 	c.results = append(c.results, result)
 }
 
@@ -70,6 +71,7 @@ func (c *DefaultCollector) Summary() Summary {
 			summary.Successful++
 		case runner.StatusFailed:
 			summary.Failed++
+
 			summary.Errors = append(summary.Errors, ErrorDetail{
 				Tool:    r.Tool.Name,
 				Message: r.Message,

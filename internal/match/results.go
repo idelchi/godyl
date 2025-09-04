@@ -31,6 +31,7 @@ type Results []Result
 // ToString converts the results into a formatted string for output.
 func (m Results) ToString() string {
 	var result string
+
 	for _, res := range m {
 		result += fmt.Sprintf("	- %s\n", res.Asset.Name)
 		result += fmt.Sprintf("		score: %d\n", res.Score)

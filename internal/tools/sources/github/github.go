@@ -159,7 +159,7 @@ func (g *GitHub) MatchAssetsToRequirements(
 		}
 
 		if release == nil {
-			return "", fmt.Errorf("failed to get release: release is nil")
+			return "", errors.New("failed to get release: release is nil")
 		}
 	} else {
 		release = g.latestStoredRelease

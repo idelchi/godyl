@@ -25,6 +25,7 @@ type Trackable interface {
 type readCloserWithProgress struct {
 	io.Reader
 	io.Closer
+
 	Tracker   *gpp.Tracker // associated tracker
 	totalRead int64        // number of bytes read so far
 }
@@ -150,6 +151,7 @@ func (pt *Tracker) TrackProgress(
 	tracker, ok := pt.trackers[src]
 	if !ok {
 		var sizeStr string
+
 		if totalSize >= 0 {
 			sizeStr = humanize.Bytes(uint64(totalSize))
 		} else {
@@ -163,6 +165,7 @@ func (pt *Tracker) TrackProgress(
 			DeferStart:         false,
 			RemoveOnCompletion: false,
 		}
+
 		if currentSize > 0 {
 			tracker.SetValue(currentSize)
 		}
@@ -181,6 +184,7 @@ func (pt *Tracker) TrackProgress(
 // closeWrapper wraps an io.Closer to mark a tracker as done and signal completion.
 type closeWrapper struct {
 	io.Closer
+
 	wg      *sync.WaitGroup
 	tracker *gpp.Tracker
 }

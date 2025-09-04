@@ -48,6 +48,7 @@ func (r *Repository) GetReleaseFromWeb(ctx context.Context, tag string) (*Releas
 	req.Header.Set("Accept", "application/json")
 
 	client := newHTTPClient()
+
 	client.CheckRedirect = nil // Allow redirects for this request
 
 	res, err := client.Do(req)

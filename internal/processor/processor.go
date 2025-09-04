@@ -89,6 +89,7 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 		g.Go(func() error {
 			// Build run options
 			var runOpts []runner.RunOption
+
 			runOpts = append(runOpts, runner.WithProgressTracker(p.progress.Tracker()))
 
 			if p.NoDownload {
@@ -205,6 +206,7 @@ func (p *Processor) presentResults() {
 func (p *Processor) presentErrors(summary results.Summary) {
 	// Determine error format
 	format := presentation.ErrorFormatText
+
 	if p.config.ErrorFile.Path() != "" {
 		format = presentation.ErrorFormatJSON
 	}

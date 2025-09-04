@@ -16,6 +16,7 @@ func (f File) IsBinaryLike() bool {
 
 	// MIME allow-list
 	var textish bool
+
 	if m, err := mimetype.DetectFile(f.Path()); err == nil {
 		for p := m; p != nil; p = p.Parent() {
 			s := p.String()
@@ -30,6 +31,7 @@ func (f File) IsBinaryLike() bool {
 				strings.HasSuffix(s, "+json") ||
 				strings.HasSuffix(s, "+xml") {
 				textish = true
+
 				break
 			}
 		}
@@ -39,6 +41,7 @@ func (f File) IsBinaryLike() bool {
 	r, err := f.Open()
 	if err == nil {
 		defer r.Close()
+
 		buf := make([]byte, 128<<10) // read up to 128 KiB
 		n, _ := r.Read(buf)
 		b := buf[:n]
@@ -49,9 +52,11 @@ func (f File) IsBinaryLike() bool {
 			if bytes.Contains(b, []byte{0}) && !looksLikeUTF16(b) {
 				return true
 			}
+
 			if textish {
 				return false
 			}
+
 			return false
 		}
 
@@ -70,10 +75,11 @@ func (f File) IsBinaryLike() bool {
 	if textish {
 		return false
 	}
+
 	return true
 }
 
-// --- Helpers ---
+// --- Helpers ---.
 func hasUTF16BOM(b []byte) bool {
 	return len(b) >= 2 && ((b[0] == 0xFE && b[1] == 0xFF) || (b[0] == 0xFF && b[1] == 0xFE))
 }
@@ -89,11 +95,14 @@ func looksLikeUTF16(b []byte) bool {
 	if limit > 4096 {
 		limit = 4096
 	}
+
 	nullCount := 0
+
 	for i := 0; i+1 < limit; i += 2 {
 		if b[i] == 0x00 || b[i+1] == 0x00 {
 			nullCount++
 		}
 	}
+
 	return nullCount > limit/4 // heuristic threshold
 }

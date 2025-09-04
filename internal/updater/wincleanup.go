@@ -79,7 +79,7 @@ func createBatchFile(templateContent []byte, batchFilePath string, data cleanupD
 	}
 
 	batchFile := file.New(batchFilePath)
-	if err := batchFile.Create(); err != nil { //nolint:govet // Shadow variable naming is intentional
+	if err := batchFile.Create(); err != nil {
 		return fmt.Errorf("creating batch file: %w", err)
 	}
 

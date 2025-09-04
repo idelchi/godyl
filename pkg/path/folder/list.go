@@ -20,6 +20,7 @@ func (f Folder) ListFolders() (folders []Folder, err error) {
 	for _, entry := range entries {
 		if entry.IsDir() {
 			subFolder := New(f.String(), entry.Name())
+
 			folders = append(folders, subFolder)
 		}
 	}
@@ -40,6 +41,7 @@ func (f Folder) ListFiles() (files files.Files, err error) {
 	for _, entry := range entries {
 		if !entry.IsDir() {
 			file := file.New(f.String(), entry.Name())
+
 			files = append(files, file)
 		}
 	}

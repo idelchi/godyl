@@ -70,6 +70,7 @@ func (d Downloader) Download(url, output string, header ...http.Header) (file.Fi
 
 	// retryable HTTP client
 	client := retryablehttp.NewClient()
+
 	client.Logger = nil // silence default logging
 	client.RetryMax = d.maxRetries
 	client.RetryWaitMin = d.retryWaitMin

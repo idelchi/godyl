@@ -105,6 +105,7 @@ func (g *GitLab) LatestVersion(ctx context.Context) (string, error) {
 
 	if g.Pre {
 		const PerPage = 1000
+
 		release, err = repository.GetLatestIncludingPreRelease(ctx, PerPage)
 	} else {
 		release, err = repository.LatestRelease(ctx)

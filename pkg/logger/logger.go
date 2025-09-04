@@ -114,6 +114,7 @@ func (l *Logger) log(level Level, format string, args ...any) {
 	}
 
 	message := fmt.Sprintf(format, args...)
+
 	if c, ok := l.colors[level]; ok {
 		_, _ = c.Fprintln(l.output, message)
 	} else {

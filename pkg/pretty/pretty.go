@@ -97,6 +97,7 @@ func Env(obj any) string {
 
 	// Convert to string map (godotenv requires map[string]string)
 	stringMap := make(map[string]string)
+
 	for k, v := range data {
 		// Convert each value to string
 		stringMap[k] = fmt.Sprintf("%v", v)

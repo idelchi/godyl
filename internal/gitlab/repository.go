@@ -73,6 +73,7 @@ func (g *Repository) GetLatestIncludingPreRelease(ctx context.Context, perPage i
 
 	// Find the most recent release by published date
 	var latestRelease *gitlab.Release
+
 	for i, release := range releases {
 		if i == 0 || latestRelease.CreatedAt.Before(*release.CreatedAt) {
 			latestRelease = release

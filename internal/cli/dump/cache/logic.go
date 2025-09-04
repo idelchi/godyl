@@ -21,6 +21,7 @@ func run(input common.Input) error {
 	}
 
 	var name string
+
 	if len(args) > 0 {
 		name = args[0]
 	}

@@ -52,6 +52,7 @@ func run(input common.Input) error {
 		tokens, _ := iutils.StructToKoanf(cfg.Tokens)
 
 		keys := tokens.Keys()
+
 		if len(args) > 0 {
 			keys = args
 		}

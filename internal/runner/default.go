@@ -30,6 +30,7 @@ func NewDefaultRunner(cache *cache.Cache, log *logger.Logger) *DefaultRunner {
 func (r *DefaultRunner) Run(ctx context.Context, t *tool.Tool, tags tags.IncludeTags, options ...RunOption) Result {
 	// Apply options
 	opts := &runOptions{}
+
 	for _, opt := range options {
 		opt(opts)
 	}

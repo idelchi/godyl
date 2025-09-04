@@ -31,6 +31,7 @@ type Update struct {
 // ToCommon converts the Update configuration to a common.Common instance.
 func (u Update) ToCommon() common.Common {
 	s := strategy.Sync
+
 	if u.Force {
 		s = strategy.Force
 	}

@@ -16,6 +16,7 @@ func (v *Values) Merge(values ...Values) {
 		}
 
 		maps.Copy(value, *v)
+
 		*v = value
 	}
 }

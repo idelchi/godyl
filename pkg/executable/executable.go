@@ -34,6 +34,7 @@ func (e Executable) Command(ctx context.Context, cmdArgs []string) (string, erro
 		ctx,
 		e.String(),
 		cmdArgs...)
+
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 	cmd.Stdin = os.Stdin

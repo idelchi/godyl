@@ -38,6 +38,7 @@ func (as Assets) Match(req Requirements) Results {
 
 	for _, a := range as {
 		score, qualified, err := a.Match(req)
+
 		results = append(results, Result{Asset: a, Score: score, Qualified: qualified, Error: err})
 	}
 

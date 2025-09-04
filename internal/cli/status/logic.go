@@ -46,6 +46,7 @@ func run(input common.Input) error {
 	}
 	// At this point, all tools have been resolved and can be processed by the processor
 	proc := processor.New(tools, *cfg, runner.Logger())
+
 	proc.NoDownload = true
 	proc.Options = []tool.ResolveOption{tool.WithoutURL()}
 

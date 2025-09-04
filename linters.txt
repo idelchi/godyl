@@ -1,365 +1,362 @@
-[go:lint] internal\tools\tool\validate.go:255:35: Non-inherited new context, use function like `context.WithXXX` instead (contextcheck)
+[go:lint] internal/tools/tool/validate.go:255:35: Non-inherited new context, use function like `context.WithXXX` instead (contextcheck)
 [go:lint] 		if output, err := t.Commands.Run(context.Background(), t.Env); err != nil {
 [go:lint] 		                                ^
-[go:lint] internal\cli\logic.go:31:1: calculated cyclomatic complexity for function run is 31, max is 30 (cyclop)
+[go:lint] internal/cli/logic.go:31:1: calculated cyclomatic complexity for function run is 31, max is 30 (cyclop)
 [go:lint] func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error {
 [go:lint] ^
-[go:lint] internal\cli\subcommands.go:1:1: the average complexity for the package cli is 11.333333, max is 10.000000 (cyclop)
+[go:lint] internal/cli/subcommands.go:1:1: the average complexity for the package cli is 11.333333, max is 10.000000 (cyclop)
 [go:lint] package cli
 [go:lint] ^
-[go:lint] internal\config\download\config.go:21:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
+[go:lint] internal/config/download/config.go:21:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
 [go:lint] 	common.Tracker `mapstructure:"-" yaml:"-"`
 [go:lint] 	^
-[go:lint] internal\config\dump\config.go:16:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
+[go:lint] internal/config/dump/config.go:16:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
 [go:lint] 	common.Tracker `mapstructure:"-" yaml:"-"`
 [go:lint] 	^
-[go:lint] internal\config\dump\tools\config.go:20:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
+[go:lint] internal/config/dump/tools/config.go:20:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
 [go:lint] 	common.Tracker `mapstructure:"-" yaml:"-"`
 [go:lint] 	^
-[go:lint] internal\config\install\config.go:36:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
+[go:lint] internal/config/install/config.go:36:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
 [go:lint] 	common.Tracker `mapstructure:"-" yaml:"-"`
 [go:lint] 	^
-[go:lint] internal\config\root\config.go:95:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
+[go:lint] internal/config/root/config.go:95:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
 [go:lint] 	common.Tracker `mapstructure:"-" yaml:"-"`
 [go:lint] 	^
-[go:lint] internal\config\status\config.go:13:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
+[go:lint] internal/config/status/config.go:13:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
 [go:lint] 	common.Tracker `mapstructure:"-" yaml:"-"`
 [go:lint] 	^
-[go:lint] internal\config\update\config.go:28:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
+[go:lint] internal/config/update/config.go:28:2: embedded fields should be listed before regular fields (embeddedstructfieldcheck)
 [go:lint] 	common.Tracker `mapstructure:"-" yaml:"-"`
 [go:lint] 	^
-[go:lint] pkg\koanfx\internal.go:14:1: cognitive complexity 27 of func `textUnmarshalerHookFunc` is high (> 20) (gocognit)
+[go:lint] pkg/koanfx/internal.go:14:1: cognitive complexity 27 of func `textUnmarshalerHookFunc` is high (> 20) (gocognit)
 [go:lint] func textUnmarshalerHookFunc() mapstructure.DecodeHookFuncType {
 [go:lint] ^
-[go:lint] pkg\path\file\binary.go:12:1: cognitive complexity 25 of func `(File).IsBinaryLike` is high (> 20) (gocognit)
+[go:lint] pkg/path/file/binary.go:12:1: cognitive complexity 25 of func `(File).IsBinaryLike` is high (> 20) (gocognit)
 [go:lint] func (f File) IsBinaryLike() bool {
 [go:lint] ^
-[go:lint] internal\cli\logic.go:27:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Some subcommands should N..." (godox)
+[go:lint] internal/cli/logic.go:27:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Some subcommands should N..." (godox)
 [go:lint] // TODO(Idelchi): Some subcommands should NOT validate the config file, such as `auth`, `config`. //nolint:godox // TODO
 [go:lint]  ^
-[go:lint] internal\cli\logic.go:235:3: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Allow also GITHUB_TOKEN_F..." (godox)
+[go:lint] internal/cli/logic.go:235:3: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Allow also GITHUB_TOKEN_F..." (godox)
 [go:lint] 	// TODO(Idelchi): Allow also GITHUB_TOKEN_FILE, GITLAB_TOKEN_FILE, URL_TOKEN_FILE //nolint:godox // TODO comment
 [go:lint] 	 ^
-[go:lint] internal\config\root\config.go:15:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Change all to be .Config ..." (godox)
+[go:lint] internal/config/root/config.go:15:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Change all to be .Config ..." (godox)
 [go:lint] // TODO(Idelchi): Change all to be .Config instead of .Dump, .Update, etc. //nolint:godox // TODO comment provides
 [go:lint]  ^
-[go:lint] internal\detect\platform.go:43:3: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Add flags for --library a..." (godox)
+[go:lint] internal/detect/platform.go:43:3: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Add flags for --library a..." (godox)
 [go:lint] 	// TODO(Idelchi): Add flags for --library and --distribution to override these defaults. //nolint:godox // TODO
 [go:lint] 	 ^
-[go:lint] internal\tools\result\result.go:11:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Make more sane functions...." (godox)
+[go:lint] internal/tools/result/result.go:11:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Make more sane functions...." (godox)
 [go:lint] // TODO(Idelchi): Make more sane functions. Wrap and Wrapped are confusing. //nolint:godox // TODO comment provides
 [go:lint]  ^
-[go:lint] internal\tools\sources\go\go.go:36:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): This should be ignored if..." (godox)
+[go:lint] internal/tools/sources/go/go.go:36:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): This should be ignored if..." (godox)
 [go:lint] // TODO(Idelchi): This should be ignored if the version is already set. //nolint:godox // TODO comment provides valuable
 [go:lint]  ^
-[go:lint] internal\tools\sources\go\go.go:68:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Remove this at some point..." (godox)
+[go:lint] internal/tools/sources/go/go.go:68:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Remove this at some point..." (godox)
 [go:lint] // TODO(Idelchi): Remove this at some point - why do we need it? //nolint:godox // TODO comment provides valuable
 [go:lint]  ^
-[go:lint] internal\tools\sources\source.go:35:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): go generate the source ty..." (godox)
+[go:lint] internal/tools/sources/source.go:35:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): go generate the source ty..." (godox)
 [go:lint] // TODO(Idelchi): go generate the source type strings //nolint:godox // TODO comment provides valuable context for
 [go:lint]  ^
-[go:lint] internal\tools\tool\tool.go:114:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Get rid of currentResult...." (godox)
+[go:lint] internal/tools/tool/tool.go:114:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Get rid of currentResult...." (godox)
 [go:lint] // TODO(Idelchi): Get rid of currentResult. //nolint:godox // TODO comment provides valuable context for future
 [go:lint]  ^
-[go:lint] pkg\unmarshal\templatable.go:34:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Return t.Template or t.Va..." (godox)
+[go:lint] pkg/unmarshal/templatable.go:34:2: Line contains TODO/BUG/FIXME: "TODO(Idelchi): Return t.Template or t.Va..." (godox)
 [go:lint] // TODO(Idelchi): Return t.Template or t.Value? //nolint:godox // TODO comment provides valuable context for future
 [go:lint]  ^
-[go:lint] internal\debug\debug.go:19:2: G104: Errors unhandled (gosec)
+[go:lint] internal/debug/debug.go:19:2: G104: Errors unhandled (gosec)
 [go:lint] 	pretty.Print(a) //nolint:errcheck // Debug print functions do not need error handling
 [go:lint] 	^
-[go:lint] internal\detect\os.go:36:2: G104: Errors unhandled (gosec)
+[go:lint] internal/detect/os.go:36:2: G104: Errors unhandled (gosec)
 [go:lint] 	distro.ParseFrom(info.Platform) //nolint:errcheck 	// Ignore error as it's not critical
 [go:lint] 	^
-[go:lint] internal\tools\tool\tool.go:190:1: GetPopulator returns interface (github.com/idelchi/godyl/internal/tools/sources.Populator) (ireturn)
-[go:lint] func (t Tool) GetPopulator() sources.Populator {
-[go:lint] ^
-[go:lint] internal\tools\tool\tool.go:40:1: The line is 124 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] internal/tools/tool/tool.go:40:1: The line is 124 characters long, which exceeds the maximum of 120 characters. (lll)
 [go:lint] 	Description string `json:"description"   mapstructure:"description"                                     yaml:"description"`
 [go:lint] ^
-[go:lint] internal\tools\tool\tool.go:42:1: The line is 125 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] internal/tools/tool/tool.go:42:1: The line is 125 characters long, which exceeds the maximum of 120 characters. (lll)
 [go:lint] 	Version version.Version `json:"version"       mapstructure:"version"                                         yaml:"version"`
 [go:lint] ^
-[go:lint] internal\tools\tool\tool.go:50:1: The line is 127 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] internal/tools/tool/tool.go:50:1: The line is 127 characters long, which exceeds the maximum of 120 characters. (lll)
 [go:lint] 	Platform detect.Platform `json:"platform"      mapstructure:"platform"                                        yaml:"platform"`
 [go:lint] ^
-[go:lint] internal\tools\tool\tool.go:52:1: The line is 125 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] internal/tools/tool/tool.go:52:1: The line is 125 characters long, which exceeds the maximum of 120 characters. (lll)
 [go:lint] 	Aliases aliases.Aliases `json:"aliases"       mapstructure:"aliases"                                         yaml:"aliases"`
 [go:lint] ^
-[go:lint] internal\tools\tool\tool.go:54:1: The line is 121 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] internal/tools/tool/tool.go:54:1: The line is 121 characters long, which exceeds the maximum of 120 characters. (lll)
 [go:lint] 	Values values.Values `json:"values"        mapstructure:"values"                                          yaml:"values"`
 [go:lint] ^
-[go:lint] internal\tools\tool\tool.go:56:1: The line is 133 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] internal/tools/tool/tool.go:56:1: The line is 133 characters long, which exceeds the maximum of 120 characters. (lll)
 [go:lint] 	Fallbacks fallbacks.Fallbacks `json:"fallbacks"     mapstructure:"fallbacks"                                       yaml:"fallbacks"`
 [go:lint] ^
-[go:lint] internal\tools\tool\tool.go:60:1: The line is 122 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] internal/tools/tool/tool.go:60:1: The line is 122 characters long, which exceeds the maximum of 120 characters. (lll)
 [go:lint] 	Source sources.Source `json:"source"        mapstructure:"source"                                          yaml:"source"`
 [go:lint] ^
-[go:lint] internal\tools\tool\tool.go:62:1: The line is 128 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] internal/tools/tool/tool.go:62:1: The line is 128 characters long, which exceeds the maximum of 120 characters. (lll)
 [go:lint] 	Commands command.Commands `json:"commands"      mapstructure:"commands"                                        yaml:"commands"`
 [go:lint] ^
-[go:lint] internal\tools\tool\tool.go:66:1: The line is 129 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] internal/tools/tool/tool.go:66:1: The line is 129 characters long, which exceeds the maximum of 120 characters. (lll)
 [go:lint] 	Strategy strategy.Strategy `json:"strategy"      mapstructure:"strategy"                                        yaml:"strategy"`
 [go:lint] ^
-[go:lint] internal\tools\tool\tool.go:73:1: The line is 124 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] internal/tools/tool/tool.go:73:1: The line is 124 characters long, which exceeds the maximum of 120 characters. (lll)
 [go:lint] 	NoVerifySSL bool `json:"no-verify-ssl" mapstructure:"no-verify-ssl"                                   yaml:"no-verify-ssl"`
 [go:lint] ^
-[go:lint] internal\tools\tool\tool.go:77:1: The line is 126 characters long, which exceeds the maximum of 120 characters. (lll)
+[go:lint] internal/tools/tool/tool.go:77:1: The line is 126 characters long, which exceeds the maximum of 120 characters. (lll)
 [go:lint] 	Inherit *inherit.Inherit `json:"inherit"       mapstructure:"inherit"                                         yaml:"inherit"`
 [go:lint] ^
-[go:lint] pkg\path\file\binary.go:45:23: Magic number: 128, in <argument> detected (mnd)
+[go:lint] pkg/path/file/binary.go:45:23: Magic number: 128, in <argument> detected (mnd)
 [go:lint] 		buf := make([]byte, 128<<10) // read up to 128 KiB
 [go:lint] 		                    ^
-[go:lint] pkg\path\file\binary.go:95:13: Magic number: 4096, in <condition> detected (mnd)
+[go:lint] pkg/path/file/binary.go:95:13: Magic number: 4096, in <condition> detected (mnd)
 [go:lint] 	if limit > 4096 {
 [go:lint] 	           ^
-[go:lint] internal\cache\cache.go:282:27: the given struct should be annotated with the `json` tag (musttag)
+[go:lint] internal/cache/cache.go:282:27: the given struct should be annotated with the `json` tag (musttag)
 [go:lint] 	if err := decoder.Decode(&items); err != nil {
 [go:lint] 	                         ^
-[go:lint] internal\cache\cache.go:312:24: the given struct should be annotated with the `json` tag (musttag)
+[go:lint] internal/cache/cache.go:312:24: the given struct should be annotated with the `json` tag (musttag)
 [go:lint] 	return encoder.Encode(items) //nolint:wrapcheck 	// Error does not need additional wrapping.
 [go:lint] 	                      ^
-[go:lint] internal\tools\tool\copy.go:18:30: the given struct should be annotated with the `json` tag (musttag)
+[go:lint] internal/tools/tool/copy.go:18:30: the given struct should be annotated with the `json` tag (musttag)
 [go:lint] 	err = json.Unmarshal(bytes, t)
 [go:lint] 	                            ^
-[go:lint] internal\tools\tool\copy.go:34:30: the given struct should be annotated with the `json` tag (musttag)
+[go:lint] internal/tools/tool/copy.go:34:30: the given struct should be annotated with the `json` tag (musttag)
 [go:lint] 	err = json.Unmarshal(bytes, &dst)
 [go:lint] 	                            ^
-[go:lint] internal\tools\sources\github\github.go:146:1: `if g.latestStoredRelease == nil` has complex nested blocks (complexity: 5) (nestif)
+[go:lint] internal/tools/sources/github/github.go:146:1: `if g.latestStoredRelease == nil` has complex nested blocks (complexity: 5) (nestif)
 [go:lint] 	if g.latestStoredRelease == nil {
 [go:lint] ^
-[go:lint] pkg\koanfx\internal.go:37:1: `if f.Kind() == t.Kind()` has complex nested blocks (complexity: 6) (nestif)
+[go:lint] pkg/koanfx/internal.go:37:1: `if f.Kind() == t.Kind()` has complex nested blocks (complexity: 6) (nestif)
 [go:lint] 		if f.Kind() == t.Kind() {
 [go:lint] ^
-[go:lint] pkg\path\file\binary.go:42:1: `if err == nil` has complex nested blocks (complexity: 7) (nestif)
+[go:lint] pkg/path/file/binary.go:42:1: `if err == nil` has complex nested blocks (complexity: 7) (nestif)
 [go:lint] 	if err == nil {
 [go:lint] ^
-[go:lint] pkg\utils\utils.go:95:3: return both a `nil` error and an invalid value: use a sentinel error instead (nilnil)
+[go:lint] pkg/utils/utils.go:95:3: return both a `nil` error and an invalid value: use a sentinel error instead (nilnil)
 [go:lint] 		return nil, nil // Return nil if source is nil
 [go:lint] 		^
-[go:lint] internal\detect\platform\arch.go:250:21: os/exec.Command must not be called. use os/exec.CommandContext (noctx)
+[go:lint] internal/detect/platform/arch.go:250:21: os/exec.Command must not be called. use os/exec.CommandContext (noctx)
 [go:lint] 	cmd := exec.Command("getconf", "LONG_BIT")
 [go:lint] 	                   ^
-[go:lint] internal\goi\installer.go:23:21: os/exec.Command must not be called. use os/exec.CommandContext (noctx)
+[go:lint] internal/goi/installer.go:23:21: os/exec.Command must not be called. use os/exec.CommandContext (noctx)
 [go:lint] 	cmd := exec.Command( //nolint:gosec // Path is validated by upstream tool configuration
 [go:lint] 	                   ^
-[go:lint] internal\updater\wincleanup.go:104:21: os/exec.Command must not be called. use os/exec.CommandContext (noctx)
+[go:lint] internal/updater/wincleanup.go:104:21: os/exec.Command must not be called. use os/exec.CommandContext (noctx)
 [go:lint] 	cmd := exec.Command("cmd", "/C", "start", "/MIN", scriptPath)
 [go:lint] 	                   ^
-[go:lint] pkg\koanfx\internal.go:1:1: directive `//nolint:gocyclo,funlen // This is a copy-paste from the internals of the Koanf library.` is unused for linter "gocyclo" (nolintlint)
+[go:lint] pkg/koanfx/internal.go:1:1: directive `//nolint:gocyclo,funlen // This is a copy-paste from the internals of the Koanf library.` is unused for linter "gocyclo" (nolintlint)
 [go:lint] //nolint:gocyclo,funlen // This is a copy-paste from the internals of the Koanf library.
 [go:lint] ^
-[go:lint] internal\defaults\defaults.go:15:6: the methods of "Defaults" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] internal/defaults/defaults.go:15:6: the methods of "Defaults" use pointer receiver and non-pointer receiver. (recvcheck)
 [go:lint] type Defaults map[string]*Default
 [go:lint]      ^
-[go:lint] internal\tools\fallbacks\fallbacks.go:16:6: the methods of "Fallbacks" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] internal/tools/fallbacks/fallbacks.go:16:6: the methods of "Fallbacks" use pointer receiver and non-pointer receiver. (recvcheck)
 [go:lint] type Fallbacks []sources.Type
 [go:lint]      ^
-[go:lint] internal\tools\hints\hint.go:47:6: the methods of "Hint" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] internal/tools/hints/hint.go:47:6: the methods of "Hint" use pointer receiver and non-pointer receiver. (recvcheck)
 [go:lint] type Hint struct {
 [go:lint]      ^
-[go:lint] internal\tools\skip\skip.go:13:6: the methods of "Skip" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] internal/tools/skip/skip.go:13:6: the methods of "Skip" use pointer receiver and non-pointer receiver. (recvcheck)
 [go:lint] type Skip unmarshal.SingleOrSliceType[Condition]
 [go:lint]      ^
-[go:lint] internal\tools\skip\skip.go:16:6: the methods of "Condition" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] internal/tools/skip/skip.go:16:6: the methods of "Condition" use pointer receiver and non-pointer receiver. (recvcheck)
 [go:lint] type Condition struct {
 [go:lint]      ^
-[go:lint] internal\tools\sources\source.go:23:6: the methods of "Type" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] internal/tools/sources/source.go:23:6: the methods of "Type" use pointer receiver and non-pointer receiver. (recvcheck)
 [go:lint] type Type string
 [go:lint]      ^
-[go:lint] internal\tools\tags\tags.go:23:6: the methods of "Tags" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] internal/tools/tags/tags.go:23:6: the methods of "Tags" use pointer receiver and non-pointer receiver. (recvcheck)
 [go:lint] type Tags []string
 [go:lint]      ^
-[go:lint] internal\tools\tool\tool.go:36:6: the methods of "Tool" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] internal/tools/tool/tool.go:36:6: the methods of "Tool" use pointer receiver and non-pointer receiver. (recvcheck)
 [go:lint] type Tool struct {
 [go:lint]      ^
-[go:lint] internal\tools\tools.go:16:6: the methods of "Tools" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] internal/tools/tools.go:16:6: the methods of "Tools" use pointer receiver and non-pointer receiver. (recvcheck)
 [go:lint] type Tools []*tool.Tool
 [go:lint]      ^
-[go:lint] pkg\path\file\types.go:6:6: the methods of "File" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] pkg/path/file/types.go:6:6: the methods of "File" use pointer receiver and non-pointer receiver. (recvcheck)
 [go:lint] type File string
 [go:lint]      ^
-[go:lint] pkg\path\files\files.go:12:6: the methods of "Files" use pointer receiver and non-pointer receiver. (recvcheck)
+[go:lint] pkg/path/files/files.go:12:6: the methods of "Files" use pointer receiver and non-pointer receiver. (recvcheck)
 [go:lint] type Files []file.File
 [go:lint]      ^
-[go:lint] internal\cli\common\helpers.go:1:9: var-naming: avoid meaningless package names (revive)
+[go:lint] internal/cli/common/context.go:1:9: var-naming: avoid meaningless package names (revive)
 [go:lint] package common
 [go:lint]         ^
-[go:lint] internal\config\common\trackable.go:1:9: var-naming: avoid meaningless package names (revive)
+[go:lint] internal/config/common/trackable.go:1:9: var-naming: avoid meaningless package names (revive)
 [go:lint] package common
 [go:lint]         ^
-[go:lint] internal\config\common\trackable.go:41:9: empty-block: this block is empty, you can remove it (revive)
+[go:lint] internal/config/common/trackable.go:41:9: empty-block: this block is empty, you can remove it (revive)
 [go:lint] 	} else {
 [go:lint] 		// debug.Debug("name %s found in tracker", name)
 [go:lint] 	}
-[go:lint] internal\config\download\flags.go:5:1: exported: exported function Flags should have comment or be unexported (revive)
+[go:lint] internal/config/download/flags.go:5:1: exported: exported function Flags should have comment or be unexported (revive)
 [go:lint] func Flags(cmd *cobra.Command) {
 [go:lint] ^
-[go:lint] internal\config\dump\tools\config.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] internal/config/dump/tools/config.go:1:1: package-comments: should have a package comment (revive)
 [go:lint] package tools
 [go:lint] ^
-[go:lint] internal\config\dump\tools\flags.go:5:1: exported: exported function Flags should have comment or be unexported (revive)
+[go:lint] internal/config/dump/tools/flags.go:5:1: exported: exported function Flags should have comment or be unexported (revive)
 [go:lint] func Flags(cmd *cobra.Command) {
 [go:lint] ^
-[go:lint] internal\config\install\config.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] internal/config/install/config.go:1:1: package-comments: should have a package comment (revive)
 [go:lint] package install
 [go:lint] ^
-[go:lint] internal\config\install\config.go:9:1: exported: comment on exported type Install should be of the form "Install ..." (with optional leading article) (revive)
+[go:lint] internal/config/install/config.go:9:1: exported: comment on exported type Install should be of the form "Install ..." (with optional leading article) (revive)
 [go:lint] // Package install provides the configuration for the `install` command.
 [go:lint] ^
-[go:lint] internal\config\root\config.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] internal/config/root/config.go:1:1: package-comments: should have a package comment (revive)
 [go:lint] package root
 [go:lint] ^
-[go:lint] internal\config\root\config.go:135:16: unused-parameter: parameter 'name' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] internal/config/root/config.go:135:16: unused-parameter: parameter 'name' seems to be unused, consider removing or renaming it as _ (revive)
 [go:lint] 			return func(name string) bool {
 [go:lint] 			            ^
-[go:lint] internal\debug\debug.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] internal/debug/debug.go:1:1: package-comments: should have a package comment (revive)
 [go:lint] package debug
 [go:lint] ^
-[go:lint] internal\debug\debug.go:10:1: exported: exported function Debug should have comment or be unexported (revive)
+[go:lint] internal/debug/debug.go:10:1: exported: exported function Debug should have comment or be unexported (revive)
 [go:lint] func Debug(format string, args ...any) {
 [go:lint] ^
-[go:lint] internal\debug\debug.go:18:1: exported: exported function Print should have comment or be unexported (revive)
+[go:lint] internal/debug/debug.go:18:1: exported: exported function Print should have comment or be unexported (revive)
 [go:lint] func Print(a ...any) {
 [go:lint] ^
-[go:lint] internal\defaults\defaults.go:17:1: exported: comment on exported function NewDefaultsFromBytes should be of the form "NewDefaultsFromBytes ..." (revive)
+[go:lint] internal/defaults/defaults.go:17:1: exported: comment on exported function NewDefaultsFromBytes should be of the form "NewDefaultsFromBytes ..." (revive)
 [go:lint] // NewDefaults initializes a new Defaults instance from the provided data.
 [go:lint] ^
-[go:lint] internal\defaults\defaults.go:28:1: exported: comment on exported method Defaults.Load should be of the form "Load ..." (revive)
+[go:lint] internal/defaults/defaults.go:28:1: exported: comment on exported method Defaults.Load should be of the form "Load ..." (revive)
 [go:lint] // NewDefaults initializes the Defaults instance from the provided file.
 [go:lint] ^
-[go:lint] internal\detect\platform\arch.go:39:1: exported: exported method Architecture.IsNil should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/arch.go:39:1: exported: exported method Architecture.IsNil should have comment or be unexported (revive)
 [go:lint] func (a *Architecture) IsNil() bool {
 [go:lint] ^
-[go:lint] internal\detect\platform\arch.go:43:1: exported: exported method Architecture.UnmarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/arch.go:43:1: exported: exported method Architecture.UnmarshalYAML should have comment or be unexported (revive)
 [go:lint] func (a *Architecture) UnmarshalYAML(node ast.Node) error {
 [go:lint] ^
-[go:lint] internal\detect\platform\arch.go:53:1: exported: exported method Architecture.MarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/arch.go:53:1: exported: exported method Architecture.MarshalYAML should have comment or be unexported (revive)
 [go:lint] func (a *Architecture) MarshalYAML() (any, error) {
 [go:lint] ^
-[go:lint] internal\detect\platform\arch.go:104:1: exported: comment on exported method Architecture.ParseFrom should be of the form "ParseFrom ..." (revive)
+[go:lint] internal/detect/platform/arch.go:104:1: exported: comment on exported method Architecture.ParseFrom should be of the form "ParseFrom ..." (revive)
 [go:lint] // Parse extracts architecture information from a string identifier.
 [go:lint] ^
-[go:lint] internal\detect\platform\arch.go:221:1: exported: exported method Architecture.Type should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/arch.go:221:1: exported: exported method Architecture.Type should have comment or be unexported (revive)
 [go:lint] func (a *Architecture) Type() string {
 [go:lint] ^
-[go:lint] internal\detect\platform\arch.go:225:1: exported: exported method Architecture.Version should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/arch.go:225:1: exported: exported method Architecture.Version should have comment or be unexported (revive)
 [go:lint] func (a *Architecture) Version() int {
 [go:lint] ^
-[go:lint] internal\detect\platform\distro.go:23:1: exported: exported method Distribution.IsNil should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/distro.go:23:1: exported: exported method Distribution.IsNil should have comment or be unexported (revive)
 [go:lint] func (d *Distribution) IsNil() bool {
 [go:lint] ^
-[go:lint] internal\detect\platform\distro.go:27:1: exported: exported method Distribution.UnmarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/distro.go:27:1: exported: exported method Distribution.UnmarshalYAML should have comment or be unexported (revive)
 [go:lint] func (d *Distribution) UnmarshalYAML(node ast.Node) error {
 [go:lint] ^
-[go:lint] internal\detect\platform\distro.go:37:1: exported: exported method Distribution.MarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/distro.go:37:1: exported: exported method Distribution.MarshalYAML should have comment or be unexported (revive)
 [go:lint] func (d *Distribution) MarshalYAML() (any, error) {
 [go:lint] ^
-[go:lint] internal\detect\platform\distro.go:78:1: exported: comment on exported method Distribution.ParseFrom should be of the form "ParseFrom ..." (revive)
+[go:lint] internal/detect/platform/distro.go:78:1: exported: comment on exported method Distribution.ParseFrom should be of the form "ParseFrom ..." (revive)
 [go:lint] // Parse extracts distribution information from a string identifier.
 [go:lint] ^
-[go:lint] internal\detect\platform\extension.go:7:1: exported: comment on exported method Extension.ParseFrom should be of the form "ParseFrom ..." (revive)
+[go:lint] internal/detect/platform/extension.go:7:1: exported: comment on exported method Extension.ParseFrom should be of the form "ParseFrom ..." (revive)
 [go:lint] // Default returns the platform's standard executable extension.
 [go:lint] ^
-[go:lint] internal\detect\platform\extension.go:23:1: exported: exported method Extension.IsNil should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/extension.go:23:1: exported: exported method Extension.IsNil should have comment or be unexported (revive)
 [go:lint] func (e *Extension) IsNil() bool {
 [go:lint] ^
-[go:lint] internal\detect\platform\library.go:22:1: exported: exported method Library.IsNil should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/library.go:22:1: exported: exported method Library.IsNil should have comment or be unexported (revive)
 [go:lint] func (l *Library) IsNil() bool {
 [go:lint] ^
-[go:lint] internal\detect\platform\library.go:26:1: exported: exported method Library.UnmarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/library.go:26:1: exported: exported method Library.UnmarshalYAML should have comment or be unexported (revive)
 [go:lint] func (l *Library) UnmarshalYAML(node ast.Node) error {
 [go:lint] ^
-[go:lint] internal\detect\platform\library.go:36:1: exported: exported method Library.MarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/library.go:36:1: exported: exported method Library.MarshalYAML should have comment or be unexported (revive)
 [go:lint] func (l *Library) MarshalYAML() (any, error) {
 [go:lint] ^
-[go:lint] internal\detect\platform\library.go:71:1: exported: comment on exported method Library.ParseFrom should be of the form "ParseFrom ..." (revive)
+[go:lint] internal/detect/platform/library.go:71:1: exported: comment on exported method Library.ParseFrom should be of the form "ParseFrom ..." (revive)
 [go:lint] // Parse extracts library information from a string identifier.
 [go:lint] ^
-[go:lint] internal\detect\platform\os.go:20:1: exported: exported method OS.IsNil should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/os.go:20:1: exported: exported method OS.IsNil should have comment or be unexported (revive)
 [go:lint] func (o *OS) IsNil() bool {
 [go:lint] ^
-[go:lint] internal\detect\platform\os.go:24:1: exported: exported method OS.UnmarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/os.go:24:1: exported: exported method OS.UnmarshalYAML should have comment or be unexported (revive)
 [go:lint] func (o *OS) UnmarshalYAML(node ast.Node) error {
 [go:lint] ^
-[go:lint] internal\detect\platform\os.go:34:1: exported: exported method OS.MarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/os.go:34:1: exported: exported method OS.MarshalYAML should have comment or be unexported (revive)
 [go:lint] func (o *OS) MarshalYAML() (any, error) {
 [go:lint] ^
-[go:lint] internal\detect\platform\os.go:76:1: exported: exported method OS.ParseFrom should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/os.go:76:1: exported: exported method OS.ParseFrom should have comment or be unexported (revive)
 [go:lint] func (o *OS) ParseFrom(name string, comparisons ...func(string, string) bool) error {
 [go:lint] ^
-[go:lint] internal\detect\platform\os.go:107:1: exported: exported method OS.Type should have comment or be unexported (revive)
+[go:lint] internal/detect/platform/os.go:107:1: exported: exported method OS.Type should have comment or be unexported (revive)
 [go:lint] func (o *OS) Type() string {
 [go:lint] ^
-[go:lint] internal\github\web.go:31:23: unused-parameter: parameter 'req' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] internal/github/web.go:31:23: unused-parameter: parameter 'req' seems to be unused, consider removing or renaming it as _ (revive)
 [go:lint] 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 [go:lint] 		                    ^
-[go:lint] internal\github\web.go:38:1: exported: comment on exported method Repository.GetReleaseFromWeb should be of the form "GetReleaseFromWeb ..." (revive)
+[go:lint] internal/github/web.go:38:1: exported: comment on exported method Repository.GetReleaseFromWeb should be of the form "GetReleaseFromWeb ..." (revive)
 [go:lint] // GetRelease retrieves a specific release for the repository based on the provided tag.
 [go:lint] ^
-[go:lint] internal\github\web.go:87:1: exported: comment on exported method Repository.LatestVersionFromWebHTML should be of the form "LatestVersionFromWebHTML ..." (revive)
+[go:lint] internal/github/web.go:87:1: exported: comment on exported method Repository.LatestVersionFromWebHTML should be of the form "LatestVersionFromWebHTML ..." (revive)
 [go:lint] // LatestVersionFromWeb retrieves the latest release for the repository using the GitHub website
 [go:lint] ^
-[go:lint] internal\github\web.go:100:1: exported: comment on exported method Repository.LatestVersionFromWebJSON should be of the form "LatestVersionFromWebJSON ..." (revive)
+[go:lint] internal/github/web.go:100:1: exported: comment on exported method Repository.LatestVersionFromWebJSON should be of the form "LatestVersionFromWebJSON ..." (revive)
 [go:lint] // LatestVersionFromWeb2 retrieves the latest release for the repository using the GitHub website
 [go:lint] ^
-[go:lint] internal\github\web.go:203:35: unused-parameter: parameter 'i' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] internal/github/web.go:203:35: unused-parameter: parameter 'i' seems to be unused, consider removing or renaming it as _ (revive)
 [go:lint] 	doc.Find("li.Box-row").Each(func(i int, s *goquery.Selection) {
 [go:lint] 	                                 ^
-[go:lint] internal\gitlab\repository.go:29:33: unused-parameter: parameter 'ctx' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] internal/gitlab/repository.go:29:33: unused-parameter: parameter 'ctx' seems to be unused, consider removing or renaming it as _ (revive)
 [go:lint] func (g *Repository) GetRelease(ctx context.Context, tag string) (*Release, error) {
 [go:lint]                                 ^
-[go:lint] internal\gitlab\repository.go:93:45: unused-parameter: parameter 'ctx' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] internal/gitlab/repository.go:93:45: unused-parameter: parameter 'ctx' seems to be unused, consider removing or renaming it as _ (revive)
 [go:lint] func (g *Repository) getReleasesWithOptions(ctx context.Context, perPage int) ([]*gitlab.Release, error) {
 [go:lint]                                             ^
-[go:lint] internal\iutils\doc.go:1:1: package-comments: package comment should be of the form "Package iutils ..." (revive)
+[go:lint] internal/iutils/doc.go:1:1: package-comments: package comment should be of the form "Package iutils ..." (revive)
 [go:lint] // Package utils specific helpers for internal use.
 [go:lint] ^
-[go:lint] internal\match\asset.go:17:1: exported: comment on exported method Asset.Lower should be of the form "Lower ..." (revive)
+[go:lint] internal/match/asset.go:17:1: exported: comment on exported method Asset.Lower should be of the form "Lower ..." (revive)
 [go:lint] // NameLower returns the asset's name in lowercase.
 [go:lint] ^
-[go:lint] internal\presentation\table.go:134:23: unused-parameter: parameter 'row' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] internal/presentation/table.go:134:23: unused-parameter: parameter 'row' seems to be unused, consider removing or renaming it as _ (revive)
 [go:lint] 	t.SetRowPainter(func(row table.Row, attr table.RowAttributes) text.Colors {
 [go:lint] 	                     ^
-[go:lint] internal\templates\incr.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] internal/templates/incr.go:1:1: package-comments: should have a package comment (revive)
 [go:lint] package templates
 [go:lint] ^
-[go:lint] internal\templates\incr.go:65:1: exported: exported method Processor.WithOptions should have comment or be unexported (revive)
+[go:lint] internal/templates/incr.go:65:1: exported: exported method Processor.WithOptions should have comment or be unexported (revive)
 [go:lint] func (p *Processor) WithOptions(opts ...Option) *Processor {
 [go:lint] ^
-[go:lint] internal\templates\incr.go:73:1: exported: exported method Processor.WithValues should have comment or be unexported (revive)
+[go:lint] internal/templates/incr.go:73:1: exported: exported method Processor.WithValues should have comment or be unexported (revive)
 [go:lint] func (p *Processor) WithValues(values ...map[string]any) *Processor {
 [go:lint] ^
-[go:lint] internal\templates\incr.go:84:1: exported: exported method Processor.Values should have comment or be unexported (revive)
+[go:lint] internal/templates/incr.go:84:1: exported: exported method Processor.Values should have comment or be unexported (revive)
 [go:lint] func (p *Processor) Values() map[string]any {
 [go:lint] ^
-[go:lint] internal\templates\incr.go:120:1: exported: exported method Processor.ApplyAndSet should have comment or be unexported (revive)
+[go:lint] internal/templates/incr.go:120:1: exported: exported method Processor.ApplyAndSet should have comment or be unexported (revive)
 [go:lint] func (p *Processor) ApplyAndSet(field *string) error {
 [go:lint] ^
-[go:lint] internal\templates\templates.go:10:1: exported: exported function Apply should have comment or be unexported (revive)
+[go:lint] internal/templates/templates.go:10:1: exported: exported function Apply should have comment or be unexported (revive)
 [go:lint] func Apply(field string, values any) (string, error) {
 [go:lint] ^
-[go:lint] internal\templates\templates.go:25:1: exported: exported function ApplyAndSet should have comment or be unexported (revive)
+[go:lint] internal/templates/templates.go:25:1: exported: exported function ApplyAndSet should have comment or be unexported (revive)
 [go:lint] func ApplyAndSet(field *string, values any) (err error) {
 [go:lint] ^
-[go:lint] internal\tmp\helpers.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] internal/tmp/helpers.go:1:1: package-comments: should have a package comment (revive)
 [go:lint] package tmp
 [go:lint] ^
-[go:lint] internal\tmp\helpers.go:99:1: exported: exported function UserRuntimeDir should have comment or be unexported (revive)
+[go:lint] internal/tmp/helpers.go:99:1: exported: exported function UserRuntimeDir should have comment or be unexported (revive)
 [go:lint] func UserRuntimeDir() (string, error) {
 [go:lint] ^
-[go:lint] internal\tokenstore\keyring\keyring.go:13:2: exported: exported var ErrNotFound should have comment or be unexported (revive)
+[go:lint] internal/tokenstore/keyring/keyring.go:13:2: exported: exported var ErrNotFound should have comment or be unexported (revive)
 [go:lint] 	ErrNotFound = errors.New("secret not found in keyring")
 [go:lint] 	^
-[go:lint] internal\tokenstore\keyring\keyring.go:82:1: exported: exported function DeleteAll should have comment or be unexported (revive)
+[go:lint] internal/tokenstore/keyring/keyring.go:82:1: exported: exported function DeleteAll should have comment or be unexported (revive)
 [go:lint] func DeleteAll(service string, timeout time.Duration) error {
 [go:lint] ^
-[go:lint] internal\tokenstore\tokenstore.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] internal/tokenstore/tokenstore.go:1:1: package-comments: should have a package comment (revive)
 [go:lint] package tokenstore
 [go:lint] ^
-[go:lint] internal\tools\command\commands.go:24:1: exported: exported method Commands.UnmarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/tools/command/commands.go:24:1: exported: exported method Commands.UnmarshalYAML should have comment or be unexported (revive)
 [go:lint] func (e *Commands) UnmarshalYAML(node ast.Node) error {
 [go:lint] ^
-[go:lint] internal\tools\command\commands.go:53:1: receiver-naming: receiver name c should be consistent with previous receiver name e for Commands (revive)
+[go:lint] internal/tools/command/commands.go:53:1: receiver-naming: receiver name c should be consistent with previous receiver name e for Commands (revive)
 [go:lint] func (c *Commands) Combined() Command {
 [go:lint] 	stringCommands := make([]string, 0, len(c.Commands)+1)
 [go:lint] 
@@ -375,7 +372,7 @@
 [go:lint] 
 [go:lint] 	return Command(strings.Join(stringCommands, "\n"))
 [go:lint] }
-[go:lint] internal\tools\command\commands.go:71:1: receiver-naming: receiver name c should be consistent with previous receiver name e for Commands (revive)
+[go:lint] internal/tools/command/commands.go:71:1: receiver-naming: receiver name c should be consistent with previous receiver name e for Commands (revive)
 [go:lint] func (c *Commands) Run(ctx context.Context, env env.Env) (output string, err error) {
 [go:lint] 	cmd := c.Combined()
 [go:lint] 
@@ -387,260 +384,263 @@
 [go:lint] 
 [go:lint] 	return strings.TrimRight(output, "\n"), nil
 [go:lint] }
-[go:lint] internal\tools\exe\exe.go:16:6: exported: exported type Patterns should have comment or be unexported (revive)
+[go:lint] internal/tools/exe/exe.go:16:6: exported: exported type Patterns should have comment or be unexported (revive)
 [go:lint] type Patterns = unmarshal.SingleOrSliceType[string]
 [go:lint]      ^
-[go:lint] internal\tools\fallbacks\fallbacks.go:29:1: exported: exported function Compact should have comment or be unexported (revive)
+[go:lint] internal/tools/fallbacks/fallbacks.go:29:1: exported: exported function Compact should have comment or be unexported (revive)
 [go:lint] func Compact[T comparable](s []T) []T {
 [go:lint] ^
-[go:lint] internal\tools\fallbacks\fallbacks.go:43:1: exported: exported method Fallbacks.Compacted should have comment or be unexported (revive)
+[go:lint] internal/tools/fallbacks/fallbacks.go:43:1: exported: exported method Fallbacks.Compacted should have comment or be unexported (revive)
 [go:lint] func (f Fallbacks) Compacted() Fallbacks {
 [go:lint] ^
-[go:lint] internal\tools\fallbacks\fallbacks.go:47:1: exported: exported method Fallbacks.Build should have comment or be unexported (revive)
+[go:lint] internal/tools/fallbacks/fallbacks.go:47:1: exported: exported method Fallbacks.Build should have comment or be unexported (revive)
 [go:lint] func (f Fallbacks) Build(sourceType sources.Type) []sources.Type {
 [go:lint] ^
-[go:lint] internal\tools\hints\hint.go:17:6: exported: exported type Type should have comment or be unexported (revive)
+[go:lint] internal/tools/hints/hint.go:17:6: exported: exported type Type should have comment or be unexported (revive)
 [go:lint] type Type string
 [go:lint]      ^
-[go:lint] internal\tools\hints\hint.go:34:6: exported: exported type Match should have comment or be unexported (revive)
+[go:lint] internal/tools/hints/hint.go:34:6: exported: exported type Match should have comment or be unexported (revive)
 [go:lint] type Match string
 [go:lint]      ^
-[go:lint] internal\tools\hints\hint.go:39:2: exported: comment on exported const Required should be of the form "Required ..." (revive)
+[go:lint] internal/tools/hints/hint.go:39:2: exported: comment on exported const Required should be of the form "Required ..." (revive)
 [go:lint] 	// Require indicates that the hint is a required match.
 [go:lint] 	^
-[go:lint] internal\tools\hints\hint.go:41:2: exported: comment on exported const Excluded should be of the form "Excluded ..." (revive)
+[go:lint] internal/tools/hints/hint.go:41:2: exported: comment on exported const Excluded should be of the form "Excluded ..." (revive)
 [go:lint] 	// Exclude indicates that the hint is an excluded match.
 [go:lint] 	^
-[go:lint] internal\tools\hints\hint.go:58:1: exported: exported method Hint.Matches should have comment or be unexported (revive)
+[go:lint] internal/tools/hints/hint.go:58:1: exported: exported method Hint.Matches should have comment or be unexported (revive)
 [go:lint] func (h Hint) Matches(s string) (match bool, err error) {
 [go:lint] ^
-[go:lint] internal\tools\hints\hint.go:82:1: exported: exported method Hint.UnmarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/tools/hints/hint.go:82:1: exported: exported method Hint.UnmarshalYAML should have comment or be unexported (revive)
 [go:lint] func (h *Hint) UnmarshalYAML(node ast.Node) error {
 [go:lint] ^
-[go:lint] internal\tools\hints\hint.go:92:1: exported: exported method Hint.Parse should have comment or be unexported (revive)
+[go:lint] internal/tools/hints/hint.go:92:1: exported: exported method Hint.Parse should have comment or be unexported (revive)
 [go:lint] func (h *Hint) Parse() (err error) {
 [go:lint] ^
-[go:lint] internal\tools\hints\hints.go:15:1: exported: exported method Hints.Has should have comment or be unexported (revive)
+[go:lint] internal/tools/hints/hints.go:15:1: exported: exported method Hints.Has should have comment or be unexported (revive)
 [go:lint] func (h *Hints) Has() bool {
 [go:lint] ^
-[go:lint] internal\tools\hints\hints.go:19:1: exported: exported method Hints.UnmarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/tools/hints/hints.go:19:1: exported: exported method Hints.UnmarshalYAML should have comment or be unexported (revive)
 [go:lint] func (h *Hints) UnmarshalYAML(node ast.Node) (err error) {
 [go:lint] ^
-[go:lint] internal\tools\hints\hints.go:38:1: exported: exported method Hints.Parse should have comment or be unexported (revive)
+[go:lint] internal/tools/hints/hints.go:38:1: exported: exported method Hints.Parse should have comment or be unexported (revive)
 [go:lint] func (h *Hints) Parse() error {
 [go:lint] ^
-[go:lint] internal\tools\inherit\inherit.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] internal/tools/inherit/inherit.go:1:1: package-comments: should have a package comment (revive)
 [go:lint] package inherit
 [go:lint] ^
-[go:lint] internal\tools\inherit\inherit.go:5:6: exported: exported type Inherit should have comment or be unexported (revive)
+[go:lint] internal/tools/inherit/inherit.go:5:6: exported: exported type Inherit should have comment or be unexported (revive)
 [go:lint] type Inherit = unmarshal.SingleOrSliceType[string]
 [go:lint]      ^
-[go:lint] internal\tools\result\result.go:101:1: exported: comment on exported method Result.IsFailed should be of the form "IsFailed ..." (revive)
+[go:lint] internal/tools/result/result.go:101:1: exported: comment on exported method Result.IsFailed should be of the form "IsFailed ..." (revive)
 [go:lint] // UnsIsFaileduccessful returns true if the Result status is Failed.
 [go:lint] ^
-[go:lint] internal\tools\skip\skip.go:21:1: exported: exported method Condition.True should have comment or be unexported (revive)
+[go:lint] internal/tools/skip/skip.go:21:1: exported: exported method Condition.True should have comment or be unexported (revive)
 [go:lint] func (c Condition) True() bool {
 [go:lint] ^
-[go:lint] internal\tools\skip\skip.go:25:1: exported: exported method Condition.Parse should have comment or be unexported (revive)
+[go:lint] internal/tools/skip/skip.go:25:1: exported: exported method Condition.Parse should have comment or be unexported (revive)
 [go:lint] func (c *Condition) Parse() error {
 [go:lint] ^
-[go:lint] internal\tools\skip\skip.go:35:1: exported: exported method Skip.Has should have comment or be unexported (revive)
+[go:lint] internal/tools/skip/skip.go:35:1: exported: exported method Skip.Has should have comment or be unexported (revive)
 [go:lint] func (s Skip) Has() bool {
 [go:lint] ^
-[go:lint] internal\tools\sources\common\split.go:1:9: var-naming: avoid meaningless package names (revive)
+[go:lint] internal/tools/sources/common/doc.go:4:9: var-naming: avoid meaningless package names (revive)
 [go:lint] package common
 [go:lint]         ^
-[go:lint] internal\tools\sources\github\github.go:52:1: exported: comment on exported method GitHub.URL should be of the form "URL ..." (revive)
+[go:lint] internal/tools/sources/github/github.go:52:1: exported: comment on exported method GitHub.URL should be of the form "URL ..." (revive)
 [go:lint] // Path finds a matching release asset and stores its URL in metadata.
 [go:lint] ^
-[go:lint] internal\tools\sources\gitlab\gitlab.go:59:1: exported: comment on exported method GitLab.URL should be of the form "URL ..." (revive)
+[go:lint] internal/tools/sources/gitlab/gitlab.go:59:1: exported: comment on exported method GitLab.URL should be of the form "URL ..." (revive)
 [go:lint] // Path finds a matching release asset and stores its URL in metadata.
 [go:lint] ^
-[go:lint] internal\tools\sources\none\none.go:1:1: package-comments: should have a package comment (revive)
+[go:lint] internal/tools/sources/none/none.go:1:1: package-comments: should have a package comment (revive)
 [go:lint] package none
 [go:lint] ^
-[go:lint] internal\tools\sources\none\none.go:30:1: exported: comment on exported method None.URL should be of the form "URL ..." (revive)
+[go:lint] internal/tools/sources/none/none.go:30:1: exported: comment on exported method None.URL should be of the form "URL ..." (revive)
 [go:lint] // Path is a no-op implementation of the Populator interface.
 [go:lint] ^
-[go:lint] internal\tools\sources\source.go:51:1: exported: comment on exported type Source should be of the form "Source ..." (with optional leading article) (revive)
+[go:lint] internal/tools/sources/source.go:51:1: exported: comment on exported type Source should be of the form "Source ..." (with optional leading article) (revive)
 [go:lint] // TODO(Idelchi): Add validation. //nolint:godox // TODO comment provides valuable context for future development.
 [go:lint] ^
-[go:lint] internal\tools\sources\url\url.go:34:1: exported: comment on exported method URL.URL should be of the form "URL ..." (revive)
+[go:lint] internal/tools/sources/url/url.go:34:1: exported: comment on exported method URL.URL should be of the form "URL ..." (revive)
 [go:lint] // Path stores the provided URL in the metadata.
 [go:lint] ^
-[go:lint] internal\tools\tool\copy.go:12:1: exported: exported method Tool.CopyYAML should have comment or be unexported (revive)
+[go:lint] internal/tools/tool/copy.go:12:1: exported: exported method Tool.CopyYAML should have comment or be unexported (revive)
 [go:lint] func (t *Tool) CopyYAML() error {
 [go:lint] ^
-[go:lint] internal\tools\tool\copy.go:26:1: exported: exported method Tool.CopiedYAML should have comment or be unexported (revive)
+[go:lint] internal/tools/tool/copy.go:26:1: exported: exported method Tool.CopiedYAML should have comment or be unexported (revive)
 [go:lint] func (t *Tool) CopiedYAML() (*Tool, error) {
 [go:lint] ^
-[go:lint] internal\tools\tool\copy.go:52:1: exported: comment on exported method Tool.Copy should be of the form "Copy ..." (revive)
+[go:lint] internal/tools/tool/copy.go:52:1: exported: comment on exported method Tool.Copy should be of the form "Copy ..." (revive)
 [go:lint] // Copied copies the Tool instance and sets it to itself.
 [go:lint] ^
-[go:lint] internal\tools\tool\options.go:14:1: exported: exported function WithoutVersion should have comment or be unexported (revive)
+[go:lint] internal/tools/tool/options.go:14:1: exported: exported function WithoutVersion should have comment or be unexported (revive)
 [go:lint] func WithoutVersion() ResolveOption {
 [go:lint] ^
-[go:lint] internal\tools\tool\options.go:20:1: exported: exported function WithoutURL should have comment or be unexported (revive)
+[go:lint] internal/tools/tool/options.go:20:1: exported: exported function WithoutURL should have comment or be unexported (revive)
 [go:lint] func WithoutURL() ResolveOption {
 [go:lint] ^
-[go:lint] internal\tools\tool\options.go:26:1: exported: exported function WithUpUntilVersion should have comment or be unexported (revive)
+[go:lint] internal/tools/tool/options.go:26:1: exported: exported function WithUpUntilVersion should have comment or be unexported (revive)
 [go:lint] func WithUpUntilVersion() ResolveOption {
 [go:lint] ^
-[go:lint] internal\tools\tool\template.go:13:30: unused-parameter: parameter 'flatten' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] internal/tools/tool/template.go:13:30: unused-parameter: parameter 'flatten' seems to be unused, consider removing or renaming it as _ (revive)
 [go:lint] func (t *Tool) ToTemplateMap(flatten ...map[string]any) map[string]any {
 [go:lint]                              ^
-[go:lint] internal\tools\tool\tool.go:107:1: exported: comment on exported method Tool.DisableCache should be of the form "DisableCache ..." (revive)
+[go:lint] internal/tools/tool/tool.go:107:1: exported: comment on exported method Tool.DisableCache should be of the form "DisableCache ..." (revive)
 [go:lint] // EnableCache sets the cache for the Tool instance.
 [go:lint] ^
-[go:lint] internal\tools\tool\tool.go:175:9: indent-error-flow: if block ends with a return statement, so drop this else and outdent its block (move short variable declaration to its own line if necessary) (revive)
+[go:lint] internal/tools/tool/tool.go:175:9: indent-error-flow: if block ends with a return statement, so drop this else and outdent its block (move short variable declaration to its own line if necessary) (revive)
 [go:lint] 	} else {
 [go:lint] 		return parsed
 [go:lint] 	}
-[go:lint] internal\tools\tool\validate.go:224:25: unused-parameter: parameter 'ctx' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] internal/tools/tool/tool.go:190:1: exported: exported method Tool.GetPopulator should have comment or be unexported (revive)
+[go:lint] func (t Tool) GetPopulator() sources.Populator {
+[go:lint] ^
+[go:lint] internal/tools/tool/validate.go:224:25: unused-parameter: parameter 'ctx' seems to be unused, consider removing or renaming it as _ (revive)
 [go:lint] func (t *Tool) Download(ctx context.Context, progressListener getter.ProgressTracker) result.Result {
 [go:lint]                         ^
-[go:lint] internal\tools\tools.go:18:1: exported: exported method Tools.Append should have comment or be unexported (revive)
+[go:lint] internal/tools/tools.go:18:1: exported: exported method Tools.Append should have comment or be unexported (revive)
 [go:lint] func (ts *Tools) Append(t *tool.Tool) {
 [go:lint] ^
-[go:lint] internal\tools\tools.go:44:1: exported: exported method Tools.Get should have comment or be unexported (revive)
+[go:lint] internal/tools/tools.go:44:1: exported: exported method Tools.Get should have comment or be unexported (revive)
 [go:lint] func (ts Tools) Get(name string) *tool.Tool {
 [go:lint] ^
-[go:lint] internal\tools\tools.go:54:1: exported: exported method Tools.GetFirst should have comment or be unexported (revive)
+[go:lint] internal/tools/tools.go:54:1: exported: exported method Tools.GetFirst should have comment or be unexported (revive)
 [go:lint] func (ts Tools) GetFirst() *tool.Tool {
 [go:lint] ^
-[go:lint] internal\tools\tools.go:62:1: exported: exported method Tools.DefaultInheritance should have comment or be unexported (revive)
+[go:lint] internal/tools/tools.go:62:1: exported: exported method Tools.DefaultInheritance should have comment or be unexported (revive)
 [go:lint] func (ts Tools) DefaultInheritance(inheritance string) {
 [go:lint] ^
-[go:lint] internal\tools\tools.go:70:1: exported: exported method Tools.ResolveInheritance should have comment or be unexported (revive)
+[go:lint] internal/tools/tools.go:70:1: exported: exported method Tools.ResolveInheritance should have comment or be unexported (revive)
 [go:lint] func (ts Tools) ResolveInheritance(d *defaults.Defaults) error {
 [go:lint] ^
-[go:lint] internal\tools\tools.go:104:1: exported: exported method Tools.ResolveNilPointers should have comment or be unexported (revive)
+[go:lint] internal/tools/tools.go:104:1: exported: exported method Tools.ResolveNilPointers should have comment or be unexported (revive)
 [go:lint] func (ts Tools) ResolveNilPointers() error {
 [go:lint] ^
-[go:lint] internal\tools\tools.go:116:1: exported: exported method Tools.MergePlatform should have comment or be unexported (revive)
+[go:lint] internal/tools/tools.go:116:1: exported: exported method Tools.MergePlatform should have comment or be unexported (revive)
 [go:lint] func (ts Tools) MergePlatform() error {
 [go:lint] ^
-[go:lint] internal\tools\tools.go:129:1: exported: exported method Tools.Copy should have comment or be unexported (revive)
+[go:lint] internal/tools/tools.go:129:1: exported: exported method Tools.Copy should have comment or be unexported (revive)
 [go:lint] func (ts Tools) Copy() error {
 [go:lint] ^
-[go:lint] internal\tools\version\version.go:18:2: exported: exported type Patterns should have comment or be unexported (revive)
+[go:lint] internal/tools/version/version.go:18:2: exported: exported type Patterns should have comment or be unexported (revive)
 [go:lint] 	Patterns = unmarshal.SingleOrSliceType[string]
 [go:lint] 	^
-[go:lint] internal\tools\version\version.go:19:2: exported: exported type Commands should have comment or be unexported (revive)
+[go:lint] internal/tools/version/version.go:19:2: exported: exported type Commands should have comment or be unexported (revive)
 [go:lint] 	Commands = unmarshal.SingleOrSliceType[string]
 [go:lint] 	^
-[go:lint] internal\tools\version\version.go:22:1: exported: exported method Version.UnmarshalYAML should have comment or be unexported (revive)
+[go:lint] internal/tools/version/version.go:22:1: exported: exported method Version.UnmarshalYAML should have comment or be unexported (revive)
 [go:lint] func (v *Version) UnmarshalYAML(node ast.Node) error {
 [go:lint] ^
-[go:lint] internal\updater\latest.go:12:6: exported: exported type Latest should have comment or be unexported (revive)
+[go:lint] internal/updater/latest.go:12:6: exported: exported type Latest should have comment or be unexported (revive)
 [go:lint] type Latest struct {
 [go:lint]      ^
-[go:lint] internal\updater\updater.go:30:6: exported: exported type Godyl should have comment or be unexported (revive)
+[go:lint] internal/updater/updater.go:30:6: exported: exported type Godyl should have comment or be unexported (revive)
 [go:lint] type Godyl struct {
 [go:lint]      ^
-[go:lint] internal\updater\updater.go:35:1: exported: exported method Godyl.IsUpToDate should have comment or be unexported (revive)
+[go:lint] internal/updater/updater.go:35:1: exported: exported method Godyl.IsUpToDate should have comment or be unexported (revive)
 [go:lint] func (g *Godyl) IsUpToDate() bool {
 [go:lint] ^
-[go:lint] internal\updater\updater.go:39:1: exported: exported function NewGodyl should have comment or be unexported (revive)
+[go:lint] internal/updater/updater.go:39:1: exported: exported function NewGodyl should have comment or be unexported (revive)
 [go:lint] func NewGodyl(v string, cfg *root.Config) Godyl {
 [go:lint] ^
-[go:lint] internal\updater\updater.go:88:1: exported: exported method Updater.IsForced should have comment or be unexported (revive)
+[go:lint] internal/updater/updater.go:88:1: exported: exported method Updater.IsForced should have comment or be unexported (revive)
 [go:lint] func (u *Updater) IsForced() bool {
 [go:lint] ^
 [go:lint] main.go:1:1: package-comments: should have a package comment (revive)
 [go:lint] package main
 [go:lint] ^
-[go:lint] pkg\download\download.go:64:5: exported: exported var ErrDownload should have comment or be unexported (revive)
+[go:lint] pkg/download/download.go:64:5: exported: exported var ErrDownload should have comment or be unexported (revive)
 [go:lint] var ErrDownload = errors.New("download error")
 [go:lint]     ^
-[go:lint] pkg\download\options.go:57:21: redefines-builtin-id: redefinition of the built-in function min (revive)
+[go:lint] pkg/download/options.go:57:21: redefines-builtin-id: redefinition of the built-in function min (revive)
 [go:lint] func WithRetryWaits(min, max time.Duration) Option {
 [go:lint]                     ^
-[go:lint] pkg\editor\editor.go:15:1: exported: comment on exported type YAML should be of the form "YAML ..." (with optional leading article) (revive)
+[go:lint] pkg/editor/editor.go:15:1: exported: comment on exported type YAML should be of the form "YAML ..." (with optional leading article) (revive)
 [go:lint] // Editor is a struct that provides methods to edit YAML files while preserving comments.
 [go:lint] ^
-[go:lint] pkg\env\add.go:86:1: exported: comment on exported method Env.MergedWithX should be of the form "MergedWithX ..." (revive)
+[go:lint] pkg/env/add.go:86:1: exported: comment on exported method Env.MergedWithX should be of the form "MergedWithX ..." (revive)
 [go:lint] // Or?
 [go:lint] ^
-[go:lint] pkg\logger\logger.go:47:26: error-strings: error strings should not be capitalized or end with punctuation or a newline (revive)
+[go:lint] pkg/logger/logger.go:47:26: error-strings: error strings should not be capitalized or end with punctuation or a newline (revive)
 [go:lint] 		return nil, fmt.Errorf("%w: %q, setting to %q\n", ErrInvalidLogLevel, level, INFO)
 [go:lint] 		                       ^
-[go:lint] pkg\path\file\info.go:121:1: exported: exported method File.InPath should have comment or be unexported (revive)
+[go:lint] pkg/path/file/info.go:121:1: exported: exported method File.InPath should have comment or be unexported (revive)
 [go:lint] func (f File) InPath() bool {
 [go:lint] ^
-[go:lint] pkg\path\file\man.go:52:1: exported: comment on exported method File.ExpandedX should be of the form "ExpandedX ..." (revive)
+[go:lint] pkg/path/file/man.go:52:1: exported: comment on exported method File.ExpandedX should be of the form "ExpandedX ..." (revive)
 [go:lint] // Expanded resolves home directory references.
 [go:lint] ^
-[go:lint] pkg\path\folder\io.go:65:41: unused-parameter: parameter 'path' seems to be unused, consider removing or renaming it as _ (revive)
+[go:lint] pkg/path/folder/io.go:65:41: unused-parameter: parameter 'path' seems to be unused, consider removing or renaming it as _ (revive)
 [go:lint] 	err := filepath.WalkDir(f.Path(), func(path string, d fs.DirEntry, err error) error {
 [go:lint] 	                                       ^
-[go:lint] pkg\pretty\pretty.go:14:5: exported: exported var YAMLOptions should have comment or be unexported (revive)
+[go:lint] pkg/pretty/pretty.go:14:5: exported: exported var YAMLOptions should have comment or be unexported (revive)
 [go:lint] var YAMLOptions = []yaml.EncodeOption{
 [go:lint]     ^
-[go:lint] pkg\utils\utils.go:3:9: var-naming: avoid meaningless package names (revive)
+[go:lint] pkg/utils/utils.go:3:9: var-naming: avoid meaningless package names (revive)
 [go:lint] package utils
 [go:lint]         ^
-[go:lint] pkg\version\version.go:31:1: exported: comment on exported function Equal should be of the form "Equal ..." (revive)
+[go:lint] pkg/version/version.go:31:1: exported: comment on exported function Equal should be of the form "Equal ..." (revive)
 [go:lint] // Compare compares two version strings for equality.
 [go:lint] ^
-[go:lint] internal\tools\sources\github\github.go:203:10: ST1005: error strings should not be capitalized (staticcheck)
+[go:lint] internal/tools/sources/github/github.go:203:10: ST1005: error strings should not be capitalized (staticcheck)
 [go:lint] 		return errors.New("Either both `owner` and `repo` must be set or `name` must be in the format `owner/repo`")
 [go:lint] 		       ^
-[go:lint] internal\tools\sources\gitlab\gitlab.go:183:10: ST1005: error strings should not be capitalized (staticcheck)
+[go:lint] internal/tools/sources/gitlab/gitlab.go:183:10: ST1005: error strings should not be capitalized (staticcheck)
 [go:lint] 		return errors.New(
 [go:lint] 		       ^
-[go:lint] internal\config\download\config.go:13:23: tag is not aligned, should be: mapstructure:"source"  validate:"oneof=github gitlab url none go" yaml:"source" (tagalign)
+[go:lint] internal/config/download/config.go:13:23: tag is not aligned, should be: mapstructure:"source"  validate:"oneof=github gitlab url none go" yaml:"source" (tagalign)
 [go:lint] 	Source  sources.Type `mapstructure:"source"  yaml:"source"  validate:"oneof=github gitlab url none go"`
 [go:lint] 	                     ^
-[go:lint] internal\tools\sources\github\github.go:18:38: tag is not aligned , should be: mapstructure:"-" yaml:"-" (tagalign)
+[go:lint] internal/tools/sources/github/github.go:18:38: tag is not aligned , should be: mapstructure:"-" yaml:"-" (tagalign)
 [go:lint] 	Data                common.Metadata `mapstructure:"-"     yaml:"-"`
 [go:lint] 	                                    ^
-[go:lint] internal\tools\sources\github\github.go:22:29: tag is not aligned, should be: mapstructure:"token" mask:"fixed" yaml:"token" (tagalign)
+[go:lint] internal/tools/sources/github/github.go:22:29: tag is not aligned, should be: mapstructure:"token" mask:"fixed" yaml:"token" (tagalign)
 [go:lint] 	Token               string `mapstructure:"token" yaml:"token" mask:"fixed"`
 [go:lint] 	                           ^
-[go:lint] internal\tools\sources\gitlab\gitlab.go:19:38: tag is not aligned , should be: mapstructure:"-" yaml:"-" (tagalign)
+[go:lint] internal/tools/sources/gitlab/gitlab.go:19:38: tag is not aligned , should be: mapstructure:"-" yaml:"-" (tagalign)
 [go:lint] 	Data                common.Metadata `mapstructure:"-"         yaml:"-"`
 [go:lint] 	                                    ^
-[go:lint] internal\tools\sources\gitlab\gitlab.go:23:29: tag is not aligned, should be: mapstructure:"token"     mask:"fixed"     yaml:"token" (tagalign)
+[go:lint] internal/tools/sources/gitlab/gitlab.go:23:29: tag is not aligned, should be: mapstructure:"token"     mask:"fixed"     yaml:"token" (tagalign)
 [go:lint] 	Token               string `mapstructure:"token"     yaml:"token"     mask:"fixed"`
 [go:lint] 	                           ^
-[go:lint] internal\tools\sources\url\url.go:21:26: tag is not aligned, should be: mapstructure:"token"   mask:"fixed"   yaml:"token" (tagalign)
+[go:lint] internal/tools/sources/url/url.go:21:26: tag is not aligned, should be: mapstructure:"token"   mask:"fixed"   yaml:"token" (tagalign)
 [go:lint] 	Token   string          `mapstructure:"token"   yaml:"token"   mask:"fixed"`
 [go:lint] 	                        ^
-[go:lint] internal\tools\tool\tool.go:38:14: tag is not aligned , should be: json:"name" mapstructure:"name" single:"true" validate:"required" yaml:"name" (tagalign)
+[go:lint] internal/tools/tool/tool.go:38:14: tag is not aligned , should be: json:"name" mapstructure:"name" single:"true" validate:"required" yaml:"name" (tagalign)
 [go:lint] 	Name string `json:"name"          mapstructure:"name"          single:"true" validate:"required" yaml:"name"`
 [go:lint] 	            ^
-[go:lint] internal\tools\tool\tool.go:44:13: tag is not aligned , should be: json:"url" mapstructure:"url" yaml:"url" (tagalign)
+[go:lint] internal/tools/tool/tool.go:44:13: tag is not aligned , should be: json:"url" mapstructure:"url" yaml:"url" (tagalign)
 [go:lint] 	URL string `json:"url"           mapstructure:"url"                                             yaml:"url"`
 [go:lint] 	           ^
-[go:lint] internal\tools\tool\tool.go:46:16: tag is not aligned , should be: json:"output" mapstructure:"output" yaml:"output" (tagalign)
+[go:lint] internal/tools/tool/tool.go:46:16: tag is not aligned , should be: json:"output" mapstructure:"output" yaml:"output" (tagalign)
 [go:lint] 	Output string `json:"output"        mapstructure:"output"                                          yaml:"output"`
 [go:lint] 	              ^
-[go:lint] internal\tools\tool\tool.go:48:14: tag is not aligned , should be: json:"exe" mapstructure:"exe" yaml:"exe" (tagalign)
+[go:lint] internal/tools/tool/tool.go:48:14: tag is not aligned , should be: json:"exe" mapstructure:"exe" yaml:"exe" (tagalign)
 [go:lint] 	Exe exe.Exe `json:"exe"           mapstructure:"exe"                                             yaml:"exe"`
 [go:lint] 	            ^
-[go:lint] internal\tools\tool\tool.go:58:21: tag is not aligned , should be: json:"hints" mapstructure:"hints" yaml:"hints" (tagalign)
+[go:lint] internal/tools/tool/tool.go:58:21: tag is not aligned , should be: json:"hints" mapstructure:"hints" yaml:"hints" (tagalign)
 [go:lint] 	Hints *hints.Hints `json:"hints"         mapstructure:"hints"                                           yaml:"hints"`
 [go:lint] 	                   ^
-[go:lint] internal\tools\tool\tool.go:64:17: tag is not aligned , should be: json:"tags" mapstructure:"tags" yaml:"tags" (tagalign)
+[go:lint] internal/tools/tool/tool.go:64:17: tag is not aligned , should be: json:"tags" mapstructure:"tags" yaml:"tags" (tagalign)
 [go:lint] 	Tags tags.Tags `json:"tags"          mapstructure:"tags"                                            yaml:"tags"`
 [go:lint] 	               ^
-[go:lint] internal\tools\tool\tool.go:68:17: tag is not aligned, should be: json:"skip" mapstructure:"skip" yaml:"skip" (tagalign)
+[go:lint] internal/tools/tool/tool.go:68:17: tag is not aligned, should be: json:"skip" mapstructure:"skip" yaml:"skip" (tagalign)
 [go:lint] 	Skip skip.Skip `json:"skip"          mapstructure:"skip"                                            yaml:"skip"`
 [go:lint] 	               ^
-[go:lint] internal\tools\tool\tool.go:69:17: tag is not aligned, should be: json:"mode" mapstructure:"mode" yaml:"mode" (tagalign)
+[go:lint] internal/tools/tool/tool.go:69:17: tag is not aligned, should be: json:"mode" mapstructure:"mode" yaml:"mode" (tagalign)
 [go:lint] 	Mode mode.Mode `json:"mode"          mapstructure:"mode"                                            yaml:"mode"`
 [go:lint] 	               ^
-[go:lint] internal\tools\tool\tool.go:71:14: tag is not aligned , should be: json:"env" mapstructure:"env" yaml:"env" (tagalign)
+[go:lint] internal/tools/tool/tool.go:71:14: tag is not aligned , should be: json:"env" mapstructure:"env" yaml:"env" (tagalign)
 [go:lint] 	Env env.Env `json:"env"           mapstructure:"env"                                             yaml:"env"`
 [go:lint] 	            ^
-[go:lint] internal\tools\tool\tool.go:75:15: tag is not aligned , should be: json:"no-cache" mapstructure:"no-cache" yaml:"no-cache" (tagalign)
+[go:lint] internal/tools/tool/tool.go:75:15: tag is not aligned , should be: json:"no-cache" mapstructure:"no-cache" yaml:"no-cache" (tagalign)
 [go:lint] 	NoCache bool `json:"no-cache"      mapstructure:"no-cache"                                        yaml:"no-cache"`
 [go:lint] 	             ^
-[go:lint] internal\tools\version\version.go:14:21: tag is not aligned, should be: mapstructure:"version"  single:"true"   yaml:"version" (tagalign)
+[go:lint] internal/tools/version/version.go:14:21: tag is not aligned, should be: mapstructure:"version"  single:"true"   yaml:"version" (tagalign)
 [go:lint] 	Version  string    `mapstructure:"version"  yaml:"version"  single:"true"`
 [go:lint] 	                   ^
-[go:lint] pkg\download\progress\progress.go:113:20: func (*Tracker).wait is unused (unused)
+[go:lint] pkg/download/progress/progress.go:113:20: func (*Tracker).wait is unused (unused)
 [go:lint] func (pt *Tracker) wait() {
 [go:lint]                    ^
 [go:lint] 207 issues:
@@ -650,7 +650,6 @@
 [go:lint] * gocognit: 2
 [go:lint] * godox: 10
 [go:lint] * gosec: 2
-[go:lint] * ireturn: 1
 [go:lint] * lll: 11
 [go:lint] * mnd: 2
 [go:lint] * musttag: 4
@@ -659,7 +658,7 @@
 [go:lint] * noctx: 3
 [go:lint] * nolintlint: 1
 [go:lint] * recvcheck: 11
-[go:lint] * revive: 126
+[go:lint] * revive: 127
 [go:lint] * staticcheck: 2
 [go:lint] * tagalign: 17
 [go:lint] * unused: 1

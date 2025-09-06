@@ -32,14 +32,10 @@ This uses simple heuristics to select the correct binary to download, and will n
 
 However, most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
 
-> [!NOTE]
-> Set up a GitHub API token to avoid rate limiting when using `github` as a source type.
-> See [configuration](#configuration) for more information, or simply `export GODYL_GITHUB_TOKEN=<token>`
-
 Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
 
 For a quick installation, you can use the provided installation script:
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin
 ```

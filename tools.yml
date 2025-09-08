@@ -27,6 +27,11 @@
   tags:
     - docker
 
+- name: oras-project/oras
+  description: A tool for managing container images and artifacts in OCI registries.
+  tags:
+    - docker
+
 - name: ahmetb/kubectx
   description: Faster way to switch between clusters and namespaces in kubectl
   aliases: kbx
@@ -819,11 +824,6 @@
       type: endswith
   tags:
     - kubernetes
-
-- name: oras-project/oras
-  description: A tool for managing container images and artifacts in OCI registries.
-  tags:
-    - docker
 
 - name: StyraInc/regal
   description: A tool for managing and validating Rego policies.

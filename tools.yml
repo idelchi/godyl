@@ -1,10 +1,3 @@
-- name: traefik/traefik
-  description: The Cloud Native Application Proxy
-  version:
-    commands: version
-  tags:
-    - automation
-
 - name: moncho/dry
   description: A Docker manager for the terminal
   tags:
@@ -21,6 +14,16 @@
 - name: jesseduffield/lazydocker
   description: The lazier way to manage everything docker
   aliases: lazy
+  tags:
+    - docker
+
+- name: bcicen/ctop
+  description: Top-like interface for container metrics
+  skip:
+    reason: "ctop is not available for darwin arm64"
+    condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
+  # [] because none of the assets have any `proper` extension - the version number clutters it up so it looks like the extension is for example `.7-windows-amd64`
+  hints: []
   tags:
     - docker
 
@@ -52,6 +55,13 @@
   url: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
   tags:
     - kubernetes
+
+- name: traefik/traefik
+  description: The Cloud Native Application Proxy
+  version:
+    commands: version
+  tags:
+    - automation
 
 - name: kubernetes/kubernetes
   description: Command-line tool for controlling Kubernetes clusters
@@ -94,16 +104,6 @@
       type: endswith
   tags:
     - terminal
-
-- name: bcicen/ctop
-  description: Top-like interface for container metrics
-  skip:
-    reason: "ctop is not available for darwin arm64"
-    condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
-  # [] because none of the assets have any `proper` extension - the version number clutters it up so it looks like the extension is for example `.7-windows-amd64`
-  hints: []
-  tags:
-    - docker
 
 - name: kdash-rs/kdash
   description: A simple and fast dashboard for Kubernetes
@@ -964,6 +964,14 @@
   description: A CLI tool for interacting with OpenAI's Codex models.
   exe:
     patterns: "{{ .Exe }}*{{ .EXTENSION }}"
+  tags:
+    - terminal
+
+- name: atuinsh/atuin
+  description: A next-generation shell history
+  skip:
+    reason: "atuin is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
   tags:
     - terminal
 

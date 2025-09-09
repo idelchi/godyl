@@ -13,12 +13,12 @@
     protocol: https
     host: gitlab.garfield-labs.com
     endpoint: api/v4/projects
-    project: 7
+    project: 10
   tags:
     - automation
   inherit: gitlab:selfhosted
 
-- name: raspberry/recovery
+- name: apps/recovery
   skip:
     reason: "recovery is not available on windows"
     condition: '{{ eq .OS "windows" }}'

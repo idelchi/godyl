@@ -786,6 +786,7 @@
 
 - name: argoproj/argo-cd
   description: Declarative continuous deployment for Kubernetes.
+  exe: argocd
   tags:
     - terminal
 

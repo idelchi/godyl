@@ -61,24 +61,39 @@ func (r *Repository) GetRelease(ctx context.Context, tag string) (*Release, erro
 // including pre-releases. This returns the newest release by published date, regardless of
 // whether it's a regular release or pre-release.
 func (r *Repository) LatestIncludingPreRelease(ctx context.Context, perPage int) (*Release, error) {
-	// List all releases including pre-releases
-	opts := &github.ListOptions{
-		PerPage: perPage,
+	var allReleases []*github.RepositoryRelease
+
+	page := 1
+
+	for {
+		opts := &github.ListOptions{
+			PerPage: perPage,
+			Page:    page,
+		}
+
+		releases, resp, err := r.client.Repositories.ListReleases(ctx, r.Owner, r.Repo, opts)
+		if err != nil {
+			return nil, fmt.Errorf("listing releases (page %d): %w", page, err)
+		}
+
+		allReleases = append(allReleases, releases...)
+
+		// Check if there are more pages
+		if resp.NextPage == 0 {
+			break
+		}
+
+		page = resp.NextPage
 	}
 
-	repositoryReleases, _, err := r.client.Repositories.ListReleases(ctx, r.Owner, r.Repo, opts)
-	if err != nil {
-		return nil, fmt.Errorf("listing releases: %w", err)
-	}
-
-	if len(repositoryReleases) == 0 {
+	if len(allReleases) == 0 {
 		return nil, fmt.Errorf("no releases found for %s/%s", r.Owner, r.Repo)
 	}
 
 	// Find the most recent release by published date
 	var latestRelease *github.RepositoryRelease
 
-	for i, release := range repositoryReleases {
+	for i, release := range allReleases {
 		if i == 0 || release.PublishedAt == nil || latestRelease.PublishedAt == nil {
 			latestRelease = release
 
@@ -110,16 +125,32 @@ func (r *Repository) GetReleasesByWildcard(ctx context.Context, pattern string, 
 		return nil, fmt.Errorf("invalid version pattern %q: %w", pattern, err)
 	}
 
-	opts := &github.ListOptions{
-		PerPage: perPage,
+	var allReleases []*github.RepositoryRelease
+
+	page := 1
+
+	for {
+		opts := &github.ListOptions{
+			PerPage: perPage,
+			Page:    page,
+		}
+
+		releases, resp, err := r.client.Repositories.ListReleases(ctx, r.Owner, r.Repo, opts)
+		if err != nil {
+			return nil, fmt.Errorf("listing releases (page %d): %w", page, err)
+		}
+
+		allReleases = append(allReleases, releases...)
+
+		// Check if there are more pages
+		if resp.NextPage == 0 {
+			break
+		}
+
+		page = resp.NextPage
 	}
 
-	repositoryReleases, _, err := r.client.Repositories.ListReleases(ctx, r.Owner, r.Repo, opts)
-	if err != nil {
-		return nil, fmt.Errorf("listing releases: %w", err)
-	}
-
-	if len(repositoryReleases) == 0 {
+	if len(allReleases) == 0 {
 		return nil, fmt.Errorf("no releases found for %s/%s", r.Owner, r.Repo)
 	}
 
@@ -128,7 +159,7 @@ func (r *Repository) GetReleasesByWildcard(ctx context.Context, pattern string, 
 		highestRelease *github.RepositoryRelease
 	)
 
-	for _, release := range repositoryReleases {
+	for _, release := range allReleases {
 		if release.TagName == nil {
 			continue
 		}

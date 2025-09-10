@@ -44,7 +44,7 @@ func (g *Repository) GetRelease(_ context.Context, tag string) (*Release, error)
 
 // LatestRelease retrieves the latest release for the repository.
 func (g *Repository) LatestRelease(ctx context.Context) (*Release, error) {
-	const PerPage = 1000
+	const PerPage = 100
 
 	releases, err := g.getReleasesWithOptions(ctx, PerPage)
 	if err != nil {

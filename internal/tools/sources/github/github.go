@@ -96,12 +96,12 @@ func (g *GitHub) LatestVersion(ctx context.Context, version string) (string, err
 
 	switch {
 	case strings.Contains(version, "*"):
-		const PerPage = 1000
+		const PerPage = 100
 
 		release, err = repository.GetReleasesByWildcard(ctx, version, PerPage)
 
 	case g.Pre:
-		const PerPage = 1000
+		const PerPage = 100
 
 		release, err = repository.LatestIncludingPreRelease(
 			ctx,

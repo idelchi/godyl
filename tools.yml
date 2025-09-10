@@ -639,7 +639,7 @@
 
 - name: bitwarden/cli
   description: The Bitwarden command-line interface
-  version: 2025.1.0
+  version: 2025.8.0
   exe: bw
   url: |-
     {{- if eq .OS "darwin" -}}
@@ -998,6 +998,18 @@
   skip:
     reason: "atuin is not available on windows"
     condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
+
+- name: Gu1llaum-3/sshm
+  description: A modern, interactive SSH Manager for your terminal
+  exe:
+    patterns: "{{ .Exe }}*"
+  tags:
+    - terminal
+
+- name: Adembc/lazyssh
+  description: A terminal-based SSH manager inspired by lazydocker and k9s
   tags:
     - terminal
 

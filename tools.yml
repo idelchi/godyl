@@ -916,7 +916,7 @@
 
 - name: Timmoth/aid-cli
   description: A CLI toolkit featuring a variety of helpful utilities
-  aliases: aid
+  exe: aid
   tags:
     - terminal
 

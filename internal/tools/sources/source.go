@@ -71,8 +71,6 @@ type Populator interface {
 
 // Installer returns the appropriate Populator implementation for the source Type.
 // Returns an error if the source type is unknown or unsupported.
-//
-//nolint:ireturn // Returning interface is intentional for factory pattern
 func (s *Source) Installer() (Populator, error) {
 	switch s.Type {
 	case GITHUB:

@@ -11,13 +11,13 @@ nav_order: 2
 For a quick installation, you can use the provided installation script:
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin
 ```
 
 For information on available options, run:
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/dev/install.sh | sh -s -- -h
+curl -sSL https://raw.githubusercontent.com/idelchi/godyl/refs/heads/main/install.sh | sh -s -- -h
 ```
 
 ## Docker

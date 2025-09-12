@@ -91,9 +91,6 @@ services:
       - --incremental
       - --watch
 
-include:
-  - ${DOTAI}/compose.yaml
-
 networks:
   godyl:
     name: godyl

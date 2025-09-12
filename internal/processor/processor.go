@@ -141,7 +141,11 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 // updateCache updates the cache with a successful result.
 func (p *Processor) updateCache(result runner.Result) {
 	if result.Tool.Version.Version == "" {
-		return
+		result.Tool.Version.Version = result.Tool.GetCurrentVersion()
+	}
+
+	if result.Tool.Version.Version == "" {
+		return // No version information available
 	}
 
 	now := time.Now()

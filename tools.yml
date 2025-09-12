@@ -1,10 +1,3 @@
-- name: traefik/traefik
-  description: The Cloud Native Application Proxy
-  version:
-    commands: version
-  tags:
-    - automation
-
 - name: moncho/dry
   description: A Docker manager for the terminal
   tags:
@@ -21,6 +14,21 @@
 - name: jesseduffield/lazydocker
   description: The lazier way to manage everything docker
   aliases: lazy
+  tags:
+    - docker
+
+- name: bcicen/ctop
+  description: Top-like interface for container metrics
+  skip:
+    reason: "ctop is not available for darwin arm64"
+    condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
+  # [] because none of the assets have any `proper` extension - the version number clutters it up so it looks like the extension is for example `.7-windows-amd64`
+  hints: []
+  tags:
+    - docker
+
+- name: oras-project/oras
+  description: A tool for managing container images and artifacts in OCI registries.
   tags:
     - docker
 
@@ -53,6 +61,13 @@
   tags:
     - kubernetes
 
+- name: traefik/traefik
+  description: The Cloud Native Application Proxy
+  version:
+    commands: version
+  tags:
+    - automation
+
 - name: kubernetes/kubernetes
   description: Command-line tool for controlling Kubernetes clusters
   exe: kubectl
@@ -60,50 +75,6 @@
   aliases: kc
   tags:
     - kubernetes
-
-- name: syncthing/syncthing
-  description: Open Source Continuous File Synchronization
-  tags:
-    - sync
-
-- name: ajeetdsouza/zoxide
-  description: A smarter cd command for your terminal
-  tags:
-    - terminal
-
-- name: junegunn/fzf
-  description: A command-line fuzzy finder
-  tags:
-    - terminal
-
-- name: starship/starship
-  description: The minimal, blazing-fast, and infinitely customizable prompt for any shell
-  tags:
-    - terminal
-
-- name: go-task/task
-  description: A task runner / simpler Make alternative written in Go
-  tags:
-    - automation
-
-- name: sharkdp/fd
-  description: A simple, fast and user-friendly alternative to 'find'
-  hints:
-    - pattern: .tar.gz
-      match: '{{ if ne .OS "windows" }}required{{ else }}excluded{{ end }}'
-      type: endswith
-  tags:
-    - terminal
-
-- name: bcicen/ctop
-  description: Top-like interface for container metrics
-  skip:
-    reason: "ctop is not available for darwin arm64"
-    condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
-  # [] because none of the assets have any `proper` extension - the version number clutters it up so it looks like the extension is for example `.7-windows-amd64`
-  hints: []
-  tags:
-    - docker
 
 - name: kdash-rs/kdash
   description: A simple and fast dashboard for Kubernetes
@@ -127,6 +98,40 @@
   tags:
     - kubernetes
 
+- name: syncthing/syncthing
+  description: Open Source Continuous File Synchronization
+  tags:
+    - terminal
+
+- name: ajeetdsouza/zoxide
+  description: A smarter cd command for your terminal
+  tags:
+    - terminal
+
+- name: junegunn/fzf
+  description: A command-line fuzzy finder
+  tags:
+    - terminal
+
+- name: starship/starship
+  description: The minimal, blazing-fast, and infinitely customizable prompt for any shell
+  tags:
+    - terminal
+
+- name: go-task/task
+  description: A task runner / simpler Make alternative written in Go
+  tags:
+    - terminal
+
+- name: sharkdp/fd
+  description: A simple, fast and user-friendly alternative to 'find'
+  hints:
+    - pattern: .tar.gz
+      match: '{{ if ne .OS "windows" }}required{{ else }}excluded{{ end }}'
+      type: endswith
+  tags:
+    - terminal
+
 - name: knqyf263/pet
   description: Simple command-line snippet manager
   tags:
@@ -139,12 +144,12 @@
   version:
     commands: []
   tags:
-    - automation
+    - terminal
 
 - name: casey/just
   description: Just a command runner
   tags:
-    - automation
+    - terminal
 
 - name: charmbracelet/glow
   description: Render markdown on the CLI, with pizzazz!
@@ -168,7 +173,7 @@
 - name: FiloSottile/age
   description: A simple, modern and secure encryption tool
   tags:
-    - security
+    - terminal
 
 - name: chmln/sd
   description: Intuitive find & replace CLI
@@ -191,7 +196,7 @@
       match: '{{ if eq .OS "windows" }}required{{ else }}weighted{{ end }}'
       type: endswith
   tags:
-    - processing
+    - terminal
 
 - name: sharkdp/hyperfine
   description: A command-line benchmarking tool
@@ -199,7 +204,7 @@
     reason: "hyperfine is for the Darwin platform only supporting amd64"
     condition: '{{ and (eq .OS "darwin") (ne .ARCH "amd64") }}'
   tags:
-    - automation
+    - terminal
 
 - name: sharkdp/diskus
   description: A minimal, fast alternative to 'du -sh'
@@ -259,7 +264,7 @@
   fallbacks:
     - go
   tags:
-    - processing
+    - terminal
 
 - name: so-fancy/diff-so-fancy
   description: Good-looking diffs with diff-highlight and more.
@@ -271,7 +276,7 @@
     - pattern: ^[^.]+$
       type: regex
   tags:
-    - processing
+    - terminal
 
 - name: logdyhq/logdy-core
   description: A log management tool
@@ -281,7 +286,7 @@
   fallbacks:
     - go
   tags:
-    - processing
+    - terminal
 
 - name: cespare/reflex
   description: |
@@ -295,7 +300,7 @@
   fallbacks:
     - go
   tags:
-    - automation
+    - terminal
 
 - name: trntv/sshed
   description: |
@@ -327,7 +332,7 @@
       match: '{{ if eq .OS "linux" }}weighted{{ else }}required{{ end }}'
       type: endswith
   tags:
-    - processing
+    - terminal
 
 - name: pemistahl/grex
   description: A command-line tool for generating regular expressions
@@ -335,7 +340,7 @@
     reason: "grex is not available for ARM32 architecture"
     condition: '{{ eq .ARCH "arm" }}'
   tags:
-    - processing
+    - terminal
 
 - name: MilesCranmer/rip2
   description: A safe and ergonomic alternative to rm
@@ -408,7 +413,7 @@
     go:
       command: v2/cmd/dasel
   tags:
-    - processing
+    - terminal
 
 - name: zyedidia/micro
   description: A modern and intuitive terminal-based text editor
@@ -422,7 +427,7 @@
 - name: golangci/golangci-lint
   description: Linters Runner for Go
   tags:
-    - go
+    - terminal
 
 - name: antonmedv/fx
   description: Command-line JSON processing tool
@@ -430,7 +435,7 @@
     reason: "fx is not available for ARM32 architecture"
     condition: '{{ eq .ARCH "arm" }}'
   tags:
-    - processing
+    - terminal
 
 - name: tidwall/jj
   description: JSON Stream Editor
@@ -438,7 +443,7 @@
     reason: "jj not available for arm based architectures"
     condition: "{{ .IS_ARM }}"
   tags:
-    - processing
+    - terminal
 
 - name: simeji/jid
   description: json incremental digger
@@ -451,7 +456,7 @@
     - pattern: .zip
       type: endswith
   tags:
-    - processing
+    - terminal
 
 - name: ynqa/jnv
   description: JSON navigator
@@ -466,7 +471,7 @@
       match: '{{ if ne .OS "windows" }}required{{ end }}'
       type: endswith
   tags:
-    - processing
+    - terminal
 
 - name: jqlang/jq
   description: Command-line JSON processor
@@ -496,7 +501,7 @@
         {{- end -}}
       type: contains
   tags:
-    - processing
+    - terminal
 
 - name: BurntSushi/ripgrep
   description: recursively searches directories for a regex pattern
@@ -512,6 +517,8 @@
   skip:
     reason: "hadolint is not available darwin arm64"
     condition: '{{ and (eq .OS "darwin") (eq .ARCH "arm64") }}'
+  tags:
+    - terminal
 
 - name: jesseduffield/lazygit
   description: simple terminal UI for git commands
@@ -559,19 +566,19 @@
   url: https://releases.hashicorp.com/terraform/{{ .Version | trimPrefix "v" }}/terraform_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   aliases: tf
   tags:
-    - automation
+    - terminal
 
 - name: hashicorp/vault
   description: Secure, store, and tightly control access to tokens, passwords, certificates, API keys, and other secrets
   url: https://releases.hashicorp.com/vault/{{ .Version | trimPrefix "v" }}/vault_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   tags:
-    - automation
+    - terminal
 
 - name: hashicorp/packer
   description: Create identical machine images for multiple platforms from a single source configuration
   url: https://releases.hashicorp.com/packer/{{ .Version | trimPrefix "v" }}/packer_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   tags:
-    - automation
+    - terminal
 
 - name: authelia/authelia
   description: The Single Sign-On Multi-Factor portal for web apps
@@ -588,7 +595,7 @@
       weight: '{{ if eq .DISTRIBUTION "alpine" }}0{{ else }}-2{{ end }}'
       type: contains
   tags:
-    - automation
+    - terminal
 
 - name: hairyhenderson/gomplate
   description: A versatile Go template processor
@@ -613,7 +620,7 @@
     - pattern: .tgz
       type: endswith
   tags:
-    - networking
+    - terminal
 
 - name: watchexec/watchexec
   description: Executes commands in response to file modifications
@@ -628,11 +635,11 @@
       weight: '{{ if eq .OS "windows" }}0{{ else }}1{{ end }}'
       type: endswith
   tags:
-    - automation
+    - terminal
 
 - name: bitwarden/cli
   description: The Bitwarden command-line interface
-  version: 2025.1.0
+  version: 2025.8.0
   exe: bw
   url: |-
     {{- if eq .OS "darwin" -}}
@@ -648,7 +655,7 @@
   source:
     type: url
   tags:
-    - automation
+    - terminal
 
 - name: gotify/cli
   exe: gotify
@@ -665,7 +672,7 @@
     - pattern: "{{ .ARCH }}"
       type: endswith
   tags:
-    - security
+    - terminal
 
 - name: dagu-org/dagu
   description: Developer-friendly minimalism Cron/Airflow alternative
@@ -673,7 +680,7 @@
     reason: "dagu is not available on windows"
     condition: '{{ eq .OS "windows" }}'
   tags:
-    - automation
+    - terminal
 
 - name: binwiederhier/ntfy
   description: Send push notifications to your phone or desktop using PUT/POST
@@ -695,7 +702,7 @@
 - name: znscli/zns
   description: A command-line utility for querying DNS records
   tags:
-    - networking
+    - terminal
 
 - name: paololazzari/play
   description: A TUI playground for your favorite programs, such as grep, sed and awk
@@ -713,7 +720,7 @@
       match: excluded
       type: endswith
   tags:
-    - processing
+    - terminal
 
 - name: google/go-jsonnet
   description: A linter for Jsonnet
@@ -723,7 +730,7 @@
       match: excluded
       type: endswith
   tags:
-    - processing
+    - terminal
 
 - name: google/go-jsonnet
   description: A formatter for Jsonnet
@@ -733,7 +740,7 @@
       match: excluded
       type: endswith
   tags:
-    - processing
+    - terminal
 
 - name: jdx/mise
   description: The front-end to your dev env
@@ -743,12 +750,12 @@
 - name: nektos/act
   description: Run GitHub Actions locally
   tags:
-    - automation
+    - terminal
 
 - name: goreleaser/goreleaser
   description: Deliver Go binaries as fast and easily as possible
   tags:
-    - go
+    - terminal
 
 - name: charmbracelet/vhs
   description: A terminal recorder
@@ -760,17 +767,17 @@
   source:
     type: go
   tags:
-    - go
+    - terminal
 
 - name: astral-sh/uv
   description: An extremely fast Python package and project manager, written in Rust.
   tags:
-    - python
+    - terminal
 
 - name: astral-sh/ruff
   description: An extremely fast Python linter and code formatter, written in Rust.
   tags:
-    - python
+    - terminal
 
 - name: eksctl-io/eksctl
   description: The official CLI for Amazon EKS !
@@ -779,22 +786,33 @@
 
 - name: argoproj/argo-cd
   description: Declarative continuous deployment for Kubernetes.
+  exe: argocd
+  tags:
+    - terminal
 
 - name: wagoodman/dive
   description: A tool for exploring each layer in a Docker image.
+  tags:
+    - terminal
 
 - name: istio/istio
   description: An open platform to connect, manage, and secure microservices.
   exe: istioctl
+  tags:
+    - kubernetes
 
 - name: kubernetes-sigs/kustomize
   description: A tool to customize Kubernetes YAML configurations.
+  tags:
+    - kubernetes
 
 - name: denisidoro/navi
   description: An interactive cheatsheet tool for the command line.
   skip:
     reason: "navi is not available on darwin"
     condition: '{{ eq .OS "darwin" }}'
+  tags:
+    - terminal
 
 - name: open-policy-agent/opa
   description: An open-source policy engine that enables unified policy enforcement across the stack.
@@ -805,12 +823,13 @@
     # Select the static variant
     - pattern: static
       type: endswith
-
-- name: oras-project/oras
-  description: A tool for managing container images and artifacts in OCI registries.
+  tags:
+    - kubernetes
 
 - name: StyraInc/regal
   description: A tool for managing and validating Rego policies.
+  tags:
+    - terminal
 
 - name: tsl0922/ttyd
   description: A command-line tool for sharing terminal sessions over the web.
@@ -818,19 +837,27 @@
     - pattern: win32
       match: '{{ if eq .OS "windows" }}required{{ else }}excluded{{ end }}'
       type: contains
+  tags:
+    - terminal
 
 - name: crate-ci/typos
   description: A tool for detecting and correcting typos in source code.
+  tags:
+    - terminal
 
 - name: koalaman/shellcheck
   description: A shell script static analysis tool that helps to find bugs in shell scripts.
   skip:
     reason: "shellcheck is not available on windows"
     condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
 
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases.
   inherit: gitlab
+  tags:
+    - terminal
 
 - name: gitlab-org/cli
   description: glab is an open source GitLab CLI tool
@@ -842,9 +869,9 @@
     - pattern: .tar.gz
       match: '{{ if ne .OS "windows" }}required{{ end }}'
       type: endswith
+  inherit: gitlab
   tags:
     - terminal
-  inherit: gitlab
 
 - name: lfaoro/ssm
   description: Streamline SSH connections with a simple Terminal UI
@@ -876,7 +903,7 @@
 - name: JinmuGo/sls
   description: sls is a smart fuzzy CLI selector for SSH config hosts
   tags:
-    - automation
+    - terminal
 
 - name: zix99/rare
   description: A fast text scanner/regex extractor and realtime summarizer
@@ -890,7 +917,7 @@
 
 - name: Timmoth/aid-cli
   description: A CLI toolkit featuring a variety of helpful utilities
-  aliases: aid
+  exe: aid
   tags:
     - terminal
 
@@ -922,7 +949,7 @@
     condition: '{{ eq .OS "windows" }}'
     reason: "bunster is not available on windows"
   tags:
-    - scripts
+    - terminal
 
 - name: vaibhav-mattoo/cxt
   description: Command-line tool that aggregates file and directory contents into your clipboard
@@ -964,6 +991,26 @@
   description: A CLI tool for interacting with OpenAI's Codex models.
   exe:
     patterns: "{{ .Exe }}*{{ .EXTENSION }}"
+  tags:
+    - terminal
+
+- name: atuinsh/atuin
+  description: A next-generation shell history
+  skip:
+    reason: "atuin is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
+
+- name: Gu1llaum-3/sshm
+  description: A modern, interactive SSH Manager for your terminal
+  exe:
+    patterns: "{{ .Exe }}*"
+  tags:
+    - terminal
+
+- name: Adembc/lazyssh
+  description: A terminal-based SSH manager inspired by lazydocker and k9s
   tags:
     - terminal
 

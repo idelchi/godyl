@@ -8,9 +8,9 @@ import (
 	"github.com/kr/pretty"
 )
 
-// Debug prints formatted debug messages when DEBUG environment variable is set.
+// Debug prints formatted debug messages when GODYL_DEBUG environment variable is set.
 func Debug(format string, args ...any) {
-	if os.Getenv("DEBUG") != "" {
+	if os.Getenv("GODYL_DEBUG") != "" {
 		fmt.Printf( //nolint:forbidigo // Debug package is meant for printing
 			"DEBUG: "+format+"\n",
 			args...)

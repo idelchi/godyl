@@ -113,11 +113,22 @@ func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.R
 	return res
 }
 
+// resolve performs the detailed resolution steps for the tool, including version resolution,
+// URL determination, templating, strategy synchronization, and validation. It uses the provided
+// populator and template engine to achieve this. Returns a Result indicating success or failure.
+//
+//nolint:gocognit	// Acceptable complexity for this function
 func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, opts resolveOptions) result.Result {
 	// Retrieve the tool's version from the installer if it is not already set.
 	if generic.IsZero(t.Version.Version) {
 		if err := populator.Version(t.Name); err != nil {
 			return result.WithFailed(fmt.Sprintf("getting version: %s", err))
+		}
+
+		t.Version.Version = populator.Get("version")
+	} else if strings.Contains(t.Version.Version, "*") {
+		if err := populator.Version(t.Version.Version); err != nil {
+			return result.WithFailed(fmt.Sprintf("getting version for pattern %q: %s", t.Version.Version, err))
 		}
 
 		t.Version.Version = populator.Get("version")

@@ -29,6 +29,8 @@ linters:
     - recvcheck
     # Competes with golines
     - tagalign
+    # Returning interfaces is not inherently wrong or bad
+    - ireturn
 
   settings:
     wsl_v5:

@@ -48,8 +48,6 @@ func (m *DefaultManager) Wait() {
 }
 
 // Tracker returns the underlying progress tracker.
-//
-//nolint:ireturn // Returns interface for flexibility - allows different progress tracker implementations
 func (m *DefaultManager) Tracker() getter.ProgressTracker {
 	return m.trackable
 }

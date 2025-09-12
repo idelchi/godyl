@@ -86,8 +86,6 @@ func (s MultiSource) Read() ([]byte, error) {
 var ErrInvalidSource = errors.New("invalid source")
 
 // GetSourceFromPath determines the appropriate source type for a given path.
-//
-//nolint:ireturn // We want to return an interface here.
 func GetSourceFromPath(path string) (Source, error) {
 	if path == "-" {
 		if !stdin.IsPiped() {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/go-getter/v2"
 
@@ -36,10 +37,10 @@ func (g *GitHub) Initialize(name string) error {
 }
 
 // Version fetches the latest release version and stores it in metadata.
-func (g *GitHub) Version(_ string) error {
+func (g *GitHub) Version(version string) error {
 	ctx := context.Background()
 
-	version, err := g.LatestVersion(ctx)
+	version, err := g.LatestVersion(ctx, version)
 	if err != nil {
 		return err
 	}
@@ -85,7 +86,7 @@ func (g *GitHub) Get(attribute string) string {
 
 // LatestVersion fetches the latest release version from GitHub.
 // Returns the tag name of the latest release, respecting the Pre flag setting.
-func (g *GitHub) LatestVersion(ctx context.Context) (string, error) {
+func (g *GitHub) LatestVersion(ctx context.Context, version string) (string, error) {
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
@@ -93,14 +94,20 @@ func (g *GitHub) LatestVersion(ctx context.Context) (string, error) {
 
 	var err error
 
-	if g.Pre {
-		const PerPage = 1000
+	switch {
+	case strings.Contains(version, "*"):
+		const PerPage = 100
+
+		release, err = repository.GetReleasesByWildcard(ctx, version, PerPage)
+
+	case g.Pre:
+		const PerPage = 100
 
 		release, err = repository.LatestIncludingPreRelease(
 			ctx,
 			PerPage,
 		)
-	} else {
+	default:
 		if g.Token == "" {
 			if tag, webErr := repository.LatestVersionFromWebJSON(ctx); webErr == nil {
 				return tag, nil
@@ -108,14 +115,6 @@ func (g *GitHub) LatestVersion(ctx context.Context) (string, error) {
 		}
 
 		release, err = repository.LatestRelease(ctx)
-		// Old:
-		// release, err = repository.LatestRelease()
-		//
-		//	if err != nil {
-		//		if tag, err := repository.LatestVersionFromWeb(); err == nil {
-		//			return tag, nil
-		//		}
-		//	}
 	}
 
 	if err != nil {

@@ -49,11 +49,17 @@ func (r *Release) FromRepositoryRelease(release *github.RepositoryRelease) error
 		name = *release.Name
 	}
 
+	var body string
+
+	if release.Body != nil {
+		body = *release.Body
+	}
+
 	*r = Release{
 		Name:   name,
 		Tag:    *release.TagName,
 		Assets: assets,
-		Body:   *release.Body,
+		Body:   body,
 	}
 
 	return nil

@@ -191,8 +191,6 @@ func (t Tool) GetTargetVersion() string {
 }
 
 // GetPopulator returns the last successful populator used by the tool.
-//
-//nolint:ireturn // Must return an interface type
 func (t Tool) GetPopulator() sources.Populator {
 	return t.populator
 }

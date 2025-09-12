@@ -54,8 +54,9 @@ A complete reference for all fields is available below.
   # Version tracking of the tool. Specifies the target version, as well as how to parse the current version.
   version:
     # For `github` and `gitlab` sources, leave empty to fetch the latest release from the API.
-    # The version is always available as {{ .Version }}, expect when not set.
-    # It is then only available after the API call has been made.
+    # The version is always available as {{ .Version }}, except when not set.
+    # It is then only available after the version has been determined.
+    # Allows for using wildcards like `v1.*` or `1.2.*` to fetch the latest matching version.
     version: v0.1.0
     # Commands to run to get the current installed version (for syncs),
     # whenever not available in the cache.

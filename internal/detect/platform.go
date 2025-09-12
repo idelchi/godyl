@@ -88,6 +88,7 @@ func (p *Platform) ToMap() map[string]any {
 
 	platformMap["OS"] = p.OS.String()
 	platformMap["ARCH"] = p.Architecture.Type()
+	platformMap["ARCH_ALIASES"] = p.Architecture.Aliases()
 	platformMap["ARCH_VERSION"] = p.Architecture.Version()
 	platformMap["ARCH_LONG"] = p.Architecture.String()
 	platformMap["IS_ARM"] = p.Architecture.IsARM()

@@ -227,6 +227,21 @@ func (a *Architecture) Type() string {
 	return a.canonical
 }
 
+// Aliases returns all aliases for the architecture type.
+func (a *Architecture) Aliases() []string {
+	if a.IsUnset() {
+		return nil
+	}
+
+	for _, info := range (ArchInfo{}).Supported() {
+		if info.Type == a.canonical {
+			return info.Aliases
+		}
+	}
+
+	return nil
+}
+
 // Version returns the architecture version number.
 func (a *Architecture) Version() int {
 	return a.version

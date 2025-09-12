@@ -43,7 +43,7 @@ func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error
 	log.Debugf("Executable path: %q", exePath)
 
 	// Create a temporary folder for cleanup files
-	folder, err := tmp.GodylCreateRandomDir()
+	folder, err := tmp.CreateRandomDir()
 	if err != nil {
 		return fmt.Errorf("creating temporary directory: %w", err)
 	}

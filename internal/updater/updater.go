@@ -212,7 +212,7 @@ func (u *Updater) createTempDir() (string, error) {
 			return "", fmt.Errorf("getting executable path: %w", err)
 		}
 
-		dir, err := tmp.GodylCreateRandomDirIn(folder.New(file.New(exePath).Dir()))
+		dir, err := tmp.CreateRandomDirIn(folder.New(file.New(exePath).Dir()))
 		if err != nil {
 			return "", fmt.Errorf("creating temporary directory: %w", err)
 		}
@@ -221,7 +221,7 @@ func (u *Updater) createTempDir() (string, error) {
 	}
 
 	// On other platforms, use system temp directory
-	dir, err := tmp.GodylCreateRandomDir()
+	dir, err := tmp.CreateRandomDir()
 	if err != nil {
 		return "", fmt.Errorf("creating temporary directory: %w", err)
 	}

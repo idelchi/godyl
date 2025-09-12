@@ -91,7 +91,7 @@ func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, f
 		GOARCH: d.Arch,
 	}
 
-	folder, err := tmp.GodylCreateRandomDir()
+	folder, err := tmp.CreateRandomDir()
 	if err != nil {
 		return "", "", fmt.Errorf("creating random dir: %w", err)
 	}

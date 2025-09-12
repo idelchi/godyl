@@ -39,7 +39,7 @@ func Download(data Data) (found file.File, err error) {
 	dir := folder.New(data.Output)
 
 	if data.Mode == "find" {
-		if dir, err = tmp.GodylCreateRandomDir(); err != nil {
+		if dir, err = tmp.CreateRandomDir(); err != nil {
 			return "", fmt.Errorf("creating random dir: %w", err)
 		}
 

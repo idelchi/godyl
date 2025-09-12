@@ -226,6 +226,10 @@ func (t *Tool) CheckSkipConditions(tags tags.IncludeTags) result.Result {
 		return res.Wrapped("already exists")
 	}
 
+	if t.Strategy == strategy.Existing && !t.Exists() {
+		return res.Wrapped("only considering existing tools for sync")
+	}
+
 	return result.WithOK("passed all conditions")
 }
 

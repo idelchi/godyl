@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/pkg/logger"
@@ -57,10 +58,10 @@ func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error
 
 	// Create cleanup script
 	if err := createBatchFile(templateContent, batchFile.Path(), cleanupData{
-		OldBinary: oldBinary.Path(),
-		BatchFile: batchFile.Path(),
-		Folder:    folder.Path(),
-		LogFile:   logFile.Path(),
+		OldBinary: filepath.FromSlash(oldBinary.Path()),
+		BatchFile: filepath.FromSlash(batchFile.Path()),
+		Folder:    filepath.FromSlash(folder.Path()),
+		LogFile:   filepath.FromSlash(logFile.Path()),
 	}); err != nil {
 		return err
 	}

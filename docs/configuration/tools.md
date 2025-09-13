@@ -202,6 +202,7 @@ Platform-specific variables are upper-cased and available as:
 
 - `{{ .OS }}` - The operating system
 - `{{ .ARCH }}` - The architecture
+- `{{ .ARCH_ALIASES }}` - The architecture aliases as an array
 - `{{ .ARCH_VERSION }}` - The architecture version
 - `{{ .ARCH_LONG }}` - The architecture with version
 - `{{ .IS_ARM }}` - Whether the architecture is ARM

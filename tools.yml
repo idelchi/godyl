@@ -660,6 +660,8 @@
 - name: gotify/cli
   exe: gotify
   description: A command-line client for Gotify
+  tags:
+    - terminal
 
 - name: getsops/sops
   description: Simple and flexible tool for managing secrets
@@ -918,6 +920,9 @@
 - name: Timmoth/aid-cli
   description: A CLI toolkit featuring a variety of helpful utilities
   exe: aid
+  skip:
+    - reason: "aid is only available for amd64 architecture"
+      condition: '{{ ne .ARCH "amd64" }}'
   tags:
     - terminal
 

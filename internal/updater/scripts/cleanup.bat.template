@@ -1,125 +1,44 @@
 @echo off
-setlocal enabledelayedexpansion
 
-rem -----------------------------
-rem Config
-rem -----------------------------
 set "OLD_BINARY={{.OldBinary}}"
 set "BATCH_FILE={{.BatchFile}}"
 set "FOLDER={{.Folder}}"
 set "LOG_FILE={{.LogFile}}"
 
-rem Detect if spawned via transient cmd /c (Explorer) or interactive /K
-set "AUTOEXIT=0"
-echo %cmdcmdline% | find /I " /c " >nul && set "AUTOEXIT=1"
-
-rem -----------------------------
-rem Prologue diagnostics
-rem -----------------------------
-(
-  echo ==== CLEANUP START %DATE% %TIME% ====
-  echo whoami:
-) >> "%LOG_FILE%"
-whoami >> "%LOG_FILE%" 2>&1
-(
-  echo OS/Ver:
-) >> "%LOG_FILE%"
-ver >> "%LOG_FILE%" 2>&1
-(
-  echo PWD:
-  cd
-  echo cmdcmdline:
-  echo %cmdcmdline%
-  echo AUTOEXIT=%AUTOEXIT%
-  echo --
-  echo OLD_BINARY="%OLD_BINARY%"
-  echo BATCH_FILE="%BATCH_FILE%"
-  echo FOLDER="%FOLDER%"
-  echo LOG_FILE="%LOG_FILE%"
-  echo --
-  echo [existence] OLD_BINARY exists?:
-) >> "%LOG_FILE%"
-if exist "%OLD_BINARY%" (>>"%LOG_FILE%" echo(YES) else (>>"%LOG_FILE%" echo(NO))
-(
-  echo [existence] FOLDER exists?:
-) >> "%LOG_FILE%"
-if exist "%FOLDER%" (>>"%LOG_FILE%" echo(YES) else (>>"%LOG_FILE%" echo(NO))
->>"%LOG_FILE%" echo([attrib] OLD_BINARY:)
+echo Starting cleanup script at %TIME% >> "%LOG_FILE%"
+echo OLD_BINARY="%OLD_BINARY%" >> "%LOG_FILE%"
+echo FOLDER="%FOLDER%" >> "%LOG_FILE%"
+echo LOG_FILE="%LOG_FILE%" >> "%LOG_FILE%"
+echo Initial state (existence/attrib): >> "%LOG_FILE%"
+if exist "%OLD_BINARY%" (echo OLD_BINARY exists >> "%LOG_FILE%") else (echo OLD_BINARY missing >> "%LOG_FILE%")
 attrib "%OLD_BINARY%" >> "%LOG_FILE%" 2>&1
->>"%LOG_FILE%" echo([icacls] OLD_BINARY:)
-icacls "%OLD_BINARY%" >> "%LOG_FILE%" 2>&1
 
->>"%LOG_FILE%" echo([%TIME%] Reset attributes on OLD_BINARY)
-attrib -r -s -h "%OLD_BINARY%" >> "%LOG_FILE%" 2>&1
->>"%LOG_FILE%" echo([%TIME%] attrib rc=!errorlevel!)
+echo Removing attributes >> "%LOG_FILE%"
+attrib -h -s "%OLD_BINARY%" >> "%LOG_FILE%" 2>&1
 
-rem -----------------------------
-rem Deletion loop with single rename-probe
-rem -----------------------------
->>"%LOG_FILE%" echo([%TIME%] Beginning deletion attempts)
-
+echo Beginning deletion attempts >> "%LOG_FILE%"
 for /L %%G in (1,1,10) do (
-  >>"%LOG_FILE%" echo([%TIME%] Attempt %%G: del "%OLD_BINARY%"
-  del /F "%OLD_BINARY%" >> "%LOG_FILE%" 2>&1
-  set "rc=!errorlevel!"
-  >>"%LOG_FILE%" echo([%TIME%] del rc=!rc!
-
-  if not exist "%OLD_BINARY%" (
-    >>"%LOG_FILE%" echo([%TIME%] Deleted successfully on attempt %%G)
-    goto :cleanup_success
-  )
-
-  rem Minimal fix: rename-probe; if it succeeds, delete the renamed file and finish
-  for %%A in ("%OLD_BINARY%") do set "OLD_DIR=%%~dpA"
-  set "PROBE=.delete_!RANDOM!_!RANDOM!"
-  >>"%LOG_FILE%" echo([%TIME%] Attempt %%G: ren "%OLD_BINARY%" "!PROBE!"
-  ren "%OLD_BINARY%" "!PROBE!" >> "%LOG_FILE%" 2>&1
-  set "rc=!errorlevel!"
-  >>"%LOG_FILE%" echo([%TIME%] ren rc=!rc!
-
-  if "!rc!"=="0" (
-    >>"%LOG_FILE%" echo([%TIME%] rename-probe succeeded; deleting "!OLD_DIR!!PROBE!"
-    del /F "!OLD_DIR!!PROBE!" >> "%LOG_FILE%" 2>&1
-    set "rc=!errorlevel!"
-    >>"%LOG_FILE%" echo([%TIME%] del_renamed rc=!rc!
-    if not exist "!OLD_DIR!!PROBE!" (
-      >>"%LOG_FILE%" echo([%TIME%] Deleted via rename-probe on attempt %%G)
-      goto :cleanup_success
-    ) else (
-      >>"%LOG_FILE%" echo([%TIME%] WARN renamed file still exists after delete
+    echo Attempt %%G >> "%LOG_FILE%"
+    del /F "%OLD_BINARY%" >> "%LOG_FILE%" 2>&1
+    if not exist "%OLD_BINARY%" (
+        echo Deleted successfully on attempt %%G >> "%LOG_FILE%"
+        goto :cleanup_success
     )
-  ) else (
-    >>"%LOG_FILE%" echo([%TIME%] rename-probe FAILED (likely locked); will retry
-  )
-
-  >>"%LOG_FILE%" echo([%TIME%] Still exists after attempt %%G
-  timeout /t 1 /nobreak >nul
+    echo Still exists after attempt %%G >> "%LOG_FILE%"
+    dir /a "%OLD_BINARY%" >> "%LOG_FILE%" 2>&1
+    timeout /t 1 /nobreak >nul
 )
 
 :cleanup_failed
->>"%LOG_FILE%" echo([%TIME%] ERROR Cleanup failed after 10 attempts)
+echo Cleanup failed after 10 attempts >> "%LOG_FILE%"
 goto :after_cleanup
 
 :cleanup_success
->>"%LOG_FILE%" echo([%TIME%] Cleanup succeeded)
-
-rem -----------------------------
-rem Only remove the script's folder on success, and only if it IS the folder
-rem containing the script. Spawn a new shell so handles are released.
-rem -----------------------------
-for %%A in ("%BATCH_FILE%") do set "BATCH_DIR=%%~dpA"
-for %%A in ("%BATCH_DIR:~0,-1%") do set "BATCH_DIR_NORM=%%~fA"
-for %%A in ("%FOLDER%") do set "FOLDER_NORM=%%~fA"
-
-if /I "!BATCH_DIR_NORM!"=="!FOLDER_NORM!" (
-  >>"%LOG_FILE%" echo([%TIME%] Scheduling removal of script folder "!FOLDER_NORM!"
-  start "" /min cmd /c "timeout /t 2 /nobreak >nul & rmdir /s /q ""!FOLDER_NORM!"""
-) else (
-  >>"%LOG_FILE%" echo([%TIME%] Skipping folder removal; script not inside target folder
-)
+echo Cleanup succeeded >> "%LOG_FILE%"
+echo Changing directory to TEMP before deleting files and folder >> "%LOG_FILE%"
+cd /d "%TEMP%"
+echo Removing temporary folder "%FOLDER%" >> "%LOG_FILE%"
+(goto) 2>nul & rmdir /s /q "%FOLDER%" >> "%LOG_FILE%" 2>&1 & exit
 
 :after_cleanup
->>"%LOG_FILE%" echo(==== CLEANUP END %DATE% %TIME% ====)
-
-rem Close the window only if we were started via cmd /c
-if "%AUTOEXIT%"=="1" (exit) else (exit /b 0)
+echo Skipping removal of temporary folder "%FOLDER%" due to failure >> "%LOG_FILE%"

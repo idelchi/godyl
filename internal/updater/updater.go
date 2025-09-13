@@ -12,7 +12,7 @@ import (
 	"github.com/inconshreveable/go-update"
 
 	"github.com/idelchi/godyl/internal/config/root"
-	"github.com/idelchi/godyl/internal/tmp"
+	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/internal/tools/mode"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
@@ -212,7 +212,7 @@ func (u *Updater) createTempDir() (string, error) {
 			return "", fmt.Errorf("getting executable path: %w", err)
 		}
 
-		dir, err := tmp.GodylCreateRandomDirIn(folder.New(file.New(exePath).Dir()))
+		dir, err := data.CreateUniqueDirIn(folder.New(file.New(exePath).Dir()).Path())
 		if err != nil {
 			return "", fmt.Errorf("creating temporary directory: %w", err)
 		}
@@ -221,7 +221,7 @@ func (u *Updater) createTempDir() (string, error) {
 	}
 
 	// On other platforms, use system temp directory
-	dir, err := tmp.GodylCreateRandomDir()
+	dir, err := data.CreateUniqueDirIn()
 	if err != nil {
 		return "", fmt.Errorf("creating temporary directory: %w", err)
 	}

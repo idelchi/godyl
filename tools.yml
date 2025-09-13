@@ -660,6 +660,8 @@
 - name: gotify/cli
   exe: gotify
   description: A command-line client for Gotify
+  tags:
+    - terminal
 
 - name: getsops/sops
   description: Simple and flexible tool for managing secrets
@@ -918,6 +920,9 @@
 - name: Timmoth/aid-cli
   description: A CLI toolkit featuring a variety of helpful utilities
   exe: aid
+  skip:
+    - reason: "aid is only available for amd64 architecture"
+      condition: '{{ ne .ARCH "amd64" }}'
   tags:
     - terminal
 
@@ -1011,6 +1016,18 @@
 
 - name: Adembc/lazyssh
   description: A terminal-based SSH manager inspired by lazydocker and k9s
+  tags:
+    - terminal
+
+- name: Canop/dysk
+  description: A linux utility to get information on filesystems, like df but better
+  skip:
+    - reason: "dysk is only available for Linux"
+      condition: '{{ ne .OS "linux" }}'
+    - reason: "dysk is only available for amd64 and arm64 architectures"
+      condition: '{{ and (ne .ARCH "amd64") (ne .ARCH "arm64") }}'
+  exe: dysk
+  url: https://dystroy.org/dysk/download/{{ index .ARCH_ALIASES 0 }}-unknown-{{ .OS }}-gnu/dysk
   tags:
     - terminal
 

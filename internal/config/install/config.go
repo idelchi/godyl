@@ -14,7 +14,7 @@ type Install struct {
 	shared.Tracker `mapstructure:"-" yaml:"-"`
 
 	// Strategy defines how the installation should be performed
-	Strategy strategy.Strategy `mapstructure:"strategy" validate:"oneof=none sync force" yaml:"strategy"`
+	Strategy strategy.Strategy `mapstructure:"strategy" validate:"oneof=none sync existing force" yaml:"strategy"`
 
 	// OS defines the target operating system for the installation
 	OS string `mapstructure:"os" yaml:"os"`

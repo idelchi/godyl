@@ -12,7 +12,7 @@ The `config` command allows interaction with `godyl`'s config file.
 ## Syntax
 
 ```sh
-godyl config [path|set] [flags]
+godyl [flags] config [path|set] [flags]
 ```
 
 ## Aliases

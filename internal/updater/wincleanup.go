@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/idelchi/godyl/internal/tmp"
+	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
@@ -43,7 +43,7 @@ func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error
 	log.Debugf("Executable path: %q", exePath)
 
 	// Create a temporary folder for cleanup files
-	folder, err := tmp.GodylCreateRandomDir()
+	folder, err := data.CreateUniqueDirIn()
 	if err != nil {
 		return fmt.Errorf("creating temporary directory: %w", err)
 	}

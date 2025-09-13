@@ -10,11 +10,11 @@ import (
 
 	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/config/root"
+	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/internal/presentation"
 	"github.com/idelchi/godyl/internal/progress"
 	"github.com/idelchi/godyl/internal/results"
 	"github.com/idelchi/godyl/internal/runner"
-	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/tags"
 	"github.com/idelchi/godyl/internal/tools/tool"
@@ -40,7 +40,7 @@ func New(toolsList tools.Tools, cfg root.Config, log *logger.Logger) *Processor 
 	var cacheManager *cache.Cache
 
 	if !cfg.Cache.Disabled {
-		cacheManager = cache.New(tmp.CacheFile(cfg.Cache.Dir))
+		cacheManager = cache.New(data.CacheFile(cfg.Cache.Dir))
 	}
 
 	// Initialize progress manager
@@ -64,6 +64,8 @@ func New(toolsList tools.Tools, cfg root.Config, log *logger.Logger) *Processor 
 }
 
 // Process installs and manages tools with the given tags.
+//
+//nolint:gocognit // Function is complex but clear enough.
 func (p *Processor) Process(tags tags.IncludeTags) error {
 	// 1. Setup
 	if p.cache != nil {
@@ -76,10 +78,15 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 	ctx := context.Background()
 	g, ctx := errgroup.WithContext(ctx)
 
-	if par := p.config.Parallel; par > 0 {
-		g.SetLimit(par)
-		p.log.Debugf("running with %d parallel downloads", par)
+	if p.config.Tokens.GitHub == "" {
+		p.config.Parallel = 1
 	}
+
+	if p.config.Parallel > 0 {
+		g.SetLimit(p.config.Parallel)
+	}
+
+	p.log.Debugf("running with %d parallel downloads", p.config.Parallel)
 
 	// Start progress tracking
 	p.progress.Start()
@@ -112,7 +119,7 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 
 			// Update cache if successful
 			if result.Status == runner.StatusOK && p.cache != nil {
-				p.updateCache(result)
+				p.updateCache(result) //nolint:contextcheck	// Unclear what this is about.
 			}
 
 			return nil
@@ -141,7 +148,11 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 // updateCache updates the cache with a successful result.
 func (p *Processor) updateCache(result runner.Result) {
 	if result.Tool.Version.Version == "" {
-		return
+		result.Tool.Version.Version = result.Tool.GetCurrentVersion()
+	}
+
+	if result.Tool.Version.Version == "" {
+		return // No version information available
 	}
 
 	now := time.Now()

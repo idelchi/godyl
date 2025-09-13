@@ -4,6 +4,7 @@ package tool
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/hashicorp/go-getter/v2"
@@ -212,7 +213,7 @@ func (t *Tool) CheckSkipConditions(tags tags.IncludeTags) result.Result {
 		return res.Wrapped(fmt.Sprintf("does not have required tags: %v", tags.Include))
 	}
 
-	if !t.Tags.Exclude(tags.Exclude) {
+	if !t.Tags.Exclude(tags.Exclude) && !slices.Contains(tags.Include, t.Name) {
 		return res.Wrapped(fmt.Sprintf("has excluded tags: %v", tags.Exclude))
 	}
 
@@ -224,6 +225,10 @@ func (t *Tool) CheckSkipConditions(tags tags.IncludeTags) result.Result {
 
 	if t.Strategy == strategy.None && t.Exists() {
 		return res.Wrapped("already exists")
+	}
+
+	if t.Strategy == strategy.Existing && !t.Exists() {
+		return res.Wrapped("only considering existing tools for sync")
 	}
 
 	return result.WithOK("passed all conditions")

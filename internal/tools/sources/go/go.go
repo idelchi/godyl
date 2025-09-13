@@ -14,9 +14,9 @@ import (
 
 	"github.com/hashicorp/go-getter/v2"
 
+	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/internal/goi"
 	"github.com/idelchi/godyl/internal/match"
-	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
@@ -91,7 +91,7 @@ func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, f
 		GOARCH: d.Arch,
 	}
 
-	folder, err := tmp.GodylCreateRandomDir()
+	folder, err := data.CreateUniqueDirIn()
 	if err != nil {
 		return "", "", fmt.Errorf("creating random dir: %w", err)
 	}

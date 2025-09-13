@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"github.com/idelchi/godyl/internal/tmp"
+	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
@@ -42,7 +42,7 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 
 		return binary, nil
 		// 2: Else search in the (possibly) previously created directory
-	} else if path, err := binary.Find(tmp.GodylDir("go").Path()); err == nil {
+	} else if path, err := binary.Find(data.GoDir().Path()); err == nil {
 		binary.File = path
 		binary.Dir = folder.New(binary.File.Dir())
 		binary.Env.Default(binary.Dir.Path())
@@ -50,7 +50,7 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 		return binary, nil
 	}
 
-	binary.Dir = tmp.GodylDir("go")
+	binary.Dir = data.GoDir()
 	if err := binary.Dir.Create(); err != nil {
 		return binary, fmt.Errorf("creating dir: %w", err)
 	}

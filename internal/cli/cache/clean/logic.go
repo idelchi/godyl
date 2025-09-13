@@ -7,7 +7,7 @@ import (
 	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/config/root"
-	"github.com/idelchi/godyl/internal/tmp"
+	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/pkg/executable"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/path/file"
@@ -46,7 +46,7 @@ func setup(cfg *root.Config) (*logger.Logger, *cache.Cache, error) {
 		return nil, nil, err
 	}
 
-	cacheFile := tmp.CacheFile(cfg.Cache.Dir)
+	cacheFile := data.CacheFile(cfg.Cache.Dir)
 
 	if !cacheFile.Exists() {
 		return logger, nil, fmt.Errorf("cache file %q does not exist", cacheFile)

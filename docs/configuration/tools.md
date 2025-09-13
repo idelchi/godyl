@@ -149,7 +149,7 @@ A complete reference for all fields is available below.
   tags:
     - env
   # Strategy for updating existing tools.
-  strategy: none|sync|force
+  strategy: none|sync|existing|force
   # Skip the tool if the condition is met.
   skip:
     - reason: "envprof is not available for Darwin"
@@ -202,6 +202,7 @@ Platform-specific variables are upper-cased and available as:
 
 - `{{ .OS }}` - The operating system
 - `{{ .ARCH }}` - The architecture
+- `{{ .ARCH_ALIASES }}` - The architecture aliases as an array
 - `{{ .ARCH_VERSION }}` - The architecture version
 - `{{ .ARCH_LONG }}` - The architecture with version
 - `{{ .IS_ARM }}` - Whether the architecture is ARM
@@ -457,6 +458,7 @@ Valid values:
 
 - `none`: Skip if the tool already exists
 - `sync`: Sync the tool to the desired version
+- `existing`: Only sync if the tool already exists
 - `force`: Always download and install
 
 ### `skip`

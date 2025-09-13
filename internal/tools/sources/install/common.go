@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/go-getter/v2"
 
-	"github.com/idelchi/godyl/internal/tmp"
+	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/path/file"
@@ -35,11 +35,11 @@ type Data struct {
 // Download retrieves files according to the InstallData configuration.
 // Creates temporary directories when needed, manages the download process,
 // and returns the download output and file information.
-func Download(data Data) (found file.File, err error) {
-	dir := folder.New(data.Output)
+func Download(d Data) (found file.File, err error) {
+	dir := folder.New(d.Output)
 
-	if data.Mode == "find" {
-		if dir, err = tmp.GodylCreateRandomDir(); err != nil {
+	if d.Mode == "find" {
+		if dir, err = data.CreateUniqueDirIn(); err != nil {
 			return "", fmt.Errorf("creating random dir: %w", err)
 		}
 
@@ -48,20 +48,20 @@ func Download(data Data) (found file.File, err error) {
 		}()
 	}
 
-	options := []download.Option{download.WithProgress(data.ProgressListener)}
-	if data.NoVerifySSL {
+	options := []download.Option{download.WithProgress(d.ProgressListener)}
+	if d.NoVerifySSL {
 		options = append(options, download.WithInsecureSkipVerify())
 	}
 
 	downloader := download.New(options...)
 
-	destination, err := downloader.Download(data.Path, dir.Path(), data.Header)
+	destination, err := downloader.Download(d.Path, dir.Path(), d.Header)
 	if err != nil {
-		return "", fmt.Errorf("downloading %q: %w", data.Path, err)
+		return "", fmt.Errorf("downloading %q: %w", d.Path, err)
 	}
 
-	if data.Mode == "find" {
-		found, err = FindAndSymlink(destination, data)
+	if d.Mode == "find" {
+		found, err = FindAndSymlink(destination, d)
 	}
 
 	return found, err

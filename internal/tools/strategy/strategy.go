@@ -16,6 +16,8 @@ const (
 	None Strategy = "none"
 	// Sync indicates that the tool should only be modified if different from the desired state.
 	Sync Strategy = "sync"
+	// Existing indicates that only existing tools should be synced.
+	Existing Strategy = "existing"
 	// Force indicates that the tool should be installed or updated regardless of its current state.
 	Force Strategy = "force"
 )
@@ -46,7 +48,7 @@ func (s Strategy) Sync(t Tool) result.Result {
 	case None:
 		// If the strategy is "None" and the tool exists, return an error indicating it already exists.
 		return result.WithSkipped("already exists")
-	case Sync:
+	case Sync, Existing:
 		if currentVersion == "" {
 			return result.WithOK("current version not retrievable, forcing update")
 		}

@@ -64,6 +64,8 @@ func New(toolsList tools.Tools, cfg root.Config, log *logger.Logger) *Processor 
 }
 
 // Process installs and manages tools with the given tags.
+//
+//nolint:gocognit // Function is complex but clear enough.
 func (p *Processor) Process(tags tags.IncludeTags) error {
 	// 1. Setup
 	if p.cache != nil {
@@ -76,10 +78,15 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 	ctx := context.Background()
 	g, ctx := errgroup.WithContext(ctx)
 
-	if par := p.config.Parallel; par > 0 {
-		g.SetLimit(par)
-		p.log.Debugf("running with %d parallel downloads", par)
+	if p.config.Tokens.GitHub == "" {
+		p.config.Parallel = 1
 	}
+
+	if p.config.Parallel > 0 {
+		g.SetLimit(p.config.Parallel)
+	}
+
+	p.log.Debugf("running with %d parallel downloads", p.config.Parallel)
 
 	// Start progress tracking
 	p.progress.Start()

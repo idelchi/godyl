@@ -103,8 +103,10 @@ A complete reference for all fields is available below.
         0
         {{- end -}}
       # Method to use for matching the pattern.
+      # default: glob
       type: glob|regex|globstar|startswith|endswith|contains
       # Whether to use the weight for matches, require the match, or exclude the match.
+      # default: weighted
       match: weighted|required|excluded
   source:
     type: github|gitlab|url|go|none # [`--source`]
@@ -282,7 +284,7 @@ The most common use-case is to have it inferred from the `source` field configur
 
 ### `output`
 
-🔴 Required • 🧩 Templated • 📤 Exports as: `{{ .Output }}`
+🧩 Templated • 📤 Exports as: `{{ .Output }}`
 
 The directory where the tool will be installed.
 
@@ -358,15 +360,15 @@ hints:
   - pattern: "*{{ .Exe }}*"
     weight: 1
   - pattern: "^{{ .OS }}"
-    must: true
-    regex: true
+    type: regex
+    match: required
 ```
 
 If weight is not provided, it will be set to 1.
 
 ### `source`
 
-🔴 Required • 🧩 Templated • 📤 Exports as: `{{ .Source }}`
+🧩 Templated • 📤 Exports as: `{{ .Source }}`
 
 Information about the source of the tool.
 
@@ -446,8 +448,6 @@ The name of the current tool will always be added to the list of tags.
 
 ### `strategy`
 
-🔴 Required
-
 Strategy for updating the tool.
 
 ```yaml
@@ -478,8 +478,6 @@ skip:
 Only the `condition` field supports templating.
 
 ### `mode`
-
-🔴 Required
 
 Mode for downloading and installing.
 

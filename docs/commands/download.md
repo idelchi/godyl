@@ -41,7 +41,7 @@ When using the `download` command, the tool will be downloaded and extracted dir
 | `--hint`         | `GODYL_DOWNLOAD_HINT`    | `[""]`   | Add hint patterns with weight 1                                       |
 | `--version`      | `GODYL_DOWNLOAD_VERSION` | `""`     | Version to download. Will set the `{{ .Version }}` template variable  |
 | `--dry`          | `GODYL_DOWNLOAD_DRY`     | `false`  | Dry run. Will not download, but show what would be done. Implies `-v` |
-| `--pre`          | `GODYL_INSTALL_PRE`      | `false`  | Consider pre-releases when installing tools                           |
+| `--pre`          | `GODYL_DOWNLOAD_PRE`      | `false`  | Consider pre-releases when installing tools                           |
 
 ## Examples
 

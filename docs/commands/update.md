@@ -66,4 +66,4 @@ This will include pre-release versions when determining the latest version to in
 
 ### Windows
 
-On Windows, the running binary cannot be directly replaced. Use the `--cleanup` flag/option to launch a background process to remove up the old version.
+On Windows, the running binary cannot be directly replaced. Use the `--cleanup` flag/option to launch a background process to remove the old version.

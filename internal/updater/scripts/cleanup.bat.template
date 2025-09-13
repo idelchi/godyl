@@ -1,51 +1,54 @@
 @echo off
+setlocal enabledelayedexpansion
 
 set "OLD_BINARY={{.OldBinary}}"
 set "BATCH_FILE={{.BatchFile}}"
 set "FOLDER={{.Folder}}"
 set "LOG_FILE={{.LogFile}}"
 
-echo ==== Starting cleanup script at %DATE% %TIME% ==== >> "%LOG_FILE%"
-echo OLD_BINARY="%OLD_BINARY%" >> "%LOG_FILE%"
-echo FOLDER="%FOLDER%" >> "%LOG_FILE%"
-echo LOG_FILE="%LOG_FILE%" >> "%LOG_FILE%"
+rem ---- diagnostics header ----
+>>"%LOG_FILE%" echo ==== START %DATE% %TIME% ====
+>>"%LOG_FILE%" echo CD=%CD%
+>>"%LOG_FILE%" echo OLD_BINARY="%OLD_BINARY%"
+>>"%LOG_FILE%" echo FOLDER="%FOLDER%"
+>>"%LOG_FILE%" echo LOG_FILE="%LOG_FILE%"
 
-echo Checking initial state >> "%LOG_FILE%"
-if exist "%OLD_BINARY%" (
-    echo File exists before cleanup >> "%LOG_FILE%"
-) else (
-    echo File NOT found before cleanup >> "%LOG_FILE%"
-)
+>>"%LOG_FILE%" echo Initial existence:
+if exist "%OLD_BINARY%" (>>"%LOG_FILE%" echo   OLD_BINARY: YES) else (>>"%LOG_FILE%" echo   OLD_BINARY: NO)
+>>"%LOG_FILE%" echo Initial attributes:
 attrib "%OLD_BINARY%" >> "%LOG_FILE%" 2>&1
 
-echo Removing attributes >> "%LOG_FILE%"
+>>"%LOG_FILE%" echo Removing attributes
 attrib -h -s -r "%OLD_BINARY%" >> "%LOG_FILE%" 2>&1
-echo attrib rc=%errorlevel% >> "%LOG_FILE%"
+>>"%LOG_FILE%" echo attrib rc=!errorlevel!
 
-echo Beginning deletion attempts >> "%LOG_FILE%"
+>>"%LOG_FILE%" echo Beginning deletion attempts
 for /L %%G in (1,1,10) do (
-    echo Attempt %%G >> "%LOG_FILE%"
+    >>"%LOG_FILE%" echo -- Attempt %%G --
+    >>"%LOG_FILE%" echo del "%OLD_BINARY%"
     del /F "%OLD_BINARY%" >> "%LOG_FILE%" 2>&1
-    echo del rc=!errorlevel! >> "%LOG_FILE%"
+    >>"%LOG_FILE%" echo del rc=!errorlevel!
     if not exist "%OLD_BINARY%" (
-        echo Deleted successfully on attempt %%G >> "%LOG_FILE%"
+        >>"%LOG_FILE%" echo Deleted successfully on attempt %%G
         goto :cleanup_success
     )
-    echo Still exists after attempt %%G >> "%LOG_FILE%"
+    >>"%LOG_FILE%" echo Still exists after attempt %%G
+    >>"%LOG_FILE%" echo dir of target path:
     dir /a "%OLD_BINARY%" >> "%LOG_FILE%" 2>&1
     timeout /t 1 /nobreak >nul
 )
 
 :cleanup_failed
-echo Cleanup failed after 10 attempts >> "%LOG_FILE%"
+>>"%LOG_FILE%" echo ERROR: Cleanup failed after 10 attempts
 goto :done
 
 :cleanup_success
-echo Cleanup succeeded >> "%LOG_FILE%"
-echo Changing directory to TEMP before deleting files and folder >> "%LOG_FILE%"
+>>"%LOG_FILE%" echo Cleanup succeeded
+>>"%LOG_FILE%" echo Changing directory to TEMP before deleting files and folder
 cd /d "%TEMP%"
-echo Removing temporary folder "%FOLDER%" >> "%LOG_FILE%"
+>>"%LOG_FILE%" echo Removing temporary folder "%FOLDER%"
 (goto) 2>nul & rmdir /s /q "%FOLDER%" >> "%LOG_FILE%" 2>&1 & exit
 
 :done
+>>"%LOG_FILE%" echo ==== END %DATE% %TIME% ====
 exit

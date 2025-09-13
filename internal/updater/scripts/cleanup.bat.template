@@ -34,3 +34,4 @@ echo Removing temporary folder "%FOLDER%" >> "%LOG_FILE%"
 (goto) 2>nul & rmdir /s /q "%FOLDER%" >nul 2>&1 & exit
 
 :done
+exit

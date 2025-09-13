@@ -12,7 +12,7 @@ nav_order: 9
 ## Syntax
 
 ```sh
-godyl validate
+godyl [flags] validate
 ```
 
 ## Examples

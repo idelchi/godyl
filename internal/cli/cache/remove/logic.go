@@ -6,7 +6,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/cli/core"
-	"github.com/idelchi/godyl/internal/tmp"
+	"github.com/idelchi/godyl/internal/data"
 )
 
 // run executes the `cache remove` command.
@@ -18,7 +18,7 @@ func run(input core.Input) error {
 		return err
 	}
 
-	cacheFile := tmp.CacheFile(cfg.Cache.Dir)
+	cacheFile := data.CacheFile(cfg.Cache.Dir)
 	if !cacheFile.Exists() {
 		return fmt.Errorf("cache file %q does not exist", cacheFile)
 	}

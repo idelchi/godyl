@@ -12,7 +12,7 @@ The `cache` command allows interaction with `godyl`'s cache.
 ## Syntax
 
 ```sh
-godyl cache [path|remove|clean] [flags]
+godyl [flags] cache [path|remove|clean] [flags]
 ```
 
 ## Description

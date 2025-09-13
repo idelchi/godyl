@@ -5,8 +5,8 @@ import (
 
 	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/cli/core"
+	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/internal/iutils"
-	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
@@ -14,7 +14,7 @@ import (
 func run(input core.Input) error {
 	cfg, _, _, _, args := input.Unpack()
 
-	cacheFile := tmp.CacheFile(cfg.Cache.Dir)
+	cacheFile := data.CacheFile(cfg.Cache.Dir)
 
 	if !cacheFile.Exists() {
 		return fmt.Errorf("cache file %q does not exist", cacheFile)

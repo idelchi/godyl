@@ -12,7 +12,7 @@ The `auth` command provides a convenient way of adding or removing tokens from e
 ## Syntax
 
 ```sh
-godyl auth [store|remove|status] [flags]
+godyl [flags] auth [store|remove|status] [flags]
 ```
 
 ## Subcommands

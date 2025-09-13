@@ -29,6 +29,7 @@ has_children: true
 | [`config`]({{ site.baseurl }}/commands/config)     | Manage the configuration            |
 | [`auth`]({{ site.baseurl }}/commands/auth)         | Manage the authentication tokens    |
 | [`validate`]({{ site.baseurl }}/commands/validate) | Validate the configuration          |
+| [`paths`]({{ site.baseurl }}/commands/paths)       | Show active filesystem paths        |
 | [`version`]({{ site.baseurl }}/commands/version)   | Display the current version         |
 
 ## Global Flags
@@ -65,6 +66,10 @@ godyl -ss
 ```
 
 If you get a lot of error messages for a run, use `error-file` to log them to a file for inspection.
+
+### Configuration management
+
+Use `config` and `auth` to manage the tool configuration.
 
 > **Note**: Commands that write to the `yaml` configuration file (such as `config set`, `config remove`, `auth store` and `auth remove`) will lead to loss of order and newlines.
 

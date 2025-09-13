@@ -149,7 +149,7 @@ A complete reference for all fields is available below.
   tags:
     - env
   # Strategy for updating existing tools.
-  strategy: none|sync|force
+  strategy: none|sync|existing|force
   # Skip the tool if the condition is met.
   skip:
     - reason: "envprof is not available for Darwin"
@@ -457,6 +457,7 @@ Valid values:
 
 - `none`: Skip if the tool already exists
 - `sync`: Sync the tool to the desired version
+- `existing`: Only sync if the tool already exists
 - `force`: Always download and install
 
 ### `skip`

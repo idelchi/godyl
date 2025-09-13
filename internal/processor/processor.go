@@ -10,11 +10,11 @@ import (
 
 	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/config/root"
+	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/internal/presentation"
 	"github.com/idelchi/godyl/internal/progress"
 	"github.com/idelchi/godyl/internal/results"
 	"github.com/idelchi/godyl/internal/runner"
-	"github.com/idelchi/godyl/internal/tmp"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/tags"
 	"github.com/idelchi/godyl/internal/tools/tool"
@@ -40,7 +40,7 @@ func New(toolsList tools.Tools, cfg root.Config, log *logger.Logger) *Processor 
 	var cacheManager *cache.Cache
 
 	if !cfg.Cache.Disabled {
-		cacheManager = cache.New(tmp.CacheFile(cfg.Cache.Dir))
+		cacheManager = cache.New(data.CacheFile(cfg.Cache.Dir))
 	}
 
 	// Initialize progress manager
@@ -112,7 +112,7 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 
 			// Update cache if successful
 			if result.Status == runner.StatusOK && p.cache != nil {
-				p.updateCache(result)
+				p.updateCache(result) //nolint:contextcheck	// Unclear what this is about.
 			}
 
 			return nil

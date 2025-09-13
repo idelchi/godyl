@@ -10,6 +10,7 @@ import (
 	"github.com/idelchi/godyl/internal/cli/download"
 	"github.com/idelchi/godyl/internal/cli/dump"
 	"github.com/idelchi/godyl/internal/cli/install"
+	"github.com/idelchi/godyl/internal/cli/paths"
 	"github.com/idelchi/godyl/internal/cli/status"
 	"github.com/idelchi/godyl/internal/cli/update"
 	"github.com/idelchi/godyl/internal/cli/validate"
@@ -29,6 +30,7 @@ func subcommands(cmd *cobra.Command, global *root.Config, embedded *core.Embedde
 		cconfig.Command(global, nil),
 		validate.Command(global, nil, embedded),
 		auth.Command(global, nil),
+		paths.Command(global, nil),
 
 		version.Command(global, nil),
 	)

@@ -903,7 +903,11 @@
     - terminal
 
 - name: JinmuGo/sls
-  description: sls is a smart fuzzy CLI selector for SSH config hosts
+  description: |
+    sls is a smart fuzzy CLI selector for SSH config hosts
+    Note, does not contain a version stamp and will therefore always reinstall, unless cache file is used.
+  version:
+    commands: []
   tags:
     - terminal
 
@@ -1015,7 +1019,11 @@
     - terminal
 
 - name: Adembc/lazyssh
-  description: A terminal-based SSH manager inspired by lazydocker and k9s
+  description: |
+    A terminal-based SSH manager inspired by lazydocker and k9s
+    Note, does not contain a version stamp and will therefore always reinstall, unless cache file is used.
+  version:
+    commands: []
   tags:
     - terminal
 

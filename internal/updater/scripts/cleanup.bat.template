@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 
 set "OLD_BINARY={{.OldBinary}}"
 set "BATCH_FILE={{.BatchFile}}"
@@ -18,19 +19,41 @@ for /L %%G in (1,1,10) do (
         echo Deleted successfully on attempt %%G >> "%LOG_FILE%"
         goto :cleanup_success
     )
+    rem Minimal fix: rename-probe; if it succeeds, delete the renamed file and finish
+    for %%A in ("%OLD_BINARY%") do set "OLD_DIR=%%~dpA"
+    set "PROBE=.delete_!RANDOM!_!RANDOM!"
+    ren "%OLD_BINARY%" "!PROBE!" >nul 2>&1 && (
+        del /F "!OLD_DIR!!PROBE!" >nul 2>&1
+        if not exist "!OLD_DIR!!PROBE!" (
+            echo Deleted via rename-probe on attempt %%G >> "%LOG_FILE%"
+            goto :cleanup_success
+        )
+    )
     echo Still exists after attempt %%G >> "%LOG_FILE%"
     timeout /t 1 /nobreak >nul
 )
 
 :cleanup_failed
 echo Cleanup failed after 10 attempts >> "%LOG_FILE%"
-goto :after_cleanup
+goto :done
 
 :cleanup_success
 echo Cleanup succeeded >> "%LOG_FILE%"
 
-:after_cleanup
-echo Changing directory to TEMP before deleting files and folder >> "%LOG_FILE%"
-cd /d "%TEMP%"
-echo Removing temporary folder "%FOLDER%" >> "%LOG_FILE%"
-(goto) 2>nul & rmdir /s /q "%FOLDER%" >nul 2>&1 & exit
+rem Only delete the *folder containing this script* if deletion succeeded.
+rem Resolve the script's directory and ensure it matches %FOLDER% (safety).
+for %%A in ("%BATCH_FILE%") do set "BATCH_DIR=%%~dpA"
+for %%A in ("%BATCH_DIR:~0,-1%") do set "BATCH_DIR_NORM=%%~fA"
+for %%A in ("%FOLDER%") do set "FOLDER_NORM=%%~fA"
+
+if /I "!BATCH_DIR_NORM!"=="!FOLDER_NORM!" (
+    echo Scheduling removal of script folder "!FOLDER_NORM!" >> "%LOG_FILE%"
+    rem Use a new shell after short delay so we don't delete while running.
+    start "" /min cmd /c "timeout /t 2 /nobreak >nul & rmdir /s /q ""!FOLDER_NORM!"""
+) else (
+    echo Skipping folder removal; script not inside target folder >> "%LOG_FILE%"
+)
+
+:done
+endlocal
+exit /b 0

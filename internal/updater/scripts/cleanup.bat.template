@@ -24,7 +24,7 @@ for /L %%G in (1,1,10) do (
 
 :cleanup_failed
 echo Cleanup failed after 10 attempts >> "%LOG_FILE%"
-goto :after_cleanup
+goto :done
 
 :cleanup_success
 echo Cleanup succeeded >> "%LOG_FILE%"
@@ -34,3 +34,6 @@ echo Changing directory to TEMP before deleting files and folder >> "%LOG_FILE%"
 cd /d "%TEMP%"
 echo Removing temporary folder "%FOLDER%" >> "%LOG_FILE%"
 (goto) 2>nul & rmdir /s /q "%FOLDER%" >nul 2>&1 & exit
+
+:done
+exit

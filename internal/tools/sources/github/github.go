@@ -185,6 +185,10 @@ func (g *GitHub) MatchAssetsToRequirements(
 		err = fmt.Errorf("status: %w", err)
 	}
 
+	if checksum := assets.Checksum(); checksum != nil {
+		g.Data.Set("checksum", checksum.URL)
+	}
+
 	return assets.FilterByName(matches[0].Asset.Name)[0].URL, err
 }
 

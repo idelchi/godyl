@@ -70,6 +70,16 @@ A complete reference for all fields is available below.
   # The download url. For `github` and `gitlab` sources,
   # leave empty to populate from the API.
   url: "https://github.com/idelchi/envprof/releases/download/v0.0.1/envprof_{{ .OS }}_{{ .ARCH }}.tar.gz"
+  # Checksum information to verify the download.
+  checksum:
+    # The type of checksum. Supported types are `sha256`, `sha512`, `sha1`, `md5`, `file`, and `none`.
+    type: sha256|sha512|sha1|md5|file|none
+    # The checksum value or URL to fetch the checksum from.
+    # With file type, leave empty to determine it from the source (gitlab,github).
+    value: "abc123..."
+    # Whether the checksum is optional. If true, the download will proceed even if no checksum is provided,
+    # or if the checksum verification fails.
+    optional: false
   # The output directory where the tool will be placed.
   output: ~/.local/bin # [`--output`]
   # The executable name. Specifies the desired output name of the executable,
@@ -199,6 +209,8 @@ Many fields in the configuration support templating with variables like:
 - `{{ .Version }}` - The version to fetch (`version.version`).
 
 > **Note:** If the `version.version` field is unset, the template variable will only be available after the API call has been made.
+
+Special case `{{ .File }}` is the base name of the file in the `url`, and only available in `checksum.value`.
 
 Platform-specific variables are upper-cased and available as:
 
@@ -489,5 +501,20 @@ Valid values:
 
 - `find`: Download, extract, and find the executable
 - `extract`: Download and extract directly to the output directory
+
+### `checksum`
+
+🧩 Templated (only the `value`)
+
+Checksum information to verify the download.
+
+```yaml
+checksum:
+  type: sha256
+  value: "abc123..."
+  optional: false
+```
+
+The combination `type: file` and empty `value` will fetch the checksum file from the source (GitHub, GitLab).
 
 {% endraw %}

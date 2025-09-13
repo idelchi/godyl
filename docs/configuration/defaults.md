@@ -21,6 +21,8 @@ The default configuration is embedded in the `godyl` binary and looks like this:
 default:
   # Output as for example `.bin-linux-amd64/<tool>`
   output: .bin-{{ .OS }}-{{ .ARCH_LONG }}
+  checksum:
+    type: file
   exe:
     patterns:
       # Search for the executable in all subdirectories

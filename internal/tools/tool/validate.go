@@ -177,8 +177,25 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 		t.URL = populator.Get("url")
 	}
 
+	if t.Checksum.Value == "" {
+		t.Checksum.Value = populator.Get("checksum")
+	}
+
+	if !t.Checksum.IsSet() && !t.Checksum.Optional && t.Checksum.Type != "none" {
+		return result.WithFailed("no checksum could be determined, please provide one or set as optional")
+	}
+
+	if t.Checksum.Optional && !t.Checksum.IsSet() {
+		t.Checksum.Type = "none" // No need to check anything.
+	}
+
 	// Update the URL to the template engine.
 	tmpl.AddValue("URL", t.URL)
+	tmpl.AddValue("File", file.File(t.URL).Unescape().Base())
+
+	if err := tmpl.ApplyAndSet(&t.Checksum.Value); err != nil {
+		return result.WithFailed(fmt.Sprintf("templating checksum value: %s", err))
+	}
 
 	// Append platform-specific extensions to aliases.
 	for i, alias := range t.Aliases {
@@ -252,6 +269,7 @@ func (t *Tool) Download(_ context.Context, progressListener getter.ProgressTrack
 		Aliases:     t.Aliases,
 		Mode:        t.Mode.String(),
 		Env:         t.Env,
+		Checksum:    t.Checksum,
 		NoVerifySSL: t.NoVerifySSL,
 		// TODO(Idelchi): Pass OS and Architecture as they are and let downstream decide if they want Type(), or
 		// //nolint:godox // TODO comment provides valuable context for future development

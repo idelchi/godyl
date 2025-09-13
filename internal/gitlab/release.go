@@ -15,7 +15,7 @@ type Release struct {
 	// Name is the name of the release.
 	Name string `json:"name"`
 	// Tag is the tag associated with the release (e.g., version number).
-	Tag string `json:"tag_name"` //nolint:tagliatelle // GitLab API uses snake_case field names
+	Tag string `json:"tag_name"`
 	// Assets is a collection of assets attached to the release.
 	Assets Assets `json:"assets"`
 }
@@ -36,7 +36,7 @@ func (r *Release) FromRepositoryRelease(release *gitlab.Release) error {
 	for _, link := range release.Assets.Links {
 		assets = append(assets, Asset{
 			Name: link.Name,
-			URL:  link.URL,
+			URL:  link.DirectAssetURL,
 			Type: string(link.LinkType), // Convert LinkTypeValue to string
 		})
 	}

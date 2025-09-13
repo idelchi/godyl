@@ -11,6 +11,7 @@ import (
 	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/tools/aliases"
+	"github.com/idelchi/godyl/internal/tools/checksum"
 	"github.com/idelchi/godyl/internal/tools/command"
 	"github.com/idelchi/godyl/internal/tools/exe"
 	"github.com/idelchi/godyl/internal/tools/fallbacks"
@@ -77,6 +78,8 @@ type Tool struct {
 	NoCache bool `json:"no-cache"      mapstructure:"no-cache"                                        yaml:"no-cache"`
 	// Inherit is used to determine which default configurations the tool should inherit from.
 	Inherit *inherit.Inherit `json:"inherit"       mapstructure:"inherit"                                         yaml:"inherit"`
+	// Checksum defines the checksum configuration for verifying the integrity of the tool.
+	Checksum checksum.Checksum `json:"checksum"      mapstructure:"checksum"                                        yaml:"checksum"`
 	// Cache can be carried around for various checks
 	cache *cache.Cache `json:"-"`
 	// currentResult stores the latest operation result

@@ -215,6 +215,7 @@ func parseGitHubReleaseAssets(html string) ([]Asset, error) {
 				assets = append(assets, Asset{
 					Name: name,
 					URL:  url,
+					Type: "text/plain", // GitHub does not provide MIME type in this context
 				})
 			}
 		}

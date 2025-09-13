@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/detect/platform"
 	"github.com/idelchi/godyl/internal/match"
 )
@@ -43,4 +44,17 @@ func (as Assets) Match(requirements match.Requirements) (matches match.Results) 
 	matches = assets.Select(requirements)
 
 	return matches
+}
+
+// Checksum returns the first asset that appears to be a checksum file, or nil if none found.
+func (as Assets) Checksum() *Asset {
+	for _, asset := range as {
+		if asset.IsChecksumLike() {
+			debug.Debug("found checksum asset: %q", asset.Name)
+
+			return &asset
+		}
+	}
+
+	return nil
 }

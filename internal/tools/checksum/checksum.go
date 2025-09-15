@@ -109,13 +109,13 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 				c.Value = val
 
 				return nil
-			} else {
-				for checksum := range checksums {
-					if strings.Contains(checksum, c.Entry) {
-						c.Value = checksums[checksum]
+			}
 
-						return nil
-					}
+			for checksum := range checksums {
+				if strings.Contains(checksum, c.Entry) {
+					c.Value = checksums[checksum]
+
+					return nil
 				}
 			}
 
@@ -130,6 +130,7 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 		return nil
 	}
 
+	//nolint:nestif // TODO(Idelchi): Refactor this whole package
 	if path, ok := strings.CutPrefix(c.Value, "path:"); ok {
 		bytes, err := file.New(path).Read()
 		if err != nil {
@@ -145,13 +146,13 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 				c.Value = val
 
 				return nil
-			} else {
-				for checksum := range checksums {
-					if strings.Contains(checksum, c.Entry) {
-						c.Value = checksums[checksum]
+			}
 
-						return nil
-					}
+			for checksum := range checksums {
+				if strings.Contains(checksum, c.Entry) {
+					c.Value = checksums[checksum]
+
+					return nil
 				}
 			}
 

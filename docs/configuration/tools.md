@@ -77,8 +77,7 @@ A complete reference for all fields is available below.
     # Value can be one of the following:
     # For `Type=[sha256 sha512 sha1 md5]` it can be:
     #  - A value (the checksum)
-    #  - A URL or file path containing ONLY the checksum value for the specific asset, when prefixed by
-    #   `url:` or `path:`
+    #  - when prefixed by `url:` or `path:`, a URL or file path containing a single checksum value (or a BSD or GNU style checksum file, see `entry`).
     # For `Type=file` it can be:
     #  - A URL or file path containing BSD or GNU style checksums
     #  - Empty to determine it from the source [gitlab, github].
@@ -86,7 +85,9 @@ A complete reference for all fields is available below.
     value: "[abc123...|url:https://example.com/checksum.txt|path:./checksum.txt]|https://example.com/checksums.txt"
     # For `Type=file`, pattern to match to select the correct checksum file from the assets.
     pattern: "checksum*.txt"
-    # Entry may be used when value contains `url` or `path` which points to a file with multiple entries.
+    # Entry may be used when value contains `url:` or `path:` which points to a file with multiple entries.
+    # Mainly used as workaround when the `go-getter` library cannot select the correct asset.
+    # Try `type: file` first, and if it doesn't work, use `type: sha256` with `value: url:...` and `entry`.
     entry: "{{ .File }}"
   # The output directory where the tool will be placed.
   output: ~/.local/bin # [`--output`]

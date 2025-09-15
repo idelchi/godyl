@@ -26,7 +26,7 @@
     - docker
 
 - name: oras-project/oras
-  description: A tool for managing container images and artifacts in OCI registries.
+  description: A tool for managing container images and artifacts in OCI registries
   tags:
     - docker
 
@@ -143,7 +143,7 @@
     - terminal
 
 - name: ldez/traefik-certs-dumper
-  description:  A tool to dump ACME certs from Traefik
+  description: A tool to dump ACME certs from Traefik
   version:
     # Doesn't have a version command
     commands: []
@@ -267,7 +267,7 @@
     - terminal
 
 - name: so-fancy/diff-so-fancy
-  description: Good-looking diffs with diff-highlight and more.
+  description: Good-looking diffs with diff-highlight and more
   checksum: none
   hints:
     # No extension for the binary
@@ -731,7 +731,7 @@
     - terminal
 
 - name: ofabry/go-callvis
-  description: A development tool to help visualize call graph of a Go program using interactive view.
+  description: A development tool to help visualize call graph of a Go program using interactive view
   checksum: none
   source:
     type: go
@@ -739,12 +739,12 @@
     - terminal
 
 - name: astral-sh/uv
-  description: An extremely fast Python package and project manager, written in Rust.
+  description: An extremely fast Python package and project manager, written in Rust
   tags:
     - terminal
 
 - name: astral-sh/ruff
-  description: An extremely fast Python linter and code formatter, written in Rust.
+  description: An extremely fast Python linter and code formatter, written in Rust
   tags:
     - terminal
 
@@ -754,29 +754,29 @@
     - kubernetes
 
 - name: argoproj/argo-cd
-  description: Declarative continuous deployment for Kubernetes.
+
   exe: argocd
   tags:
     - terminal
 
 - name: wagoodman/dive
-  description: A tool for exploring each layer in a Docker image.
+  description: A tool for exploring each layer in a Docker image
   tags:
     - terminal
 
 - name: istio/istio
-  description: An open platform to connect, manage, and secure microservices.
+  description: An open platform to connect, manage, and secure microservices
   exe: istioctl
   tags:
     - kubernetes
 
 - name: kubernetes-sigs/kustomize
-  description: A tool to customize Kubernetes YAML configurations.
+  description: A tool to customize Kubernetes YAML configurations
   tags:
     - kubernetes
 
 - name: denisidoro/navi
-  description: An interactive cheatsheet tool for the command line.
+  description: An interactive cheatsheet tool for the command line
   checksum: none
   skip:
     reason: "navi is not available on darwin"
@@ -785,7 +785,7 @@
     - terminal
 
 - name: open-policy-agent/opa
-  description: An open-source policy engine that enables unified policy enforcement across the stack.
+  description: An open-source policy engine that enables unified policy enforcement across the stack
   hints:
     # No extension for the binary
     - pattern: ^[^.]+$
@@ -797,12 +797,12 @@
     - kubernetes
 
 - name: StyraInc/regal
-  description: A tool for managing and validating Rego policies.
+  description: A tool for managing and validating Rego policies
   tags:
     - terminal
 
 - name: tsl0922/ttyd
-  description: A command-line tool for sharing terminal sessions over the web.
+  description: A command-line tool for sharing terminal sessions over the web
   hints:
     - pattern: win32
       match: '{{ if eq .OS "windows" }}required{{ else }}excluded{{ end }}'
@@ -811,12 +811,12 @@
     - terminal
 
 - name: crate-ci/typos
-  description: A tool for detecting and correcting typos in source code.
+  description: A tool for detecting and correcting typos in source code
   tags:
     - terminal
 
 - name: koalaman/shellcheck
-  description: A shell script static analysis tool that helps to find bugs in shell scripts.
+  description: A shell script static analysis tool that helps to find bugs in shell scripts
   skip:
     reason: "shellcheck is not available on windows"
     condition: '{{ eq .OS "windows" }}'
@@ -846,7 +846,7 @@
     - terminal
 
 - name: crumbyte/noxdir
-  description: A command-line tool for visualizing and exploring your file system usage.
+  description: A command-line tool for visualizing and exploring your file system usage
   tags:
     - terminal
 
@@ -890,7 +890,7 @@
     - terminal
 
 - name: alexpasmantier/television
-  description: A cross-platform, fast and extensible general purpose fuzzy finder for the terminal.
+  description: A cross-platform, fast and extensible general purpose fuzzy finder for the terminal
   exe: tv
   skip:
     reason: "television is not available on windows"
@@ -925,25 +925,25 @@
     - terminal
 
 - name: regclient/regclient
-  description: Docker and OCI Registry Client in Go and tooling using those libraries.
+  description: Docker and OCI Registry Client in Go and tooling using those libraries
   exe: regctl
   tags:
     - terminal
 
 - name: regclient/regclient
-  description: Docker and OCI Registry Client in Go and tooling using those libraries.
+  description: Docker and OCI Registry Client in Go and tooling using those libraries
   exe: regsync
   tags:
     - terminal
 
 - name: regclient/regclient
-  description: Docker and OCI Registry Client in Go and tooling using those libraries.
+  description: Docker and OCI Registry Client in Go and tooling using those libraries
   exe: regbot
   tags:
     - terminal
 
 - name: openai/codex
-  description: A CLI tool for interacting with OpenAI's Codex models.
+  description: A CLI tool for interacting with OpenAI's Codex models
   exe:
     patterns: "{{ .Exe }}*{{ .EXTENSION }}"
   tags:
@@ -984,7 +984,7 @@
     - terminal
 
 - name: gitlab-org/release-cli
-  description: A command-line tool for managing GitLab releases.
+  description: A command-line tool for managing GitLab releases
   checksum: none
   inherit: gitlab
   tags:

@@ -68,11 +68,11 @@ tasks:
   format:
     deps:
       - generate
-      - task: yaml
-      - task: json
-      - task: docker
-      - task: md
-      - task: ws
+      - task: format:yaml
+      - task: format:json
+      - task: format:docker
+      - task: format:md
+      - task: format:ws
     cmds:
       - task: go:format
 

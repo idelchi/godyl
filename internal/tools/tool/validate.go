@@ -170,6 +170,7 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 		if err := populator.URL(t.Name, nil, t.Version.Version, match.Requirements{
 			Platform: t.Platform,
 			Hints:    *t.Hints.Reduced(),
+			Checksum: t.Checksum.Pattern,
 		}); err != nil {
 			return result.WithFailed(fmt.Sprintf("getting url: %s", err))
 		}
@@ -181,12 +182,8 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 		t.Checksum.Value = populator.Get("checksum")
 	}
 
-	if !t.Checksum.IsSet() && !t.Checksum.Optional && t.Checksum.Type != "none" {
-		return result.WithFailed("no checksum could be determined, please provide one or set as optional")
-	}
-
-	if t.Checksum.Optional && !t.Checksum.IsSet() {
-		t.Checksum.Type = "none" // No need to check anything.
+	if t.NoVerifyChecksum {
+		t.Checksum.Type = "none"
 	}
 
 	// Update the URL to the template engine.
@@ -195,6 +192,20 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 
 	if err := tmpl.ApplyAndSet(&t.Checksum.Value); err != nil {
 		return result.WithFailed(fmt.Sprintf("templating checksum value: %s", err))
+	}
+
+	if err := t.Checksum.Resolve(t.NoVerifySSL); err != nil {
+		return result.WithFailed(fmt.Sprintf("resolving checksum: %s", err))
+	}
+
+	if !t.Checksum.IsSet() && t.Checksum.IsMandatory() {
+		msg := "no checksum could be determined, please provide one"
+
+		if t.Checksum.Pattern != "" {
+			msg += fmt.Sprintf(" or tweak the pattern %q", t.Checksum.Pattern)
+		}
+
+		return result.WithFailed(msg)
 	}
 
 	// Append platform-specific extensions to aliases.
@@ -272,7 +283,6 @@ func (t *Tool) Download(_ context.Context, progressListener getter.ProgressTrack
 		Checksum:    t.Checksum,
 		NoVerifySSL: t.NoVerifySSL,
 		// TODO(Idelchi): Pass OS and Architecture as they are and let downstream decide if they want Type(), or
-		// //nolint:godox // TODO comment provides valuable context for future development
 		// String(), or whatever.
 		OS:   t.Platform.OS.Type(),
 		Arch: t.Platform.Architecture.Type(),

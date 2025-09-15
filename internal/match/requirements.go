@@ -8,6 +8,10 @@ import (
 // Requirements represents the criteria an asset must meet.
 // It includes platform compatibility and a list of hints for name matching.
 type Requirements struct {
-	Hints    hints.Hints
+	// Hints are used to match asset names.
+	Hints hints.Hints
+	// Platform represents the target platform for the asset.
 	Platform detect.Platform
+	// Checksum is a pattern to match checksum assets.
+	Checksum string
 }

@@ -9,6 +9,7 @@ services:
     hostname: godyl
     volumes:
       - .:/home/user/ws
+      - ./.bash_history:/home/user/.bash_history
     extra_hosts:
       - host:host-gateway
     working_dir: /home/user/ws

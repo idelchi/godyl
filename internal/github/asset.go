@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
-
-	"github.com/idelchi/godyl/internal/tools/checksum"
 )
 
 // Asset represents a GitHub release asset with its name, download URL, and content type.
@@ -16,6 +14,8 @@ type Asset struct {
 	URL string `json:"browser_download_url"`
 	// Type is the content type of the asset.
 	Type string `json:"content_type"`
+	// Digest is the checksum digest of the asset, if available.
+	Digest string `json:"digest"`
 }
 
 // Match checks if the asset name matches the given pattern.
@@ -37,9 +37,4 @@ func (a Asset) HasExtension(extension string) (bool, error) {
 
 	// Otherwise, check if the name ends with the specified extension.
 	return strings.HasSuffix(a.Name, extension), nil
-}
-
-// IsChecksumLike determines if the asset is likely a checksum file based on its name and content type.
-func (a Asset) IsChecksumLike() bool {
-	return checksum.IsChecksumLike(strings.ToLower(a.Name))
 }

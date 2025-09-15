@@ -71,5 +71,4 @@ func (dt *Tracker) add(key string) {
 }
 
 // TODO(Idelchi): Implement an additional tracking "FromWhere" method that tracks where the key was set from (e.g.,
-// //nolint:godox // TODO comment provides valuable context for future development
 // command line, config file, etc.)

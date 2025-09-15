@@ -8,8 +8,7 @@ import (
 	"fmt"
 )
 
-// TODO(Idelchi): Make more sane functions. Wrap and Wrapped are confusing. //nolint:godox // TODO comment provides
-// valuable context for future development
+// TODO(Idelchi): Make more sane functions. Wrap and Wrapped are confusing.
 
 // Result represents the outcome of a tool installation operation.
 // It combines a status code with a descriptive message and an optional error.

@@ -42,7 +42,7 @@ func run(input core.Input) error {
 			tool.Source.Type = sources.URL
 		} else {
 			tool.Name = name
-			tool.Source.Type = sources.GITHUB
+			tool.Source.Type = cfg.Download.Source
 		}
 
 		tools.Append(tool)

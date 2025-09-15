@@ -55,8 +55,8 @@ func Download(d Data) (found file.File, err error) {
 		options = append(options, download.WithInsecureSkipVerify())
 	}
 
-	if d.Checksum.Type != "none" {
-		options = append(options, download.WithChecksum(d.Checksum))
+	if d.Checksum.IsMandatory() {
+		options = append(options, download.WithChecksum(d.Checksum.ToQuery()))
 	}
 
 	downloader := download.New(options...)

@@ -1,12 +1,13 @@
 package github
 
 import (
+	"path"
 	"path/filepath"
 	"strings"
 
-	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/detect/platform"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/tools/checksum"
 )
 
 // Assets represents a collection of GitHub release assets.
@@ -46,15 +47,24 @@ func (as Assets) Match(requirements match.Requirements) (matches match.Results) 
 	return matches
 }
 
-// Checksum returns the first asset that appears to be a checksum file, or nil if none found.
-func (as Assets) Checksum() *Asset {
-	for _, asset := range as {
-		if asset.IsChecksumLike() {
-			debug.Debug("found checksum asset: %q", asset.Name)
+// Checksums returns all assets that appear to be checksum files.
+func (as Assets) Checksums(pattern string) checksum.Checksums {
+	checksums := checksum.Checksums{}
 
-			return &asset
+	if pattern != "" {
+		for _, checksum := range checksums {
+			match, err := path.Match(pattern, checksum)
+			if err == nil && match {
+				checksums = append(checksums, checksum)
+			}
 		}
+
+		return checksums
 	}
 
-	return nil
+	for _, asset := range as {
+		checksums = append(checksums, asset.Name)
+	}
+
+	return checksums.IsChecksumLike()
 }

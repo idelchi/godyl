@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
-
-	"github.com/idelchi/godyl/internal/tools/checksum"
 )
 
 // Asset represents a GitLab release asset with its name, download URL, and content type.
@@ -37,17 +35,4 @@ func (a Asset) HasExtension(extension string) (bool, error) {
 
 	// Otherwise, check if the name ends with the specified extension.
 	return strings.HasSuffix(a.Name, extension), nil
-}
-
-// IsChecksumLike determines if the asset is likely a checksum file based on its name and content type.
-func (a Asset) IsChecksumLike() bool {
-	lowerName := strings.ToLower(a.Name)
-
-	for _, indicator := range checksum.Indicators() {
-		if strings.Contains(lowerName, indicator) && strings.Contains(a.Type, "other") {
-			return true
-		}
-	}
-
-	return false
 }

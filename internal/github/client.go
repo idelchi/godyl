@@ -1,7 +1,7 @@
 package github
 
 import (
-	"github.com/google/go-github/v64/github"
+	"github.com/google/go-github/v74/github"
 )
 
 // NewClient creates a new GitHub client.

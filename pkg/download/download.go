@@ -16,7 +16,6 @@ import (
 	retryablehttp "github.com/hashicorp/go-retryablehttp"
 
 	"github.com/idelchi/godyl/internal/debug"
-	"github.com/idelchi/godyl/internal/tools/checksum"
 	"github.com/idelchi/godyl/pkg/generic"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
@@ -28,7 +27,7 @@ type Downloader struct {
 	readTimeout        time.Duration
 	headTimeout        time.Duration
 	insecureSkipVerify bool
-	checksum           checksum.Checksum
+	checksum           string
 
 	// retry settings
 	maxRetries   int
@@ -68,25 +67,21 @@ func New(opts ...Option) *Downloader {
 var ErrDownload = errors.New("download error")
 
 // URLWithChecksum  appends the checksum query parameter to the URL if a checksum is provided.
-func URLWithChecksum(url string, c checksum.Checksum) string {
-	// Append checksum if configured
-	if c.Type != "" {
-		// Direct hash value
-		param := "checksum=" + c.Type + ":" + c.Value
+func URLWithChecksum(url, query string) string {
+	if query == "" {
+		return url
+	}
 
-		if strings.Contains(url, "?") {
-			url += "&" + param
-		} else {
-			url += "?" + param
-		}
+	if strings.Contains(url, "?") {
+		url += "&" + query
+	} else {
+		url += "?" + query
 	}
 
 	return url
 }
 
 // Download fetches url to output (archives auto‑extracted).
-//
-//nolint:gocognit // Complex error handling
 func (d Downloader) Download(url, output string, header ...http.Header) (file.File, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), d.contextTimeout)
 	defer cancel()
@@ -132,64 +127,23 @@ func (d Downloader) Download(url, output string, header ...http.Header) (file.Fi
 		return file.New(), fmt.Errorf("%w: invalid URL: %q", ErrDownload, url)
 	}
 
-	rawURL := url
-
-	url = URLWithChecksum(url, d.checksum)
-
 	req := &getter.Request{
-		Src:              url,
+		Src:              URLWithChecksum(url, d.checksum),
 		Dst:              output,
 		GetMode:          getter.ModeAny,
 		ProgressListener: d.progressListener,
 	}
 
-	debug.Debug("downloading %q to %q", url, output)
+	debug.Debug("downloading %q to %q", URLWithChecksum(url, d.checksum), output)
 
 	res, err := (&getter.Client{Getters: []getter.Getter{httpGetter}}).Get(ctx, req)
-	if err != nil { //nolint:nestif // Complex error handling
-		debug.Debug("tried to download %q to %q", url, output)
+	if err != nil {
 		debug.Debug("error: %v", err)
 
-		var checksumErr *getter.ChecksumError
-
-		if errors.As(err, &checksumErr) || d.checksum.Optional {
-			if errors.As(err, &checksumErr) {
-				debug.Debug("checksum mismatch for %s (got=%x expected=%x)",
-					checksumErr.File, checksumErr.Actual, checksumErr.Expected)
-			}
-
-			if d.checksum.Optional {
-				if errors.As(err, &checksumErr) {
-					debug.Debug("continuing despite checksum mismatch as it is marked optional")
-				} else {
-					debug.Debug("retrying in case the failure was due to some checksum fetch issue")
-				}
-
-				url = rawURL
-
-				req := &getter.Request{
-					Src:              url,
-					Dst:              output,
-					GetMode:          getter.ModeAny,
-					ProgressListener: d.progressListener,
-				}
-
-				debug.Debug("downloading %q to %q", url, output)
-
-				res, err = (&getter.Client{Getters: []getter.Getter{httpGetter}}).Get(ctx, req)
-				if err != nil {
-					debug.Debug("tried to download without checksum %q to %q", req.Src, output)
-					debug.Debug("error: %v", err)
-				}
-			}
-		}
-	}
-
-	if err != nil {
 		return file.New(), fmt.Errorf("%w: getting file: %w", ErrDownload, err)
 	}
 
-	debug.Debug("downloaded %q to %q", rawURL, res.Dst)
+	debug.Debug("downloaded %q to %q", url, res.Dst)
 
 	return file.New(res.Dst), nil
 }

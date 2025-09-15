@@ -74,12 +74,18 @@ A complete reference for all fields is available below.
   checksum:
     # The type of checksum. Supported types are `sha256`, `sha512`, `sha1`, `md5`, `file`, and `none`.
     type: sha256|sha512|sha1|md5|file|none
-    # The checksum value or URL to fetch the checksum from.
-    # With file type, leave empty to determine it from the source (gitlab,github).
-    value: "abc123..."
-    # Whether the checksum is optional. If true, the download will proceed even if no checksum is provided,
-    # or if the checksum verification fails.
-    optional: false
+    # Value can be one of the following:
+    # For `Type=[sha256 sha512 sha1 md5]` it can be:
+    #  - A value (the checksum)
+    #  - A URL or file path containing ONLY the checksum value for the specific asset, when prefixed by
+    #   `url:` or `path:`
+    # For `Type=file` it can be:
+    #  - A URL or file path containing BSD or GNU style checksums
+    #  - Empty to determine it from the source [gitlab, github].
+    #      Either a checksum asset will be used, or the digest field from the asset (if available).
+    value: "[abc123...|url:https://example.com/checksum.txt|path:./checksum.txt]|https://example.com/checksums.txt"
+    # For `Type=file`, pattern to match to select the correct checksum file from the assets.
+    pattern: "checksum*.txt"
   # The output directory where the tool will be placed.
   output: ~/.local/bin # [`--output`]
   # The executable name. Specifies the desired output name of the executable,
@@ -148,6 +154,8 @@ A complete reference for all fields is available below.
       # Specifies the path for the `go install` command.
       # Useful when the installable is not in the default path (e.g `cmd/<tool>` or `.`).
       command: cmd/envprof
+      # Whether to download and install Go if not available locally.
+      download_if_missing: true
   # Run custom commands after the installation (or only commands if `source.type` is `none`).
   commands:
     # The list of commands to run.
@@ -411,11 +419,13 @@ Go source:
 source:
   type: go
   go:
+    base: github.com
     command: cmd/envprof
+    download_if_missing: true
 ```
 
 > **Note**: Choosing `go` as a source or fallback, without having a local installation and the `go` command available, will result in
-> the download of the latest version of `go`.
+> the download of the latest version of `go`, if `download_if_missing` is set to `true`.
 
 #### Templating
 
@@ -512,9 +522,9 @@ Checksum information to verify the download.
 checksum:
   type: sha256
   value: "abc123..."
-  optional: false
+  pattern: "checksum*.txt"
 ```
 
-The combination `type: file` and empty `value` will fetch the checksum file from the source (GitHub, GitLab).
+The combination `type: file` and empty `value` will fetch the checksum file from the source (only `github` & `gitlab` supported).
 
 {% endraw %}

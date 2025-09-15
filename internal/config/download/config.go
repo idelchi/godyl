@@ -12,7 +12,7 @@ type Download struct {
 	shared.Tracker `mapstructure:"-" yaml:"-"`
 
 	Version string       `mapstructure:"version" yaml:"version"`
-	Source  sources.Type `mapstructure:"source"  yaml:"source"  validate:"oneof=github gitlab url none go"`
+	Source  sources.Type `mapstructure:"source"  yaml:"source"  validate:"oneof=github gitlab url"`
 	OS      string       `mapstructure:"os"      yaml:"os"`
 	Arch    string       `mapstructure:"arch"    yaml:"arch"`
 	Output  string       `mapstructure:"output"  yaml:"output"`

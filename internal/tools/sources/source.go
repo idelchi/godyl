@@ -32,8 +32,7 @@ func (t *Type) From(name string) {
 	*t = Type(name)
 }
 
-// TODO(Idelchi): go generate the source type strings //nolint:godox // TODO comment provides valuable context for
-// future development
+// TODO(Idelchi): go generate the source type strings
 
 const (
 	// GITHUB indicates GitHub as the source type.
@@ -49,7 +48,7 @@ const (
 )
 
 // Source represents the configuration for various source types used to retrieve tools.
-// TODO(Idelchi): Add validation. //nolint:godox // TODO comment provides valuable context for future development.
+// TODO(Idelchi): Add validation.
 type Source struct {
 	GitHub github.GitHub
 	URL    url.URL

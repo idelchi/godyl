@@ -24,16 +24,17 @@ import (
 
 // Go represents a Go project configuration that can be installed from GitHub.
 type Go struct {
-	github  *github.GitHub
-	Data    install.Metadata `yaml:"-"`
-	Command string           `yaml:"command"`
-	Base    string           `yaml:"base"`
+	github            *github.GitHub
+	Data              install.Metadata `yaml:"-"`
+	Command           string           `yaml:"command"`
+	Base              string           `yaml:"base"`
+	DownloadIfMissing bool             `yaml:"download_if_missing"`
 }
 
 // Initialize sets up the Go project configuration from the given name.
 // Uses the associated GitHub repository for initialization.
 //
-// TODO(Idelchi): This should be ignored if the version is already set. //nolint:godox // TODO comment provides valuable
+// TODO(Idelchi): This should be ignored if the version is already set.
 // context for future development
 // As a workaround, just return nil for now.
 func (g *Go) Initialize(name string) error {
@@ -65,8 +66,7 @@ func (g *Go) URL(_ string, _ []string, version string, _ match.Requirements) err
 	return nil
 }
 
-// TODO(Idelchi): Remove this at some point - why do we need it? //nolint:godox // TODO comment provides valuable
-// context for future development.
+// TODO(Idelchi): Remove this at some point - why do we need it?
 var mu sync.Mutex //nolint:gochecknoglobals // Global mutex for thread-safe access across package
 
 // Install downloads and builds the Go project using 'go install'.
@@ -76,7 +76,7 @@ var mu sync.Mutex //nolint:gochecknoglobals // Global mutex for thread-safe acce
 func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, found file.File, err error) {
 	mu.Lock()
 
-	binary, err := goi.New(d.NoVerifySSL)
+	binary, err := goi.New(d.NoVerifySSL, g.DownloadIfMissing)
 	if err != nil {
 		mu.Unlock()
 

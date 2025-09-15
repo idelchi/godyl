@@ -160,7 +160,6 @@ func (p *Processor) updateCache(result runner.Result) {
 	item := &cache.Item{
 		ID: result.Tool.ID(),
 		// TODO(Idelchi): Name is too ambiguous and can be used for several tools (especially repos that store multiple
-		// //nolint:godox // TODO comment provides valuable context for future development
 		// tools), consider using something else.
 		Name:       result.Tool.Name,
 		Version:    result.Tool.Version,

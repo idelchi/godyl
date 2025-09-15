@@ -43,6 +43,11 @@ func (f File) Base() string {
 	return filepath.Base(f.String())
 }
 
+// Up returns the parent directory of the file path.
+func (f File) Up() File {
+	return New(filepath.Dir(f.String()))
+}
+
 // Join combines this path with additional components.
 // Returns a new File with the combined path.
 func (f File) Join(paths ...string) File {

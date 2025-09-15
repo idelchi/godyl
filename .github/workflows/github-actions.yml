@@ -47,3 +47,9 @@ jobs:
       - name: Dry install tools
         shell: bash
         run: ./godyl dump tools -e | ./godyl -j 1 -v i - --dry
+        if: github.ref != 'refs/heads/main'
+
+      - name: Install tools
+        shell: bash
+        run: ./godyl dump tools -e | ./godyl -j 1 -v i -
+        if: github.ref == 'refs/heads/main'

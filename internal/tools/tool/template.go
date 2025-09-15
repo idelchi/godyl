@@ -76,6 +76,10 @@ func (t *Tool) TemplateFirst(tmpl *templates.Processor) error {
 		return TemplateError(err, "url.token")
 	}
 
+	if err := tmpl.ApplyAndSet(&t.Checksum.Type); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -27,7 +27,7 @@ The `dump` command provides a way to inspect `godyl`'s configuration, available 
 | `env`                     | Display environment variables that affect the application |
 | `platform`                | Display information about the current platform            |
 | `tools [tools.yml\|-]...` | Display information about available tools                 |
-| `cache [name]`            | Display information about the cache                       |
+| `cache [name...]`         | Display information about the cache                       |
 | `config [key]`            | Display information about the configuration               |
 | `auth`                    | Display information about authentication tokens           |
 
@@ -104,10 +104,12 @@ godyl dump cache
 ### Display cache information for a specific item
 
 ```sh
-godyl dump cache idelchi/envprof
+godyl dump cache idelchi/envprof idelchi/wslint
 ```
 
 Output will show details about the cache, including its location, size, and contents.
+
+Names may use wildcards `*` which matches any sequence of characters.
 
 ## Practical Uses
 

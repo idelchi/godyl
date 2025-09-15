@@ -43,7 +43,7 @@ Most properties can be overridden, with `hints` and `skip` used to help the tool
 
 for the tools listed in the default [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) file.
 
-> **Note**: You'll have a very short journey with this tool without a GitHub API token. To avoid rate limiting when using `github` as a source type, set up an API token and use it with the `--github-token` flag or the `GODYL_GITHUB_TOKEN` environment variable. See [Authentication]({{ site.baseurl }}/commands/index#authentication) for more details. By not using a token, `godyl` will attempt to use the unauthenticated web API, which might lead to rate limiting / blocking if you make too many requests in a short time. As such, the parallelism is set to `1` by default when no token is provided.
+> **Note**: You'll have a very short journey with this tool without a GitHub API token. To avoid rate limiting when using `github` as a source type, set up an API token and use it with the `--github-token` flag or the `GODYL_GITHUB_TOKEN` environment variable. See [Authentication]({{ site.baseurl }}/commands/index#authentication) for more details. By not using a token, `godyl` will attempt to use the unauthenticated web API firstly, which might lead to rate limiting / blocking if you make too many requests in a short time. As such, the parallelism is set to `1` by default when no token is provided.
 
 Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
 

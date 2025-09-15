@@ -13,6 +13,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/internal/data"
+	debugi "github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/tools/mode"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
@@ -146,6 +147,8 @@ func (u *Updater) performUpdate(tool *tool.Tool) error {
 		return err
 	}
 
+	debugi.Debug("Downloaded to: %s", outputDir)
+
 	// Clean up the temporary directory when done
 	defer func() {
 		if err := folder.New(outputDir).Remove(); err != nil {
@@ -155,6 +158,8 @@ func (u *Updater) performUpdate(tool *tool.Tool) error {
 
 	// Replace the existing binary with the newly downloaded version
 	newBinaryPath := filepath.Join(outputDir, tool.Exe.Name)
+	debugi.Debug("Replacing binary with: %s", newBinaryPath)
+
 	if err := u.replaceBinary(newBinaryPath); err != nil {
 		return fmt.Errorf("replacing binary: %w", err)
 	}

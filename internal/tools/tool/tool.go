@@ -9,6 +9,7 @@ import (
 	"github.com/goccy/go-yaml/ast"
 
 	"github.com/idelchi/godyl/internal/cache"
+	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/tools/aliases"
 	"github.com/idelchi/godyl/internal/tools/checksum"
@@ -164,6 +165,8 @@ func (t Tool) GetCurrentVersion() string {
 			return item[0].Version.Version
 		}
 	}
+
+	debug.Debug("no cache hit for %q, parsing version using commands", t.Name)
 
 	// No cache hit, check if we have commands to determine version
 	if t.Version.Commands == nil || len(*t.Version.Commands) == 0 {

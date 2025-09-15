@@ -8,8 +8,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/tools/version"
 	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/wildcard"
 )
 
 // New creates a new cache manager with the specified file as the backend.
@@ -130,6 +132,10 @@ func (c *Cache) GetByName(names ...string) ([]*Item, error) {
 
 	items := make([]*Item, 0, len(names))
 
+	if len(names) == 0 {
+		return c.Get()
+	}
+
 	var errs []error
 
 	for _, name := range names {
@@ -242,7 +248,10 @@ func (c *Cache) get(identifier string) (*Item, error) {
 // getByName retrieves an item from the cache by name.
 func (c *Cache) getByName(name string) (*Item, error) {
 	for _, item := range c.items {
-		if item.Name == name {
+		// if item.Name == name {
+		debug.Debug("matching %q with %q", name, item.Name)
+
+		if wildcard.Match(name, item.Name) {
 			return item, nil
 		}
 	}

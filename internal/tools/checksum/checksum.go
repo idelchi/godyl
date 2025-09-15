@@ -23,6 +23,8 @@ type Checksum struct {
 	// Pattern is an optional glob pattern to consider when selecting the checksum file with the combination
 	// `Type: file` and `Value: ""`. It is ignored for other types.
 	Pattern string
+	// Entry is an optional entry to consider when selecting the checksum from a file containing multiple checksums.
+	Entry string
 }
 
 // UnmarshalYAML implements custom YAML unmarshaling for Checksum configuration.
@@ -43,8 +45,9 @@ func (c *Checksum) IsMandatory() bool {
 	return c.Type != "none"
 }
 
-// Resolve determines the value type if type is not none or file, and the value
-// looks url/path-like.
+// Resolve determines the actual checksum value based on its type and value.
+//
+//nolint:gocognit,funlen // TODO(Idelchi): Refactor this whole package
 func (c *Checksum) Resolve(skipVerifySSL bool) error {
 	// For none and file type, do nothing
 	if c.Type == "none" {
@@ -61,11 +64,16 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 		}
 	}
 
+	if c.Type == "file" && c.Entry != "" {
+		return errors.New("cannot use 'entry' with checksum type 'file'")
+	}
+
 	// For file type, do nothing
 	if c.Type == "file" {
 		return nil
 	}
 
+	//nolint:nestif // TODO(Idelchi): Refactor this whole package
 	if url, ok := strings.CutPrefix(c.Value, "url:"); ok {
 		options := []download.Option{}
 
@@ -92,7 +100,29 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 			return fmt.Errorf("reading checksum file from path %q: %w", dir.Path(), err)
 		}
 
-		c.Value = strings.TrimSpace(string(bytes))
+		content := string(bytes)
+
+		if c.Entry != "" {
+			checksums := ParseChecksumFile(content)
+
+			if val, ok := checksums[c.Entry]; ok {
+				c.Value = val
+
+				return nil
+			}
+
+			for checksum := range checksums {
+				if strings.Contains(checksum, c.Entry) {
+					c.Value = checksums[checksum]
+
+					return nil
+				}
+			}
+
+			return fmt.Errorf("entry %q not found in checksum file from %q", c.Entry, url)
+		}
+
+		c.Value = strings.TrimSpace(content)
 
 		// If c.Value contains spaces, the first part is the checksum type
 		c.Value, _, _ = strings.Cut(c.Value, " ")
@@ -100,13 +130,36 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 		return nil
 	}
 
+	//nolint:nestif // TODO(Idelchi): Refactor this whole package
 	if path, ok := strings.CutPrefix(c.Value, "path:"); ok {
 		bytes, err := file.New(path).Read()
 		if err != nil {
 			return fmt.Errorf("reading checksum file from path %q: %w", path, err)
 		}
 
-		c.Value = strings.TrimSpace(string(bytes))
+		content := string(bytes)
+
+		if c.Entry != "" {
+			checksums := ParseChecksumFile(content)
+
+			if val, ok := checksums[c.Entry]; ok {
+				c.Value = val
+
+				return nil
+			}
+
+			for checksum := range checksums {
+				if strings.Contains(checksum, c.Entry) {
+					c.Value = checksums[checksum]
+
+					return nil
+				}
+			}
+
+			return fmt.Errorf("entry %q not found in checksum file from %q", c.Entry, path)
+		}
+
+		c.Value = strings.TrimSpace(content)
 
 		// If c.Value contains spaces, the first part is the checksum type
 		c.Value, _, _ = strings.Cut(c.Value, " ")

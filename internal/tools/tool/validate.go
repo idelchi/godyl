@@ -182,7 +182,7 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 		t.Checksum.Value = populator.Get("checksum")
 	}
 
-	if t.NoVerifyChecksum {
+	if !t.NoVerifyChecksum && !t.Source.Type.SupportsChecksum() {
 		t.Checksum.Type = "none"
 	}
 

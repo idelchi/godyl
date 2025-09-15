@@ -5,21 +5,25 @@
 package goc
 
 import (
-	"errors"
 	"fmt"
+	"os"
+	"path"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"sync"
 
 	"github.com/hashicorp/go-getter/v2"
 
-	"github.com/idelchi/godyl/internal/data"
+	"github.com/idelchi/godyl/internal/debug"
+	"github.com/idelchi/godyl/internal/detect/platform"
 	"github.com/idelchi/godyl/internal/goi"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
 // Go represents a Go project configuration that can be installed from GitHub.
@@ -91,16 +95,24 @@ func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, f
 		GOARCH: d.Arch,
 	}
 
-	folder, err := data.CreateUniqueDirIn()
-	if err != nil {
-		return "", "", fmt.Errorf("creating random dir: %w", err)
-	}
+	crossCompiling := d.OS != runtime.GOOS || d.Arch != runtime.GOARCH
 
-	installer.Binary.Env.Append(
-		goi.Env{
-			"GOBIN": folder.Path(),
-		},
-	)
+	var outFolder folder.Folder
+
+	if value, ok := installer.Binary.Env["GOPATH"]; ok {
+		outFolder = folder.New(filepath.Join(value, "bin"))
+	} else if bin, ok := os.LookupEnv("GOBIN"); ok {
+		outFolder = folder.New(bin)
+	} else if goPath, ok := os.LookupEnv("GOPATH"); ok {
+		outFolder = folder.New(filepath.Join(goPath, "bin"))
+	} else {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			home = os.Getenv("HOME")
+		}
+
+		outFolder = folder.New(filepath.Join(home, "go", "bin"))
+	}
 
 	name := strings.TrimSuffix(d.Exe, filepath.Ext(d.Exe))
 
@@ -122,19 +134,40 @@ func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, f
 		}
 	}
 
-	defer func() {
-		if removeErr := folder.Remove(); removeErr != nil {
-			err = errors.Join(err, removeErr)
-		}
-	}()
+	var (
+		os        platform.OS
+		extension platform.Extension
+	)
 
-	for _, path := range paths {
-		output, err = installer.Install(path)
+	_ = os.ParseFrom(runtime.GOOS)
+
+	for _, pth := range paths {
+		output, err = installer.Install(pth)
+		debug.Debug("go install output: %q", output)
+		debug.Debug("successful path was: %q", pth)
+
 		if err == nil {
-			d.Path = path
+			d.Path = pth
+
+			last := path.Base(pth)
+			name, _, _ := strings.Cut(last, "@")
+
+			if crossCompiling {
+				outFolder = outFolder.Join(fmt.Sprintf("%s_%s", d.OS, d.Arch))
+
+				_ = os.ParseFrom(d.OS)
+			}
+
+			extension.ParseFrom(os)
+
+			name = fmt.Sprintf("%s%s", name, extension)
+
+			d.Patterns = []string{name}
+
+			debug.Debug("Searching in %q for %q", outFolder.Path(), d.Patterns)
 
 			found, findErr := install.FindAndSymlink(
-				file.New(folder.Path()),
+				file.New(outFolder.Path()),
 				d,
 			)
 

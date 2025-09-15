@@ -49,7 +49,7 @@ func New(noVerifySSL, downloadIfMissing bool) (binary Binary, err error) {
 	if path, err := binary.Find(data.GoDir().Path()); err == nil {
 		binary.File = path
 		binary.Dir = folder.New(binary.File.Dir())
-		binary.Env.Default(binary.Dir.Path())
+		binary.Env.Default(data.GoDir().Path())
 
 		return binary, nil
 	}

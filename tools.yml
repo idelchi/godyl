@@ -309,9 +309,7 @@
     commands: []
   exe:
     name: sshed
-    patterns:
-      - "*sshed*"
-      - cmd
+    patterns: "*sshed*"
   fallbacks:
     - go
   hints:
@@ -754,7 +752,7 @@
     - kubernetes
 
 - name: argoproj/argo-cd
-
+  description: Declarative continuous deployment for Kubernetes
   exe: argocd
   tags:
     - terminal

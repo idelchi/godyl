@@ -84,6 +84,7 @@ default:
     type: github
     go:
       base: github.com
+      download_if_missing: true
   mode: find
   strategy: sync
   version:

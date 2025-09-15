@@ -47,6 +47,18 @@ const (
 	GO Type = "go"
 )
 
+// SupportsChecksum returns true if the source type supports checksum verification.
+func (t Type) SupportsChecksum() bool {
+	switch t {
+	case GITHUB, GITLAB, URL:
+		return true
+	case NONE, GO:
+		return false
+	default:
+		return false
+	}
+}
+
 // Source represents the configuration for various source types used to retrieve tools.
 // TODO(Idelchi): Add validation.
 type Source struct {

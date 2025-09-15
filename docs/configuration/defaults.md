@@ -101,6 +101,7 @@ default:
     type: github
     go:
       base: github.com
+      download_if_missing: false
   mode: find
   strategy: sync
   version:

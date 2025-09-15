@@ -22,9 +22,9 @@ jobs:
       matrix:
         os:
           - ubuntu-24.04
-          # - ubuntu-24.04-arm
-          # - windows-2022
-          # - macos-14
+          - ubuntu-24.04-arm
+          - windows-2022
+          - macos-14
     runs-on: ${{ matrix.os }}
     env:
       GODYL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

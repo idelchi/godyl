@@ -17,6 +17,10 @@
 
 - name: bcicen/ctop
   description: Top-like interface for container metrics
+  checksum:
+    # Set checksum to `none` for ARM since there's an issue with parsing
+    # arm/arm64 from the checksums (arm is selected instead of arm64)
+    type: '{{ if .IS_ARM }}none{{ else }}path{{ end }}'
   skip:
     reason: "ctop is not available for darwin"
     condition: '{{ eq .OS "darwin" }}'
@@ -82,10 +86,6 @@
   checksum:
     type: sha256
     value: url:{{ trimSuffix ".tar.gz" .URL }}.sha256
-  # hints:
-  #   - pattern: "{{ .OS }}"
-  #     weight: -1
-  #     type: contains
   tags:
     - kubernetes
 

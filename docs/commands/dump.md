@@ -109,7 +109,7 @@ godyl dump cache idelchi/envprof idelchi/wslint
 
 Output will show details about the cache, including its location, size, and contents.
 
-Supports simple glob patterns where `*` matches any sequence of characters.
+Names may use wildcards `*` which matches any sequence of characters.
 
 ## Practical Uses
 

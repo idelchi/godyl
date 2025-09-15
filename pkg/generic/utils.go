@@ -64,6 +64,15 @@ func SetIfZero[S comparable](input *S, value S) {
 	}
 }
 
+// SafeDereference safely dereferences a pointer.
+func SafeDereference[T any](ptr *T) (zero T) {
+	if ptr != nil {
+		return *ptr
+	}
+
+	return zero
+}
+
 // ExpandHome resolves home directory references in paths.
 // Replaces leading ~ with the user's home directory path.
 // Returns the original path if expansion fails or isn't needed.

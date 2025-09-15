@@ -14,7 +14,7 @@ import (
 func run(input core.Input) error {
 	cfg, embedded, _, _, args := input.Unpack()
 
-	if cfg.Download.Dry {
+	if cfg.Install.Dry {
 		cfg.Verbose = 1
 	}
 

@@ -26,7 +26,7 @@ import (
 
 // TODO(Idelchi): Some subcommands should NOT validate the config file, such as `auth`, `config`.
 
-//nolint:maintidx,funlen,gocognit,gocyclo // Handles multiple configuration sources and validation steps
+//nolint:maintidx,funlen,gocognit,gocyclo,cyclop // Handles multiple configuration sources and validation steps
 func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error {
 	debug.Debug("[PersistentPreRunE root] Current command: %s\n", cmd.CommandPath())
 	debug.Debug("[PersistentPreRunE root] Called from: %s\n", calledFrom.CommandPath())

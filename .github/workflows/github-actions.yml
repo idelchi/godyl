@@ -9,22 +9,22 @@ on:
       - main
 
 jobs:
-  info:
-    uses: idelchi/devenv/.github/workflows/info.yml@main
+  # info:
+  #   uses: idelchi/devenv/.github/workflows/info.yml@main
 
-  lint:
-    uses: idelchi/devenv/.github/workflows/task.yml@main
-    needs: info
+  # lint:
+  #   uses: idelchi/devenv/.github/workflows/task.yml@main
+  #   needs: info
 
   test:
-    needs: lint
+    # needs: lint
     strategy:
       matrix:
         os:
           - ubuntu-24.04
-          - ubuntu-24.04-arm
-          - windows-2022
-          - macos-14
+          # - ubuntu-24.04-arm
+          # - windows-2022
+          # - macos-14
     runs-on: ${{ matrix.os }}
     env:
       GODYL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

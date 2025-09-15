@@ -159,8 +159,10 @@ func (f *TableFormatter) renderTable(results []runner.Result) string {
 func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 	tool := result.Tool
 
+	const na = "n/a"
+
 	// Format file/URL
-	fileDisplay := "n/a"
+	fileDisplay := na
 
 	if tool.URL != "" {
 		fileDisplay = file.File(tool.URL).Unescape().Base()
@@ -168,7 +170,7 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 
 	// Format executable name
 	exeName := file.New(tool.Exe.Name).WithoutExtension().String()
-	if tool.Mode == "extract" && fileDisplay != "n/a" {
+	if tool.Mode == "extract" && fileDisplay != na {
 		exeName = fileDisplay
 	}
 
@@ -178,7 +180,7 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 		message = "failed, see below for details"
 	}
 
-	checksum := "n/a"
+	checksum := na
 
 	const maxChecksumDisplay = 8
 
@@ -192,7 +194,7 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 	}
 
 	if checksum == "" {
-		checksum = "n/a"
+		checksum = na
 	}
 
 	return table.Row{

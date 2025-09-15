@@ -66,6 +66,15 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 		return nil
 	}
 
+	// TODO(Idelchi): Extend logic below to resolve the ctop issue:
+	// 				  If Entry is provided, that particular entry should be used to extract the correct checksum
+	// Example:
+	// ctop:
+	//   checksum:
+	//     type: sha256
+	//     value: url:https://example.com/checksum.sha256
+	//     entry: {{ .FILE }}
+
 	if url, ok := strings.CutPrefix(c.Value, "url:"); ok {
 		options := []download.Option{}
 
@@ -120,4 +129,37 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 // ToQuery converts the checksum to a query string format.
 func (c *Checksum) ToQuery() string {
 	return "checksum=" + c.Type + ":" + c.Value
+}
+
+// ParseChecksums parses a string containing multiple checksums in the format
+func ParseChecksumsGNU(input string) map[string]string {
+	m := make(map[string]string)
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
+		parts := strings.Fields(line)
+		if len(parts) == 2 {
+			m[parts[1]] = parts[0]
+		}
+	}
+	return m
+}
+
+func ParseBSDChecksums(input string) map[string]string {
+	m := make(map[string]string)
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
+		// BSD style: "<filename> (algo) = <hash>"
+		parts := strings.SplitN(line, " = ", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		left := parts[0]
+		hash := parts[1]
+		nameStart := strings.Index(left, "(")
+		nameEnd := strings.Index(left, ")")
+		if nameStart == -1 || nameEnd == -1 || nameEnd <= nameStart {
+			continue
+		}
+		name := left[nameStart+1 : nameEnd]
+		m[name] = hash
+	}
+	return m
 }

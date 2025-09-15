@@ -94,6 +94,7 @@ func (f *TableFormatter) renderTable(results []runner.Result) string {
 		{Name: "Output Path", WidthMax: f.config.MaxWidth},
 		{Name: "OS/ARCH", WidthMax: f.config.MaxWidth},
 		{Name: "File", WidthMax: f.config.MaxWidth},
+		{Name: "Checksum", WidthMax: f.config.MaxWidth},
 		{Name: "Status", WidthMax: f.config.MaxWidth, Bold: true},
 	}
 
@@ -159,7 +160,7 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 	tool := result.Tool
 
 	// Format file/URL
-	fileDisplay := "Not Applicable"
+	fileDisplay := "n/a"
 
 	if tool.URL != "" {
 		fileDisplay = file.File(tool.URL).Unescape().Base()
@@ -167,7 +168,7 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 
 	// Format executable name
 	exeName := file.New(tool.Exe.Name).WithoutExtension().String()
-	if tool.Mode == "extract" && fileDisplay != "Not Applicable" {
+	if tool.Mode == "extract" && fileDisplay != "n/a" {
 		exeName = fileDisplay
 	}
 
@@ -177,12 +178,30 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 		message = "failed, see below for details"
 	}
 
+	checksum := "n/a"
+
+	const maxChecksumDisplay = 8
+
+	if tool.Checksum.IsMandatory() {
+		val := tool.Checksum.Value
+		if len(val) > maxChecksumDisplay {
+			checksum = val[:maxChecksumDisplay] + "..."
+		} else {
+			checksum = val
+		}
+	}
+
+	if checksum == "" {
+		checksum = "n/a"
+	}
+
 	return table.Row{
 		exeName,
 		tool.Version.Version,
 		tool.Output,
 		fmt.Sprintf("%s/%s", tool.Platform.OS.Name, tool.Platform.Architecture.Name),
 		fileDisplay,
+		checksum,
 		message,
 	}
 }

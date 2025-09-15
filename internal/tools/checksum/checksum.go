@@ -23,6 +23,8 @@ type Checksum struct {
 	// Pattern is an optional glob pattern to consider when selecting the checksum file with the combination
 	// `Type: file` and `Value: ""`. It is ignored for other types.
 	Pattern string
+	// Entry is an optional entry to consider when selecting the checksum from a file containing multiple checksums.
+	Entry string
 }
 
 // UnmarshalYAML implements custom YAML unmarshaling for Checksum configuration.
@@ -43,8 +45,9 @@ func (c *Checksum) IsMandatory() bool {
 	return c.Type != "none"
 }
 
-// Resolve determines the value type if type is not none or file, and the value
-// looks url/path-like.
+// Resolve determines the actual checksum value based on its type and value.
+//
+//nolint:gocognit,funlen // TODO(Idelchi): Refactor this whole package
 func (c *Checksum) Resolve(skipVerifySSL bool) error {
 	// For none and file type, do nothing
 	if c.Type == "none" {
@@ -61,20 +64,16 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 		}
 	}
 
+	if c.Type == "file" && c.Entry != "" {
+		return errors.New("cannot use 'entry' with checksum type 'file'")
+	}
+
 	// For file type, do nothing
 	if c.Type == "file" {
 		return nil
 	}
 
-	// TODO(Idelchi): Extend logic below to resolve the ctop issue:
-	// 				  If Entry is provided, that particular entry should be used to extract the correct checksum
-	// Example:
-	// ctop:
-	//   checksum:
-	//     type: sha256
-	//     value: url:https://example.com/checksum.sha256
-	//     entry: {{ .FILE }}
-
+	//nolint:nestif // TODO(Idelchi): Refactor this whole package
 	if url, ok := strings.CutPrefix(c.Value, "url:"); ok {
 		options := []download.Option{}
 
@@ -101,7 +100,21 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 			return fmt.Errorf("reading checksum file from path %q: %w", dir.Path(), err)
 		}
 
-		c.Value = strings.TrimSpace(string(bytes))
+		content := string(bytes)
+
+		if c.Entry != "" {
+			checksums := ParseChecksumFile(content)
+
+			if val, ok := checksums[c.Entry]; ok {
+				c.Value = val
+
+				return nil
+			}
+
+			return fmt.Errorf("entry %q not found in checksum file from %q", c.Entry, url)
+		}
+
+		c.Value = strings.TrimSpace(content)
 
 		// If c.Value contains spaces, the first part is the checksum type
 		c.Value, _, _ = strings.Cut(c.Value, " ")
@@ -115,7 +128,21 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 			return fmt.Errorf("reading checksum file from path %q: %w", path, err)
 		}
 
-		c.Value = strings.TrimSpace(string(bytes))
+		content := string(bytes)
+
+		if c.Entry != "" {
+			checksums := ParseChecksumFile(content)
+
+			if val, ok := checksums[c.Entry]; ok {
+				c.Value = val
+
+				return nil
+			}
+
+			return fmt.Errorf("entry %q not found in checksum file from %q", c.Entry, path)
+		}
+
+		c.Value = strings.TrimSpace(content)
 
 		// If c.Value contains spaces, the first part is the checksum type
 		c.Value, _, _ = strings.Cut(c.Value, " ")
@@ -129,37 +156,4 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 // ToQuery converts the checksum to a query string format.
 func (c *Checksum) ToQuery() string {
 	return "checksum=" + c.Type + ":" + c.Value
-}
-
-// ParseChecksums parses a string containing multiple checksums in the format
-func ParseChecksumsGNU(input string) map[string]string {
-	m := make(map[string]string)
-	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
-		parts := strings.Fields(line)
-		if len(parts) == 2 {
-			m[parts[1]] = parts[0]
-		}
-	}
-	return m
-}
-
-func ParseBSDChecksums(input string) map[string]string {
-	m := make(map[string]string)
-	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
-		// BSD style: "<filename> (algo) = <hash>"
-		parts := strings.SplitN(line, " = ", 2)
-		if len(parts) != 2 {
-			continue
-		}
-		left := parts[0]
-		hash := parts[1]
-		nameStart := strings.Index(left, "(")
-		nameEnd := strings.Index(left, ")")
-		if nameStart == -1 || nameEnd == -1 || nameEnd <= nameStart {
-			continue
-		}
-		name := left[nameStart+1 : nameEnd]
-		m[name] = hash
-	}
-	return m
 }

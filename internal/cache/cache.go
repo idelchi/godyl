@@ -250,6 +250,7 @@ func (c *Cache) getByName(name string) (*Item, error) {
 	for _, item := range c.items {
 		// if item.Name == name {
 		debug.Debug("matching %q with %q", name, item.Name)
+
 		if wildcard.Match(name, item.Name) {
 			return item, nil
 		}

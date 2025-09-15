@@ -27,7 +27,7 @@ The `dump` command provides a way to inspect `godyl`'s configuration, available 
 | `env`                     | Display environment variables that affect the application |
 | `platform`                | Display information about the current platform            |
 | `tools [tools.yml\|-]...` | Display information about available tools                 |
-| `cache [name...]`            | Display information about the cache                       |
+| `cache [name...]`         | Display information about the cache                       |
 | `config [key]`            | Display information about the configuration               |
 | `auth`                    | Display information about authentication tokens           |
 

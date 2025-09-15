@@ -189,9 +189,14 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 	// Update the URL to the template engine.
 	tmpl.AddValue("URL", t.URL)
 	tmpl.AddValue("File", file.File(t.URL).Unescape().Base())
+	tmpl.AddValue("Base", strings.TrimSuffix(strings.TrimSuffix(t.URL, file.File(t.URL).Base()), "/"))
 
 	if err := tmpl.ApplyAndSet(&t.Checksum.Value); err != nil {
 		return result.WithFailed(fmt.Sprintf("templating checksum value: %s", err))
+	}
+
+	if err := tmpl.ApplyAndSet(&t.Checksum.Entry); err != nil {
+		return result.WithFailed(fmt.Sprintf("templating checksum entry: %s", err))
 	}
 
 	if err := t.Checksum.Resolve(t.NoVerifySSL); err != nil {

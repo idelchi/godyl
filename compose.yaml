@@ -28,6 +28,10 @@ services:
         - linux/amd64
         - linux/arm64
 
+  arm64:
+    extends: final
+    platform: linux/arm64
+
   docker:
     extends: build
     build:

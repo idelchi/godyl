@@ -18,9 +18,10 @@
 - name: bcicen/ctop
   description: Top-like interface for container metrics
   checksum:
-    # Set checksum to `none` for ARM since there's an issue with parsing
-    # arm/arm64 from the checksums (arm is selected instead of arm64)
-    type: '{{ if .IS_ARM }}none{{ else }}path{{ end }}'
+    # go-getter selects the incorrect asset on arm64 otherwise
+    type: "{{ if .IS_ARM }}sha256{{ else }}file{{ end }}"
+    value: "{{ if .IS_ARM }}url:{{ .Base }}/sha256sums.txt{{ else }}{{ end }}"
+    entry: "{{ if .IS_ARM }}{{ .File }}{{ else }}{{ end }}"
   skip:
     reason: "ctop is not available for darwin"
     condition: '{{ eq .OS "darwin" }}'
@@ -59,7 +60,7 @@
   url: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
   checksum:
     type: file
-    value: https://get.helm.sh/{{ .File }}.sha256sum
+    value: "{{ .Base }}/{{ .File }}.sha256sum"
   tags:
     - kubernetes
 
@@ -72,10 +73,10 @@
 
 - name: kubernetes/kubernetes
   description: Command-line tool for controlling Kubernetes clusters
-  url: https://dl.k8s.io/{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}
+  url: https://dl.k8s.io/release/{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}
   checksum:
     type: sha256
-    value: url:https://dl.k8s.io/release/{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}.sha256
+    value: url:{{ .Base }}/kubectl{{ .EXTENSION }}.sha256
   exe: kubectl
   aliases: kc
   tags:
@@ -529,7 +530,7 @@
   url: https://releases.hashicorp.com/terraform/{{ .Version | trimPrefix "v" }}/terraform_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   checksum:
     type: file
-    value: https://releases.hashicorp.com/terraform/{{ .Version | trimPrefix "v" }}/terraform_{{ .Version | trimPrefix "v" }}_SHA256SUMS
+    value: '{{ .Base }}/terraform_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
   aliases: tf
   tags:
     - terminal
@@ -539,7 +540,7 @@
   url: https://releases.hashicorp.com/vault/{{ .Version | trimPrefix "v" }}/vault_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   checksum:
     type: file
-    value: https://releases.hashicorp.com/vault/{{ .Version | trimPrefix "v" }}/vault_{{ .Version | trimPrefix "v" }}_SHA256SUMS
+    value: '{{ .Base }}/vault_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
   tags:
     - terminal
 
@@ -548,7 +549,7 @@
   url: https://releases.hashicorp.com/packer/{{ .Version | trimPrefix "v" }}/packer_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   checksum:
     type: file
-    value: https://releases.hashicorp.com/packer/{{ .Version | trimPrefix "v" }}/packer_{{ .Version | trimPrefix "v" }}_SHA256SUMS
+    value: '{{ .Base }}/packer_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
   tags:
     - terminal
 

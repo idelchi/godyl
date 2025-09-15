@@ -3,6 +3,7 @@ package cli
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/MakeNowJust/heredoc/v2"
@@ -273,7 +274,7 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		return err
 	}
 
-	if cfg.Tokens.GitHub == "" {
+	if cfg.Tokens.GitHub == "" && UsesAPI(calledFrom) {
 		if !k.Tracker.IsSet("parallel") {
 			if err := cobraext.SetFlagIfNotSet(flags.Lookup("parallel"), "1"); err != nil {
 				return err
@@ -307,9 +308,20 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		return fmt.Errorf("creating logger: %w", err)
 	}
 
-	if len(logWarning) > 0 && !strings.HasPrefix(calledFrom.CommandPath(), "godyl dump") {
+	if len(logWarning) > 0 {
 		log.Warn(strings.TrimSpace(strings.Join(logWarning, "\n")))
 	}
 
 	return nil
+}
+
+// UsesAPI returns true if the command called from uses any API tokens.
+func UsesAPI(calledFrom *cobra.Command) bool {
+	usesAPI := []string{
+		"godyl install",
+		"godyl download",
+		"godyl sync",
+	}
+
+	return slices.Contains(usesAPI, calledFrom.CommandPath())
 }

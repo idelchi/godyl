@@ -268,6 +268,24 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		return err
 	}
 
+	if cfg.Tokens.GitHub == "" {
+		if !k.Tracker.IsSet("parallel") {
+			if err := cobraext.SetFlagIfNotSet(flags.Lookup("parallel"), "1"); err != nil {
+				return err
+			}
+
+			logWarning = append(
+				logWarning,
+				"GitHub token is not set. Limiting parallelism to 1 to avoid hitting rate limits.",
+			)
+		} else {
+			logWarning = append(
+				logWarning,
+				fmt.Sprintf("GitHub token is not set. Make sure you don't hit rate limits with current level: %v", cfg.Parallel),
+			)
+		}
+	}
+
 	// Parse again with the new defaults
 	if err := core.KCreateSubcommandPreRunE(cmd, cfg, cfg.ShowFunc)(cmd, []string{}); err != nil {
 		return err

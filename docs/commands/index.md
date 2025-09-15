@@ -39,7 +39,7 @@ The following global flags are available:
 | Flag                    | Environment Variable       | Default                               | Description                                          |
 | :---------------------- | :------------------------- | :------------------------------------ | :--------------------------------------------------- |
 | `--log-level`, `-l`     | `GODYL_LOG_LEVEL`          | `info`                                | Log level (silent, debug, info, warn, error, always) |
-| `--parallel`, `-j`      | `GODYL_PARALLEL`           | `runtime.NumCPU()`                    | Parallelism. 0 means unlimited.                      |
+| `--parallel`, `-j`      | `GODYL_PARALLEL`           | `0`                                   | Parallelism. 0 means unlimited.                      |
 | `--cache-dir`           | `GODYL_CACHE_DIR`          | `${XDG_CACHE_HOME}/godyl`             | Path to cache directory                              |
 | `--no-cache`            | `GODYL_NO_CACHE`           | `false`                               | Disable cache                                        |
 | `--no-verify-ssl`, `-k` | `GODYL_NO_VERIFY_SSL`      | `false`                               | Skip SSL verification                                |

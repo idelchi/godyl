@@ -109,6 +109,14 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 				c.Value = val
 
 				return nil
+			} else {
+				for checksum := range checksums {
+					if strings.Contains(checksum, c.Entry) {
+						c.Value = checksums[checksum]
+
+						return nil
+					}
+				}
 			}
 
 			return fmt.Errorf("entry %q not found in checksum file from %q", c.Entry, url)
@@ -137,6 +145,14 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 				c.Value = val
 
 				return nil
+			} else {
+				for checksum := range checksums {
+					if strings.Contains(checksum, c.Entry) {
+						c.Value = checksums[checksum]
+
+						return nil
+					}
+				}
 			}
 
 			return fmt.Errorf("entry %q not found in checksum file from %q", c.Entry, path)

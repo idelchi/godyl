@@ -478,6 +478,11 @@
 
 - name: BurntSushi/ripgrep
   description: recursively searches directories for a regex pattern
+  checksum:
+    # go-getter selects the incorrect asset on arm64 otherwise
+    type: '{{ if eq .OS "darwin" }}sha256{{ else }}file{{ end }}'
+    value: '{{ if eq .OS "darwin" }}url:{{ .URL }}.sha256{{ else }}{{ end }}'
+    entry: '{{ if eq .OS "darwin" }}{{ .File }}{{ else }}{{ end }}'
   exe: rg
   tags:
     - terminal

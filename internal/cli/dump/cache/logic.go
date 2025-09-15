@@ -20,13 +20,7 @@ func run(input core.Input) error {
 		return fmt.Errorf("cache file %q does not exist", cacheFile)
 	}
 
-	var name string
-
-	if len(args) > 0 {
-		name = args[0]
-	}
-
-	cache, err := getCache(cacheFile, name)
+	cache, err := getCache(cacheFile, args...)
 	if err != nil {
 		return err
 	}
@@ -37,18 +31,13 @@ func run(input core.Input) error {
 }
 
 // getCache retrieves the cache from the specified folder and cache type and returns the content.
-func getCache(file file.File, name string) (content any, err error) {
+func getCache(file file.File, names ...string) (content any, err error) {
 	cache := cache.New(file)
 	if err = cache.Load(); err != nil {
 		return nil, fmt.Errorf("loading cache file %q: %w", file, err)
 	}
 
-	if name != "" {
-		content, err = cache.GetByName(name)
-	} else {
-		content, err = cache.Get()
-	}
-
+	content, err = cache.GetByName(names...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to display cache: %w", err)
 	}

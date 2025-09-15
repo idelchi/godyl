@@ -26,7 +26,7 @@ import (
 
 // TODO(Idelchi): Some subcommands should NOT validate the config file, such as `auth`, `config`.
 
-//nolint:maintidx,funlen,gocognit,gocyclo // Handles multiple configuration sources and validation steps
+//nolint:maintidx,funlen,gocognit,gocyclo,cyclop // Handles multiple configuration sources and validation steps
 func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error {
 	debug.Debug("[PersistentPreRunE root] Current command: %s\n", cmd.CommandPath())
 	debug.Debug("[PersistentPreRunE root] Called from: %s\n", calledFrom.CommandPath())
@@ -268,6 +268,11 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		return err
 	}
 
+	// Parse again with the new defaults
+	if err := core.KCreateSubcommandPreRunE(cmd, cfg, root.NoShow)(cmd, []string{}); err != nil {
+		return err
+	}
+
 	if cfg.Tokens.GitHub == "" {
 		if !k.Tracker.IsSet("parallel") {
 			if err := cobraext.SetFlagIfNotSet(flags.Lookup("parallel"), "1"); err != nil {
@@ -286,7 +291,7 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		}
 	}
 
-	// Parse again with the new defaults
+	// Parse last time
 	if err := core.KCreateSubcommandPreRunE(cmd, cfg, cfg.ShowFunc)(cmd, []string{}); err != nil {
 		return err
 	}
@@ -302,8 +307,7 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		return fmt.Errorf("creating logger: %w", err)
 	}
 
-	// Make a simple warning: If the env-file was set from the .envs, the user might be confused
-	if len(logWarning) > 0 {
+	if len(logWarning) > 0 && !strings.HasPrefix(calledFrom.CommandPath(), "godyl dump") {
 		log.Warn(strings.TrimSpace(strings.Join(logWarning, "\n")))
 	}
 

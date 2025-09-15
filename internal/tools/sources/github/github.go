@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/go-getter/v2"
 
+	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/install"
@@ -185,7 +186,24 @@ func (g *GitHub) MatchAssetsToRequirements(
 		err = fmt.Errorf("status: %w", err)
 	}
 
-	return assets.FilterByName(matches[0].Asset.Name)[0].URL, err
+	asset := assets.FilterByName(matches[0].Asset.Name)[0]
+
+	// Check inline digest
+	if asset.Digest != "" {
+		debug.Debug("found asset with digest: %q", asset.Digest)
+		g.Data.Set("checksum", asset.Digest)
+	} else if checksums := assets.Checksums(requirements.Checksum); len(checksums) > 0 {
+		debug.Debug("found checksum assets: %q", checksums)
+
+		preferred := checksums.Preferred(asset.Name)
+		if preferred != "" {
+			checksum := assets.FilterByName(preferred)[0]
+			g.Data.Set("checksum", checksum.URL)
+			debug.Debug("using preferred checksum asset: %q from %q", checksum.URL, asset.Name)
+		}
+	}
+
+	return asset.URL, err
 }
 
 // PopulateOwnerAndRepo sets the Owner and Repo fields from a name string.

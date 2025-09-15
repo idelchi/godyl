@@ -40,8 +40,7 @@ func (p *Platform) Parse() error {
 
 	// Choose the default library if GOOS is overridden and clear the distribution,
 	// since it's impossible to determine the distribution in that case.
-	// TODO(Idelchi): Add flags for --library and --distribution to override these defaults. //nolint:godox // TODO
-	// comment provides valuable context for future development
+	// TODO(Idelchi): Add flags for --library and --distribution to override these defaults.
 	if p.OS.String() != runtime.GOOS {
 		p.Library = p.Library.Default(p.OS, p.Distribution)
 		p.Distribution = platform.Distribution{}

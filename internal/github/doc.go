@@ -12,6 +12,6 @@
 //   - NewClient: Creates a new GitHub API client.
 //   - NewRepository: Creates a new Repository instance for accessing repository data.
 //
-// This package uses the Google GitHub client (github.com/google/go-github/v64) for
+// This package uses the Google GitHub client (github.com/google/go-github/v74) for
 // making API calls and provides additional utilities to handle GitHub data.
 package github

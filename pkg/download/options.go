@@ -11,6 +11,13 @@ import (
 // Option defines a functional option for configuring a Downloader.
 type Option func(*Downloader)
 
+// WithChecksum returns an option that sets the checksum for verifying downloads.
+func WithChecksum(query string) Option {
+	return func(d *Downloader) {
+		d.checksum = query
+	}
+}
+
 // WithProgress returns an option that sets the progress tracker.
 func WithProgress(progressTracker getter.ProgressTracker) Option {
 	return func(d *Downloader) {

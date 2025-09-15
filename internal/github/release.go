@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/google/go-github/v64/github"
+	"github.com/google/go-github/v74/github"
+
+	"github.com/idelchi/godyl/pkg/generic"
 )
 
 // ErrRelease is returned when a release issue is encountered.
@@ -36,30 +38,18 @@ func (r *Release) FromRepositoryRelease(release *github.RepositoryRelease) error
 		}
 
 		assets = append(assets, Asset{
-			Name: *asset.Name,
-			URL:  *asset.BrowserDownloadURL,
-			Type: *asset.ContentType,
+			Name:   generic.SafeDereference(asset.Name),
+			URL:    generic.SafeDereference(asset.BrowserDownloadURL),
+			Type:   generic.SafeDereference(asset.ContentType),
+			Digest: generic.SafeDereference(asset.Digest),
 		})
 	}
 
-	// Get release name, defaulting to empty string if nil
-	var name string
-
-	if release.Name != nil {
-		name = *release.Name
-	}
-
-	var body string
-
-	if release.Body != nil {
-		body = *release.Body
-	}
-
 	*r = Release{
-		Name:   name,
-		Tag:    *release.TagName,
+		Name:   generic.SafeDereference(release.Name),
+		Tag:    generic.SafeDereference(release.TagName),
 		Assets: assets,
-		Body:   body,
+		Body:   generic.SafeDereference(release.Body),
 	}
 
 	return nil

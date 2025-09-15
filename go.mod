@@ -19,7 +19,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0
 	github.com/go-viper/mapstructure/v2 v2.2.1
 	github.com/goccy/go-yaml v1.17.1
-	github.com/google/go-github/v64 v64.0.0
+	github.com/google/go-github/v74 v74.0.0
 	github.com/hashicorp/go-cleanhttp v0.5.2
 	github.com/hashicorp/go-getter/v2 v2.2.3
 	github.com/hashicorp/go-retryablehttp v0.7.7

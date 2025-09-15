@@ -5,35 +5,40 @@
 package goc
 
 import (
-	"errors"
 	"fmt"
+	"os"
+	"path"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"sync"
 
 	"github.com/hashicorp/go-getter/v2"
 
-	"github.com/idelchi/godyl/internal/data"
+	"github.com/idelchi/godyl/internal/debug"
+	"github.com/idelchi/godyl/internal/detect/platform"
 	"github.com/idelchi/godyl/internal/goi"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
 // Go represents a Go project configuration that can be installed from GitHub.
 type Go struct {
-	github  *github.GitHub
-	Data    install.Metadata `yaml:"-"`
-	Command string           `yaml:"command"`
-	Base    string           `yaml:"base"`
+	github            *github.GitHub
+	Data              install.Metadata `yaml:"-"`
+	Command           string           `yaml:"command"`
+	Base              string           `yaml:"base"`
+	DownloadIfMissing bool             `yaml:"download_if_missing"`
 }
 
 // Initialize sets up the Go project configuration from the given name.
 // Uses the associated GitHub repository for initialization.
 //
-// TODO(Idelchi): This should be ignored if the version is already set. //nolint:godox // TODO comment provides valuable
+// TODO(Idelchi): This should be ignored if the version is already set.
 // context for future development
 // As a workaround, just return nil for now.
 func (g *Go) Initialize(name string) error {
@@ -65,8 +70,7 @@ func (g *Go) URL(_ string, _ []string, version string, _ match.Requirements) err
 	return nil
 }
 
-// TODO(Idelchi): Remove this at some point - why do we need it? //nolint:godox // TODO comment provides valuable
-// context for future development.
+// TODO(Idelchi): Remove this at some point - why do we need it?
 var mu sync.Mutex //nolint:gochecknoglobals // Global mutex for thread-safe access across package
 
 // Install downloads and builds the Go project using 'go install'.
@@ -76,7 +80,7 @@ var mu sync.Mutex //nolint:gochecknoglobals // Global mutex for thread-safe acce
 func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, found file.File, err error) {
 	mu.Lock()
 
-	binary, err := goi.New(d.NoVerifySSL)
+	binary, err := goi.New(d.NoVerifySSL, g.DownloadIfMissing)
 	if err != nil {
 		mu.Unlock()
 
@@ -91,16 +95,24 @@ func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, f
 		GOARCH: d.Arch,
 	}
 
-	folder, err := data.CreateUniqueDirIn()
-	if err != nil {
-		return "", "", fmt.Errorf("creating random dir: %w", err)
-	}
+	crossCompiling := d.OS != runtime.GOOS || d.Arch != runtime.GOARCH
 
-	installer.Binary.Env.Append(
-		goi.Env{
-			"GOBIN": folder.Path(),
-		},
-	)
+	var outFolder folder.Folder
+
+	if value, ok := installer.Binary.Env["GOPATH"]; ok {
+		outFolder = folder.New(filepath.Join(value, "bin"))
+	} else if bin, ok := os.LookupEnv("GOBIN"); ok {
+		outFolder = folder.New(bin)
+	} else if goPath, ok := os.LookupEnv("GOPATH"); ok {
+		outFolder = folder.New(filepath.Join(goPath, "bin"))
+	} else {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			home = os.Getenv("HOME")
+		}
+
+		outFolder = folder.New(filepath.Join(home, "go", "bin"))
+	}
 
 	name := strings.TrimSuffix(d.Exe, filepath.Ext(d.Exe))
 
@@ -122,19 +134,40 @@ func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, f
 		}
 	}
 
-	defer func() {
-		if removeErr := folder.Remove(); removeErr != nil {
-			err = errors.Join(err, removeErr)
-		}
-	}()
+	var (
+		os        platform.OS
+		extension platform.Extension
+	)
 
-	for _, path := range paths {
-		output, err = installer.Install(path)
+	_ = os.ParseFrom(runtime.GOOS)
+
+	for _, pth := range paths {
+		output, err = installer.Install(pth)
+		debug.Debug("go install output: %q", output)
+		debug.Debug("successful path was: %q", pth)
+
 		if err == nil {
-			d.Path = path
+			d.Path = pth
+
+			last := path.Base(pth)
+			name, _, _ := strings.Cut(last, "@")
+
+			if crossCompiling {
+				outFolder = outFolder.Join(fmt.Sprintf("%s_%s", d.OS, d.Arch))
+
+				_ = os.ParseFrom(d.OS)
+			}
+
+			extension.ParseFrom(os)
+
+			name = fmt.Sprintf("%s%s", name, extension)
+
+			d.Patterns = []string{name}
+
+			debug.Debug("Searching in %q for %q", outFolder.Path(), d.Patterns)
 
 			found, findErr := install.FindAndSymlink(
-				file.New(folder.Path()),
+				file.New(outFolder.Path()),
 				d,
 			)
 

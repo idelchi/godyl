@@ -32,16 +32,16 @@ When using the `download` command, the tool will be downloaded and extracted dir
 
 ## Flags
 
-| Flag             | Environment Variable     | Default  | Description                                                           |
-| :--------------- | :----------------------- | :------- | :-------------------------------------------------------------------- |
-| `--output`, `-o` | `GODYL_DOWNLOAD_OUTPUT`  | `./bin`  | Output path for the downloaded tools                                  |
-| `--source`       | `GODYL_DOWNLOAD_SOURCE`  | `github` | Source from which to install the tools                                |
-| `--os`           | `GODYL_DOWNLOAD_OS`      | `""`     | Operating system to use for downloading                               |
-| `--arch`         | `GODYL_DOWNLOAD_ARCH`    | `""`     | Architecture to use for downloading                                   |
-| `--hint`         | `GODYL_DOWNLOAD_HINT`    | `[""]`   | Add hint patterns with weight 1                                       |
-| `--version`      | `GODYL_DOWNLOAD_VERSION` | `""`     | Version to download. Will set the `{{ .Version }}` template variable  |
-| `--dry`          | `GODYL_DOWNLOAD_DRY`     | `false`  | Dry run. Will not download, but show what would be done. Implies `-v` |
-| `--pre`          | `GODYL_INSTALL_PRE`      | `false`  | Consider pre-releases when installing tools                           |
+| Flag             | Environment Variable     | Default  | Description                                                                          |
+| :--------------- | :----------------------- | :------- | :----------------------------------------------------------------------------------- |
+| `--output`, `-o` | `GODYL_DOWNLOAD_OUTPUT`  | `./bin`  | Output path for the downloaded tools                                                 |
+| `--source`       | `GODYL_DOWNLOAD_SOURCE`  | `github` | Source from which to install the tools. Only allows for `github`, `gitlab`, or `url` |
+| `--os`           | `GODYL_DOWNLOAD_OS`      | `""`     | Operating system to use for downloading                                              |
+| `--arch`         | `GODYL_DOWNLOAD_ARCH`    | `""`     | Architecture to use for downloading                                                  |
+| `--hint`         | `GODYL_DOWNLOAD_HINT`    | `[""]`   | Add hint patterns with weight 1                                                      |
+| `--version`      | `GODYL_DOWNLOAD_VERSION` | `""`     | Version to download. Will set the `{{ .Version }}` template variable                 |
+| `--dry`          | `GODYL_DOWNLOAD_DRY`     | `false`  | Dry run. Will not download, but show what would be done. Implies `-v`                |
+| `--pre`          | `GODYL_DOWNLOAD_PRE`     | `false`  | Consider pre-releases when installing tools                                          |
 
 ## Examples
 

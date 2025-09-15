@@ -17,7 +17,7 @@
 
 For full documentation, see [homepage](https://idelchi.github.io/godyl)
 
-`godyl` helps with batch-downloading and installing statically compiled binaries from:
+`godyl` helps with batch-downloading, checksum verifying, and installing statically compiled binaries from:
 
 - GitHub releases
 - GitLab releases

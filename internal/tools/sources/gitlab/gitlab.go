@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/go-getter/v2"
 
+	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/gitlab"
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/install"
@@ -166,7 +167,20 @@ func (g *GitLab) MatchAssetsToRequirements(
 		err = fmt.Errorf("status: %w", err)
 	}
 
-	return assets.FilterByName(matches[0].Asset.Name)[0].URL, err
+	asset := assets.FilterByName(matches[0].Asset.Name)[0]
+
+	if checksums := assets.Checksums(requirements.Checksum); len(checksums) > 0 {
+		debug.Debug("found checksum assets: %q", checksums)
+
+		preferred := checksums.Preferred(asset.Name)
+		if preferred != "" {
+			checksum := assets.FilterByName(preferred)[0]
+			g.Data.Set("checksum", checksum.URL)
+			debug.Debug("using preferred checksum asset: %q from %q", checksum.URL, asset.Name)
+		}
+	}
+
+	return asset.URL, err
 }
 
 // PopulateNamespaceAndRepo sets the Namespace and Project fields from a name string.

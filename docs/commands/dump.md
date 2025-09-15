@@ -36,7 +36,7 @@ The `dump` command provides a way to inspect `godyl`'s configuration, available 
 | Flag             | Environment Variable        | Default | Description                |
 | :--------------- | :-------------------------- | :------ | :------------------------- |
 | `--embedded,`-e` | `GODYL_DUMP_TOOLS_EMBEDDED` | `true`  | Show only embedded tools   |
-| `--tags`, `-f`   | `GODYL_DUMP_TOOLS_TAGS`     | `false` | Filter by tags             |
+| `--tags`, `-t`   | `GODYL_DUMP_TOOLS_TAGS`     | `false` | Filter by tags             |
 | `--full`, `-f`   | `GODYL_DUMP_TOOLS_FULL`     | `false` | Show full tool information |
 
 `tags` may use wildcards `*` which matches any sequence of characters.

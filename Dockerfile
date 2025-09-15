@@ -73,17 +73,17 @@ RUN mkdir -p /home/${USER}/.local/bin
 RUN cp bin/godyl /home/${USER}/.local/bin
 RUN mkdir -p $XDG_RUNTIME_DIR && chmod 700 $XDG_RUNTIME_DIR
 
-WORKDIR /home/${USER}
-
+WORKDIR /tmp
 USER root
 RUN rm -rf /tmp/go
 
 USER ${USER}
+WORKDIR /home/${USER}
 
 # Timezone
 ENV TZ=Europe/Zurich
 
-FROM debian:bookworm-slim AS final
+FROM debian:trixie-slim AS final
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \

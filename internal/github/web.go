@@ -2,6 +2,7 @@ package github
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -191,6 +192,9 @@ func (r *Repository) getLatestReleaseInfoFromWebJSON(ctx context.Context) (*WebR
 	return release, nil
 }
 
+// parseGitHubReleaseAssets parses the HTML of a GitHub release page to extract asset information.
+//
+//nolint:gocognit // Complexity is acceptable for this function
 func parseGitHubReleaseAssets(html string) ([]Asset, error) {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
@@ -203,7 +207,7 @@ func parseGitHubReleaseAssets(html string) ([]Asset, error) {
 	doc.Find("li.Box-row").Each(func(_ int, s *goquery.Selection) {
 		// Find the download link
 		link := s.Find("a[href*='/releases/download/']")
-		if link.Length() > 0 {
+		if link.Length() > 0 { //nolint:nestif // Necessary nesting
 			href, exists := link.Attr("href")
 			if exists {
 				// Extract the filename from the link text
@@ -212,9 +216,31 @@ func parseGitHubReleaseAssets(html string) ([]Asset, error) {
 				// Build the full URL
 				url := "https://github.com" + href
 
+				// Find the digest - it's in a span with class "Truncate-text"
+				// within the color-fg-muted section
+				var digest string
+
+				const expectedParts = 2
+
+				s.Find("span.Truncate-text").Each(func(_ int, span *goquery.Selection) {
+					text := strings.TrimSpace(span.Text())
+					// Digests are in format "algo:hexvalue" where algo could be sha256, sha512, md5, etc.
+					if strings.Contains(text, ":") {
+						parts := strings.SplitN(text, ":", expectedParts)
+						if len(parts) == expectedParts {
+							// Check if second part is valid hex
+							if _, err := hex.DecodeString(parts[1]); err == nil {
+								digest = text // Store the whole "algo:value"
+							}
+						}
+					}
+				})
+
 				assets = append(assets, Asset{
-					Name: name,
-					URL:  url,
+					Name:   name,
+					URL:    url,
+					Type:   "text/plain", // GitHub does not provide MIME type in this context
+					Digest: digest,
 				})
 			}
 		}

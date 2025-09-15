@@ -21,6 +21,8 @@ The default configuration is embedded in the `godyl` binary and looks like this:
 default:
   # Output as for example `.bin-linux-amd64/<tool>`
   output: .bin-{{ .OS }}-{{ .ARCH_LONG }}
+  checksum:
+    type: file
   exe:
     patterns:
       # Search for the executable in all subdirectories
@@ -72,7 +74,6 @@ default:
       type: contains
 
     # Matches strings starting with 'arm' followed by any single character except 'v'
-    # TODO(Idelchi): Why?
     - pattern: arm[^v]
       type: regex
 
@@ -100,6 +101,7 @@ default:
     type: github
     go:
       base: github.com
+      download_if_missing: false
   mode: find
   strategy: sync
   version:

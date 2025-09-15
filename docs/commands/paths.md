@@ -7,7 +7,7 @@ nav_order: 10
 
 # Paths Command
 
-The `paths` prints out all active filesystem paths used by godyl.
+`paths` prints out all active filesystem paths used by godyl.
 
 These include:
 

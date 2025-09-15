@@ -28,7 +28,7 @@ var mutex sync.Mutex //nolint:gochecknoglobals 		// TODO(Idelchi): Address this 
 
 // New creates a new Binary instance, setting up the directory, downloading the latest release if necessary,
 // and initializing environment variables. It ensures thread-safe execution by using a mutex lock.
-func New(noVerifySSL bool) (binary Binary, err error) {
+func New(noVerifySSL, downloadIfMissing bool) (binary Binary, err error) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
@@ -42,10 +42,14 @@ func New(noVerifySSL bool) (binary Binary, err error) {
 
 		return binary, nil
 		// 2: Else search in the (possibly) previously created directory
-	} else if path, err := binary.Find(data.GoDir().Path()); err == nil {
+	} else if !downloadIfMissing {
+		return binary, fmt.Errorf("looking for go binary in system: %w", err)
+	}
+
+	if path, err := binary.Find(data.GoDir().Path()); err == nil {
 		binary.File = path
 		binary.Dir = folder.New(binary.File.Dir())
-		binary.Env.Default(binary.Dir.Path())
+		binary.Env.Default(data.GoDir().Path())
 
 		return binary, nil
 	}

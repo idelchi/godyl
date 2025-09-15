@@ -1,11 +1,13 @@
 package gitlab
 
 import (
+	"path"
 	"path/filepath"
 	"strings"
 
 	"github.com/idelchi/godyl/internal/detect/platform"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/tools/checksum"
 )
 
 // Assets represents a collection of GitLab release assets.
@@ -43,4 +45,26 @@ func (as Assets) Match(requirements match.Requirements) (matches match.Results) 
 	matches = assets.Select(requirements)
 
 	return matches
+}
+
+// Checksums returns all assets that appear to be checksum files.
+func (as Assets) Checksums(pattern string) checksum.Checksums {
+	checksums := checksum.Checksums{}
+
+	if pattern != "" {
+		for _, checksum := range checksums {
+			match, err := path.Match(pattern, checksum)
+			if err == nil && match {
+				checksums = append(checksums, checksum)
+			}
+		}
+
+		return checksums
+	}
+
+	for _, asset := range as {
+		checksums = append(checksums, asset.Name)
+	}
+
+	return checksums.IsChecksumLike()
 }

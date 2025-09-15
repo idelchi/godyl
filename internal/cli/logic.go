@@ -231,7 +231,7 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	// Default values for tokens are deferred such that they can be
 	// set with .env files or the keyring without unnecessary checks
 
-	// TODO(Idelchi): Allow also GITHUB_TOKEN_FILE, GITLAB_TOKEN_FILE, URL_TOKEN_FILE //nolint:godox // TODO comment
+	// TODO(Idelchi): Allow also GITHUB_TOKEN_FILE, GITLAB_TOKEN_FILE, URL_TOKEN_FILE
 	// provides valuable context for future development
 	githubToken := menv.GetAny("GITHUB_TOKEN", "GH_TOKEN")
 	gitlabToken := menv.GetAny("GITLAB_TOKEN", "CI_JOB_TOKEN")

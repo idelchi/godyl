@@ -70,6 +70,22 @@ A complete reference for all fields is available below.
   # The download url. For `github` and `gitlab` sources,
   # leave empty to populate from the API.
   url: "https://github.com/idelchi/envprof/releases/download/v0.0.1/envprof_{{ .OS }}_{{ .ARCH }}.tar.gz"
+  # Checksum information to verify the download.
+  checksum:
+    # The type of checksum. Supported types are `sha256`, `sha512`, `sha1`, `md5`, `file`, and `none`.
+    type: sha256|sha512|sha1|md5|file|none
+    # Value can be one of the following:
+    # For `Type=[sha256 sha512 sha1 md5]` it can be:
+    #  - A value (the checksum)
+    #  - A URL or file path containing ONLY the checksum value for the specific asset, when prefixed by
+    #   `url:` or `path:`
+    # For `Type=file` it can be:
+    #  - A URL or file path containing BSD or GNU style checksums
+    #  - Empty to determine it from the source [gitlab, github].
+    #      Either a checksum asset will be used, or the digest field from the asset (if available).
+    value: "[abc123...|url:https://example.com/checksum.txt|path:./checksum.txt]|https://example.com/checksums.txt"
+    # For `Type=file`, pattern to match to select the correct checksum file from the assets.
+    pattern: "checksum*.txt"
   # The output directory where the tool will be placed.
   output: ~/.local/bin # [`--output`]
   # The executable name. Specifies the desired output name of the executable,
@@ -103,8 +119,10 @@ A complete reference for all fields is available below.
         0
         {{- end -}}
       # Method to use for matching the pattern.
+      # default: glob
       type: glob|regex|globstar|startswith|endswith|contains
       # Whether to use the weight for matches, require the match, or exclude the match.
+      # default: weighted
       match: weighted|required|excluded
   source:
     type: github|gitlab|url|go|none # [`--source`]
@@ -136,6 +154,8 @@ A complete reference for all fields is available below.
       # Specifies the path for the `go install` command.
       # Useful when the installable is not in the default path (e.g `cmd/<tool>` or `.`).
       command: cmd/envprof
+      # Whether to download and install Go if not available locally.
+      download_if_missing: true
   # Run custom commands after the installation (or only commands if `source.type` is `none`).
   commands:
     # The list of commands to run.
@@ -197,6 +217,8 @@ Many fields in the configuration support templating with variables like:
 - `{{ .Version }}` - The version to fetch (`version.version`).
 
 > **Note:** If the `version.version` field is unset, the template variable will only be available after the API call has been made.
+
+Special case `{{ .File }}` is the base name of the file in the `url`, and only available in `checksum.value`.
 
 Platform-specific variables are upper-cased and available as:
 
@@ -282,7 +304,7 @@ The most common use-case is to have it inferred from the `source` field configur
 
 ### `output`
 
-🔴 Required • 🧩 Templated • 📤 Exports as: `{{ .Output }}`
+🧩 Templated • 📤 Exports as: `{{ .Output }}`
 
 The directory where the tool will be installed.
 
@@ -358,15 +380,15 @@ hints:
   - pattern: "*{{ .Exe }}*"
     weight: 1
   - pattern: "^{{ .OS }}"
-    must: true
-    regex: true
+    type: regex
+    match: required
 ```
 
 If weight is not provided, it will be set to 1.
 
 ### `source`
 
-🔴 Required • 🧩 Templated • 📤 Exports as: `{{ .Source }}`
+🧩 Templated • 📤 Exports as: `{{ .Source }}`
 
 Information about the source of the tool.
 
@@ -397,11 +419,13 @@ Go source:
 source:
   type: go
   go:
+    base: github.com
     command: cmd/envprof
+    download_if_missing: true
 ```
 
 > **Note**: Choosing `go` as a source or fallback, without having a local installation and the `go` command available, will result in
-> the download of the latest version of `go`.
+> the download of the latest version of `go`, if `download_if_missing` is set to `true`.
 
 #### Templating
 
@@ -446,8 +470,6 @@ The name of the current tool will always be added to the list of tags.
 
 ### `strategy`
 
-🔴 Required
-
 Strategy for updating the tool.
 
 ```yaml
@@ -479,8 +501,6 @@ Only the `condition` field supports templating.
 
 ### `mode`
 
-🔴 Required
-
 Mode for downloading and installing.
 
 ```yaml
@@ -491,5 +511,20 @@ Valid values:
 
 - `find`: Download, extract, and find the executable
 - `extract`: Download and extract directly to the output directory
+
+### `checksum`
+
+🧩 Templated (only the `value`)
+
+Checksum information to verify the download.
+
+```yaml
+checksum:
+  type: sha256
+  value: "abc123..."
+  pattern: "checksum*.txt"
+```
+
+The combination `type: file` and empty `value` will fetch the checksum file from the source (only `github` & `gitlab` supported).
 
 {% endraw %}

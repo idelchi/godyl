@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/go-getter/v2"
 
 	"github.com/idelchi/godyl/internal/data"
+	"github.com/idelchi/godyl/internal/tools/checksum"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/path/file"
@@ -19,6 +20,7 @@ import (
 type Data struct {
 	ProgressListener getter.ProgressTracker
 	Env              env.Env
+	Checksum         checksum.Checksum
 	Header           http.Header
 	Path             string
 	Name             string
@@ -51,6 +53,10 @@ func Download(d Data) (found file.File, err error) {
 	options := []download.Option{download.WithProgress(d.ProgressListener)}
 	if d.NoVerifySSL {
 		options = append(options, download.WithInsecureSkipVerify())
+	}
+
+	if d.Checksum.IsMandatory() {
+		options = append(options, download.WithChecksum(d.Checksum.ToQuery()))
 	}
 
 	downloader := download.New(options...)

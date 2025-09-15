@@ -13,7 +13,7 @@ type Asset struct {
 	// URL is the browser download URL for the asset.
 	URL string `json:"url"`
 	// Type is the content type of the asset.
-	Type string `json:"content_type"` //nolint:tagliatelle // GitLab API uses snake_case field names
+	Type string `json:"content_type"`
 }
 
 // Match checks if the asset name matches the given pattern.

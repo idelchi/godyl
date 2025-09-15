@@ -6,7 +6,6 @@ import (
 )
 
 // TODO(Idelchi): This doesn't work so well for "pure" Go installations where the version has already been given. If the
-// //nolint:godox // TODO comment provides valuable context for future development
 // version is given,
 // it should be ignored.
 

@@ -5,7 +5,7 @@ parent: Commands
 nav_order: 8
 ---
 
-# Config Command
+# Auth Command
 
 The `auth` command provides a convenient way of adding or removing tokens from either the configuration file or the system keyring.
 

@@ -116,11 +116,11 @@ func (f *ErrorFormatter) formatText(errors []results.ErrorDetail) string {
 		}
 
 		// Tool name
-		sb.WriteString(fmt.Sprintf("Tool: %q\n", e.Tool))
+		sb.WriteString(e.Tool + "\n")
 
 		// Error details if present
 		if e.Error != nil {
-			sb.WriteString(fmt.Sprintf("Error: %v", e.Error))
+			sb.WriteString(fmt.Sprintf("%v", e.Error))
 		}
 	}
 

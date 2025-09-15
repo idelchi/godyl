@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/go-cleanhttp"
@@ -26,6 +27,7 @@ type Downloader struct {
 	readTimeout        time.Duration
 	headTimeout        time.Duration
 	insecureSkipVerify bool
+	checksum           string
 
 	// retry settings
 	maxRetries   int
@@ -63,6 +65,21 @@ func New(opts ...Option) *Downloader {
 
 // ErrDownload indicates a download operation failed.
 var ErrDownload = errors.New("download error")
+
+// URLWithChecksum  appends the checksum query parameter to the URL if a checksum is provided.
+func URLWithChecksum(url, query string) string {
+	if query == "" {
+		return url
+	}
+
+	if strings.Contains(url, "?") {
+		url += "&" + query
+	} else {
+		url += "?" + query
+	}
+
+	return url
+}
 
 // Download fetches url to output (archives auto‑extracted).
 func (d Downloader) Download(url, output string, header ...http.Header) (file.File, error) {
@@ -111,15 +128,16 @@ func (d Downloader) Download(url, output string, header ...http.Header) (file.Fi
 	}
 
 	req := &getter.Request{
-		Src:              url,
+		Src:              URLWithChecksum(url, d.checksum),
 		Dst:              output,
 		GetMode:          getter.ModeAny,
 		ProgressListener: d.progressListener,
 	}
 
+	debug.Debug("downloading %q to %q", URLWithChecksum(url, d.checksum), output)
+
 	res, err := (&getter.Client{Getters: []getter.Getter{httpGetter}}).Get(ctx, req)
 	if err != nil {
-		debug.Debug("tried to download %q to %q", url, output)
 		debug.Debug("error: %v", err)
 
 		return file.New(), fmt.Errorf("%w: getting file: %w", ErrDownload, err)

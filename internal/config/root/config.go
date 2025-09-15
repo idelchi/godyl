@@ -13,7 +13,7 @@ import (
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
-// TODO(Idelchi): Change all to be .Config instead of .Dump, .Update, etc. //nolint:godox // TODO comment provides
+// TODO(Idelchi): Change all to be .Config instead of .Dump, .Update, etc.
 // valuable context for future development
 
 // Config holds the root level configuration options.
@@ -87,6 +87,9 @@ type Config struct {
 
 	// NoProgress disables progress indicators
 	NoProgress bool `mapstructure:"no-progress" yaml:"no-progress"`
+
+	// NoVerifyChecksum disables checksum verification
+	NoVerifyChecksum bool `mapstructure:"no-verify-checksum" yaml:"no-verify-checksum"`
 
 	// Keyring enables the use of the keyring for retrieving tokens
 	Keyring bool `mapstructure:"keyring" yaml:"keyring"`
@@ -163,6 +166,10 @@ func (c *Config) ToTool(forced bool) *tool.Tool {
 
 	if isSet(c)("no-verify-ssl") {
 		tool.NoVerifySSL = c.NoVerifySSL
+	}
+
+	if isSet(c)("no-verify-checksum") {
+		tool.NoVerifyChecksum = c.NoVerifyChecksum
 	}
 
 	if isSet(&c.Common)("output") {

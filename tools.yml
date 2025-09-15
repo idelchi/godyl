@@ -295,7 +295,7 @@
     # Doesn't have a version command
     commands: []
   skip:
-    reason: "reflex does not work on Windows"
+    reason: "reflex does not work on windows"
     condition: '{{ eq .OS "windows" }}'
   fallbacks:
     - go
@@ -347,7 +347,7 @@
   description: A faster alternative to cd + ls
   checksum: none
   skip:
-    reason: "tere is not available for Darwin"
+    reason: "tere is not available for darwin"
     condition: '{{ eq .OS "darwin" }}'
   hints:
     - pattern: .zip
@@ -838,7 +838,7 @@
 - name: peltho/tufw
   description: A terminal user interface for ufw
   skip:
-    reason: "tufw is only available for Linux"
+    reason: "tufw is only available for linux"
     condition: '{{ ne .OS "linux" }}'
   tags:
     - terminal
@@ -976,7 +976,7 @@
   checksum: none
   exe: dysk
   skip:
-    reason: "dysk is only available for Linux"
+    reason: "dysk is only available for linux"
     condition: '{{ ne .OS "linux" }}'
   tags:
     - terminal

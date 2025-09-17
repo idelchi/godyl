@@ -269,10 +269,7 @@ func StartSynthetic(
 					continue
 				}
 
-				next := current + int64(step)
-				if next > plateau {
-					next = plateau
-				}
+				next := min(current+int64(step), plateau)
 
 				rc.Tracker.SetValue(next)
 			}

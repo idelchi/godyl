@@ -1,5 +1,0 @@
-[go:lint] internal\tools\sources\install\common.go:19:6: exported: type name will be used as install.Data by other packages, and that stutters; consider calling this Data (revive)
-[go:lint] type InstallData struct {
-[go:lint]      ^
-[go:lint] 1 issues:
-[go:lint] * revive: 1

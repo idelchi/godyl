@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
+	"github.com/hashicorp/go-getter/v2"
 	gpp "github.com/jedib0t/go-pretty/v6/progress"
 	"github.com/jedib0t/go-pretty/v6/text"
 
@@ -199,6 +200,73 @@ func (pt *Tracker) SetManualDisplay(src, message, valueLabel, speedLabel string)
 		}
 
 		return speedLabel
+	}
+}
+
+// StartSynthetic creates and drives a synthetic progress entry identified by key.
+// It is useful for operations that lack byte-level progress (like go install) but
+// should still appear in the global progress list. The returned function must be
+// called to stop the synthetic tracker once the operation completes.
+func StartSynthetic(
+	progress getter.ProgressTracker,
+	key string,
+	message string,
+	valueLabel string,
+	speedLabel string,
+) func() {
+	tracker, ok := progress.(*Tracker)
+	if !ok {
+		return func() {}
+	}
+
+	pr, pw := io.Pipe()
+
+	const syntheticTotal = 1024
+
+	tracked := tracker.TrackProgress(key, 0, syntheticTotal, pr)
+	tracker.SetManualDisplay(key, message, valueLabel, speedLabel)
+
+	stop := make(chan struct{})
+
+	var once sync.Once
+
+	go func() {
+		defer tracked.Close()
+
+		_, _ = io.Copy(io.Discard, tracked)
+	}()
+
+	const (
+		tickInterval = 200 * time.Millisecond
+		chunkSize    = 64
+	)
+
+	go func() {
+		ticker := time.NewTicker(tickInterval)
+		defer ticker.Stop()
+
+		chunk := make([]byte, chunkSize)
+
+		for {
+			select {
+			case <-stop:
+				_ = pw.Close()
+
+				return
+			case <-ticker.C:
+				if _, err := pw.Write(chunk); err != nil {
+					return
+				}
+			}
+		}
+	}()
+
+	return func() {
+		once.Do(func() {
+			close(stop)
+
+			_ = pw.Close()
+		})
 	}
 }
 

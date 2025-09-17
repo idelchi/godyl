@@ -64,8 +64,6 @@ func New(toolsList tools.Tools, cfg root.Config, log *logger.Logger) *Processor 
 }
 
 // Process installs and manages tools with the given tags.
-//
-//nolint:gocognit // Function is complex but clear enough.
 func (p *Processor) Process(tags tags.IncludeTags) error {
 	// 1. Setup
 	if p.cache != nil {

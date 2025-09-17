@@ -216,5 +216,5 @@ func startGoInstallProgress(progressListener getter.ProgressTracker, label strin
 
 	const stallFraction = 0.8
 
-	return progresspkg.StartSynthetic(tracker, label, message, valueLabel, speedLabel, stallFraction)
+	return progresspkg.StartSynthetic(tracker, label, message, speedLabel, speedLabel, stallFraction)
 }

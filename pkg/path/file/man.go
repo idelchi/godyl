@@ -14,13 +14,13 @@ import (
 
 // Matches checks if the file path matches the given (extended glob) pattern.
 func (f File) Matches(pattern string) (bool, error) {
-	return doublestar.Match(pattern, f.String())
+	return doublestar.Match(pattern, f.Path())
 }
 
 // RelativeTo computes the relative path from base to this file.
 // Returns an error if the relative path cannot be computed.
-func (f File) RelativeTo(base File) (File, error) {
-	rel, err := filepath.Rel(base.String(), f.String())
+func (f File) RelativeTo(base string) (File, error) {
+	rel, err := filepath.Rel(base, f.Path())
 	if err != nil {
 		return f, fmt.Errorf("getting relative path from %q to %q: %w", base, f, err)
 	}
@@ -40,29 +40,29 @@ func (f File) String() string {
 
 // Base returns the last component of the file path.
 func (f File) Base() string {
-	return filepath.Base(f.String())
+	return filepath.Base(f.Path())
 }
 
 // Up returns the parent directory of the file path.
 func (f File) Up() File {
-	return New(filepath.Dir(f.String()))
+	return New(filepath.Dir(f.Path()))
 }
 
 // Join combines this path with additional components.
 // Returns a new File with the combined path.
 func (f File) Join(paths ...string) File {
-	return New(append([]string{f.String()}, paths...)...)
+	return New(append([]string{f.Path()}, paths...)...)
 }
 
 // ExpandedX resolves home directory references.
 // Replaces ~ with the user's home directory path.
 func (f File) ExpandedX() File {
-	return New(generic.ExpandHome(f.String()))
+	return New(generic.ExpandHome(f.Path()))
 }
 
 // Expanded resolves environment variables including `~` home directory references.
 func (f File) Expanded() File {
-	return New(os.ExpandEnv(generic.ExpandHome(f.String())))
+	return New(os.ExpandEnv(generic.ExpandHome(f.Path())))
 }
 
 // Dir returns the containing directory path.
@@ -70,15 +70,15 @@ func (f File) Expanded() File {
 // otherwise returns the parent directory path.
 func (f File) Dir() string {
 	if f.IsDir() {
-		return f.String()
+		return f.Path()
 	}
 
-	return filepath.Dir(f.String())
+	return filepath.Dir(f.Path())
 }
 
 // Absolute returns the absolute path of the file.
 func (f File) Absolute() File {
-	absPath, err := filepath.Abs(f.String())
+	absPath, err := filepath.Abs(f.Path())
 	if err != nil {
 		return f
 	}
@@ -114,7 +114,7 @@ func (f File) WithExtension(extension string) File {
 
 // WithoutExtension returns the path without file extensions.
 func (f File) WithoutExtension() File {
-	return New(strings.TrimSuffix(f.String(), "."+f.Extension()))
+	return New(strings.TrimSuffix(f.Path(), "."+f.Extension()))
 }
 
 // HasExtension checks if the file has an extension.
@@ -150,7 +150,7 @@ func (f File) WithoutFolder(prefix string) File {
 // Returns the original path if unescaping fails.
 func (f File) Unescape() File {
 	// Replace escaped characters with their original representation
-	unescapedPath, err := url.QueryUnescape(f.String())
+	unescapedPath, err := url.QueryUnescape(f.Path())
 	if err != nil {
 		return f
 	}

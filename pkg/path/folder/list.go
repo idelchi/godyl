@@ -12,14 +12,14 @@ import (
 // ListFolders returns all immediate subdirectories of the folder.
 // It excludes files and other non-directory entries.
 func (f Folder) ListFolders() (folders []Folder, err error) {
-	entries, err := os.ReadDir(f.String())
+	entries, err := os.ReadDir(f.Path())
 	if err != nil {
 		return nil, fmt.Errorf("reading directory %q: %w", f, err)
 	}
 
 	for _, entry := range entries {
 		if entry.IsDir() {
-			subFolder := New(f.String(), entry.Name())
+			subFolder := New(f.Path(), entry.Name())
 
 			folders = append(folders, subFolder)
 		}
@@ -33,14 +33,14 @@ func (f Folder) ListFolders() (folders []Folder, err error) {
 // ListFiles returns all immediate regular files in the folder.
 // It excludes directories and other non-file entries.
 func (f Folder) ListFiles() (files files.Files, err error) {
-	entries, err := os.ReadDir(f.String())
+	entries, err := os.ReadDir(f.Path())
 	if err != nil {
 		return nil, fmt.Errorf("reading directory %q: %w", f, err)
 	}
 
 	for _, entry := range entries {
 		if !entry.IsDir() {
-			file := file.New(f.String(), entry.Name())
+			file := file.New(f.Path(), entry.Name())
 
 			files = append(files, file)
 		}

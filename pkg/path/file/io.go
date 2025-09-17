@@ -44,7 +44,7 @@ func (f File) Create() error {
 		return err
 	}
 
-	file, err := os.Create(f.String())
+	file, err := os.Create(f.Path())
 	if err != nil {
 		return fmt.Errorf("creating file %q: %w", f, err)
 	}
@@ -63,7 +63,7 @@ func (f File) Create() error {
 func (f File) OpenForWriting() (*os.File, error) {
 	const perm = 0o600
 
-	file, err := os.OpenFile(f.String(), os.O_RDWR|os.O_CREATE|os.O_TRUNC, perm)
+	file, err := os.OpenFile(f.Path(), os.O_RDWR|os.O_CREATE|os.O_TRUNC, perm)
 	if err != nil {
 		return nil, fmt.Errorf("opening file %q for writing: %w", f, err)
 	}
@@ -95,7 +95,7 @@ func (f File) Write(data []byte) (err error) {
 // Open opens the file for reading and returns a pointer to the os.File object.
 // The user must close the file after use.
 func (f File) Open() (*os.File, error) {
-	file, err := os.Open(f.String())
+	file, err := os.Open(f.Path())
 	if err != nil {
 		return nil, fmt.Errorf("opening file %q: %w", f, err)
 	}
@@ -106,7 +106,7 @@ func (f File) Open() (*os.File, error) {
 // Read retrieves the entire contents of the file.
 // Returns the file contents as a byte slice.
 func (f File) Read() ([]byte, error) {
-	file, err := os.ReadFile(f.String())
+	file, err := os.ReadFile(f.Path())
 	if err != nil {
 		return nil, fmt.Errorf("reading file %q: %w", f, err)
 	}
@@ -137,7 +137,7 @@ func (f File) Lines() ([]string, error) {
 // Returns an error if the file cannot be deleted.
 // Silently ignores the error if the file does not exist.
 func (f File) Remove() error {
-	if err := os.Remove(f.String()); err != nil && !errors.Is(err, os.ErrNotExist) {
+	if err := os.Remove(f.Path()); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf("removing file %q: %w", f, err)
 	}
 
@@ -147,7 +147,7 @@ func (f File) Remove() error {
 // Chmod modifies the file's permission bits.
 // Takes a fs.FileMode parameter specifying the new permissions.
 func (f *File) Chmod(mode fs.FileMode) error {
-	if err := os.Chmod(f.String(), mode); err != nil {
+	if err := os.Chmod(f.Path(), mode); err != nil {
 		return fmt.Errorf("changing permissions of file %q: %w", f, err)
 	}
 
@@ -175,13 +175,13 @@ func (f File) Copy(dest File) error {
 	defer src.Close()
 
 	// Stat source to get mode
-	srcInfo, err := os.Stat(f.String())
+	srcInfo, err := os.Stat(f.Path())
 	if err != nil {
 		return fmt.Errorf("statting source file: %w", err)
 	}
 
 	// Open destination with same mode
-	dst, err := os.OpenFile(dest.String(), os.O_CREATE|os.O_WRONLY|os.O_TRUNC, srcInfo.Mode().Perm())
+	dst, err := os.OpenFile(dest.Path(), os.O_CREATE|os.O_WRONLY|os.O_TRUNC, srcInfo.Mode().Perm())
 	if err != nil {
 		return fmt.Errorf("opening destination file: %w", err)
 	}

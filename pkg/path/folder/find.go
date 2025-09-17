@@ -31,7 +31,7 @@ func (f Folder) FindFiles(firstOnly bool, criteria ...CriteriaFunc) (files.Files
 
 	var found files.Files
 
-	err := filepath.WalkDir(root.String(), func(path string, d fs.DirEntry, walkErr error) error {
+	err := filepath.WalkDir(root.Path(), func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return fmt.Errorf("walking folder %q: %w", root, walkErr)
 		}
@@ -42,7 +42,7 @@ func (f Folder) FindFiles(firstOnly bool, criteria ...CriteriaFunc) (files.Files
 
 		current := file.New(path)
 
-		relPath, err := current.RelativeTo(root)
+		relPath, err := current.RelativeTo(root.Path())
 		if err != nil {
 			return fmt.Errorf("getting relative path: %w", err)
 		}
@@ -58,7 +58,7 @@ func (f Folder) FindFiles(firstOnly bool, criteria ...CriteriaFunc) (files.Files
 			}
 		}
 
-		found = append(found, root.Join(relPath.String()))
+		found = append(found, root.Join(relPath.Path()))
 
 		if firstOnly {
 			return filepath.SkipAll

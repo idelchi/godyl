@@ -178,7 +178,7 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 		t.URL = populator.Get("url")
 	}
 
-	if t.NoVerifyChecksum {
+	if t.NoVerifyChecksum || !t.Source.Type.SupportsChecksum() {
 		t.Checksum.Type = "none"
 	}
 

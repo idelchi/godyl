@@ -13,13 +13,13 @@ import (
 
 // Set checks if the path is non-empty.
 func (f File) Set() bool {
-	return f.String() != ""
+	return f.Path() != ""
 }
 
 // IsExecutable checks if the file has execute permissions.
 // Returns true if any execute bit (user/group/other) is set.
 func (f File) IsExecutable() (bool, error) {
-	info, err := os.Stat(f.String())
+	info, err := os.Stat(f.Path())
 	if err != nil {
 		return false, fmt.Errorf("getting file info: %w", err)
 	}
@@ -30,7 +30,7 @@ func (f File) IsExecutable() (bool, error) {
 // Exists checks if the path exists in the filesystem.
 // Returns true if the path exists, false otherwise.
 func (f File) Exists() bool {
-	_, err := os.Stat(f.String())
+	_, err := os.Stat(f.Path())
 
 	return err == nil
 }
@@ -38,7 +38,7 @@ func (f File) Exists() bool {
 // IsFile checks if the path is a regular file.
 // Returns false for directories, symlinks, and special files.
 func (f File) IsFile() bool {
-	info, err := os.Stat(f.String())
+	info, err := os.Stat(f.Path())
 	if err != nil {
 		return false // File does not exist or error accessing it
 	}
@@ -49,7 +49,7 @@ func (f File) IsFile() bool {
 // IsDir checks if the path is a directory.
 // Returns false for regular files and non-existent paths.
 func (f File) IsDir() bool {
-	info, err := os.Stat(f.String())
+	info, err := os.Stat(f.Path())
 	if err != nil {
 		return false // File does not exist or error accessing it
 	}
@@ -59,12 +59,12 @@ func (f File) IsDir() bool {
 
 // Extension returns the file's extension as a string, without the leading dot.
 func (f File) Extension() string {
-	return strings.TrimPrefix(filepath.Ext(f.String()), ".")
+	return strings.TrimPrefix(filepath.Ext(f.Path()), ".")
 }
 
 // Info retrieves the file information.
 func (f File) Info() (fs.FileInfo, error) {
-	info, err := os.Stat(f.String())
+	info, err := os.Stat(f.Path())
 	if err != nil {
 		return nil, fmt.Errorf("getting file info for %q: %w", f, err)
 	}

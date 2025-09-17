@@ -169,7 +169,7 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 	}
 
 	// Format executable name
-	exeName := file.New(tool.Exe.Name).WithoutExtension().String()
+	exeName := file.New(tool.Exe.Name).WithoutExtension().Path()
 	if tool.Mode == "extract" && fileDisplay != na {
 		exeName = fileDisplay
 	}

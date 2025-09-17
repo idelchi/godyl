@@ -118,7 +118,7 @@ func findExecutableInDir(destination file.File, patterns []string) (file.File, e
 		"finding executable: no executable matching patterns %v found in %q: found %v",
 		patterns,
 		searchDir,
-		allFiles.RelativeTo(searchDir.AsFile()),
+		allFiles.RelativeTo(searchDir.String()),
 	)
 }
 

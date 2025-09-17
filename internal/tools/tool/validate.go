@@ -273,16 +273,17 @@ func (t *Tool) Download(_ context.Context, progressListener getter.ProgressTrack
 	}
 
 	data := install.Data{
-		Path:        t.URL,
-		Name:        t.Name,
-		Exe:         t.Exe.Name,
-		Patterns:    *t.Exe.Patterns,
-		Output:      t.Output,
-		Aliases:     t.Aliases,
-		Mode:        t.Mode.String(),
-		Env:         t.Env,
-		Checksum:    t.Checksum,
-		NoVerifySSL: t.NoVerifySSL,
+		Path:             t.URL,
+		Name:             t.Name,
+		Exe:              t.Exe.Name,
+		Patterns:         *t.Exe.Patterns,
+		Output:           t.Output,
+		Aliases:          t.Aliases,
+		Mode:             t.Mode.String(),
+		Env:              t.Env,
+		Checksum:         t.Checksum,
+		NoVerifySSL:      t.NoVerifySSL,
+		NoVerifyChecksum: t.NoVerifyChecksum,
 		// TODO(Idelchi): Pass OS and Architecture as they are and let downstream decide if they want Type(), or
 		// String(), or whatever.
 		OS:   t.Platform.OS.Type(),

@@ -30,6 +30,7 @@ type Data struct {
 	Patterns         []string
 	Aliases          []string
 	NoVerifySSL      bool
+	NoVerifyChecksum bool
 	OS               string // Target operating system for cross-compilation.
 	Arch             string // Target architecture for cross-compilation.
 }
@@ -55,7 +56,7 @@ func Download(d Data) (found file.File, err error) {
 		options = append(options, download.WithInsecureSkipVerify())
 	}
 
-	if d.Checksum.IsMandatory() {
+	if d.Checksum.IsMandatory() && !d.NoVerifyChecksum {
 		options = append(options, download.WithChecksum(d.Checksum.ToQuery()))
 	}
 

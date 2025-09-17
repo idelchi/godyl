@@ -12,19 +12,20 @@ import (
 
 	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/internal/debug"
+	"github.com/idelchi/godyl/internal/tools/checksum"
 	"github.com/idelchi/godyl/pkg/download"
-	progresspkg "github.com/idelchi/godyl/pkg/download/progress"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
 // Binary represents a Go binary, including its associated file, directory, and environment variables.
 type Binary struct {
-	Env         Env
-	File        file.File
-	Dir         folder.Folder
-	noVerifySSL bool
-	progress    getter.ProgressTracker
+	Env              Env
+	File             file.File
+	Dir              folder.Folder
+	noVerifySSL      bool
+	noVerifyChecksum bool
+	progress         getter.ProgressTracker
 }
 
 // mutex is a mutex to prevent concurrent binary creation.
@@ -32,15 +33,19 @@ var mutex sync.Mutex //nolint:gochecknoglobals 		// TODO(Idelchi): Address this 
 
 // New creates a new Binary instance, setting up the directory, downloading the latest release if necessary,
 // and initializing environment variables. It ensures thread-safe execution by using a mutex lock.
-func New(noVerifySSL, downloadIfMissing bool, progress getter.ProgressTracker) (binary Binary, err error) {
+func New(
+	noVerifySSL, downloadIfMissing, noVerifyChecksum bool,
+	progress getter.ProgressTracker,
+) (binary Binary, err error) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
 	binary.noVerifySSL = noVerifySSL
 	binary.progress = progress
+	binary.noVerifyChecksum = noVerifyChecksum
 
 	// 1: Search for go binary on system
-	if path, err := exec.LookPath("gox"); err == nil {
+	if path, err := exec.LookPath("go"); err == nil {
 		binary.File = file.New(path)
 		binary.Env = Env{}
 		binary.Dir = folder.New(binary.File.Dir())
@@ -82,9 +87,18 @@ func New(noVerifySSL, downloadIfMissing bool, progress getter.ProgressTracker) (
 		return binary, err
 	}
 
-	debug.Debug("Downloading Go toolchain: %q", path[0].Asset.Name)
+	toolchain := path[0].Asset.Name
 
-	err = binary.Download(path[0].Asset.Name)
+	// Filter the targets to get back the original one
+	targets = targets.FilterBy(func(t Target) bool {
+		return t.FileName == toolchain
+	})
+
+	target := targets.Files[0]
+
+	debug.Debug("Downloading Go toolchain: %q", target.FileName)
+
+	err = binary.Download(target)
 	if err != nil {
 		return binary, err
 	}
@@ -111,16 +125,29 @@ func (b *Binary) Find(paths ...string) (file.File, error) {
 
 // Download downloads the Go binary from the provided path and saves it to the directory.
 // It returns an error if the download or file validation fails.
-func (b *Binary) Download(path string) error {
-	url := "https://go.dev/dl/" + path
-
-	stopProgress := startGoToolchainProgress(b.progress, url, path)
-	defer stopProgress()
+func (b *Binary) Download(target Target) error {
+	url := "https://go.dev/dl/" + target.FileName
 
 	options := []download.Option{}
 
 	if b.noVerifySSL {
 		options = append(options, download.WithInsecureSkipVerify())
+	}
+
+	if b.progress != nil {
+		options = append(options, download.WithProgress(b.progress))
+	}
+
+	if !b.noVerifyChecksum {
+		checksum := checksum.Checksum{
+			Type:  "sha256",
+			Value: target.Checksum,
+		}
+
+		options = append(
+			options,
+			download.WithChecksum(checksum.ToQuery()),
+		)
 	}
 
 	downloader := download.New(options...)
@@ -133,14 +160,6 @@ func (b *Binary) Download(path string) error {
 	b.File = file.New(destination.String(), "go", "bin", "go")
 
 	return nil
-}
-
-func startGoToolchainProgress(progress getter.ProgressTracker, key, artifact string) func() {
-	valueLabel := "(go toolchain)"
-	speedLabel := "(n/a)"
-	message := fmt.Sprintf("%-45s %s", file.New(artifact).Base(), valueLabel)
-
-	return progresspkg.StartSynthetic(progress, key, message, speedLabel, speedLabel)
 }
 
 // CleanUp removes the temporary directory associated with the binary.

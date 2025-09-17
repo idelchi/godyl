@@ -42,10 +42,11 @@ type RunOption func(*runOptions)
 
 // runOptions holds configuration for a tool run.
 type runOptions struct {
-	progressTracker getter.ProgressTracker
-	resolveOptions  []tool.ResolveOption
-	noDownload      bool
-	noVerifySSL     bool
+	progressTracker  getter.ProgressTracker
+	resolveOptions   []tool.ResolveOption
+	noDownload       bool
+	noVerifySSL      bool
+	noVerifyChecksum bool
 }
 
 // WithProgressTracker sets the progress tracker for downloads.
@@ -66,6 +67,13 @@ func WithNoDownload() RunOption {
 func WithNoVerifySSL() RunOption {
 	return func(opts *runOptions) {
 		opts.noVerifySSL = true
+	}
+}
+
+// WithNoVerifyChecksum disables checksum verification.
+func WithNoVerifyChecksum() RunOption {
+	return func(opts *runOptions) {
+		opts.noVerifyChecksum = true
 	}
 }
 

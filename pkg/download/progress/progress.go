@@ -205,14 +205,16 @@ func (pt *Tracker) SetManualDisplay(src, message, valueLabel, speedLabel string)
 
 // StartSynthetic creates and drives a synthetic progress entry identified by key.
 // It is useful for operations that lack byte-level progress (like go install) but
-// should still appear in the global progress list. The returned function must be
-// called to stop the synthetic tracker once the operation completes.
+// should still appear in the global progress list. The bar advances gradually and
+// stalls once it reaches the given fraction (0 < stallFraction ≤ 1) until the
+// returned function is invoked, at which point it completes instantly.
 func StartSynthetic(
 	progress getter.ProgressTracker,
 	key string,
 	message string,
 	valueLabel string,
 	speedLabel string,
+	stallFraction float64,
 ) func() {
 	tracker, ok := progress.(*Tracker)
 	if !ok {
@@ -221,50 +223,69 @@ func StartSynthetic(
 
 	pr, pw := io.Pipe()
 
-	const syntheticTotal = 1024
+	const syntheticTotal = 1000
 
 	tracked := tracker.TrackProgress(key, 0, syntheticTotal, pr)
 	tracker.SetManualDisplay(key, message, valueLabel, speedLabel)
+
+	rc, ok := tracked.(*readCloserWithProgress)
+	if !ok {
+		return func() {}
+	}
+
+	if stallFraction <= 0 || stallFraction > 1 {
+		stallFraction = 1
+	}
+
+	plateau := int64(float64(syntheticTotal) * stallFraction)
+	if plateau <= 0 {
+		plateau = syntheticTotal
+	}
+
+	const stepSize = 50
+
+	step := syntheticTotal / stepSize
+	if step <= 0 {
+		step = 1
+	}
 
 	stop := make(chan struct{})
 
 	var once sync.Once
 
-	go func() {
-		defer tracked.Close()
-
-		_, _ = io.Copy(io.Discard, tracked)
-	}()
-
-	const (
-		tickInterval = 200 * time.Millisecond
-		chunkSize    = 64
-	)
+	const tickerInterval = 200 * time.Millisecond
 
 	go func() {
-		ticker := time.NewTicker(tickInterval)
+		ticker := time.NewTicker(tickerInterval)
 		defer ticker.Stop()
-
-		chunk := make([]byte, chunkSize)
 
 		for {
 			select {
 			case <-stop:
-				_ = pw.Close()
-
 				return
 			case <-ticker.C:
-				if _, err := pw.Write(chunk); err != nil {
-					return
+				current := rc.Tracker.Value()
+				if current >= plateau {
+					continue
 				}
+
+				next := current + int64(step)
+				if next > plateau {
+					next = plateau
+				}
+
+				rc.Tracker.SetValue(next)
 			}
 		}
 	}()
 
 	return func() {
 		once.Do(func() {
+			rc.Tracker.SetValue(syntheticTotal)
+			rc.Tracker.MarkAsDone()
 			close(stop)
 
+			_ = tracked.Close()
 			_ = pw.Close()
 		})
 	}

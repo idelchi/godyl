@@ -85,7 +85,7 @@ func (g *Go) Install(
 
 	debug.Debug("Searching for go binary...")
 
-	binary, err := goi.New(d.NoVerifySSL, g.DownloadIfMissing, progressListener)
+	binary, err := goi.New(d.NoVerifySSL, g.DownloadIfMissing, d.NoVerifyChecksum, progressListener)
 	if err != nil {
 		mu.Unlock()
 
@@ -209,5 +209,7 @@ func startGoInstallProgress(progressListener getter.ProgressTracker, label strin
 	speedLabel := "(n/a)"
 	message := fmt.Sprintf("%-45s %s", file.New(label).Unescape(), valueLabel)
 
-	return progresspkg.StartSynthetic(progressListener, label, message, speedLabel, speedLabel)
+	const stallFraction = 0.8
+
+	return progresspkg.StartSynthetic(progressListener, label, message, valueLabel, speedLabel, stallFraction)
 }

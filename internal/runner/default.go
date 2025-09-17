@@ -63,6 +63,11 @@ func (r *DefaultRunner) Run(ctx context.Context, t *tool.Tool, tags tags.Include
 		t.NoVerifySSL = true
 	}
 
+	// Apply checksum verification setting
+	if opts.noVerifyChecksum {
+		t.NoVerifyChecksum = true
+	}
+
 	// Download the tool
 	downloadResult := t.Download(ctx, opts.progressTracker)
 

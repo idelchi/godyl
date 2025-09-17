@@ -6,6 +6,7 @@ package goc
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -13,6 +14,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/hashicorp/go-getter/v2"
 
@@ -22,6 +24,7 @@ import (
 	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools/sources/github"
 	"github.com/idelchi/godyl/internal/tools/sources/install"
+	progresspkg "github.com/idelchi/godyl/pkg/download/progress"
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
@@ -38,9 +41,7 @@ type Go struct {
 // Initialize sets up the Go project configuration from the given name.
 // Uses the associated GitHub repository for initialization.
 //
-// TODO(Idelchi): This should be ignored if the version is already set.
-// context for future development
-// As a workaround, just return nil for now.
+// TODO(Idelchi): This should be ignored if the version is already set. As a workaround, just return nil for now.
 func (g *Go) Initialize(name string) error {
 	if g.Base != "github.com" {
 		g.github.Repo = name
@@ -75,9 +76,13 @@ var mu sync.Mutex //nolint:gochecknoglobals // Global mutex for thread-safe acce
 
 // Install downloads and builds the Go project using 'go install'.
 // Handles temporary directory creation, environment setup, and file linking.
-// Progress listener is accepted but not used as go install doesn't support it.
 // Returns the installation output, installed file information, and any errors.
-func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, found file.File, err error) {
+//
+//nolint:funlen // TODO(Idelchi): Refactor later.
+func (g *Go) Install(
+	d install.Data,
+	progressListener getter.ProgressTracker,
+) (output string, found file.File, err error) {
 	mu.Lock()
 
 	binary, err := goi.New(d.NoVerifySSL, g.DownloadIfMissing)
@@ -134,6 +139,9 @@ func (g *Go) Install(d install.Data, _ getter.ProgressTracker) (output string, f
 		}
 	}
 
+	stopProgress := startGoInstallProgress(progressListener, paths[0])
+	defer stopProgress()
+
 	var (
 		os        platform.OS
 		extension platform.Extension
@@ -186,4 +194,74 @@ func (g *Go) Get(attribute string) string {
 // SetGitHub configures the GitHub repository for the Go project.
 func (g *Go) SetGitHub(gh *github.GitHub) {
 	g.github = gh
+}
+
+func startGoInstallProgress(progressListener getter.ProgressTracker, label string) func() {
+	if progressListener == nil {
+		return func() {}
+	}
+
+	if _, isNoop := progressListener.(*progresspkg.Noop); isNoop {
+		return func() {}
+	}
+
+	pr, pw := io.Pipe()
+
+	const syntheticTotal = 1024
+
+	valueLabel := "(go install)"
+	speedLabel := "(n/a)"
+
+	tracked := progressListener.TrackProgress(
+		label,
+		0,
+		syntheticTotal,
+		pr,
+	)
+
+	if tracker, ok := progressListener.(*progresspkg.Tracker); ok {
+		message := fmt.Sprintf("%-45s %s", file.New(label).Unescape(), valueLabel)
+		tracker.SetManualDisplay(label, message, valueLabel, speedLabel)
+	}
+
+	stop := make(chan struct{})
+
+	var once sync.Once
+
+	go func() {
+		defer tracked.Close()
+
+		_, _ = io.Copy(io.Discard, tracked)
+	}()
+
+	const (
+		tickInterval = 200 * time.Millisecond
+		chunkCount   = 20
+	)
+
+	go func() {
+		ticker := time.NewTicker(tickInterval)
+		defer ticker.Stop()
+
+		chunk := make([]byte, chunkCount)
+
+		for {
+			select {
+			case <-stop:
+				_ = pw.Close()
+
+				return
+			case <-ticker.C:
+				if _, err := pw.Write(chunk); err != nil {
+					return
+				}
+			}
+		}
+	}()
+
+	return func() {
+		once.Do(func() {
+			close(stop)
+		})
+	}
 }

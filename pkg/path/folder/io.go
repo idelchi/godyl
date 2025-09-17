@@ -32,7 +32,7 @@ func CreateRandomInDir(dir, pattern string) (Folder, error) {
 func (f Folder) Create() error {
 	const perm = 0o755
 
-	if err := os.MkdirAll(f.String(), perm); err != nil {
+	if err := os.MkdirAll(f.Path(), perm); err != nil {
 		return fmt.Errorf("creating directory %q: %w", f, err)
 	}
 
@@ -41,7 +41,7 @@ func (f Folder) Create() error {
 
 // Remove recursively deletes the directory and its contents.
 func (f Folder) Remove() error {
-	if err := os.RemoveAll(f.String()); err != nil {
+	if err := os.RemoveAll(f.Path()); err != nil {
 		return fmt.Errorf("removing directory %q: %w", f, err)
 	}
 
@@ -50,7 +50,7 @@ func (f Folder) Remove() error {
 
 // Info retrieves the file information for the directory.
 func (f Folder) Info() (fs.FileInfo, error) {
-	info, err := os.Stat(f.String())
+	info, err := os.Stat(f.Path())
 	if err != nil {
 		return nil, fmt.Errorf("getting folder info for %q: %w", f, err)
 	}

@@ -37,6 +37,7 @@
 
 - name: ahmetb/kubectx
   description: Faster way to switch between clusters and namespaces in kubectl
+  exe: kubectx
   aliases: kbx
   tags:
     - kubernetes
@@ -60,7 +61,7 @@
   url: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
   checksum:
     type: file
-    value: "{{ .Base }}/{{ .File }}.sha256sum"
+    value: "{{ .URL }}.sha256sum"
   tags:
     - kubernetes
 
@@ -76,7 +77,7 @@
   url: https://dl.k8s.io/release/{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}
   checksum:
     type: sha256
-    value: url:{{ .Base }}/kubectl{{ .EXTENSION }}.sha256
+    value: url:{{ .URL }}.sha256
   exe: kubectl
   aliases: kc
   tags:
@@ -95,7 +96,7 @@
   version:
     commands: version
   exe:
-    patterns: "{{ .Exe }}*{{ .EXTENSION }}"
+    patterns: "**/{{ .Exe }}*{{ .EXTENSION }}"
   hints:
     pattern: .tar.gz
     match: required
@@ -262,8 +263,6 @@
 
 - name: homeport/dyff
   description: A diff tool for YAML files
-  fallbacks:
-    - go
   tags:
     - terminal
 
@@ -282,8 +281,6 @@
   exe:
     name: logdy
     patterns: logdy*
-  fallbacks:
-    - go
   tags:
     - terminal
 
@@ -296,10 +293,8 @@
     # Doesn't have a version command
     commands: []
   skip:
-    reason: "reflex does not work on windows"
+    reason: "reflex is not available on windows"
     condition: '{{ eq .OS "windows" }}'
-  fallbacks:
-    - go
   tags:
     - terminal
 
@@ -308,15 +303,12 @@
   version:
     # Doesn't have a version command
     commands: []
-  exe:
-    name: sshed
-    patterns: "*sshed*"
-  fallbacks:
-    - go
   hints:
     - pattern: "{{ .OS }}"
       match: required
       type: contains
+  source:
+    type: '{{ if eq .ARCH "arm64" }}go{{ else }}github{{ end }}'
   tags:
     - terminal
 
@@ -324,10 +316,10 @@
   description: Count Lines of Code
   hints:
     - pattern: .pl
-      match: '{{ if eq .OS "linux" }}required{{ else }}weighted{{ end }}'
+      match: '{{ if or (eq .OS "linux") (eq .OS "darwin") }}required{{ else }}excluded{{ end }}'
       type: endswith
     - pattern: .exe
-      match: '{{ if eq .OS "linux" }}weighted{{ else }}required{{ end }}'
+      match: '{{ if eq .OS "windows" }}required{{ else }}excluded{{ end }}'
       type: endswith
   tags:
     - terminal
@@ -362,7 +354,7 @@
   exe:
     name: gh
     patterns:
-      - "bin/gh{{ .EXTENSION }}"
+      - "**/bin/gh{{ .EXTENSION }}"
   tags:
     - terminal
 
@@ -374,8 +366,6 @@
 - name: antonmedv/walk
   description: Terminal file manager
   checksum: none
-  fallbacks:
-    - go
   tags:
     - terminal
 
@@ -386,8 +376,6 @@
     - pattern: .gz
       match: excluded
       type: endswith
-  fallbacks:
-    - go
   source:
     type: github
     go:
@@ -535,7 +523,7 @@
   url: https://releases.hashicorp.com/terraform/{{ .Version | trimPrefix "v" }}/terraform_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   checksum:
     type: file
-    value: '{{ .Base }}/terraform_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
+    value: '{{ .Base }}/{{ .Exe }}_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
   aliases: tf
   tags:
     - terminal
@@ -545,7 +533,7 @@
   url: https://releases.hashicorp.com/vault/{{ .Version | trimPrefix "v" }}/vault_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   checksum:
     type: file
-    value: '{{ .Base }}/vault_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
+    value: '{{ .Base }}/{{ .Exe }}_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
   tags:
     - terminal
 
@@ -554,7 +542,7 @@
   url: https://releases.hashicorp.com/packer/{{ .Version | trimPrefix "v" }}/packer_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   checksum:
     type: file
-    value: '{{ .Base }}/packer_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
+    value: '{{ .Base }}/{{ .Exe }}_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
   tags:
     - terminal
 

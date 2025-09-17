@@ -10,7 +10,6 @@ import (
 	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/pkg/executable"
 	"github.com/idelchi/godyl/pkg/logger"
-	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/version"
 )
 
@@ -64,7 +63,7 @@ func setup(cfg *root.Config) (*logger.Logger, *cache.Cache, error) {
 func cleanTool(cacheHandler *cache.Cache, tool *cache.Item, logger *logger.Logger) {
 	exe := executable.New(tool.Path)
 
-	if !file.New(exe.String()).Exists() {
+	if !exe.ToFile().Exists() {
 		if err := cacheHandler.Delete(tool.ID); err != nil {
 			logger.Warnf("failed to delete cache for id %q: %v", tool.ID, err)
 		} else {

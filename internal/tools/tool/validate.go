@@ -49,8 +49,8 @@ func (t *Tool) Resolve(tags tags.IncludeTags, options ...ResolveOption) result.R
 	tmpl := templates.New(templates.WithMissingKeyError(), templates.WithSlimSprig()).
 		WithValues(t.Platform.ToMap(), t.ToTemplateMap())
 
-	if err := t.TemplateFirst(tmpl); err != nil {
-		return result.WithFailed("templating first").Wrap(err)
+	if err := t.TemplatePreAPI(tmpl); err != nil {
+		return result.WithFailed("templating pre api").Wrap(err)
 	}
 
 	// Expand and set the output folder path.
@@ -142,8 +142,8 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 		return result.WithSkipped("skipped after version resolution")
 	}
 
-	if err := t.TemplateLast(tmpl); err != nil {
-		return result.WithFailed(fmt.Sprintf("templating last: %s", err))
+	if err := t.TemplatePostAPI(tmpl); err != nil {
+		return result.WithFailed(fmt.Sprintf("templating post api: %s", err))
 	}
 
 	// Attempt to sync the tool using the current strategy.
@@ -172,13 +172,13 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 			Hints:    *t.Hints.Reduced(),
 			Checksum: t.Checksum.Pattern,
 		}); err != nil {
-			return result.WithFailed(fmt.Sprintf("getting url: %s", err))
+			return result.WithFailed(fmt.Sprintf("getting post url: %s", err))
 		}
 
 		t.URL = populator.Get("url")
 	}
 
-	if !t.NoVerifyChecksum && !t.Source.Type.SupportsChecksum() {
+	if t.NoVerifyChecksum || !t.Source.Type.SupportsChecksum() {
 		t.Checksum.Type = "none"
 	}
 
@@ -187,12 +187,8 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 	tmpl.AddValue("File", file.File(t.URL).Unescape().Base())
 	tmpl.AddValue("Base", strings.TrimSuffix(strings.TrimSuffix(t.URL, file.File(t.URL).Base()), "/"))
 
-	if err := tmpl.ApplyAndSet(&t.Checksum.Value); err != nil {
-		return result.WithFailed(fmt.Sprintf("templating checksum value: %s", err))
-	}
-
-	if err := tmpl.ApplyAndSet(&t.Checksum.Entry); err != nil {
-		return result.WithFailed(fmt.Sprintf("templating checksum entry: %s", err))
+	if err := t.TemplatePostURL(tmpl); err != nil {
+		return result.WithFailed(fmt.Sprintf("templating url: %s", err))
 	}
 
 	if t.Checksum.Value == "" {

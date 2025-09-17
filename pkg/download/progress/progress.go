@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -165,6 +166,39 @@ func (pt *Tracker) TrackProgress(
 		Reader:  stream,
 		Closer:  &closeWrapper{stream, pt.wg, tracker},
 		Tracker: tracker,
+	}
+}
+
+// SetManualDisplay customizes a tracker's presentation for sources without
+// real byte progress (for example, go install). The supplied labels replace
+// the rendered value and speed text while the message is updated to the
+// provided string.
+func (pt *Tracker) SetManualDisplay(src, message, valueLabel, speedLabel string) {
+	pt.lock.Lock()
+
+	tracker, ok := pt.trackers[src]
+	pt.lock.Unlock()
+
+	if !ok {
+		return
+	}
+
+	tracker.UpdateMessage(message)
+
+	var counter uint64
+
+	tracker.Units.Notation = ""
+	tracker.Units.NotationPosition = gpp.UnitsNotationPositionBefore
+	tracker.Units.Formatter = func(int64) string {
+		if speedLabel == "" {
+			return valueLabel
+		}
+
+		if atomic.AddUint64(&counter, 1)&1 == 1 {
+			return valueLabel
+		}
+
+		return speedLabel
 	}
 }
 

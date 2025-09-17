@@ -67,7 +67,7 @@ func (es Files) Exists() (file.File, bool) {
 func (es Files) AsSlice() []string {
 	slice := make([]string, len(es))
 	for i, f := range es {
-		slice[i] = f.String()
+		slice[i] = f.Path()
 	}
 
 	return slice
@@ -89,4 +89,21 @@ func (es *Files) Remove(file file.File) bool {
 	*es = append((*es)[:index], (*es)[index+1:]...)
 
 	return true
+}
+
+// RelativeTo makes all files in the collection relative to the specified base directory.
+func (es *Files) RelativeTo(base string) Files {
+	// preallocate
+	relFiles := make(Files, 0, len(*es))
+
+	for _, f := range *es {
+		rel, err := f.RelativeTo(base)
+		if err != nil {
+			rel = f
+		}
+
+		relFiles = append(relFiles, rel)
+	}
+
+	return relFiles
 }

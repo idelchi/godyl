@@ -94,7 +94,7 @@ func (f *TableFormatter) renderTable(results []runner.Result) string {
 		{Name: "Output Path", WidthMax: f.config.MaxWidth},
 		{Name: "OS/ARCH", WidthMax: f.config.MaxWidth},
 		{Name: "File", WidthMax: f.config.MaxWidth},
-		{Name: "Checksum", WidthMax: f.config.MaxWidth},
+		// {Name: "Checksum", WidthMax: f.config.MaxWidth},
 		{Name: "Status", WidthMax: f.config.MaxWidth, Bold: true},
 	}
 
@@ -169,7 +169,7 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 	}
 
 	// Format executable name
-	exeName := file.New(tool.Exe.Name).WithoutExtension().String()
+	exeName := file.New(tool.Exe.Name).WithoutExtension().Path()
 	if tool.Mode == "extract" && fileDisplay != na {
 		exeName = fileDisplay
 	}
@@ -203,7 +203,7 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 		tool.Output,
 		fmt.Sprintf("%s/%s", tool.Platform.OS.Name, tool.Platform.Architecture.Name),
 		fileDisplay,
-		checksum,
+		// checksum,
 		message,
 	}
 }

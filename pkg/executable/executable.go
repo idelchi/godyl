@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
 // Executable represents the path to an executable.
@@ -25,6 +27,16 @@ func (e Executable) String() string {
 	return string(e)
 }
 
+// Path returns the string representation of the executable path.
+func (e Executable) Path() string {
+	return e.String()
+}
+
+// ToFile converts the Executable to a File type.
+func (e Executable) ToFile() file.File {
+	return file.New(e.Path())
+}
+
 // Command runs the specified command arguments by passing them to the executable.
 // It returns the output of the command as a trimmed string and any error encountered during execution.
 func (e Executable) Command(ctx context.Context, cmdArgs []string) (string, error) {
@@ -32,7 +44,7 @@ func (e Executable) Command(ctx context.Context, cmdArgs []string) (string, erro
 
 	cmd := exec.CommandContext( //nolint:gosec // Executable paths are validated before use
 		ctx,
-		e.String(),
+		e.Path(),
 		cmdArgs...)
 
 	cmd.Stdout = &out

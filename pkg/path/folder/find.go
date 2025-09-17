@@ -4,56 +4,73 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
+	"slices"
 
 	"github.com/idelchi/godyl/pkg/path/file"
+	"github.com/idelchi/godyl/pkg/path/files"
 )
 
 // FindFile searches for a file matching all given criteria.
 // Recursively searches the directory tree and returns the first matching file.
 // Returns ErrNotFound if no file matches all criteria.
 func (f Folder) FindFile(criteria ...CriteriaFunc) (file.File, error) {
+	files, err := f.FindFiles(true, criteria...)
+
+	if len(files) > 0 {
+		return files[0], err
+	}
+
+	return file.File(""), fmt.Errorf("%w: no file found matching all criteria in folder %q", ErrNotFound, f.AsFile())
+}
+
+// FindFiles searches for files matching all given criteria.
+// Recursively searches the directory tree and returns all matching files.
+// Returns an empty slice if no files match all criteria.
+func (f Folder) FindFiles(firstOnly bool, criteria ...CriteriaFunc) (files.Files, error) {
 	root := f.AsFile()
 
-	var foundPath file.File
+	var found files.Files
 
-	err := filepath.WalkDir(root.String(), func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return fmt.Errorf("walking folder %q: %w", root, err)
+	err := filepath.WalkDir(root.Path(), func(path string, d fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return fmt.Errorf("walking folder %q: %w", root, walkErr)
 		}
 
-		if d.IsDir() {
-			return nil // skip directories
+		if d.IsDir() || !d.Type().IsRegular() {
+			return nil
 		}
 
 		current := file.New(path)
 
-		relPath, err := current.RelativeTo(root)
+		relPath, err := current.RelativeTo(root.Path())
 		if err != nil {
 			return fmt.Errorf("getting relative path: %w", err)
 		}
 
 		for _, criterion := range criteria {
-			matches, err := criterion(relPath)
+			match, err := criterion(relPath)
 			if err != nil {
 				return fmt.Errorf("evaluating criterion: %w", err)
 			}
 
-			if !matches {
+			if !match {
 				return nil
 			}
 		}
 
-		foundPath = root.Join(relPath.String())
+		found = append(found, root.Join(relPath.Path()))
 
-		return filepath.SkipAll
+		if firstOnly {
+			return filepath.SkipAll
+		}
+
+		return nil
 	})
 	if err != nil {
-		return file.File(""), fmt.Errorf("walking folder %q: %w", root, err)
+		return files.Files{}, fmt.Errorf("walking folder %q: %w", root, err)
 	}
 
-	if foundPath == "" {
-		return file.File(""), fmt.Errorf("%w: no file found matching all criteria in folder %q", ErrNotFound, root)
-	}
+	slices.Sort(found)
 
-	return foundPath, nil
+	return found, nil
 }

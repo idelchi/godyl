@@ -3,7 +3,6 @@ package match
 import (
 	"strings"
 
-	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/detect"
 	"github.com/idelchi/godyl/internal/tools/hints"
 )
@@ -36,24 +35,16 @@ func (a *Asset) PlatformMatch(req Requirements) (int, bool) {
 
 	// Match operating system
 	if req.Platform.OS.Is(a.Platform.OS) {
-		debug.Debug("OS exact match: %q", a.Platform.OS)
-
 		score++
 	}
 
 	if req.Platform.OS.IsCompatibleWith(a.Platform.OS) {
-		debug.Debug("OS compatible match: %q", a.Platform.OS)
-
 		score++
 	} else if !a.Platform.OS.IsUnset() && !req.Platform.OS.IsUnset() {
-		debug.Debug("OS incompatible: required %q, asset %q", req.Platform.OS, a.Platform.OS)
-
 		qualified = false
 	}
 
 	if req.Platform.Architecture.Is(a.Platform.Architecture) {
-		debug.Debug("Architecture exact match: %q", a.Platform.Architecture)
-
 		score++
 	}
 
@@ -93,14 +84,10 @@ func (a *Asset) Match(req Requirements) (int, bool, error) {
 		}
 
 		if hint.Match.Value == hints.Required && !match {
-			debug.Debug("Asset %q rejected due to failing required hint %q", a.Name, hint.Pattern)
-
 			return 0, false, nil
 		}
 
 		if hint.Match.Value == hints.Excluded && match {
-			debug.Debug("Asset %q rejected due to matching excluded hint %q", a.Name, hint.Pattern)
-
 			return 0, false, nil
 		}
 	}
@@ -116,8 +103,6 @@ func (a *Asset) Match(req Requirements) (int, bool, error) {
 		}
 
 		if hint.Match.Value == hints.Weighted && match {
-			debug.Debug("Asset %q matched weighted hint %q", a.Name, hint.Pattern)
-
 			score += hint.Weight.Value
 		}
 	}

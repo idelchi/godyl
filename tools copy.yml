@@ -366,8 +366,6 @@
 - name: antonmedv/walk
   description: Terminal file manager
   checksum: none
-  fallbacks:
-    - go
   tags:
     - terminal
 
@@ -378,8 +376,6 @@
     - pattern: .gz
       match: excluded
       type: endswith
-  fallbacks:
-    - go
   source:
     type: github
     go:

@@ -45,7 +45,6 @@ type runOptions struct {
 	progressTracker getter.ProgressTracker
 	resolveOptions  []tool.ResolveOption
 	noDownload      bool
-	noVerifySSL     bool
 }
 
 // WithProgressTracker sets the progress tracker for downloads.
@@ -59,13 +58,6 @@ func WithProgressTracker(tracker getter.ProgressTracker) RunOption {
 func WithNoDownload() RunOption {
 	return func(opts *runOptions) {
 		opts.noDownload = true
-	}
-}
-
-// WithNoVerifySSL disables SSL verification.
-func WithNoVerifySSL() RunOption {
-	return func(opts *runOptions) {
-		opts.noVerifySSL = true
 	}
 }
 

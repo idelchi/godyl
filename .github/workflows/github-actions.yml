@@ -11,13 +11,16 @@ on:
 jobs:
   info:
     uses: idelchi/devenv/.github/workflows/info.yml@main
+    if: github.ref == 'refs/heads/main'
 
   lint:
     uses: idelchi/devenv/.github/workflows/task.yml@main
     needs: info
+    if: github.ref == 'refs/heads/main'
 
   test:
     needs: lint
+    if: always()
     strategy:
       matrix:
         os:

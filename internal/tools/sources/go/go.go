@@ -6,7 +6,6 @@ package goc
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -14,7 +13,6 @@ import (
 	"slices"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/hashicorp/go-getter/v2"
 
@@ -85,12 +83,16 @@ func (g *Go) Install(
 ) (output string, found file.File, err error) {
 	mu.Lock()
 
-	binary, err := goi.New(d.NoVerifySSL, g.DownloadIfMissing)
+	debug.Debug("Searching for go binary...")
+
+	binary, err := goi.New(d.NoVerifySSL, g.DownloadIfMissing, d.NoVerifyChecksum, progressListener)
 	if err != nil {
 		mu.Unlock()
 
 		return "", "", err
 	}
+
+	debug.Debug("Go binary found: %q", binary.File)
 
 	mu.Unlock()
 
@@ -139,6 +141,8 @@ func (g *Go) Install(
 		}
 	}
 
+	debug.Debug("Setting up progress tracker for 'go install'...")
+
 	stopProgress := startGoInstallProgress(progressListener, paths[0])
 	defer stopProgress()
 
@@ -150,6 +154,8 @@ func (g *Go) Install(
 	_ = os.ParseFrom(runtime.GOOS)
 
 	for _, pth := range paths {
+		debug.Debug("Attempting to install from path: %q", pth)
+
 		output, err = installer.Install(pth)
 		debug.Debug("go install output: %q", output)
 		debug.Debug("successful path was: %q", pth)
@@ -174,6 +180,8 @@ func (g *Go) Install(
 
 			debug.Debug("Searching in %q for %q", outFolder.Path(), d.Patterns)
 
+			debug.Debug("Linking to %q", filepath.Join(outFolder.Path(), name))
+
 			found, findErr := install.FindAndSymlink(
 				file.New(outFolder.Path()),
 				d,
@@ -197,71 +205,16 @@ func (g *Go) SetGitHub(gh *github.GitHub) {
 }
 
 func startGoInstallProgress(progressListener getter.ProgressTracker, label string) func() {
-	if progressListener == nil {
-		return func() {}
-	}
-
-	if _, isNoop := progressListener.(*progresspkg.Noop); isNoop {
-		return func() {}
-	}
-
-	pr, pw := io.Pipe()
-
-	const syntheticTotal = 1024
-
 	valueLabel := "(go install)"
 	speedLabel := "(n/a)"
+	message := fmt.Sprintf("%-45s %s", file.New(label).Unescape(), valueLabel)
 
-	tracked := progressListener.TrackProgress(
-		label,
-		0,
-		syntheticTotal,
-		pr,
-	)
-
-	if tracker, ok := progressListener.(*progresspkg.Tracker); ok {
-		message := fmt.Sprintf("%-45s %s", file.New(label).Unescape(), valueLabel)
-		tracker.SetManualDisplay(label, message, valueLabel, speedLabel)
+	tracker, ok := progressListener.(*progresspkg.Tracker)
+	if !ok {
+		return func() {}
 	}
 
-	stop := make(chan struct{})
+	const stallFraction = 0.8
 
-	var once sync.Once
-
-	go func() {
-		defer tracked.Close()
-
-		_, _ = io.Copy(io.Discard, tracked)
-	}()
-
-	const (
-		tickInterval = 200 * time.Millisecond
-		chunkCount   = 20
-	)
-
-	go func() {
-		ticker := time.NewTicker(tickInterval)
-		defer ticker.Stop()
-
-		chunk := make([]byte, chunkCount)
-
-		for {
-			select {
-			case <-stop:
-				_ = pw.Close()
-
-				return
-			case <-ticker.C:
-				if _, err := pw.Write(chunk); err != nil {
-					return
-				}
-			}
-		}
-	}()
-
-	return func() {
-		once.Do(func() {
-			close(stop)
-		})
-	}
+	return progresspkg.StartSynthetic(tracker, label, message, valueLabel, speedLabel, stallFraction)
 }

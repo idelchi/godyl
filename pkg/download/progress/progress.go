@@ -202,6 +202,90 @@ func (pt *Tracker) SetManualDisplay(src, message, valueLabel, speedLabel string)
 	}
 }
 
+// StartSynthetic creates and drives a synthetic progress entry identified by key.
+// It is useful for operations that lack byte-level progress (like go install) but
+// should still appear in the global progress list. The bar advances gradually and
+// stalls once it reaches the given fraction (0 < stallFraction ≤ 1) until the
+// returned function is invoked, at which point it completes instantly.
+func StartSynthetic(
+	tracker *Tracker,
+	key string,
+	message string,
+	valueLabel string,
+	speedLabel string,
+	stallFraction float64,
+) func() {
+	if tracker == nil {
+		return func() {}
+	}
+
+	pr, pw := io.Pipe()
+
+	const syntheticTotal = 1000
+
+	tracked := tracker.TrackProgress(key, 0, syntheticTotal, pr)
+	tracker.SetManualDisplay(key, message, valueLabel, speedLabel)
+
+	wrapped, ok := tracked.(*readCloserWithProgress)
+	if !ok {
+		return func() {}
+	}
+
+	if stallFraction <= 0 || stallFraction > 1 {
+		stallFraction = 1
+	}
+
+	plateau := int64(float64(syntheticTotal) * stallFraction)
+	if plateau <= 0 {
+		plateau = syntheticTotal
+	}
+
+	const stepSize = 50
+
+	step := syntheticTotal / stepSize
+	if step <= 0 {
+		step = 1
+	}
+
+	stop := make(chan struct{})
+
+	var once sync.Once
+
+	const tickerInterval = 200 * time.Millisecond
+
+	go func() {
+		ticker := time.NewTicker(tickerInterval)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-stop:
+				return
+			case <-ticker.C:
+				current := wrapped.Tracker.Value()
+				if current >= plateau {
+					continue
+				}
+
+				next := min(current+int64(step), plateau)
+
+				wrapped.Tracker.SetValue(next)
+			}
+		}
+	}()
+
+	return func() {
+		once.Do(func() {
+			wrapped.Tracker.SetValue(syntheticTotal)
+			wrapped.Tracker.MarkAsDone()
+			close(stop)
+
+			_ = tracked.Close()
+			_ = pw.Close()
+		})
+	}
+}
+
 // closeWrapper wraps an io.Closer to mark a tracker as done and signal completion.
 type closeWrapper struct {
 	io.Closer

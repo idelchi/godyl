@@ -24,6 +24,7 @@ func (i *Installer) Install(path string) (output string, err error) {
 	cmd := exec.CommandContext(context.Background(), //nolint:gosec // Path is validated by upstream tool configuration
 		i.Binary.File.Path(),
 		"install",
+		"-modcacherw",
 		path,
 	)
 

@@ -954,6 +954,17 @@
   tags:
     - terminal
 
+- name: wait4x/wait4x
+  description: Wait4X allows you to wait for a port or a service to enter the requested state
+  tags:
+    - terminal
+
+- name: lusingander/gotip
+  description: Go Test Interactive Picker
+  checksum: none
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

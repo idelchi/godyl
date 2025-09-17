@@ -959,16 +959,6 @@
   tags:
     - terminal
 
-- name: lusingander/gotip
-  description: Go Test Interactive Picker
-  checksum: none
-  source:
-    type: go
-    go:
-      command: cmd/gotip
-  tags:
-    - terminal
-
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

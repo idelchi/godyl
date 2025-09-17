@@ -9,15 +9,15 @@ on:
       - main
 
 jobs:
-  # info:
-  #   uses: idelchi/devenv/.github/workflows/info.yml@main
+  info:
+    uses: idelchi/devenv/.github/workflows/info.yml@main
 
-  # lint:
-  #   uses: idelchi/devenv/.github/workflows/task.yml@main
-  #   needs: info
+  lint:
+    uses: idelchi/devenv/.github/workflows/task.yml@main
+    needs: info
 
   test:
-    # needs: lint
+    needs: lint
     strategy:
       matrix:
         os:
@@ -44,11 +44,12 @@ jobs:
         shell: bash
         run: ./godyl dump platform
 
-      # - name: Dry install tools
-      #   shell: bash
-      #   run: ./godyl dump tools -e | ./godyl -j 1 -v i - --dry
-      #   if: github.ref != 'refs/heads/main'
+      - name: Dry install tools
+        shell: bash
+        run: ./godyl dump tools -e | ./godyl -j 1 -v i - --dry
+        if: github.ref != 'refs/heads/main'
+
       - name: Install tools
         shell: bash
         run: ./godyl dump tools -e | ./godyl -j 1 -v i -
-        # if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'

@@ -21,57 +21,12 @@ func (f Folder) FindFile(criteria ...CriteriaFunc) (file.File, error) {
 	}
 
 	return file.File(""), fmt.Errorf("%w: no file found matching all criteria in folder %q", ErrNotFound, f.AsFile())
-
-	// root := f.AsFile()
-
-	// var foundPath file.File
-
-	// err := filepath.WalkDir(root.String(), func(path string, d fs.DirEntry, err error) error {
-	// 	if err != nil {
-	// 		return fmt.Errorf("walking folder %q: %w", root, err)
-	// 	}
-
-	// 	if d.IsDir() {
-	// 		return nil
-	// 	}
-
-	// 	current := file.New(path)
-
-	// 	relPath, err := current.RelativeTo(root)
-	// 	if err != nil {
-	// 		return fmt.Errorf("getting relative path: %w", err)
-	// 	}
-
-	// 	for _, criterion := range criteria {
-	// 		matches, err := criterion(relPath)
-	// 		if err != nil {
-	// 			return fmt.Errorf("evaluating criterion: %w", err)
-	// 		}
-
-	// 		if !matches {
-	// 			return nil
-	// 		}
-	// 	}
-
-	// 	foundPath = root.Join(relPath.String())
-
-	// 	return filepath.SkipAll
-	// })
-	// if err != nil {
-	// 	return file.File(""), fmt.Errorf("walking folder %q: %w", root, err)
-	// }
-
-	// if foundPath == "" {
-	// 	return file.File(""), fmt.Errorf("%w: no file found matching all criteria in folder %q", ErrNotFound, root)
-	// }
-
-	// return foundPath, nil
 }
 
 // FindFiles searches for files matching all given criteria.
 // Recursively searches the directory tree and returns all matching files.
 // Returns an empty slice if no files match all criteria.
-func (f Folder) FindFiles(findFirst bool, criteria ...CriteriaFunc) (files.Files, error) {
+func (f Folder) FindFiles(firstOnly bool, criteria ...CriteriaFunc) (files.Files, error) {
 	root := f.AsFile()
 
 	var found files.Files
@@ -105,7 +60,7 @@ func (f Folder) FindFiles(findFirst bool, criteria ...CriteriaFunc) (files.Files
 
 		found = append(found, root.Join(relPath.String()))
 
-		if findFirst {
+		if firstOnly {
 			return filepath.SkipAll
 		}
 

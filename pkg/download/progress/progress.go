@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/hashicorp/go-getter/v2"
 	gpp "github.com/jedib0t/go-pretty/v6/progress"
 	"github.com/jedib0t/go-pretty/v6/text"
 
@@ -209,15 +208,14 @@ func (pt *Tracker) SetManualDisplay(src, message, valueLabel, speedLabel string)
 // stalls once it reaches the given fraction (0 < stallFraction ≤ 1) until the
 // returned function is invoked, at which point it completes instantly.
 func StartSynthetic(
-	progress getter.ProgressTracker,
+	tracker *Tracker,
 	key string,
 	message string,
 	valueLabel string,
 	speedLabel string,
 	stallFraction float64,
 ) func() {
-	tracker, ok := progress.(*Tracker)
-	if !ok {
+	if tracker == nil {
 		return func() {}
 	}
 
@@ -228,7 +226,7 @@ func StartSynthetic(
 	tracked := tracker.TrackProgress(key, 0, syntheticTotal, pr)
 	tracker.SetManualDisplay(key, message, valueLabel, speedLabel)
 
-	rc, ok := tracked.(*readCloserWithProgress)
+	wrapped, ok := tracked.(*readCloserWithProgress)
 	if !ok {
 		return func() {}
 	}
@@ -264,22 +262,22 @@ func StartSynthetic(
 			case <-stop:
 				return
 			case <-ticker.C:
-				current := rc.Tracker.Value()
+				current := wrapped.Tracker.Value()
 				if current >= plateau {
 					continue
 				}
 
 				next := min(current+int64(step), plateau)
 
-				rc.Tracker.SetValue(next)
+				wrapped.Tracker.SetValue(next)
 			}
 		}
 	}()
 
 	return func() {
 		once.Do(func() {
-			rc.Tracker.SetValue(syntheticTotal)
-			rc.Tracker.MarkAsDone()
+			wrapped.Tracker.SetValue(syntheticTotal)
+			wrapped.Tracker.MarkAsDone()
 			close(stop)
 
 			_ = tracked.Close()

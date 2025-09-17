@@ -58,16 +58,6 @@ func (r *DefaultRunner) Run(ctx context.Context, t *tool.Tool, tags tags.Include
 		return r.convertResult(t, resolveResult)
 	}
 
-	// Apply SSL verification setting
-	if opts.noVerifySSL {
-		t.NoVerifySSL = true
-	}
-
-	// Apply checksum verification setting
-	if opts.noVerifyChecksum {
-		t.NoVerifyChecksum = true
-	}
-
 	// Download the tool
 	downloadResult := t.Download(ctx, opts.progressTracker)
 

@@ -103,15 +103,6 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 				runOpts = append(runOpts, runner.WithNoDownload())
 			}
 
-			// TODO(Idelchi): Unclear if this is needed since we're already setting it on the tool in the runner.
-			if p.config.NoVerifySSL {
-				runOpts = append(runOpts, runner.WithNoVerifySSL())
-			}
-
-			if p.config.NoVerifyChecksum {
-				runOpts = append(runOpts, runner.WithNoVerifyChecksum())
-			}
-
 			if p.Options != nil {
 				runOpts = append(runOpts, runner.WithResolveOptions(p.Options...))
 			}

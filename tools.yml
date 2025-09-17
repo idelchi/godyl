@@ -436,31 +436,6 @@
 
 - name: jqlang/jq
   description: Command-line JSON processor
-  hints:
-    - pattern: amd64
-      weight: |-
-        {{- if eq .ARCH "amd64" -}}
-        1
-        {{- else -}}
-        0
-        {{- end -}}
-      type: contains
-    - pattern: macos
-      weight: |-
-        {{- if eq .OS "darwin" -}}
-        1
-        {{- else -}}
-        0
-        {{- end -}}
-      type: contains
-    - pattern: armhf
-      weight: |-
-        {{- if eq .ARCH "arm" -}}
-        1
-        {{- else -}}
-        0
-        {{- end -}}
-      type: contains
   tags:
     - terminal
 

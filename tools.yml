@@ -962,6 +962,10 @@
 - name: lusingander/gotip
   description: Go Test Interactive Picker
   checksum: none
+  source:
+    type: go
+    go:
+      command: cmd/gotip
   tags:
     - terminal
 

@@ -49,4 +49,4 @@ jobs:
 
       - name: Install tools
         shell: bash
-        run: ./godyl dump tools -e | ./godyl -j 1 -v i - --tags=wait4x/wait4x --tags=lusingander/gotip
+        run: ./godyl dump tools -e | ./godyl -j 1 -v i -

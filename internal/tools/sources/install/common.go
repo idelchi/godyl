@@ -77,20 +77,20 @@ func Download(d Data) (found file.File, err error) {
 func findExecutableInDir(destination file.File, patterns []string) (file.File, error) {
 	searchDir := folder.New(destination.Dir())
 
-	folders, err := searchDir.ListFolders()
-	if err != nil {
-		return destination, fmt.Errorf("listing folders in %q: %w", searchDir, err)
-	}
+	// folders, err := searchDir.ListFolders()
+	// if err != nil {
+	// 	return destination, fmt.Errorf("listing folders in %q: %w", searchDir, err)
+	// }
 
-	files, err := searchDir.ListFiles()
-	if err != nil {
-		return destination, fmt.Errorf("listing files in %q: %w", searchDir, err)
-	}
+	// files, err := searchDir.ListFiles()
+	// if err != nil {
+	// 	return destination, fmt.Errorf("listing files in %q: %w", searchDir, err)
+	// }
 
 	// If there's only one folder and no files, search within that folder
-	if len(folders) == 1 && len(files) == 0 {
-		searchDir = folders[0]
-	}
+	// if len(folders) == 1 && len(files) == 0 {
+	// 	searchDir = folders[0]
+	// }
 
 	// Try each pattern in order
 	for _, pattern := range patterns {
@@ -110,11 +110,15 @@ func findExecutableInDir(destination file.File, patterns []string) (file.File, e
 		return found, nil
 	}
 
+	allFiles, _ := searchDir.FindFiles(true, func(file file.File) (bool, error) {
+		return file.Matches("**")
+	})
+
 	return destination, fmt.Errorf(
-		"finding executable: no executable matching patterns %v found in %q: found\n%v",
+		"finding executable: no executable matching patterns %v found in %q: found %v",
 		patterns,
 		searchDir,
-		files,
+		allFiles.RelativeTo(searchDir.AsFile()),
 	)
 }
 

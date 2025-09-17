@@ -90,3 +90,19 @@ func (es *Files) Remove(file file.File) bool {
 
 	return true
 }
+
+// RelativeTo makes all files in the collection relative to the specified base directory.
+func (es *Files) RelativeTo(baseDir file.File) Files {
+	var relFiles Files
+
+	for _, f := range *es {
+		rel, err := f.RelativeTo(baseDir)
+		if err != nil {
+			rel = f
+		}
+
+		relFiles = append(relFiles, rel)
+	}
+
+	return relFiles
+}

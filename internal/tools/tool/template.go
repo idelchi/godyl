@@ -37,9 +37,9 @@ func TemplateError(err error, name string) error {
 	return fmt.Errorf("applying template to %q: %w", name, err)
 }
 
-// TemplateFirst applies templating to various fields of the Tool struct, such as version, path, and checksum.
+// TemplatePreAPI applies templating to various fields of the Tool struct, such as version, path, and checksum.
 // It processes these fields using Go templates and updates them with the templated values.
-func (t *Tool) TemplateFirst(tmpl *templates.Processor) error {
+func (t *Tool) TemplatePreAPI(tmpl *templates.Processor) error {
 	if err := tmpl.ApplyAndSet(&t.Name); err != nil {
 		return TemplateError(err, "name")
 	}
@@ -77,19 +77,15 @@ func (t *Tool) TemplateFirst(tmpl *templates.Processor) error {
 	}
 
 	if err := tmpl.ApplyAndSet(&t.Checksum.Type); err != nil {
-		return err
+		return TemplateError(err, "checksum.type")
 	}
 
 	return nil
 }
 
-// TemplateLast applies templating to the remaining fields of the Tool struct.
-// Templates:
-//   - Exe.Patterns
-//   - Commands
-//   - Hints patterns and weights
-//   - URL
-func (t *Tool) TemplateLast(tmpl *templates.Processor) error {
+// TemplatePostAPI applies templating to the fields that depend on values resolved from the API,
+// specifically the {{ .Version }} template.
+func (t *Tool) TemplatePostAPI(tmpl *templates.Processor) error {
 	// Apply templating to the url headers
 	for key, value := range t.Source.URL.Headers {
 		for i := range value {
@@ -104,7 +100,7 @@ func (t *Tool) TemplateLast(tmpl *templates.Processor) error {
 	patterns := *t.Exe.Patterns
 	for i := range patterns {
 		if err := tmpl.ApplyAndSet(&patterns[i]); err != nil {
-			return err
+			return TemplateError(err, "exe.patterns")
 		}
 	}
 
@@ -112,7 +108,7 @@ func (t *Tool) TemplateLast(tmpl *templates.Processor) error {
 	for i, cmd := range t.Commands.Commands {
 		output, err := tmpl.Apply(cmd.String())
 		if err != nil {
-			return err
+			return TemplateError(err, "commands")
 		}
 
 		t.Commands.Commands[i].From(output)
@@ -122,20 +118,34 @@ func (t *Tool) TemplateLast(tmpl *templates.Processor) error {
 	hints := *t.Hints
 	for i := range hints {
 		if err := tmpl.ApplyAndSet(&hints[i].Pattern); err != nil {
-			return err
+			return TemplateError(err, "hints.pattern")
 		}
 
 		if err := tmpl.ApplyAndSet(&hints[i].Weight.Template); err != nil {
-			return err
+			return TemplateError(err, "hints.weight")
 		}
 
 		if err := tmpl.ApplyAndSet(&hints[i].Match.Template); err != nil {
-			return err
+			return TemplateError(err, "hints.match")
 		}
 	}
 
 	if err := tmpl.ApplyAndSet(&t.URL); err != nil {
-		return err
+		return TemplateError(err, "url")
+	}
+
+	return nil
+}
+
+// TemplatePostURL applies templating to the fields that depend on the resolved URL,
+// specifically the {{ .URL }}, {{ .File }}, and {{ .Base }} templates.
+func (t *Tool) TemplatePostURL(tmpl *templates.Processor) error {
+	if err := tmpl.ApplyAndSet(&t.Checksum.Value); err != nil {
+		return TemplateError(err, "checksum.value")
+	}
+
+	if err := tmpl.ApplyAndSet(&t.Checksum.Entry); err != nil {
+		return TemplateError(err, "checksum.entry")
 	}
 
 	return nil

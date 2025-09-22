@@ -959,6 +959,18 @@
   tags:
     - terminal
 
+- name: twpayne/chezmoi
+  description: Manage your dotfiles across multiple diverse machines, securely
+  hints:
+    - pattern: .zip
+      match: '{{ if eq .OS "windows" }}required{{ end }}'
+      type: endswith
+    - pattern: .tar.gz
+      match: '{{ if ne .OS "windows" }}required{{ end }}'
+      type: endswith
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

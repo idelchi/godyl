@@ -95,6 +95,17 @@
   tags:
     - kubernetes
 
+- name: eksctl-io/eksctl
+  description: The official CLI for Amazon EKS
+  tags:
+    - kubernetes
+
+- name: argoproj/argo-cd
+  description: Declarative continuous deployment for Kubernetes
+  exe: argocd
+  tags:
+    - kubernetes
+
 - name: kubernetes-sigs/krew
   description: Find and install kubectl plugins
   tags:
@@ -730,17 +741,6 @@
 
 - name: astral-sh/ruff
   description: An extremely fast Python linter and code formatter, written in Rust
-  tags:
-    - terminal
-
-- name: eksctl-io/eksctl
-  description: The official CLI for Amazon EKS
-  tags:
-    - kubernetes
-
-- name: argoproj/argo-cd
-  description: Declarative continuous deployment for Kubernetes
-  exe: argocd
   tags:
     - terminal
 

@@ -17,11 +17,11 @@ import (
 
 // GitHub represents a GitHub repository configuration and state.
 type GitHub struct {
-	Data                install.Metadata `mapstructure:"-"     yaml:"-"`
+	Data                install.Metadata `mapstructure:"-" yaml:"-"`
 	latestStoredRelease *github.Release
 	Repo                string `mapstructure:"repo"  yaml:"repo"`
 	Owner               string `mapstructure:"owner" yaml:"owner"`
-	Token               string `mapstructure:"token" yaml:"token" mask:"fixed"`
+	Token               string `mapstructure:"token" mask:"fixed" yaml:"token"`
 	Pre                 bool   `mapstructure:"pre"   yaml:"pre"`
 }
 

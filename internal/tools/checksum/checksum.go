@@ -17,7 +17,7 @@ import (
 // Checksum represents a checksum configuration with type, value, and optionality.
 type Checksum struct {
 	// Type is the type of checksum (e.g., sha256, sha512, sha1, md5, file, none).
-	Type string `validate:"oneof=sha256 sha512 sha1 md5 file none" single:"true"`
+	Type string `single:"true" validate:"oneof=sha256 sha512 sha1 md5 file none"`
 	// Value as a checksum string or a URL/path to a file containing the checksum.
 	Value string
 	// Pattern is an optional glob pattern to consider when selecting the checksum file with the combination

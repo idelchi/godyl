@@ -84,7 +84,7 @@ func (v *Validator) Validate(c any) []error {
 }
 
 /*
-	RegisterValidationAndTranslation registers both a validation function and its error message translation.
+RegisterValidationAndTranslation registers both a validation function and its error message translation.
 
 It simplifies the process of adding custom validations with proper error messages.
 Parameters:

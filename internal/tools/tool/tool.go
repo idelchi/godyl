@@ -35,54 +35,52 @@ import (
 // Tool represents a single tool configuration.
 // It contains various fields that specify details such as the tool's name, version, path, execution settings,
 // platform-specific settings, environment variables, and custom strategies for downloading, testing, or deploying.
-//
-//nolint:lll 	// Demanded by the formatter
 type Tool struct {
 	// Name of the tool, usually a short identifier or title.
-	Name string `json:"name"               mapstructure:"name"               single:"true" validate:"required" yaml:"name"`
+	Name string `json:"name" mapstructure:"name" single:"true" validate:"required" yaml:"name"`
 	// Description of the tool, giving more context about its purpose.
-	Description string `json:"description"        mapstructure:"description"                                          yaml:"description"`
+	Description string `json:"description" mapstructure:"description" yaml:"description"`
 	// Version specifies the version of the tool.
-	Version version.Version `json:"version"            mapstructure:"version"                                              yaml:"version"`
+	Version version.Version `json:"version" mapstructure:"version" yaml:"version"`
 	// Path represents the URL where the tool can be downloaded from.
-	URL string `json:"url"                mapstructure:"url"                                                  yaml:"url"`
+	URL string `json:"url" mapstructure:"url" yaml:"url"`
 	// Output defines the output path where the tool will be installed or extracted.
-	Output string `json:"output"             mapstructure:"output"                                               yaml:"output"`
+	Output string `json:"output" mapstructure:"output" yaml:"output"`
 	// Exe specifies the executable details for the tool, such as patterns or names for locating the binary.
-	Exe exe.Exe `json:"exe"                mapstructure:"exe"                                                  yaml:"exe"`
+	Exe exe.Exe `json:"exe" mapstructure:"exe" yaml:"exe"`
 	// Platform defines the platform-specific details for the tool, including OS and architecture constraints.
-	Platform detect.Platform `json:"platform"           mapstructure:"platform"                                             yaml:"platform"`
+	Platform detect.Platform `json:"platform" mapstructure:"platform" yaml:"platform"`
 	// Aliases represent alternative names or shortcuts for the tool.
-	Aliases aliases.Aliases `json:"aliases"            mapstructure:"aliases"                                              yaml:"aliases"`
+	Aliases aliases.Aliases `json:"aliases" mapstructure:"aliases" yaml:"aliases"`
 	// Values contains custom values or variables used in the tool's configuration.
-	Values values.Values `json:"values"             mapstructure:"values"                                               yaml:"values"`
+	Values values.Values `json:"values" mapstructure:"values" yaml:"values"`
 	// Fallbacks defines fallback configurations in case the primary configuration fails.
-	Fallbacks fallbacks.Fallbacks `json:"fallbacks"          mapstructure:"fallbacks"                                            yaml:"fallbacks"`
+	Fallbacks fallbacks.Fallbacks `json:"fallbacks" mapstructure:"fallbacks" yaml:"fallbacks"`
 	// Hints provide additional matching patterns or heuristics for the tool.
-	Hints *hints.Hints `json:"hints"              mapstructure:"hints"                                                yaml:"hints"`
+	Hints *hints.Hints `json:"hints" mapstructure:"hints" yaml:"hints"`
 	// Source defines the source configuration, which determines how the tool is fetched (e.g., GitHub, local files).
-	Source sources.Source `json:"source"             mapstructure:"source"                                               yaml:"source"`
+	Source sources.Source `json:"source" mapstructure:"source" yaml:"source"`
 	// Commands contains a set of commands that can be executed in the context of the tool.
-	Commands command.Commands `json:"commands"           mapstructure:"commands"                                             yaml:"commands"`
+	Commands command.Commands `json:"commands" mapstructure:"commands" yaml:"commands"`
 	// Tags are labels or markers that can be used to categorize or filter the tool.
-	Tags tags.Tags `json:"tags"               mapstructure:"tags"                                                 yaml:"tags"`
+	Tags tags.Tags `json:"tags" mapstructure:"tags" yaml:"tags"`
 	// Strategy defines how the tool is deployed, fetched, or managed (e.g., download strategies, handling retries).
-	Strategy strategy.Strategy `json:"strategy"           mapstructure:"strategy"                                             yaml:"strategy"`
+	Strategy strategy.Strategy `json:"strategy" mapstructure:"strategy" yaml:"strategy"`
 	// Skip defines conditions under which certain steps (e.g., downloading, testing) are skipped.
-	Skip skip.Skip `json:"skip"               mapstructure:"skip"                                                 yaml:"skip"`
-	Mode mode.Mode `json:"mode"               mapstructure:"mode"                                                 yaml:"mode"`
+	Skip skip.Skip `json:"skip" mapstructure:"skip" yaml:"skip"`
+	Mode mode.Mode `json:"mode" mapstructure:"mode" yaml:"mode"`
 	// Env defines the environment variables that are applied when running the tool.
-	Env env.Env `json:"env"                mapstructure:"env"                                                  yaml:"env"`
+	Env env.Env `json:"env" mapstructure:"env" yaml:"env"`
 	// NoVerifySSL specifies whether SSL verification should be disabled when fetching the tool.
-	NoVerifySSL bool `json:"no-verify-ssl"      mapstructure:"no-verify-ssl"                                        yaml:"no-verify-ssl"`
+	NoVerifySSL bool `json:"no-verify-ssl" mapstructure:"no-verify-ssl" yaml:"no-verify-ssl"`
 	// NoCache disables cache interaction
-	NoCache bool `json:"no-cache"           mapstructure:"no-cache"                                             yaml:"no-cache"`
+	NoCache bool `json:"no-cache" mapstructure:"no-cache" yaml:"no-cache"`
 	// NoVerifyChecksum disables checksum verification
-	NoVerifyChecksum bool `json:"no-verify-checksum" mapstructure:"no-verify-checksum"                                   yaml:"no-verify-checksum"`
+	NoVerifyChecksum bool `json:"no-verify-checksum" mapstructure:"no-verify-checksum" yaml:"no-verify-checksum"`
 	// Inherit is used to determine which default configurations the tool should inherit from.
-	Inherit *inherit.Inherit `json:"inherit"            mapstructure:"inherit"                                              yaml:"inherit"`
+	Inherit *inherit.Inherit `json:"inherit" mapstructure:"inherit" yaml:"inherit"`
 	// Checksum defines the checksum configuration for verifying the integrity of the tool.
-	Checksum checksum.Checksum `json:"checksum"           mapstructure:"checksum"                                             yaml:"checksum"`
+	Checksum checksum.Checksum `json:"checksum" mapstructure:"checksum" yaml:"checksum"`
 	// Cache can be carried around for various checks
 	cache *cache.Cache `json:"-"`
 	// currentResult stores the latest operation result

@@ -1,4 +1,3 @@
-// Package tool provides core functionality for managing tool configurations.
 package tool
 
 // ResolveOption is a functional option type for the Resolve method.

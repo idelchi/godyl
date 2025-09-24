@@ -977,6 +977,9 @@
     - pattern: .tar.gz
       match: '{{ if ne .OS "windows" }}required{{ end }}'
       type: endswith
+    - pattern: glibc
+      weight: '{{ if eq .DISTRIBUTION "alpine" }}-1{{ else }}1{{ end }}'
+      type: contains
   tags:
     - terminal
 

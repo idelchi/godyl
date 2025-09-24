@@ -27,10 +27,10 @@ linters:
     - musttag
     # Can introduce unintentional behavior
     - recvcheck
-    # Competes with golines
-    - tagalign
     # Returning interfaces is not inherently wrong or bad
     - ireturn
+    # Not in scope for this project
+    - goprintffuncname
 
   settings:
     wsl_v5:
@@ -189,7 +189,7 @@ formatters:
     golines:
       max-len: 120
       shorten-comments: true
-      reformat-tags: true
+      reformat-tags: false
 
   exclusions:
     generated: lax

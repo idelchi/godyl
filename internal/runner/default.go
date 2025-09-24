@@ -1,4 +1,3 @@
-// Package runner handles the execution of tool operations.
 package runner
 
 import (

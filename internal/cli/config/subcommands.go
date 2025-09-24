@@ -1,4 +1,3 @@
-// Package config contains the subcommand definition for `config`.
 package config
 
 import (

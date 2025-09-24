@@ -1,4 +1,3 @@
-// Package dump contains the subcommand definition for `dump`.
 package dump
 
 import (

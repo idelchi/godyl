@@ -1,4 +1,3 @@
-// Package tools provides functionality for managing tool configurations.
 package tools
 
 import (

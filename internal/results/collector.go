@@ -1,4 +1,3 @@
-// Package results manages result collection and aggregation.
 package results
 
 import (

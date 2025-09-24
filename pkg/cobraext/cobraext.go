@@ -1,4 +1,3 @@
-// Package cobraext provides extensions and utilities for the Cobra CLI framework.
 package cobraext
 
 import (

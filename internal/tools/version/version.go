@@ -11,7 +11,7 @@ import (
 type Version struct {
 	Commands *Commands `mapstructure:"commands" yaml:"commands"`
 	Patterns *Patterns `mapstructure:"patterns" yaml:"patterns"`
-	Version  string    `mapstructure:"version"  yaml:"version"  single:"true"`
+	Version  string    `mapstructure:"version"  single:"true"   yaml:"version"`
 }
 
 type (

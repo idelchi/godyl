@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/hashicorp/go-getter/v2"
 
@@ -101,10 +102,10 @@ func findExecutableInDir(destination file.File, patterns []string) (file.File, e
 	})
 
 	return destination, fmt.Errorf(
-		"finding executable: no executable matching patterns %v found in %q: found %v",
+		"finding executable: no executable matching patterns %v found in %q: found\n%v",
 		patterns,
 		searchDir,
-		allFiles.RelativeTo(searchDir.String()),
+		"- "+strings.Join(allFiles.RelativeTo(searchDir.String()).AsSlice(), "\n- "),
 	)
 }
 

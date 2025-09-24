@@ -94,6 +94,7 @@ func (ArchInfo) Supported() []ArchInfo {
 				}
 
 				re := regexp.MustCompile(`armv(\d+)`)
+
 				match := re.FindStringSubmatch(str)
 				if len(match) > 1 {
 					return strconv.Atoi(match[1])

@@ -1,5 +1,3 @@
-// Package download provides file‑download utilities with timeout,
-// retry, and optional SSL‑verification control.
 package download
 
 import (

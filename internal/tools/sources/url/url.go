@@ -18,7 +18,7 @@ import (
 type URL struct {
 	Headers http.Header      `mapstructure:"headers" yaml:"headers"`
 	Data    install.Metadata `mapstructure:"-"       yaml:"-"`
-	Token   string           `mapstructure:"token"   yaml:"token"   mask:"fixed"`
+	Token   string           `mapstructure:"token"   mask:"fixed"   yaml:"token"`
 }
 
 // Initialize is a no-op implementation of the Populator interface.

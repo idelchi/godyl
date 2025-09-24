@@ -17,11 +17,11 @@ import (
 
 // GitLab represents a GitLab project configuration and state.
 type GitLab struct {
-	Data                install.Metadata `mapstructure:"-"         yaml:"-"`
+	Data                install.Metadata `mapstructure:"-" yaml:"-"`
 	latestStoredRelease *gitlab.Release
 	Project             string `mapstructure:"project"   yaml:"project"`
 	Namespace           string `mapstructure:"namespace" yaml:"namespace"`
-	Token               string `mapstructure:"token"     yaml:"token"     mask:"fixed"`
+	Token               string `mapstructure:"token"     mask:"fixed"     yaml:"token"`
 	Server              string `mapstructure:"server"    yaml:"server"`
 	Pre                 bool   `mapstructure:"pre"       yaml:"pre"`
 	NoToken             bool   `mapstructure:"no-token"  yaml:"no-token"`

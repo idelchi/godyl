@@ -26,7 +26,7 @@ default:
   exe:
     patterns:
       # Search for the executable in all subdirectories
-      - "**/{{ .Exe }}{{ .EXTENSION }}"
+      - "**/{{ .Exe }}*{{ .EXTENSION }}"
   hints:
     # General rules
     # Name of the executable (without extension)

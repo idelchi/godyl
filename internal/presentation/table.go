@@ -94,6 +94,7 @@ func (f *TableFormatter) renderTable(results []runner.Result) string {
 		{Name: "Output Path", WidthMax: f.config.MaxWidth},
 		{Name: "OS/ARCH", WidthMax: f.config.MaxWidth},
 		{Name: "File", WidthMax: f.config.MaxWidth},
+		{Name: "Checksum", WidthMax: f.config.MaxWidth},
 		{Name: "Status", WidthMax: f.config.MaxWidth, Bold: true},
 	}
 
@@ -179,12 +180,30 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 		message = "failed, see below for details"
 	}
 
+	checksum := na
+
+	const maxChecksumDisplay = 8
+
+	if tool.Checksum.IsMandatory() {
+		val := tool.Checksum.Value
+		if len(val) > maxChecksumDisplay {
+			checksum = val[:maxChecksumDisplay] + "..."
+		} else {
+			checksum = val
+		}
+	}
+
+	if checksum == "" {
+		checksum = na
+	}
+
 	return table.Row{
 		exeName,
 		tool.Version.Version,
 		tool.Output,
 		fmt.Sprintf("%s/%s", tool.Platform.OS.Name, tool.Platform.Architecture.Name),
 		fileDisplay,
+		checksum,
 		message,
 	}
 }

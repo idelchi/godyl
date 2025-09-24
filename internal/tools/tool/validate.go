@@ -1,4 +1,3 @@
-// Package tool provides core functionality for managing tool configurations.
 package tool
 
 import (
@@ -172,7 +171,7 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 			Hints:    *t.Hints.Reduced(),
 			Checksum: t.Checksum.Pattern,
 		}); err != nil {
-			return result.WithFailed(fmt.Sprintf("getting post url: %s", err))
+			return result.WithFailed(fmt.Sprintf("getting url: %s", err))
 		}
 
 		t.URL = populator.Get("url")

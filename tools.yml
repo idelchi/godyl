@@ -65,13 +65,6 @@
   tags:
     - kubernetes
 
-- name: traefik/traefik
-  description: The Cloud Native Application Proxy
-  version:
-    commands: version
-  tags:
-    - automation
-
 - name: kubernetes/kubernetes
   description: Command-line tool for controlling Kubernetes clusters
   url: https://dl.k8s.io/release/{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}
@@ -95,14 +88,60 @@
   description: Run Kubernetes locally
   version:
     commands: version
-  exe:
-    patterns: "**/{{ .Exe }}*{{ .EXTENSION }}"
   hints:
     pattern: .tar.gz
     match: required
     type: endswith
   tags:
     - kubernetes
+
+- name: eksctl-io/eksctl
+  description: The official CLI for Amazon EKS
+  tags:
+    - kubernetes
+
+- name: argoproj/argo-cd
+  description: Declarative continuous deployment for Kubernetes
+  exe: argocd
+  tags:
+    - kubernetes
+
+- name: kubernetes-sigs/krew
+  description: Find and install kubectl plugins
+  tags:
+    - kubernetes
+
+- name: stern/stern
+  description: Multi pod and container log tailing for Kubernete
+  tags:
+    - kubernetes
+
+- name: sbstp/kubie
+  description: A more powerful alternative to kubectx and kubens
+  skip:
+    reason: "kubie is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - kubernetes
+
+- name: ahmetb/kubectl-tree
+  description: kubectl plugin to browse Kubernetes object hierarchies as a tree
+  tags:
+    - kubernetes
+
+- name: danielfoehrKn/kubeswitch
+  description: The kubectx for operators
+  checksum: none
+  exe: switcher
+  tags:
+    - kubernetes
+
+- name: traefik/traefik
+  description: The Cloud Native Application Proxy
+  version:
+    commands: version
+  tags:
+    - terminal
 
 - name: syncthing/syncthing
   description: Open Source Continuous File Synchronization
@@ -198,8 +237,6 @@
 
 - name: mikefarah/yq
   description: YAML, JSON, and XML processor
-  exe:
-    patterns: "{{ .Exe }}_*"
   hints:
     - pattern: .zip
       match: '{{ if eq .OS "windows" }}required{{ else }}weighted{{ end }}'
@@ -278,9 +315,7 @@
 
 - name: logdyhq/logdy-core
   description: A log management tool
-  exe:
-    name: logdy
-    patterns: logdy*
+  exe: logdy
   tags:
     - terminal
 
@@ -351,10 +386,7 @@
 
 - name: cli/cli
   description: GitHub's official command line tool
-  exe:
-    name: gh
-    patterns:
-      - "**/bin/gh{{ .EXTENSION }}"
+  exe: gh
   tags:
     - terminal
 
@@ -483,8 +515,6 @@
 - name: jarun/nnn
   description: The missing terminal file manager for X
   checksum: none
-  exe:
-    patterns: "{{ .Exe }}*"
   skip:
     - reason: "nnn is only available for linux"
       condition: '{{ ne .OS "linux" }}'
@@ -530,9 +560,6 @@
   skip:
     reason: "authelia is only available for linux"
     condition: '{{ ne .OS "linux" }}'
-  exe:
-    name: authelia
-    patterns: authelia*
   hints:
     - pattern: -musl
       weight: '{{ if eq .DISTRIBUTION "alpine" }}0{{ else }}-2{{ end }}'
@@ -542,8 +569,6 @@
 
 - name: hairyhenderson/gomplate
   description: A versatile Go template processor
-  exe:
-    patterns: "{{ .Exe }}_*"
   hints:
     # gomplate releases both the `.exe` and `.zip` which would have identical scores
     - pattern: .zip
@@ -716,17 +741,6 @@
 
 - name: astral-sh/ruff
   description: An extremely fast Python linter and code formatter, written in Rust
-  tags:
-    - terminal
-
-- name: eksctl-io/eksctl
-  description: The official CLI for Amazon EKS
-  tags:
-    - kubernetes
-
-- name: argoproj/argo-cd
-  description: Declarative continuous deployment for Kubernetes
-  exe: argocd
   tags:
     - terminal
 
@@ -915,8 +929,6 @@
 
 - name: openai/codex
   description: A CLI tool for interacting with OpenAI's Codex models
-  exe:
-    patterns: "{{ .Exe }}*{{ .EXTENSION }}"
   tags:
     - terminal
 
@@ -930,8 +942,6 @@
 
 - name: Gu1llaum-3/sshm
   description: A modern, interactive SSH Manager for your terminal
-  exe:
-    patterns: "{{ .Exe }}*"
   tags:
     - terminal
 
@@ -947,10 +957,29 @@
   description: A linux utility to get information on filesystems, like df but better
   url: https://dystroy.org/dysk/download/{{ index .ARCH_ALIASES 0 }}-unknown-{{ .OS }}-gnu/dysk
   checksum: none
-  exe: dysk
   skip:
     reason: "dysk is only available for linux"
     condition: '{{ ne .OS "linux" }}'
+  tags:
+    - terminal
+
+- name: wait4x/wait4x
+  description: Wait4X allows you to wait for a port or a service to enter the requested state
+  tags:
+    - terminal
+
+- name: twpayne/chezmoi
+  description: Manage your dotfiles across multiple diverse machines, securely
+  hints:
+    - pattern: .zip
+      match: '{{ if eq .OS "windows" }}required{{ end }}'
+      type: endswith
+    - pattern: .tar.gz
+      match: '{{ if ne .OS "windows" }}required{{ end }}'
+      type: endswith
+    - pattern: glibc
+      weight: '{{ if eq .DISTRIBUTION "alpine" }}-1{{ else }}1{{ end }}'
+      type: contains
   tags:
     - terminal
 

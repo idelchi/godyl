@@ -196,9 +196,11 @@ A complete reference for all fields is available below.
   env:
     GH_TOKEN: $GODYL_GITHUB_TOKEN
   # Disable SSL verification.
-  no_verify_ssl: false
+  no_verify_ssl: true
   # Disable cache usage
-  no_cache: false
+  no_cache: true
+  # Disable checksum verification
+  no_verify_checksum: true
   # A list of defaults to inherit from.
   inherit:
     - default

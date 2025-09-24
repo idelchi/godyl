@@ -86,6 +86,10 @@ func ExpandHome(path string) string {
 		return path
 	}
 
+	if path == "~" {
+		return home
+	}
+
 	return filepath.Join(home, path[1:])
 }
 

@@ -28,15 +28,15 @@ func New(dir string, paths ...string) (fs Files) {
 
 // Add adds a new file to the collection.
 // Joins the provided path with the directory to create a full path.
-func (es *Files) Add(dir, path string) {
-	*es = append(*es, file.New(dir, path))
+func (fs *Files) Add(dir, path string) {
+	*fs = append(*fs, file.New(dir, path))
 }
 
 // AddFile adds a file to the collection.
 // If the file already exists in the collection, it is not added again.
-func (es *Files) AddFile(f file.File) {
-	if !slices.Contains(*es, f) {
-		*es = append(*es, f)
+func (fs *Files) AddFile(f file.File) {
+	if !slices.Contains(*fs, f) {
+		*fs = append(*fs, f)
 	}
 }
 
@@ -44,8 +44,8 @@ func (es *Files) AddFile(f file.File) {
 // Creates a link at each path in the collection,
 // pointing to the specified target file.
 // See file.File.Links for more details.
-func (es Files) LinksFor(file file.File) error {
-	if err := file.Links(es...); err != nil {
+func (fs Files) LinksFor(file file.File) error {
+	if err := file.Links(fs...); err != nil {
 		return fmt.Errorf("creating links for %q: %w", file, err)
 	}
 
@@ -53,8 +53,8 @@ func (es Files) LinksFor(file file.File) error {
 }
 
 // Exists returns the first file in the collection that exists.
-func (es Files) Exists() (file.File, bool) {
-	for _, f := range es {
+func (fs Files) Exists() (file.File, bool) {
+	for _, f := range fs {
 		if f.Exists() {
 			return f, true
 		}
@@ -64,9 +64,9 @@ func (es Files) Exists() (file.File, bool) {
 }
 
 // AsSlice converts the Files collection to a slice of strings.
-func (es Files) AsSlice() []string {
-	slice := make([]string, len(es))
-	for i, f := range es {
+func (fs Files) AsSlice() []string {
+	slice := make([]string, len(fs))
+	for i, f := range fs {
 		slice[i] = f.Path()
 	}
 
@@ -74,29 +74,29 @@ func (es Files) AsSlice() []string {
 }
 
 // Contains checks if the collection contains a specified file.
-func (es Files) Contains(file file.File) bool {
-	return slices.Contains(es, file)
+func (fs Files) Contains(file file.File) bool {
+	return slices.Contains(fs, file)
 }
 
 // Remove removes a file from the collection.
 // Returns true if the file was found and removed, false otherwise.
-func (es *Files) Remove(file file.File) bool {
-	index := slices.Index(*es, file)
+func (fs *Files) Remove(file file.File) bool {
+	index := slices.Index(*fs, file)
 	if index == -1 {
 		return false
 	}
 
-	*es = append((*es)[:index], (*es)[index+1:]...)
+	*fs = append((*fs)[:index], (*fs)[index+1:]...)
 
 	return true
 }
 
 // RelativeTo makes all files in the collection relative to the specified base directory.
-func (es *Files) RelativeTo(base string) Files {
+func (fs *Files) RelativeTo(base string) Files {
 	// preallocate
-	relFiles := make(Files, 0, len(*es))
+	relFiles := make(Files, 0, len(*fs))
 
-	for _, f := range *es {
+	for _, f := range *fs {
 		rel, err := f.RelativeTo(base)
 		if err != nil {
 			rel = f
@@ -106,4 +106,13 @@ func (es *Files) RelativeTo(base string) Files {
 	}
 
 	return relFiles
+}
+
+// Expanded expands all files in the collection.
+func (fs *Files) Expanded() {
+	s := *fs
+
+	for i := range *fs {
+		s[i] = s[i].Expanded()
+	}
 }

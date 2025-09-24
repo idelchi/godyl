@@ -1,4 +1,3 @@
-// Package presentation handles all UI and formatting logic.
 package presentation
 
 import (

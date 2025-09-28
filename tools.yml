@@ -1009,14 +1009,15 @@
   tags:
     - terminal
 
+- idelchi/dotgen
+- idelchi/slot
+- idelchi/envprof
+- idelchi/aggr
 - idelchi/gocry
 - idelchi/gogen
 - idelchi/go-match
 - idelchi/gonc
 - idelchi/go-next-tag
 - idelchi/tcisd
-- idelchi/envprof
-- idelchi/aggr
-- idelchi/slot
 - idelchi/pwgen
 - idelchi/wslint

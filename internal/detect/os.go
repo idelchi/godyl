@@ -3,7 +3,7 @@ package detect
 import (
 	"fmt"
 
-	"github.com/shirou/gopsutil/host"
+	"github.com/shirou/gopsutil/v4/host"
 
 	"github.com/idelchi/godyl/internal/detect/platform"
 )

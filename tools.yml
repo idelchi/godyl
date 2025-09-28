@@ -983,6 +983,11 @@
   tags:
     - terminal
 
+- name: bmf-san/ggc
+  description: A modern Git CLI tool with both traditional command-line and interactive incremental-search UI
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

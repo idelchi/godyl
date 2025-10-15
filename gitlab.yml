@@ -29,6 +29,10 @@
   inherit:
     - gitlab:selfhosted
 
+- name: apps/pwgen
+  inherit:
+    - gitlab:selfhosted
+
 - name: apps/gocom
   inherit:
     - gitlab:selfhosted

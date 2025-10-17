@@ -1015,6 +1015,11 @@
   tags:
     - terminal
 
+- name: sxyazi/yazi
+  description: Blazing fast terminal file manager written in Rust, based on async I/O
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

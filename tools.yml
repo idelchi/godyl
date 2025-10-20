@@ -35,6 +35,12 @@
   tags:
     - docker
 
+- name: google/go-containerregistry
+  description: A set of libraries and tools for working with container registries
+  exe: crane
+  tags:
+    - docker
+
 - name: ahmetb/kubectx
   description: Faster way to switch between clusters and namespaces in kubectl
   exe: kubectx

@@ -199,7 +199,7 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 	}
 
 	if !t.Checksum.IsSet() && t.Checksum.IsMandatory() {
-		msg := "no checksum could be determined, please provide one"
+		msg := "no checksum could be determined, please provide one or disable checksum verification"
 
 		if t.Checksum.Pattern != "" {
 			msg += fmt.Sprintf(" or tweak the pattern %q", t.Checksum.Pattern)

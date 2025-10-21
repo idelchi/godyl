@@ -510,6 +510,8 @@
 - name: sharkdp/bat
   description: A cat(1) clone with wings
   checksum: none
+  exe:
+    patterns: "**/bat{{ .EXTENSION }}"
   tags:
     - terminal
 

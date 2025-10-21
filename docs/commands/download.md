@@ -60,7 +60,7 @@ godyl download idelchi/envprof idelchi/slot
 ### Download from a direct URL
 
 ```sh
-godyl download "https://github.com/idelchi/envprof/releases/download/v0.0.1/go-next-tag_{{ .OS }}_{{ .ARCH }}.tar.gz"
+godyl download "https://github.com/idelchi/envprof/releases/download/v0.0.1/envprof_{{ .OS }}_{{ .ARCH }}.tar.gz"
 ```
 
 or

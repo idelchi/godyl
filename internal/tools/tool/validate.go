@@ -208,13 +208,6 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 		return result.WithFailed(msg)
 	}
 
-	// Append platform-specific extensions to aliases.
-	for i, alias := range t.Aliases {
-		if !file.File(alias).HasExtension() {
-			t.Aliases[i] = alias + t.Platform.Extension.String()
-		}
-	}
-
 	if !strings.HasSuffix(t.Exe.Name, t.Platform.Extension.String()) && !file.File(t.Exe.Name).HasExtension() {
 		t.Exe.Name += t.Platform.Extension.String()
 	}
@@ -277,7 +270,6 @@ func (t *Tool) Download(_ context.Context, progressListener getter.ProgressTrack
 		Exe:              t.Exe.Name,
 		Patterns:         *t.Exe.Patterns,
 		Output:           t.Output,
-		Aliases:          t.Aliases,
 		Mode:             t.Mode.String(),
 		Env:              t.Env,
 		Checksum:         t.Checksum,

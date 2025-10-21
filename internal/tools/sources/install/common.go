@@ -13,7 +13,6 @@ import (
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/path/file"
-	"github.com/idelchi/godyl/pkg/path/files"
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
@@ -29,7 +28,6 @@ type Data struct {
 	Output           string
 	Mode             string
 	Patterns         []string
-	Aliases          []string
 	NoVerifySSL      bool
 	NoVerifyChecksum bool
 	OS               string // Target operating system for cross-compilation.
@@ -109,9 +107,9 @@ func findExecutableInDir(destination file.File, patterns []string) (file.File, e
 	)
 }
 
-// FindAndSymlink locates an executable in the downloaded content and sets up symlinks.
-// It searches directories recursively using provided patterns, copies the executable
-// to the output location, and creates symlinks for any configured aliases.
+// FindAndSymlink locates an executable in the downloaded content.
+// It searches directories recursively using provided patterns and copies the executable
+// to the output location.
 func FindAndSymlink(destination file.File, d Data) (file.File, error) {
 	if destination.IsDir() {
 		var err error
@@ -139,13 +137,6 @@ func FindAndSymlink(destination file.File, d Data) (file.File, error) {
 		if err := target.MakeExecutable(); err != nil {
 			return destination, fmt.Errorf("making %q executable: %w", target, err)
 		}
-	}
-
-	// Create symlinks for the aliases
-	if len(d.Aliases) > 0 {
-		aliases := files.New(d.Output, d.Aliases...)
-
-		return destination, aliases.LinksFor(target)
 	}
 
 	return destination, nil

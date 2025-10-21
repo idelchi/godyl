@@ -12,7 +12,7 @@ Installs Kubernetes-related tools using godyl.
 
 This script will install:
 - helm
-- kubectl (with alias 'kc')
+- kubectl
 - k9s
 - kubectx
 - kubens
@@ -81,7 +81,6 @@ install_tools() {
 - name: kubernetes/kubernetes
   exe: kubectl
   path: https://dl.k8s.io/{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}
-  aliases: kc
 - derailed/k9s
 - name: ahmetb/kubectx
 - name: ahmetb/kubectx

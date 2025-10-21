@@ -11,7 +11,6 @@
 
 - name: jesseduffield/lazydocker
   description: The lazier way to manage everything docker
-  aliases: lazy
   tags:
     - docker
 
@@ -44,14 +43,12 @@
 - name: ahmetb/kubectx
   description: Faster way to switch between clusters and namespaces in kubectl
   exe: kubectx
-  aliases: kbx
   tags:
     - kubernetes
 
 - name: ahmetb/kubectx
   description: Faster way to switch between clusters and namespaces in kubectl
   exe: kubens
-  aliases: kbn
   tags:
     - kubernetes
 
@@ -78,7 +75,6 @@
     type: sha256
     value: url:{{ .URL }}.sha256
   exe: kubectl
-  aliases: kc
   tags:
     - kubernetes
 
@@ -499,7 +495,6 @@
 
 - name: jesseduffield/lazygit
   description: simple terminal UI for git commands
-  aliases: lg
   tags:
     - terminal
 
@@ -539,7 +534,6 @@
   checksum:
     type: file
     value: '{{ .Base }}/{{ .Exe }}_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
-  aliases: tf
   tags:
     - terminal
 

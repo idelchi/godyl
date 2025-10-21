@@ -1,6 +1,5 @@
 - name: jesseduffield/lazydocker
   description: The lazier way to manage everything docker
-  aliases: lazy
   tags:
     - docker
 

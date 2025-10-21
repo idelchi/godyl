@@ -48,25 +48,25 @@ When using the `download` command, the tool will be downloaded and extracted dir
 ### Download a specific version
 
 ```sh
-godyl download idelchi/envprof --version v0.1.0
+godyl download idelchi/envprof --version v0.0.1
 ```
 
 ### Download multiple tools
 
 ```sh
-godyl download idelchi/envprof idelchi/tcisd
+godyl download idelchi/envprof idelchi/slot
 ```
 
 ### Download from a direct URL
 
 ```sh
-godyl download "https://github.com/idelchi/go-next-tag/releases/download/v0.0.1/go-next-tag_{{ .OS }}_{{ .ARCH }}.tar.gz"
+godyl download "https://github.com/idelchi/envprof/releases/download/v0.0.1/go-next-tag_{{ .OS }}_{{ .ARCH }}.tar.gz"
 ```
 
 or
 
 ```sh
-godyl download "https://github.com/idelchi/go-next-tag/releases/download/{{ .Version }}/go-next-tag_{{ .OS }}_{{ .ARCH }}.tar.gz" --version v0.0.1
+godyl download "https://github.com/idelchi/envprof/releases/download/{{ .Version }}/envprof_{{ .OS }}_{{ .ARCH }}.tar.gz" --version v0.0.1
 ```
 
 {% endraw %}

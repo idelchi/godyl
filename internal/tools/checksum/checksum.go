@@ -14,10 +14,32 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
+// Type represents the type of checksum.
+type Type string
+
+func (t Type) String() string {
+	return string(t)
+}
+
+const (
+	// SHA256 represents the SHA256 checksum type.
+	SHA256 Type = "sha256"
+	// SHA512 represents the SHA512 checksum type.
+	SHA512 Type = "sha512"
+	// SHA1 represents the SHA1 checksum type.
+	SHA1 Type = "sha1"
+	// MD5 represents the MD5 checksum type.
+	MD5 Type = "md5"
+	// File represents the file checksum type.
+	File Type = "file"
+	// None represents the no checksum type.
+	None Type = "none"
+)
+
 // Checksum represents a checksum configuration with type, value, and optionality.
 type Checksum struct {
 	// Type is the type of checksum (e.g., sha256, sha512, sha1, md5, file, none).
-	Type string `single:"true" validate:"oneof=sha256 sha512 sha1 md5 file none"`
+	Type Type `single:"true" validate:"oneof=sha256 sha512 sha1 md5 file none"`
 	// Value as a checksum string or a URL/path to a file containing the checksum.
 	Value string
 	// Pattern is an optional glob pattern to consider when selecting the checksum file with the combination
@@ -57,7 +79,7 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 	// If the value starts with sha256 sha512 sha1 md5, strip it and set the type and value
 	for _, algo := range []string{"sha256", "sha512", "sha1", "md5"} {
 		if value, ok := strings.CutPrefix(c.Value, algo+":"); ok {
-			c.Type = algo
+			c.Type = Type(algo)
 			c.Value = strings.TrimSpace(value)
 
 			return nil
@@ -172,5 +194,5 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 
 // ToQuery converts the checksum to a query string format.
 func (c *Checksum) ToQuery() string {
-	return "checksum=" + c.Type + ":" + c.Value
+	return "checksum=" + c.Type.String() + ":" + c.Value
 }

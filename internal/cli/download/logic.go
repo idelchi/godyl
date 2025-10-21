@@ -6,6 +6,7 @@ import (
 	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/processor"
 	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/tools/checksum"
 	"github.com/idelchi/godyl/internal/tools/hints"
 	"github.com/idelchi/godyl/internal/tools/mode"
 	"github.com/idelchi/godyl/internal/tools/sources"
@@ -41,7 +42,7 @@ func run(input core.Input) error {
 			tool.URL = name
 			tool.Source.Type = sources.URL
 			// Can't validate checksum for arbitrary URLs
-			tool.Checksum.Type = "none"
+			tool.Checksum.Type = checksum.None.String()
 		} else {
 			tool.Name = name
 			tool.Source.Type = cfg.Download.Source

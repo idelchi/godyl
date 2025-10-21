@@ -14,9 +14,32 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
+// Type represents the type of checksum.
+type Type string
+
+func (t Type) String() string {
+	return string(t)
+}
+
+const (
+	// SHA256 represents the SHA256 checksum type.
+	SHA256 Type = "sha256"
+	// SHA512 represents the SHA512 checksum type.
+	SHA512 Type = "sha512"
+	// SHA1 represents the SHA1 checksum type.
+	SHA1 Type = "sha1"
+	// MD5 represents the MD5 checksum type.
+	MD5 Type = "md5"
+	// File represents the file checksum type.
+	File Type = "file"
+	// None represents the no checksum type.
+	None Type = "none"
+)
+
 // Checksum represents a checksum configuration with type, value, and optionality.
 type Checksum struct {
 	// Type is the type of checksum (e.g., sha256, sha512, sha1, md5, file, none).
+	// Can't use `Type` here because of `single:"true"` tag.
 	Type string `single:"true" validate:"oneof=sha256 sha512 sha1 md5 file none"`
 	// Value as a checksum string or a URL/path to a file containing the checksum.
 	Value string

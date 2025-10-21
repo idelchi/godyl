@@ -67,7 +67,7 @@ func Download(d Data) (found file.File, err error) {
 	}
 
 	if d.Mode == "find" {
-		found, err = FindAndSymlink(destination, d)
+		found, err = Find(destination, d)
 	}
 
 	return found, err
@@ -107,10 +107,10 @@ func findExecutableInDir(destination file.File, patterns []string) (file.File, e
 	)
 }
 
-// FindAndSymlink locates an executable in the downloaded content.
+// Find locates an executable in the downloaded content.
 // It searches directories recursively using provided patterns and copies the executable
 // to the output location.
-func FindAndSymlink(destination file.File, d Data) (file.File, error) {
+func Find(destination file.File, d Data) (file.File, error) {
 	if destination.IsDir() {
 		var err error
 

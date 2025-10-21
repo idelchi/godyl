@@ -182,7 +182,7 @@ func (g *Go) Install(
 
 			debug.Debug("Linking to %q", filepath.Join(outFolder.Path(), name))
 
-			found, findErr := install.FindAndSymlink(
+			found, findErr := install.Find(
 				file.New(outFolder.Path()),
 				d,
 			)

@@ -42,7 +42,7 @@ func run(input core.Input) error {
 			tool.URL = name
 			tool.Source.Type = sources.URL
 			// Can't validate checksum for arbitrary URLs
-			tool.Checksum.Type = checksum.None.String()
+			tool.Checksum.Type = checksum.None
 		} else {
 			tool.Name = name
 			tool.Source.Type = cfg.Download.Source
@@ -70,7 +70,6 @@ func run(input core.Input) error {
 		for _, hint := range cfg.Download.Hints {
 			tool.Hints.Add(hints.Hint{
 				Pattern: hint,
-				Type:    hints.Contains,
 			})
 		}
 	}

@@ -39,8 +39,7 @@ const (
 // Checksum represents a checksum configuration with type, value, and optionality.
 type Checksum struct {
 	// Type is the type of checksum (e.g., sha256, sha512, sha1, md5, file, none).
-	// Can't use `Type` here because of `single:"true"` tag.
-	Type string `single:"true" validate:"oneof=sha256 sha512 sha1 md5 file none"`
+	Type Type `single:"true" validate:"oneof=sha256 sha512 sha1 md5 file none"`
 	// Value as a checksum string or a URL/path to a file containing the checksum.
 	Value string
 	// Pattern is an optional glob pattern to consider when selecting the checksum file with the combination
@@ -80,7 +79,7 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 	// If the value starts with sha256 sha512 sha1 md5, strip it and set the type and value
 	for _, algo := range []string{"sha256", "sha512", "sha1", "md5"} {
 		if value, ok := strings.CutPrefix(c.Value, algo+":"); ok {
-			c.Type = algo
+			c.Type = Type(algo)
 			c.Value = strings.TrimSpace(value)
 
 			return nil
@@ -195,5 +194,5 @@ func (c *Checksum) Resolve(skipVerifySSL bool) error {
 
 // ToQuery converts the checksum to a query string format.
 func (c *Checksum) ToQuery() string {
-	return "checksum=" + c.Type + ":" + c.Value
+	return "checksum=" + c.Type.String() + ":" + c.Value
 }

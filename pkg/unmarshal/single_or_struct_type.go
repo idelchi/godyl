@@ -2,6 +2,7 @@ package unmarshal
 
 import (
 	"errors"
+	"reflect"
 
 	"github.com/fatih/structs"
 	"github.com/goccy/go-yaml/ast"
@@ -16,12 +17,24 @@ func SingleStringOrStruct[T any](node ast.Node, out *T) error {
 			return errors.New("no field with `single:\"true\"` tag found")
 		}
 
+		var value string
 		// for scalars only
 		if sn, ok := node.(*ast.StringNode); ok {
-			return field.Set(sn.Value) // .Value is the de‑quoted scalar content
+			value = sn.Value
+		} else {
+			value = node.String()
 		}
 
-		return field.Set(node.String())
+		// Get the field's reflect.Value and convert the string to its type
+		fieldValue := reflect.ValueOf(field.Value())
+		if fieldValue.Kind() == reflect.String {
+			// Convert string to the field's underlying string type
+			converted := reflect.ValueOf(value).Convert(fieldValue.Type())
+
+			return field.Set(converted.Interface())
+		}
+
+		return field.Set(value)
 	}
 
 	// Not a primitive type, decode the whole structure

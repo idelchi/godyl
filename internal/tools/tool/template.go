@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/templates"
+	"github.com/idelchi/godyl/internal/tools/checksum"
 	"github.com/idelchi/godyl/internal/tools/sources"
 )
 
@@ -75,9 +76,13 @@ func (t *Tool) TemplatePreAPI(tmpl *templates.Processor) error {
 		return TemplateError(err, "url.token")
 	}
 
-	if err := tmpl.ApplyAndSet(&t.Checksum.Type); err != nil {
+	// Apply templating to Checksum.Type
+	output, err = tmpl.Apply(t.Checksum.Type.String())
+	if err != nil {
 		return TemplateError(err, "checksum.type")
 	}
+
+	t.Checksum.Type = checksum.Type(output)
 
 	return nil
 }

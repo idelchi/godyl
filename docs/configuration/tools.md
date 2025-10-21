@@ -32,8 +32,6 @@ For more complex configurations, you can use the extended form:
     name: envprof
     patterns:
       - "**/{{ .Exe }}{{ .EXTENSION }}"
-  aliases:
-    - ep
   source:
     type: github
   tags:
@@ -102,10 +100,6 @@ A complete reference for all fields is available below.
     # Uses globstar, so you can use `**` to match any number of directories.
     patterns:
       - "**/{{ .OS }}-{{ .Exe }}*{{ .EXTENSION }}"
-  # A list of aliases for the tool. Will create symlinks (or copies on Windows).
-  # If no suffix is provided, the platform-specific suffix will be added.
-  aliases:
-    - gd
   # A list of fallback strategies to try if the main source strategy fails.
   # Will be used in the order they are defined.
   fallbacks:
@@ -339,16 +333,6 @@ exe:
   name: envprof
   patterns:
     - "**/{{ .Exe }}{{ .EXTENSION }}"
-```
-
-### `aliases`
-
-Aliases for the tool. Will create symlinks (or copies on Windows).
-
-```yaml
-aliases:
-  - gd
-  - godl
 ```
 
 ### `values`

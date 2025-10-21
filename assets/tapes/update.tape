@@ -1,4 +1,4 @@
-Output gifs/update.gif
+Output assets/gifs/update.gif
 
 Set Theme "CLRS"
 Set FontSize 16

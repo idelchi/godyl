@@ -6,7 +6,7 @@
 # Ignored files
 .bash_history
 .gitconfig
-.env
+*.env
 
 # Ignored folders
 .build

@@ -80,6 +80,9 @@ Create a `tools.yml` file to define multiple tools:
 
 - name: helm/helm
   url: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
+  checksum:
+    type: file
+    value: "{{ .URL }}.sha256sum"
   tags:
     - kubernetes
 ```

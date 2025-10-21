@@ -11,7 +11,6 @@
 
 - name: jesseduffield/lazydocker
   description: The lazier way to manage everything docker
-  aliases: lazy
   tags:
     - docker
 
@@ -35,17 +34,21 @@
   tags:
     - docker
 
+- name: google/go-containerregistry
+  description: A set of libraries and tools for working with container registries
+  exe: crane
+  tags:
+    - docker
+
 - name: ahmetb/kubectx
   description: Faster way to switch between clusters and namespaces in kubectl
   exe: kubectx
-  aliases: kbx
   tags:
     - kubernetes
 
 - name: ahmetb/kubectx
   description: Faster way to switch between clusters and namespaces in kubectl
   exe: kubens
-  aliases: kbn
   tags:
     - kubernetes
 
@@ -72,7 +75,6 @@
     type: sha256
     value: url:{{ .URL }}.sha256
   exe: kubectl
-  aliases: kc
   tags:
     - kubernetes
 
@@ -493,7 +495,6 @@
 
 - name: jesseduffield/lazygit
   description: simple terminal UI for git commands
-  aliases: lg
   tags:
     - terminal
 
@@ -533,7 +534,6 @@
   checksum:
     type: file
     value: '{{ .Base }}/{{ .Exe }}_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
-  aliases: tf
   tags:
     - terminal
 
@@ -929,6 +929,10 @@
 
 - name: openai/codex
   description: A CLI tool for interacting with OpenAI's Codex models
+  hints:
+    pattern: proxy
+    match: excluded
+    type: contains
   tags:
     - terminal
 
@@ -983,6 +987,40 @@
   tags:
     - terminal
 
+- name: bmf-san/ggc
+  description: A modern Git CLI tool with both traditional command-line and interactive incremental-search UI
+  tags:
+    - terminal
+
+- name: unkn0wn-root/resterm
+  description: Terminal REST client for .http/.rest files with HTTP, GraphQL and gRPC support
+  tags:
+    - terminal
+
+- name: Achno/gowall
+  description: A tool to convert a Wallpaper's color scheme / palette, and much more
+  skip:
+    reason: "gowall is not available on arm based architectures"
+    condition: "{{ .IS_ARM }}"
+  tags:
+    - terminal
+
+- name: gopasspw/gopass
+  description: The slightly more awesome password manager
+  tags:
+    - terminal
+
+- name: ast-grep/ast-grep
+  description: A CLI tool for code structural search, lint and rewriting
+  tags:
+    - terminal
+
+- name: sxyazi/yazi
+  description: Blazing fast terminal file manager written in Rust, based on async I/O
+  checksum: none
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none
@@ -1004,14 +1042,14 @@
   tags:
     - terminal
 
+- idelchi/dotgen
+- idelchi/slot
+- idelchi/envprof
+- idelchi/aggr
 - idelchi/gocry
 - idelchi/gogen
 - idelchi/go-match
 - idelchi/gonc
 - idelchi/go-next-tag
 - idelchi/tcisd
-- idelchi/envprof
-- idelchi/aggr
-- idelchi/slot
-- idelchi/pwgen
 - idelchi/wslint

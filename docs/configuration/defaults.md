@@ -134,11 +134,15 @@ gitlab:
       no-token: true
 ```
 
+{% endraw %}
+
 See the [Tools]({{ site.baseurl }}/configuration/tools) for full configuration options.
 
 You can compose new configurations using the `inherit` keyword.
 
 As an example, the configuration below allows you to inherit from `default` and customize the output directory:
+
+{% raw %}
 
 ```yaml
 default: <as above>

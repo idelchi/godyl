@@ -11,7 +11,6 @@ import (
 	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/detect"
-	"github.com/idelchi/godyl/internal/tools/aliases"
 	"github.com/idelchi/godyl/internal/tools/checksum"
 	"github.com/idelchi/godyl/internal/tools/command"
 	"github.com/idelchi/godyl/internal/tools/exe"
@@ -50,8 +49,6 @@ type Tool struct {
 	Exe exe.Exe `json:"exe" mapstructure:"exe" yaml:"exe"`
 	// Platform defines the platform-specific details for the tool, including OS and architecture constraints.
 	Platform detect.Platform `json:"platform" mapstructure:"platform" yaml:"platform"`
-	// Aliases represent alternative names or shortcuts for the tool.
-	Aliases aliases.Aliases `json:"aliases" mapstructure:"aliases" yaml:"aliases"`
 	// Values contains custom values or variables used in the tool's configuration.
 	Values values.Values `json:"values" mapstructure:"values" yaml:"values"`
 	// Fallbacks defines fallback configurations in case the primary configuration fails.

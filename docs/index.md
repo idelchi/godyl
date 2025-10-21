@@ -68,7 +68,7 @@ export GODYL_GITHUB_TOKEN=<your_github_token>
 Download (and extract) a single tool:
 
 ```sh
-godyl download idelchi/godyl
+godyl download idelchi/envprof
 ```
 
 Create a `tools.yml` file to define multiple tools:

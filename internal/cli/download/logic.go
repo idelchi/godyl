@@ -40,6 +40,8 @@ func run(input core.Input) error {
 			tool.Name = file.New(name).Base()
 			tool.URL = name
 			tool.Source.Type = sources.URL
+			// Can't validate checksum for arbitrary URLs
+			tool.Checksum.Type = "none"
 		} else {
 			tool.Name = name
 			tool.Source.Type = cfg.Download.Source

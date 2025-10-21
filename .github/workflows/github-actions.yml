@@ -22,6 +22,7 @@ jobs:
     needs: lint
     if: always()
     strategy:
+      max-parallel: 1
       matrix:
         os:
           - ubuntu-24.04

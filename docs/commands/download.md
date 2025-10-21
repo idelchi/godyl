@@ -43,6 +43,8 @@ When using the `download` command, the tool will be downloaded and extracted dir
 | `--dry`          | `GODYL_DOWNLOAD_DRY`     | `false`  | Dry run. Will not download, but show what would be done. Implies `-v`                |
 | `--pre`          | `GODYL_DOWNLOAD_PRE`     | `false`  | Consider pre-releases when installing tools                                          |
 
+For URL downloads, the checksum verification is disabled, as it cannot be determined automatically.
+
 ## Examples
 
 ### Download a specific version

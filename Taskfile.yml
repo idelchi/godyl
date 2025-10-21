@@ -198,6 +198,12 @@ tasks:
         docker compose build --build-arg GODYL_VERSION=${current_branch}:${current_commit} final
         docker compose push final
 
-  gifs:
+  .gifs:
     cmds:
       - docker compose run --remove-orphans --build gifs
+
+  gifs:
+    cmds:
+      - rm -rf docs/assets/gifs
+      - GIFS_FOLDER=D:/Projects/GitHub/tools/gifs docker compose --file "D:/Projects/GitHub/tools/gifs/compose.yaml" --project-directory . run --remove-orphans --build gifs
+      - mv assets/gifs docs/assets/gifs

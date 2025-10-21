@@ -2,8 +2,8 @@
 # Description : Docker image containing the godyl binary
 #]=======================================================================]
 
-ARG GO_VERSION=1.25.0
-ARG DISTRO=bookworm
+ARG GO_VERSION=1.25.3
+ARG DISTRO=trixie
 
 #### ---- Build ---- ####
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-${DISTRO} AS build

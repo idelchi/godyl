@@ -6,21 +6,11 @@
 - name: helm/helm
   description: The package manager for Kubernetes
   url: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
+  checksum:
+    type: file
+    value: "{{ .URL }}.sha256sum"
   tags:
     - kubernetes
-
-- name: moncho/dry
-  description: A Docker manager for the terminal
-  tags:
-    - docker
-
-- name: mrjackwills/oxker
-  description: A simple tui to view & control docker containers
-  skip:
-    reason: "oxker is not available on darwin"
-    condition: '{{ eq .OS "darwin" }}'
-  tags:
-    - docker
 
 - name: goreleaser/goreleaser
   description: Deliver Go binaries as fast and easily as possible

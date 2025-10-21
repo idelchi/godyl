@@ -69,6 +69,7 @@ func run(input core.Input) error {
 		for _, hint := range cfg.Download.Hints {
 			tool.Hints.Add(hints.Hint{
 				Pattern: hint,
+				Type:    hints.Contains,
 			})
 		}
 	}

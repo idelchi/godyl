@@ -1023,6 +1023,19 @@
   tags:
     - terminal
 
+- name: genuinetools/reg
+  description: Docker registry v2 command line client and repo listing generator with security checks
+  checksum:
+    type: sha256
+    value: url:{{ .URL }}.sha256
+  exe: regr
+  hints:
+    # No extension for the binary
+    - pattern: ^[^.]+$
+      type: regex
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

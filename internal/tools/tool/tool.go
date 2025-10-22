@@ -65,6 +65,7 @@ type Tool struct {
 	Strategy strategy.Strategy `json:"strategy" mapstructure:"strategy" yaml:"strategy"`
 	// Skip defines conditions under which certain steps (e.g., downloading, testing) are skipped.
 	Skip skip.Skip `json:"skip" mapstructure:"skip" yaml:"skip"`
+	// Mode defines the execution mode for the tool (e.g., find, extract).
 	Mode mode.Mode `json:"mode" mapstructure:"mode" yaml:"mode"`
 	// Env defines the environment variables that are applied when running the tool.
 	Env env.Env `json:"env" mapstructure:"env" yaml:"env"`

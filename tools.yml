@@ -22,7 +22,7 @@
     value: "{{ if .IS_ARM }}url:{{ .Base }}/sha256sums.txt{{ else }}{{ end }}"
     entry: "{{ if .IS_ARM }}{{ .File }}{{ else }}{{ end }}"
   skip:
-    reason: "ctop is not available for darwin"
+    reason: "ctop is not available on darwin"
     condition: '{{ eq .OS "darwin" }}'
   # [] because none of the assets have any `proper` extension - the version number clutters it up so it looks like the extension is for example `.7-windows-amd64`
   hints: []
@@ -37,6 +37,22 @@
 - name: google/go-containerregistry
   description: A set of libraries and tools for working with container registries
   exe: crane
+  tags:
+    - docker
+
+- name: genuinetools/reg
+  description: Docker registry v2 command line client and repo listing generator with security checks
+  checksum:
+    type: sha256
+    value: url:{{ .URL }}.sha256
+  exe: regr
+  skip:
+    reason: "cli is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
+  hints:
+    # No extension for the binary
+    - pattern: ^[^.]+$
+      type: regex
   tags:
     - docker
 
@@ -295,7 +311,7 @@
     patterns:
       - "{{ .OS }}-{{ .Exe }}*"
   skip:
-    reason: "dooit not available for arm based architectures"
+    reason: "dooit not available on arm based architectures"
     condition: "{{ .IS_ARM }}"
   tags:
     - terminal
@@ -377,7 +393,7 @@
   description: A faster alternative to cd + ls
   checksum: none
   skip:
-    reason: "tere is not available for darwin"
+    reason: "tere is not available on darwin"
     condition: '{{ eq .OS "darwin" }}'
   hints:
     - pattern: .zip
@@ -440,7 +456,7 @@
   description: JSON Stream Editor
   checksum: none
   skip:
-    reason: "jj not available for arm based architectures"
+    reason: "jj not available on arm based architectures"
     condition: "{{ .IS_ARM }}"
   tags:
     - terminal
@@ -448,7 +464,7 @@
 - name: simeji/jid
   description: json incremental digger
   skip:
-    reason: "jid is not available for darwin"
+    reason: "jid is not available on darwin"
     condition: '{{ eq .OS "darwin" }}'
   hints:
     - pattern: .zip
@@ -510,6 +526,8 @@
 - name: sharkdp/bat
   description: A cat(1) clone with wings
   checksum: none
+  exe:
+    patterns: "**/bat{{ .EXTENSION }}"
   tags:
     - terminal
 
@@ -517,9 +535,9 @@
   description: The missing terminal file manager for X
   checksum: none
   skip:
-    - reason: "nnn is only available for linux"
+    - reason: "nnn is only available on linux"
       condition: '{{ ne .OS "linux" }}'
-    - reason: "nnn is only available for amd64 architecture"
+    - reason: "nnn is only available on amd64 architecture"
       condition: '{{ ne .ARCH "amd64" }}'
   hints:
     - pattern: icons
@@ -558,7 +576,7 @@
 - name: authelia/authelia
   description: The Single Sign-On Multi-Factor portal for web apps
   skip:
-    reason: "authelia is only available for linux"
+    reason: "authelia is only available on linux"
     condition: '{{ ne .OS "linux" }}'
   hints:
     - pattern: -musl
@@ -609,9 +627,6 @@
   description: The Bitwarden command-line interface
   version: cli-v2025.8.0
   exe: bw
-  skip:
-    reason: "cli is only available for amd64 architecture on darwin"
-    condition: '{{ and (eq .ARCH "arm64") (ne .OS "darwin") }}'
   hints:
     - pattern: .zip
       match: required
@@ -679,30 +694,18 @@
 - name: google/go-jsonnet
   description: Jsonnet is a data templating language for app and tool developers
   exe: jsonnet
-  hints:
-    - pattern: .deb
-      match: excluded
-      type: endswith
   tags:
     - terminal
 
 - name: google/go-jsonnet
   description: A linter for Jsonnet
   exe: jsonnet-lint
-  hints:
-    - pattern: .deb
-      match: excluded
-      type: endswith
   tags:
     - terminal
 
 - name: google/go-jsonnet
   description: A formatter for Jsonnet
   exe: jsonnetfmt
-  hints:
-    - pattern: .deb
-      match: excluded
-      type: endswith
   tags:
     - terminal
 
@@ -825,7 +828,7 @@
 - name: peltho/tufw
   description: A terminal user interface for ufw
   skip:
-    reason: "tufw is only available for linux"
+    reason: "tufw is only available on linux"
     condition: '{{ ne .OS "linux" }}'
   tags:
     - terminal
@@ -858,7 +861,7 @@
   checksum: none
   exe: aid
   skip:
-    - reason: "aid is only available for amd64 architecture"
+    - reason: "aid is only available on amd64 architecture"
       condition: '{{ ne .ARCH "amd64" }}'
   tags:
     - terminal
@@ -869,7 +872,7 @@
   skip:
     - reason: "mdcat is not available on darwin"
       condition: '{{ eq .OS "darwin" }}'
-    - reason: "mdcat is only available for amd64 architecture"
+    - reason: "mdcat is only available on amd64 architecture"
       condition: '{{ ne .ARCH "amd64" }}'
   tags:
     - terminal
@@ -877,9 +880,6 @@
 - name: alexpasmantier/television
   description: A cross-platform, fast and extensible general purpose fuzzy finder for the terminal
   exe: tv
-  skip:
-    reason: "television is not available on windows"
-    condition: '{{ eq .OS "windows" }}'
   tags:
     - terminal
 
@@ -962,7 +962,7 @@
   url: https://dystroy.org/dysk/download/{{ index .ARCH_ALIASES 0 }}-unknown-{{ .OS }}-gnu/dysk
   checksum: none
   skip:
-    reason: "dysk is only available for linux"
+    reason: "dysk is only available on linux"
     condition: '{{ ne .OS "linux" }}'
   tags:
     - terminal

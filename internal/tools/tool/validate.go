@@ -219,7 +219,7 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 // the validator package. Returns an error if validation fails.
 func (t *Tool) Validate() error {
 	if err := validator.Validate(t); err != nil {
-		return fmt.Errorf("validating config: %w", err)
+		return err
 	}
 
 	return nil
@@ -262,6 +262,10 @@ func (t *Tool) Download(_ context.Context, progressListener getter.ProgressTrack
 	installer, err := t.Source.Installer()
 	if err != nil {
 		return result.WithFailed("getting installer").Wrap(err)
+	}
+
+	if t.Exe.Patterns == nil {
+		return result.WithFailed("no exe.patterns defined for")
 	}
 
 	data := install.Data{

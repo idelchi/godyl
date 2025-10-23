@@ -89,6 +89,8 @@ func (t *Tool) TemplatePreAPI(tmpl *templates.Processor) error {
 
 // TemplatePostAPI applies templating to the fields that depend on values resolved from the API,
 // specifically the {{ .Version }} template.
+//
+//nolint:gocognit	// Function is just a long list of similar operations
 func (t *Tool) TemplatePostAPI(tmpl *templates.Processor) error {
 	// Apply templating to the url headers
 	for key, value := range t.Source.URL.Headers {
@@ -101,10 +103,12 @@ func (t *Tool) TemplatePostAPI(tmpl *templates.Processor) error {
 	}
 
 	// Apply templating to Exe.Patterns
-	patterns := *t.Exe.Patterns
-	for i := range patterns {
-		if err := tmpl.ApplyAndSet(&patterns[i]); err != nil {
-			return TemplateError(err, "exe.patterns")
+	if t.Exe.Patterns != nil {
+		patterns := *t.Exe.Patterns
+		for i := range patterns {
+			if err := tmpl.ApplyAndSet(&patterns[i]); err != nil {
+				return TemplateError(err, "exe.patterns")
+			}
 		}
 	}
 

@@ -1018,6 +1018,8 @@
 - name: sxyazi/yazi
   description: Blazing fast terminal file manager written in Rust, based on async I/O
   checksum: none
+  exe:
+    patterns: "**/yazi{{ .EXTENSION }}"
   tags:
     - terminal
 

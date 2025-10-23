@@ -40,6 +40,22 @@
   tags:
     - docker
 
+- name: genuinetools/reg
+  description: Docker registry v2 command line client and repo listing generator with security checks
+  checksum:
+    type: sha256
+    value: url:{{ .URL }}.sha256
+  exe: regr
+  skip:
+    reason: "cli is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
+  hints:
+    # No extension for the binary
+    - pattern: ^[^.]+$
+      type: regex
+  tags:
+    - docker
+
 - name: ahmetb/kubectx
   description: Faster way to switch between clusters and namespaces in kubectl
   exe: kubectx
@@ -1002,22 +1018,6 @@
 - name: sxyazi/yazi
   description: Blazing fast terminal file manager written in Rust, based on async I/O
   checksum: none
-  tags:
-    - terminal
-
-- name: genuinetools/reg
-  description: Docker registry v2 command line client and repo listing generator with security checks
-  checksum:
-    type: sha256
-    value: url:{{ .URL }}.sha256
-  exe: regr
-  skip:
-    reason: "cli is not available on darwin"
-    condition: '{{ eq .OS "darwin" }}'
-  hints:
-    # No extension for the binary
-    - pattern: ^[^.]+$
-      type: regex
   tags:
     - terminal
 

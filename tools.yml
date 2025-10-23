@@ -1,5 +1,1059 @@
+- name: moncho/dry
+  description: A Docker manager for the terminal
+  checksum: none
+  tags:
+    - docker
+
+- name: mrjackwills/oxker
+  description: A simple tui to view & control docker containers
+  tags:
+    - docker
+
+- name: jesseduffield/lazydocker
+  description: The lazier way to manage everything docker
+  tags:
+    - docker
+
+- name: bcicen/ctop
+  description: Top-like interface for container metrics
+  checksum:
+    # go-getter selects the incorrect asset on arm64 otherwise
+    type: "{{ if .IS_ARM }}sha256{{ else }}file{{ end }}"
+    value: "{{ if .IS_ARM }}url:{{ .Base }}/sha256sums.txt{{ else }}{{ end }}"
+    entry: "{{ if .IS_ARM }}{{ .File }}{{ else }}{{ end }}"
+  skip:
+    reason: "ctop is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
+  # [] because none of the assets have any `proper` extension - the version number clutters it up so it looks like the extension is for example `.7-windows-amd64`
+  hints: []
+  tags:
+    - docker
+
+- name: oras-project/oras
+  description: A tool for managing container images and artifacts in OCI registries
+  tags:
+    - docker
+
+- name: google/go-containerregistry
+  description: A set of libraries and tools for working with container registries
+  exe: crane
+  tags:
+    - docker
+
+- name: genuinetools/reg
+  description: Docker registry v2 command line client and repo listing generator with security checks
+  checksum:
+    type: sha256
+    value: url:{{ .URL }}.sha256
+  exe: regr
+  skip:
+    reason: "cli is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
+  hints:
+    # No extension for the binary
+    - pattern: ^[^.]+$
+      type: regex
+  tags:
+    - docker
+
+- name: ahmetb/kubectx
+  description: Faster way to switch between clusters and namespaces in kubectl
+  exe: kubectx
+  tags:
+    - kubernetes
+
+- name: ahmetb/kubectx
+  description: Faster way to switch between clusters and namespaces in kubectl
+  exe: kubens
+  tags:
+    - kubernetes
+
+- name: derailed/k9s
+  description: Kubernetes CLI To Manage Your Clusters In Style!
+  version:
+    commands: version
+  tags:
+    - kubernetes
+
+- name: helm/helm
+  description: The package manager for Kubernetes
+  url: https://get.helm.sh/helm-{{ .Version }}-{{ .OS }}-{{ .ARCH }}.tar.gz
+  checksum:
+    type: file
+    value: "{{ .URL }}.sha256sum"
+  tags:
+    - kubernetes
+
+- name: kubernetes/kubernetes
+  description: Command-line tool for controlling Kubernetes clusters
+  url: https://dl.k8s.io/release/{{ .Version }}/bin/{{ .OS }}/{{ .ARCH }}/kubectl{{ .EXTENSION }}
+  checksum:
+    type: sha256
+    value: url:{{ .URL }}.sha256
+  exe: kubectl
+  tags:
+    - kubernetes
+
+- name: kdash-rs/kdash
+  description: A simple and fast dashboard for Kubernetes
+  checksum:
+    type: sha256
+    value: url:{{ trimSuffix ".tar.gz" .URL }}.sha256
+  tags:
+    - kubernetes
+
+- name: kubernetes/minikube
+  description: Run Kubernetes locally
+  version:
+    commands: version
+  hints:
+    pattern: .tar.gz
+    match: required
+    type: endswith
+  tags:
+    - kubernetes
+
+- name: eksctl-io/eksctl
+  description: The official CLI for Amazon EKS
+  tags:
+    - kubernetes
+
+- name: argoproj/argo-cd
+  description: Declarative continuous deployment for Kubernetes
+  exe: argocd
+  tags:
+    - kubernetes
+
+- name: kubernetes-sigs/krew
+  description: Find and install kubectl plugins
+  tags:
+    - kubernetes
+
+- name: stern/stern
+  description: Multi pod and container log tailing for Kubernete
+  tags:
+    - kubernetes
+
+- name: sbstp/kubie
+  description: A more powerful alternative to kubectx and kubens
+  skip:
+    reason: "kubie is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - kubernetes
+
+- name: ahmetb/kubectl-tree
+  description: kubectl plugin to browse Kubernetes object hierarchies as a tree
+  tags:
+    - kubernetes
+
+- name: danielfoehrKn/kubeswitch
+  description: The kubectx for operators
+  checksum: none
+  exe: switcher
+  tags:
+    - kubernetes
+
+- name: traefik/traefik
+  description: The Cloud Native Application Proxy
+  version:
+    commands: version
+  tags:
+    - terminal
+
+- name: syncthing/syncthing
+  description: Open Source Continuous File Synchronization
+  tags:
+    - terminal
+
 - name: ajeetdsouza/zoxide
   description: A smarter cd command for your terminal
   checksum: none
+  exe:
+    patterns: "**/zoxide{{ .EXTENSION }}"
   tags:
     - terminal
+
+- name: junegunn/fzf
+  description: A command-line fuzzy finder
+  tags:
+    - terminal
+
+- name: starship/starship
+  description: The minimal, blazing-fast, and infinitely customizable prompt for any shell
+  tags:
+    - terminal
+
+- name: go-task/task
+  description: A task runner / simpler Make alternative written in Go
+  tags:
+    - terminal
+
+- name: sharkdp/fd
+  description: A simple, fast and user-friendly alternative to 'find'
+  hints:
+    - pattern: .tar.gz
+      match: '{{ if ne .OS "windows" }}required{{ else }}excluded{{ end }}'
+      type: endswith
+  tags:
+    - terminal
+
+- name: knqyf263/pet
+  description: Simple command-line snippet manager
+  tags:
+    - terminal
+
+- name: ldez/traefik-certs-dumper
+  description: A tool to dump ACME certs from Traefik
+  version:
+    # Doesn't have a version command
+    commands: []
+  tags:
+    - terminal
+
+- name: casey/just
+  description: Just a command runner
+  tags:
+    - terminal
+
+- name: charmbracelet/glow
+  description: Render markdown on the CLI, with pizzazz!
+  tags:
+    - terminal
+
+- name: lsd-rs/lsd
+  description: The next gen ls command
+  checksum: none
+  hints:
+    - pattern: .tar.gz
+      match: '{{ if ne .OS "windows" }}required{{ else }}excluded{{ end }}'
+      type: endswith
+  tags:
+    - terminal
+
+- name: muesli/duf
+  description: Disk Usage/Free Utility - a better 'df' alternative
+  tags:
+    - terminal
+
+- name: FiloSottile/age
+  description: A simple, modern and secure encryption tool
+  checksum: none
+  tags:
+    - terminal
+
+- name: chmln/sd
+  description: Intuitive find & replace CLI
+  checksum: none
+  tags:
+    - terminal
+
+- name: rs/curlie
+  description: The power of curl, the ease of use of httpie
+  version:
+    commands: version
+  tags:
+    - terminal
+
+- name: mikefarah/yq
+  description: YAML, JSON, and XML processor
+  hints:
+    - pattern: .zip
+      match: '{{ if eq .OS "windows" }}required{{ else }}weighted{{ end }}'
+      type: endswith
+  tags:
+    - terminal
+
+- name: sharkdp/hyperfine
+  description: A command-line benchmarking tool
+  checksum: none
+  tags:
+    - terminal
+
+- name: sharkdp/diskus
+  description: A minimal, fast alternative to 'du -sh'
+  checksum: none
+  tags:
+    - terminal
+
+- name: eza-community/eza
+  description: A modern replacement for 'ls'
+  skip:
+    reason: "eza is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
+  hints:
+    # eza releases both the `.tar.gz` and `.zip` which would have identical scores
+    - pattern: .tar.gz
+      match: required
+      type: endswith
+    - pattern: no_libgit
+      weight: -1
+      type: contains
+  tags:
+    - terminal
+
+- name: sorenisanerd/gotty
+  description: Share your terminal as a web application
+  skip:
+    reason: "gotty is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
+
+- name: filebrowser/filebrowser
+  description: File Browser is a web-based file manager
+  version:
+    commands: version
+  tags:
+    - terminal
+
+- name: kraanzu/dooit
+  description: A TUI todo manager
+  exe:
+    patterns:
+      - "{{ .OS }}-{{ .Exe }}*"
+  skip:
+    reason: "dooit not available on arm based architectures"
+    condition: "{{ .IS_ARM }}"
+  tags:
+    - terminal
+
+- name: homeport/dyff
+  description: A diff tool for YAML files
+  tags:
+    - terminal
+
+- name: so-fancy/diff-so-fancy
+  description: Good-looking diffs with diff-highlight and more
+  checksum: none
+  hints:
+    # No extension for the binary
+    - pattern: ^[^.]+$
+      type: regex
+  tags:
+    - terminal
+
+- name: logdyhq/logdy-core
+  description: A log management tool
+  exe: logdy
+  tags:
+    - terminal
+
+- name: cespare/reflex
+  description: Run a command when files change
+  checksum:
+    type: sha256
+    value: "url:{{ .URL }}.sha256"
+  version:
+    # Doesn't have a version command
+    commands: []
+  skip:
+    reason: "reflex is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
+
+- name: trntv/sshed
+  description: SSH client with easy bookmarking and config management
+  version:
+    # Doesn't have a version command
+    commands: []
+  hints:
+    - pattern: "{{ .OS }}"
+      match: required
+      type: contains
+  source:
+    type: '{{ if eq .ARCH "arm64" }}go{{ else }}github{{ end }}'
+  tags:
+    - terminal
+
+- name: AlDanial/cloc
+  description: Count Lines of Code
+  hints:
+    - pattern: .pl
+      match: '{{ if or (eq .OS "linux") (eq .OS "darwin") }}required{{ else }}excluded{{ end }}'
+      type: endswith
+    - pattern: .exe
+      match: '{{ if eq .OS "windows" }}required{{ else }}excluded{{ end }}'
+      type: endswith
+  tags:
+    - terminal
+
+- name: pemistahl/grex
+  description: A command-line tool for generating regular expressions
+  checksum: none
+  tags:
+    - terminal
+
+- name: MilesCranmer/rip2
+  description: A safe and ergonomic alternative to rm
+  exe: rip
+  tags:
+    - terminal
+
+- name: mgunyho/tere
+  description: A faster alternative to cd + ls
+  checksum: none
+  skip:
+    reason: "tere is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
+  hints:
+    - pattern: .zip
+      match: required
+      type: endswith
+  tags:
+    - terminal
+
+- name: cli/cli
+  description: GitHub's official command line tool
+  exe: gh
+  tags:
+    - terminal
+
+- name: direnv/direnv
+  description: Unclutter your .profile
+  tags:
+    - terminal
+
+- name: antonmedv/walk
+  description: Terminal file manager
+  checksum: none
+  tags:
+    - terminal
+
+- name: TomWright/dasel
+  description: Query and update data structures from the command line
+  checksum: none
+  hints:
+    - pattern: .gz
+      match: excluded
+      type: endswith
+  source:
+    type: github
+    go:
+      command: v2/cmd/dasel
+  tags:
+    - terminal
+
+- name: zyedidia/micro
+  description: A modern and intuitive terminal-based text editor
+  hints:
+    - pattern: static
+      weight: 1
+      type: contains
+  tags:
+    - terminal
+
+- name: golangci/golangci-lint
+  description: Linters Runner for Go
+  tags:
+    - terminal
+
+- name: antonmedv/fx
+  description: Command-line JSON processing tool
+  tags:
+    - terminal
+
+- name: tidwall/jj
+  description: JSON Stream Editor
+  checksum: none
+  skip:
+    reason: "jj not available on arm based architectures"
+    condition: "{{ .IS_ARM }}"
+  tags:
+    - terminal
+
+- name: simeji/jid
+  description: json incremental digger
+  skip:
+    reason: "jid is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
+  hints:
+    - pattern: .zip
+      type: endswith
+  tags:
+    - terminal
+
+- name: ynqa/jnv
+  description: JSON navigator
+  hints:
+    - pattern: .zip
+      match: '{{ if eq .OS "windows" }}required{{ end }}'
+      type: endswith
+    - pattern: .xz
+      match: '{{ if ne .OS "windows" }}required{{ end }}'
+      type: endswith
+  tags:
+    - terminal
+
+- name: jqlang/jq
+  description: Command-line JSON processor
+  hints:
+    pattern: "{{ .ARCH }}"
+    match: required
+    type: contains
+  tags:
+    - terminal
+
+- name: BurntSushi/ripgrep
+  description: recursively searches directories for a regex pattern
+  checksum:
+    # go-getter selects the incorrect asset on arm64 otherwise
+    type: '{{ if eq .OS "darwin" }}sha256{{ else }}file{{ end }}'
+    value: '{{ if eq .OS "darwin" }}url:{{ .URL }}.sha256{{ else }}{{ end }}'
+    entry: '{{ if eq .OS "darwin" }}{{ .File }}{{ else }}{{ end }}'
+  exe: rg
+  tags:
+    - terminal
+
+- name: hadolint/hadolint
+  description: Dockerfile linter
+  tags:
+    - terminal
+
+- name: jesseduffield/lazygit
+  description: simple terminal UI for git commands
+  tags:
+    - terminal
+
+- name: Byron/dua-cli
+  description: View disk space usage and delete unwanted data
+  exe: dua
+  skip:
+    reason: "dua-cli is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
+  tags:
+    - terminal
+
+- name: sharkdp/bat
+  description: A cat(1) clone with wings
+  checksum: none
+  exe:
+    patterns: "**/bat{{ .EXTENSION }}"
+  tags:
+    - terminal
+
+- name: jarun/nnn
+  description: The missing terminal file manager for X
+  checksum: none
+  skip:
+    - reason: "nnn is only available on linux"
+      condition: '{{ ne .OS "linux" }}'
+    - reason: "nnn is only available on amd64 architecture"
+      condition: '{{ ne .ARCH "amd64" }}'
+  hints:
+    - pattern: icons
+      match: required
+      type: contains
+  tags:
+    - terminal
+
+- name: hashicorp/terraform
+  description: Infrastructure as Code tool
+  url: https://releases.hashicorp.com/terraform/{{ .Version | trimPrefix "v" }}/terraform_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
+  checksum:
+    type: file
+    value: '{{ .Base }}/{{ .Exe }}_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
+  tags:
+    - terminal
+
+- name: hashicorp/vault
+  description: Secure, store, and tightly control access to tokens, passwords, certificates, API keys, and other secrets
+  url: https://releases.hashicorp.com/vault/{{ .Version | trimPrefix "v" }}/vault_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
+  checksum:
+    type: file
+    value: '{{ .Base }}/{{ .Exe }}_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
+  tags:
+    - terminal
+
+- name: hashicorp/packer
+  description: Create identical machine images for multiple platforms from a single source configuration
+  url: https://releases.hashicorp.com/packer/{{ .Version | trimPrefix "v" }}/packer_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
+  checksum:
+    type: file
+    value: '{{ .Base }}/{{ .Exe }}_{{ .Version | trimPrefix "v" }}_SHA256SUMS'
+  tags:
+    - terminal
+
+- name: authelia/authelia
+  description: The Single Sign-On Multi-Factor portal for web apps
+  skip:
+    reason: "authelia is only available on linux"
+    condition: '{{ ne .OS "linux" }}'
+  hints:
+    - pattern: -musl
+      weight: '{{ if eq .DISTRIBUTION "alpine" }}0{{ else }}-2{{ end }}'
+      type: contains
+  tags:
+    - terminal
+
+- name: hairyhenderson/gomplate
+  description: A versatile Go template processor
+  hints:
+    # gomplate releases both the `.exe` and `.zip` which would have identical scores
+    - pattern: .zip
+      weight: |-
+        {{- if eq .OS "windows" -}}
+        1
+        {{- else -}}
+        0
+        {{- end -}}
+      type: endswith
+  tags:
+    - terminal
+
+- name: coredns/coredns
+  description: DNS server that chains plugins
+  hints:
+    - pattern: .tgz
+      type: endswith
+  tags:
+    - terminal
+
+- name: watchexec/watchexec
+  description: Executes commands in response to file modifications
+  hints:
+    - pattern: -musl
+      weight: 2
+      type: contains
+    - pattern: .zip
+      weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
+      type: endswith
+    - pattern: .tar.xz
+      weight: '{{ if eq .OS "windows" }}0{{ else }}1{{ end }}'
+      type: endswith
+  tags:
+    - terminal
+
+- name: bitwarden/clients
+  description: The Bitwarden command-line interface
+  version: cli-v2025.8.0
+  exe: bw
+  hints:
+    - pattern: .zip
+      match: required
+      type: endswith
+    - pattern: -oss-
+      match: excluded
+      type: contains
+  tags:
+    - terminal
+
+- name: gotify/cli
+  description: A command-line client for Gotify
+  checksum: none
+  exe: gotify
+  tags:
+    - terminal
+
+- name: getsops/sops
+  description: Simple and flexible tool for managing secrets
+  skip:
+    reason: "sops is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  hints:
+    - pattern: "{{ .ARCH }}"
+      type: endswith
+  tags:
+    - terminal
+
+- name: dagu-org/dagu
+  description: Developer-friendly minimalism Cron/Airflow alternative
+  tags:
+    - terminal
+
+- name: binwiederhier/ntfy
+  description: Send push notifications to your phone or desktop using PUT/POST
+  tags:
+    - terminal
+
+- name: zouuup/landrun
+  description: A lightweight, secure sandbox for running Linux processes using Landlock LSM
+  checksum: none
+  skip:
+    reason: "landrun is only available on linux"
+    condition: '{{ ne .OS "linux" }}'
+  source:
+    type: go
+    go:
+      command: cmd/landrun
+  tags:
+    - terminal
+
+- name: znscli/zns
+  description: A command-line utility for querying DNS records
+  tags:
+    - terminal
+
+- name: paololazzari/play
+  description: A TUI playground for your favorite programs, such as grep, sed and awk
+  hints:
+    - pattern: .zip
+      type: endswith
+  tags:
+    - terminal
+
+- name: google/go-jsonnet
+  description: Jsonnet is a data templating language for app and tool developers
+  exe: jsonnet
+  tags:
+    - terminal
+
+- name: google/go-jsonnet
+  description: A linter for Jsonnet
+  exe: jsonnet-lint
+  tags:
+    - terminal
+
+- name: google/go-jsonnet
+  description: A formatter for Jsonnet
+  exe: jsonnetfmt
+  tags:
+    - terminal
+
+- name: jdx/mise
+  description: The front-end to your dev env
+  tags:
+    - terminal
+
+- name: nektos/act
+  description: Run GitHub Actions locally
+  tags:
+    - terminal
+
+- name: goreleaser/goreleaser
+  description: Deliver Go binaries as fast and easily as possible
+  tags:
+    - terminal
+
+- name: charmbracelet/vhs
+  description: A terminal recorder
+  tags:
+    - terminal
+
+- name: ofabry/go-callvis
+  description: A development tool to help visualize call graph of a Go program using interactive view
+  checksum: none
+  source:
+    type: go
+  tags:
+    - terminal
+
+- name: astral-sh/uv
+  description: An extremely fast Python package and project manager, written in Rust
+  tags:
+    - terminal
+
+- name: astral-sh/ruff
+  description: An extremely fast Python linter and code formatter, written in Rust
+  tags:
+    - terminal
+
+- name: wagoodman/dive
+  description: A tool for exploring each layer in a Docker image
+  tags:
+    - terminal
+
+- name: istio/istio
+  description: An open platform to connect, manage, and secure microservices
+  exe: istioctl
+  tags:
+    - kubernetes
+
+- name: kubernetes-sigs/kustomize
+  description: A tool to customize Kubernetes YAML configurations
+  tags:
+    - kubernetes
+
+- name: denisidoro/navi
+  description: An interactive cheatsheet tool for the command line
+  checksum: none
+  skip:
+    reason: "navi is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
+  tags:
+    - terminal
+
+- name: open-policy-agent/opa
+  description: An open-source policy engine that enables unified policy enforcement across the stack
+  hints:
+    # No extension for the binary
+    - pattern: ^[^.]+$
+      type: regex
+    # Select the static variant
+    - pattern: static
+      type: endswith
+  tags:
+    - kubernetes
+
+- name: StyraInc/regal
+  description: A tool for managing and validating Rego policies
+  tags:
+    - terminal
+
+- name: tsl0922/ttyd
+  description: A command-line tool for sharing terminal sessions over the web
+  hints:
+    - pattern: win32
+      match: '{{ if eq .OS "windows" }}required{{ else }}excluded{{ end }}'
+      type: contains
+  tags:
+    - terminal
+
+- name: crate-ci/typos
+  description: A tool for detecting and correcting typos in source code
+  tags:
+    - terminal
+
+- name: koalaman/shellcheck
+  description: A shell script static analysis tool that helps to find bugs in shell scripts
+  skip:
+    reason: "shellcheck is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
+
+- name: lfaoro/ssm
+  description: Streamline SSH connections with a simple Terminal UI
+  skip:
+    reason: "ssm is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
+
+- name: doganarif/portfinder
+  description: A modern CLI tool to identify and manage processes using network ports
+  exe: pf
+  tags:
+    - terminal
+
+- name: peltho/tufw
+  description: A terminal user interface for ufw
+  skip:
+    reason: "tufw is only available on linux"
+    condition: '{{ ne .OS "linux" }}'
+  tags:
+    - terminal
+
+- name: crumbyte/noxdir
+  description: A command-line tool for visualizing and exploring your file system usage
+  tags:
+    - terminal
+
+- name: JinmuGo/sls
+  description: sls is a smart fuzzy CLI selector for SSH config hosts
+  version:
+    # Doesn't have a version command
+    commands: []
+  tags:
+    - terminal
+
+- name: zix99/rare
+  description: A fast text scanner/regex extractor and realtime summarizer
+  tags:
+    - terminal
+
+- name: mr-karan/doggo
+  description: Command-line DNS client for humans
+  tags:
+    - terminal
+
+- name: Timmoth/aid-cli
+  description: A CLI toolkit featuring a variety of helpful utilities
+  checksum: none
+  exe: aid
+  skip:
+    - reason: "aid is only available on amd64 architecture"
+      condition: '{{ ne .ARCH "amd64" }}'
+  tags:
+    - terminal
+
+- name: swsnr/mdcat
+  description: Fancy cat for Markdown
+  checksum: none
+  skip:
+    - reason: "mdcat is not available on darwin"
+      condition: '{{ eq .OS "darwin" }}'
+    - reason: "mdcat is only available on amd64 architecture"
+      condition: '{{ ne .ARCH "amd64" }}'
+  tags:
+    - terminal
+
+- name: alexpasmantier/television
+  description: A cross-platform, fast and extensible general purpose fuzzy finder for the terminal
+  exe: tv
+  tags:
+    - terminal
+
+- name: yassinebenaid/bunster
+  description: A shell compiler that converts shell scripts into secure, portable and static binaries
+  skip:
+    condition: '{{ eq .OS "windows" }}'
+    reason: "bunster is not available on windows"
+  tags:
+    - terminal
+
+- name: vaibhav-mattoo/cxt
+  description: Command-line tool that aggregates file and directory contents into your clipboard
+  tags:
+    - terminal
+
+- name: getsavvyinc/savvy-cli
+  description: Automatically capture and surface your team's tribal knowledge
+  skip:
+    reason: "savvy-cli is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
+
+- name: stefanlogue/meteor
+  description: A highly configurable CLI tool for writing conventional commits
+  tags:
+    - terminal
+
+- name: regclient/regclient
+  description: Docker and OCI Registry Client in Go and tooling using those libraries
+  exe: regctl
+  tags:
+    - terminal
+
+- name: regclient/regclient
+  description: Docker and OCI Registry Client in Go and tooling using those libraries
+  exe: regsync
+  tags:
+    - terminal
+
+- name: regclient/regclient
+  description: Docker and OCI Registry Client in Go and tooling using those libraries
+  exe: regbot
+  tags:
+    - terminal
+
+- name: openai/codex
+  description: A CLI tool for interacting with OpenAI's Codex models
+  hints:
+    pattern: proxy
+    match: excluded
+    type: contains
+  tags:
+    - terminal
+
+- name: atuinsh/atuin
+  description: A next-generation shell history
+  skip:
+    reason: "atuin is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
+  tags:
+    - terminal
+
+- name: Gu1llaum-3/sshm
+  description: A modern, interactive SSH Manager for your terminal
+  tags:
+    - terminal
+
+- name: Adembc/lazyssh
+  description: A terminal-based SSH manager inspired by lazydocker and k9s
+  version:
+    # Doesn't have a version command
+    commands: []
+  tags:
+    - terminal
+
+- name: Canop/dysk
+  description: A linux utility to get information on filesystems, like df but better
+  url: https://dystroy.org/dysk/download/{{ index .ARCH_ALIASES 0 }}-unknown-{{ .OS }}-gnu/dysk
+  checksum: none
+  skip:
+    reason: "dysk is only available on linux"
+    condition: '{{ ne .OS "linux" }}'
+  tags:
+    - terminal
+
+- name: wait4x/wait4x
+  description: Wait4X allows you to wait for a port or a service to enter the requested state
+  tags:
+    - terminal
+
+- name: twpayne/chezmoi
+  description: Manage your dotfiles across multiple diverse machines, securely
+  hints:
+    - pattern: .zip
+      match: '{{ if eq .OS "windows" }}required{{ end }}'
+      type: endswith
+    - pattern: .tar.gz
+      match: '{{ if ne .OS "windows" }}required{{ end }}'
+      type: endswith
+    - pattern: glibc
+      weight: '{{ if eq .DISTRIBUTION "alpine" }}-1{{ else }}1{{ end }}'
+      type: contains
+  tags:
+    - terminal
+
+- name: bmf-san/ggc
+  description: A modern Git CLI tool with both traditional command-line and interactive incremental-search UI
+  tags:
+    - terminal
+
+- name: unkn0wn-root/resterm
+  description: Terminal REST client for .http/.rest files with HTTP, GraphQL and gRPC support
+  tags:
+    - terminal
+
+- name: Achno/gowall
+  description: A tool to convert a Wallpaper's color scheme / palette, and much more
+  skip:
+    reason: "gowall is not available on arm based architectures"
+    condition: "{{ .IS_ARM }}"
+  tags:
+    - terminal
+
+- name: gopasspw/gopass
+  description: The slightly more awesome password manager
+  tags:
+    - terminal
+
+- name: ast-grep/ast-grep
+  description: A CLI tool for code structural search, lint and rewriting
+  tags:
+    - terminal
+
+- name: sxyazi/yazi
+  description: Blazing fast terminal file manager written in Rust, based on async I/O
+  checksum: none
+  exe:
+    patterns: "**/yazi{{ .EXTENSION }}"
+  tags:
+    - terminal
+
+- name: gitlab-org/release-cli
+  description: A command-line tool for managing GitLab releases
+  checksum: none
+  inherit: gitlab
+  tags:
+    - terminal
+
+- name: gitlab-org/cli
+  description: glab is an open source GitLab CLI tool
+  exe: glab
+  hints:
+    - pattern: .zip
+      match: '{{ if eq .OS "windows" }}required{{ end }}'
+      type: endswith
+    - pattern: .tar.gz
+      match: '{{ if ne .OS "windows" }}required{{ end }}'
+      type: endswith
+  inherit: gitlab
+  tags:
+    - terminal
+
+- idelchi/dotgen
+- idelchi/slot
+- idelchi/envprof
+- idelchi/aggr
+- idelchi/gocry
+- idelchi/gogen
+- idelchi/go-match
+- idelchi/gonc
+- idelchi/go-next-tag
+- idelchi/tcisd
+- idelchi/wslint

@@ -169,8 +169,6 @@
 - name: ajeetdsouza/zoxide
   description: A smarter cd command for your terminal
   checksum: none
-  exe:
-    patterns: "**/zoxide{{ .EXTENSION }}"
   tags:
     - terminal
 
@@ -528,8 +526,6 @@
 - name: sharkdp/bat
   description: A cat(1) clone with wings
   checksum: none
-  exe:
-    patterns: "**/bat{{ .EXTENSION }}"
   tags:
     - terminal
 
@@ -1020,8 +1016,6 @@
 - name: sxyazi/yazi
   description: Blazing fast terminal file manager written in Rust, based on async I/O
   checksum: none
-  exe:
-    patterns: "**/yazi{{ .EXTENSION }}"
   tags:
     - terminal
 

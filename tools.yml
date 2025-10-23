@@ -308,8 +308,7 @@
 - name: kraanzu/dooit
   description: A TUI todo manager
   exe:
-    patterns:
-      - "{{ .OS }}-{{ .Exe }}*"
+    patterns: "{{ .OS }}-{{ .Exe }}*"
   skip:
     reason: "dooit not available on arm based architectures"
     condition: "{{ .IS_ARM }}"

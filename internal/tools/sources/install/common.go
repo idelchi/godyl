@@ -95,7 +95,7 @@ func findExecutableInDir(destination file.File, patterns []string) (file.File, e
 		return found, nil
 	}
 
-	allFiles, _ := searchDir.FindFiles(false, func(file file.File) (bool, error) {
+	allFiles, _ := searchDir.FindFiles(func(file file.File) (bool, error) {
 		return file.Matches("**")
 	})
 

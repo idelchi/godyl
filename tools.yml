@@ -308,8 +308,7 @@
 - name: kraanzu/dooit
   description: A TUI todo manager
   exe:
-    patterns:
-      - "{{ .OS }}-{{ .Exe }}*"
+    patterns: "{{ .OS }}-{{ .Exe }}*"
   skip:
     reason: "dooit not available on arm based architectures"
     condition: "{{ .IS_ARM }}"
@@ -526,8 +525,6 @@
 - name: sharkdp/bat
   description: A cat(1) clone with wings
   checksum: none
-  exe:
-    patterns: "**/bat{{ .EXTENSION }}"
   tags:
     - terminal
 

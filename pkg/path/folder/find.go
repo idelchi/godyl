@@ -1,6 +1,7 @@
 package folder
 
 import (
+	"cmp"
 	"fmt"
 	"io/fs"
 	"path/filepath"
@@ -11,13 +12,15 @@ import (
 )
 
 // FindFile searches for a file matching all given criteria.
-// Recursively searches the directory tree and returns the first matching file.
+// Recursively searches the directory tree and returns the first matching file, with the shortest path.
 // Returns ErrNotFound if no file matches all criteria.
 func (f Folder) FindFile(criteria ...CriteriaFunc) (file.File, error) {
-	files, err := f.FindFiles(true, criteria...)
+	files, err := f.FindFiles(criteria...)
 
 	if len(files) > 0 {
-		return files[0], err
+		return slices.MinFunc(files, func(a, b file.File) int {
+			return cmp.Compare(len(a), len(b))
+		}), err
 	}
 
 	return file.File(""), fmt.Errorf("%w: no file found matching all criteria in folder %q", ErrNotFound, f.AsFile())
@@ -26,7 +29,7 @@ func (f Folder) FindFile(criteria ...CriteriaFunc) (file.File, error) {
 // FindFiles searches for files matching all given criteria.
 // Recursively searches the directory tree and returns all matching files.
 // Returns an empty slice if no files match all criteria.
-func (f Folder) FindFiles(firstOnly bool, criteria ...CriteriaFunc) (files.Files, error) {
+func (f Folder) FindFiles(criteria ...CriteriaFunc) (files.Files, error) {
 	root := f.AsFile()
 
 	var found files.Files
@@ -59,10 +62,6 @@ func (f Folder) FindFiles(firstOnly bool, criteria ...CriteriaFunc) (files.Files
 		}
 
 		found = append(found, root.Join(relPath.Path()))
-
-		if firstOnly {
-			return filepath.SkipAll
-		}
 
 		return nil
 	})

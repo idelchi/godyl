@@ -681,30 +681,18 @@
 - name: google/go-jsonnet
   description: Jsonnet is a data templating language for app and tool developers
   exe: jsonnet
-  hints:
-    - pattern: .deb
-      match: excluded
-      type: endswith
   tags:
     - terminal
 
 - name: google/go-jsonnet
   description: A linter for Jsonnet
   exe: jsonnet-lint
-  hints:
-    - pattern: .deb
-      match: excluded
-      type: endswith
   tags:
     - terminal
 
 - name: google/go-jsonnet
   description: A formatter for Jsonnet
   exe: jsonnetfmt
-  hints:
-    - pattern: .deb
-      match: excluded
-      type: endswith
   tags:
     - terminal
 

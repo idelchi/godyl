@@ -74,6 +74,7 @@ default:
       type: contains
 
     # Matches strings starting with 'arm' followed by any single character except 'v'
+    # TODO(Idelchi): Why?
     - pattern: arm[^v]
       type: regex
 
@@ -88,13 +89,18 @@ default:
         {{- end -}}
       type: contains
 
-    # Avoid files ending with .txt (commonly the checksum.txt file)
+    # Exclude files ending with .txt
     - pattern: .txt
       type: endswith
       match: excluded
 
-    # Avoid files ending with .sha256 (commonly the checksum file)
+    # Exclude files ending with .sha256
     - pattern: .sha256
+      type: endswith
+      match: excluded
+
+    # Exclude files ending with .deb
+    - pattern: .deb
       type: endswith
       match: excluded
   source:

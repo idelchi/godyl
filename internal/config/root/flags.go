@@ -32,7 +32,7 @@ func Flags(cmd *cobra.Command) {
 	cmd.Flags().BoolP("no-cache", "", false, "disable cache")
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "skip SSL verification")
 	cmd.Flags().Bool("no-progress", false, "disable progress bar")
-	cmd.Flags().Bool("no-verify-checksum", false, "skip checksum verification")
+	cmd.Flags().BoolP("no-verify-checksum", "-C", false, "skip checksum verification")
 
 	cmd.Flags().StringP("error-file", "", "", "path to error log file, empty means stdout.")
 	cmd.Flags().CountP("verbose", "v", "increase verbosity (can be used multiple times)")

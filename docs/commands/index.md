@@ -36,28 +36,28 @@ has_children: true
 
 The following global flags are available:
 
-| Flag                    | Environment Variable       | Default                               | Description                                          |
-| :---------------------- | :------------------------- | :------------------------------------ | :--------------------------------------------------- |
-| `--log-level`, `-l`     | `GODYL_LOG_LEVEL`          | `info`                                | Log level (silent, debug, info, warn, error, always) |
-| `--parallel`, `-j`      | `GODYL_PARALLEL`           | `0`                                   | Parallelism. 0 means unlimited.                      |
-| `--cache-dir`           | `GODYL_CACHE_DIR`          | `${XDG_CACHE_HOME}/godyl`             | Path to cache directory                              |
-| `--no-cache`            | `GODYL_NO_CACHE`           | `false`                               | Disable cache                                        |
-| `--no-verify-ssl`, `-k` | `GODYL_NO_VERIFY_SSL`      | `false`                               | Skip SSL verification                                |
-| `--no-progress`         | `GODYL_NO_PROGRESS`        | `false`                               | Disable progress bar                                 |
-| `--no-verify-checksum`  | `GODYL_NO_VERIFY_CHECKSUM` | `false`                               | Skip checksum verification                           |
-| `--show`, `-s`          | `GODYL_SHOW`               | `false`                               | Show the parsed configuration and exit               |
-| `--config-file`, `-c`   | `GODYL_CONFIG_FILE`        | `${XDG_CONFIG_HOME}/godyl/godyl.yml`  | Path to config file                                  |
-| `--env-file`, `-e`      | `GODYL_ENV_FILE`           | `[".env"]`                            | Paths to .env files                                  |
-| `--defaults`, `-d`      | `GODYL_DEFAULTS`           | `defaults.yml`                        | Path to defaults file                                |
-| `--inherit`             | `GODYL_INHERIT`            | `default`                             | Default to inherit from when unset in the tool spec  |
-| `--github-token`        | `GODYL_GITHUB_TOKEN`       | See [authentication](#authentication) | GitHub token for authentication                      |
-| `--gitlab-token`        | `GODYL_GITLAB_TOKEN`       | See [authentication](#authentication) | GitLab token for authentication                      |
-| `--url-token`           | `GODYL_URL_TOKEN`          | See [authentication](#authentication) | URL token for authentication                         |
-| `--error-file`          | `GODYL_ERROR_FILE`         | ``                                    | Path to error log file. Empty means stdout.          |
-| `--keyring`             | `GODYL_KEYRING`            | `false`                               | Enable usage of system keyring                       |
-| `--verbose`, `-v`       | `GODYL_VERBOSE`            | `false`                               | Increase verbosity (can be used multiple times)      |
-| `--version`             | `GODYL_VERSION`            | `false`                               | Show the current version and exit                    |
-| `--help`, `-h`          | `GODYL_HELP`               | `false`                               | Show help for the command and exit                   |
+| Flag                         | Environment Variable       | Default                               | Description                                          |
+| :--------------------------- | :------------------------- | :------------------------------------ | :--------------------------------------------------- |
+| `--log-level`, `-l`          | `GODYL_LOG_LEVEL`          | `info`                                | Log level (silent, debug, info, warn, error, always) |
+| `--parallel`, `-j`           | `GODYL_PARALLEL`           | `0`                                   | Parallelism. 0 means unlimited.                      |
+| `--cache-dir`                | `GODYL_CACHE_DIR`          | `${XDG_CACHE_HOME}/godyl`             | Path to cache directory                              |
+| `--no-cache`                 | `GODYL_NO_CACHE`           | `false`                               | Disable cache                                        |
+| `--no-verify-ssl`, `-k`      | `GODYL_NO_VERIFY_SSL`      | `false`                               | Skip SSL verification                                |
+| `--no-progress`              | `GODYL_NO_PROGRESS`        | `false`                               | Disable progress bar                                 |
+| `--no-verify-checksum`, `-C` | `GODYL_NO_VERIFY_CHECKSUM` | `false`                               | Skip checksum verification                           |
+| `--show`, `-s`               | `GODYL_SHOW`               | `false`                               | Show the parsed configuration and exit               |
+| `--config-file`, `-c`        | `GODYL_CONFIG_FILE`        | `${XDG_CONFIG_HOME}/godyl/godyl.yml`  | Path to config file                                  |
+| `--env-file`, `-e`           | `GODYL_ENV_FILE`           | `[".env"]`                            | Paths to .env files                                  |
+| `--defaults`, `-d`           | `GODYL_DEFAULTS`           | `defaults.yml`                        | Path to defaults file                                |
+| `--inherit`                  | `GODYL_INHERIT`            | `default`                             | Default to inherit from when unset in the tool spec  |
+| `--github-token`             | `GODYL_GITHUB_TOKEN`       | See [authentication](#authentication) | GitHub token for authentication                      |
+| `--gitlab-token`             | `GODYL_GITLAB_TOKEN`       | See [authentication](#authentication) | GitLab token for authentication                      |
+| `--url-token`                | `GODYL_URL_TOKEN`          | See [authentication](#authentication) | URL token for authentication                         |
+| `--error-file`               | `GODYL_ERROR_FILE`         | ``                                    | Path to error log file. Empty means stdout.          |
+| `--keyring`                  | `GODYL_KEYRING`            | `false`                               | Enable usage of system keyring                       |
+| `--verbose`, `-v`            | `GODYL_VERBOSE`            | `false`                               | Increase verbosity (can be used multiple times)      |
+| `--version`                  | `GODYL_VERSION`            | `false`                               | Show the current version and exit                    |
+| `--help`, `-h`               | `GODYL_HELP`               | `false`                               | Show help for the command and exit                   |
 
 `--show` will display the configuration of the current command and all it's parents, and exit. Also available for all subcommands.
 Can be repeated to unmask tokens and other sensitive data.

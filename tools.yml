@@ -1018,6 +1018,12 @@
   tags:
     - terminal
 
+- name: bootandy/dust
+  description: A more intuitive version of du in rust
+  checksum: none
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

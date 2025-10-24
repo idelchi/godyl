@@ -1018,6 +1018,19 @@
   tags:
     - terminal
 
+- name: bootandy/dust
+  description: A more intuitive version of du in rust
+  tags:
+    - terminal
+
+- name: chenquan/diskusage
+  description: A tool for showing disk usage
+  exe:
+    name: disk-usage
+    patterns: diskusage{{ .EXTENSION }}
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

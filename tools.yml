@@ -1020,7 +1020,14 @@
 
 - name: bootandy/dust
   description: A more intuitive version of du in rust
-  checksum: none
+  tags:
+    - terminal
+
+- name: chenquan/diskusage
+  description: A tool for showing disk usage
+  exe:
+    name: disk-usage
+    patterns: diskusage{{ .EXTENSION }}
   tags:
     - terminal
 

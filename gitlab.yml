@@ -37,10 +37,6 @@
   inherit:
     - gitlab:selfhosted
 
-- name: apps/dirstat
-  inherit:
-    - gitlab:selfhosted
-
 - name: apps/dupfind
   inherit:
     - gitlab:selfhosted

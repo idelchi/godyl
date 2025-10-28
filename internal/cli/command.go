@@ -36,9 +36,6 @@ func Command(files *core.Embedded, version string) *cobra.Command {
 		SilenceUsage:     true,
 		SilenceErrors:    true,
 		TraverseChildren: true,
-		// PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// 	return run(cmd, cfg)
-		// },
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if core.ExitOnShow(cfg.ShowFunc, args...) {
 				return nil

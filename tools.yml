@@ -1017,7 +1017,8 @@
   checksum: none
   hints:
     pattern: -musl
-    match: "{{ if .IS_ARM }}required{{ end }}"
+    match: '{{ if and .IS_ARM (eq .OS "linux") }}required{{ end }}'
+    type: contains
   tags:
     - terminal
 

@@ -185,6 +185,7 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 	tmpl.AddValue("URL", t.URL)
 	tmpl.AddValue("File", file.File(t.URL).Unescape().Base())
 	tmpl.AddValue("Base", strings.TrimSuffix(strings.TrimSuffix(t.URL, file.File(t.URL).Base()), "/"))
+	tmpl.AddValue("URLWithoutExtensions", file.File(t.URL).WithoutExtensions())
 
 	if err := t.TemplatePostURL(tmpl); err != nil {
 		return result.WithFailed(fmt.Sprintf("templating url: %s", err))

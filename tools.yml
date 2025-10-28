@@ -98,7 +98,7 @@
   description: A simple and fast dashboard for Kubernetes
   checksum:
     type: sha256
-    value: url:{{ trimSuffix ".tar.gz" .URL }}.sha256
+    value: url:{{ .URLWithoutExtensions }}.sha256
   tags:
     - kubernetes
 
@@ -1031,6 +1031,18 @@
   exe:
     name: disk-usage
     patterns: diskusage{{ .EXTENSION }}
+  tags:
+    - terminal
+
+- name: mike-engel/jwt-cli
+  description: A super fast CLI tool to decode and encode JWTs built in Rust
+  checksum:
+    type: sha256
+    value: url:{{ .URLWithoutExtensions }}.sha256
+  exe: jwt
+  skip:
+    reason: "jwt-cli is only available on amd64 architecture"
+    condition: '{{ ne .ARCH "amd64" }}'
   tags:
     - terminal
 

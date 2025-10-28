@@ -108,7 +108,23 @@ func (f File) WithExtension(extension string) File {
 
 // WithoutExtension returns the path without file extensions.
 func (f File) WithoutExtension() File {
-	return New(strings.TrimSuffix(f.Path(), "."+f.Extension()))
+	return File(strings.TrimSuffix(f.Path(), "."+f.Extension()))
+}
+
+// WithoutExtensions keeps calling WithoutExtension until no dots remain in the base name.
+func (f File) WithoutExtensions() File {
+	result := f
+
+	for {
+		next := result.WithoutExtension()
+		if next.Path() == result.Path() {
+			break
+		}
+
+		result = next
+	}
+
+	return result
 }
 
 // HasExtension checks if the file has an extension.

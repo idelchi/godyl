@@ -48,6 +48,8 @@ func Command(files *core.Embedded, version string) *cobra.Command {
 		},
 	}
 
+	cmd.CompletionOptions.HiddenDefaultCmd = true
+
 	cmd.PersistentPreRunE = func(calledFrom *cobra.Command, _ []string) error {
 		return run(cmd, cfg, calledFrom)
 	}

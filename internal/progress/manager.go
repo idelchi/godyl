@@ -4,6 +4,7 @@ package progress
 import (
 	"github.com/hashicorp/go-getter/v2"
 
+	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/download/progress"
 )
 
@@ -29,7 +30,7 @@ func NewDefaultManager(noProgress bool) *DefaultManager {
 	if noProgress {
 		trackable = progress.NewNoop()
 	} else {
-		trackable = progress.New()
+		trackable = progress.New(download.DefaultTimeout)
 	}
 
 	return &DefaultManager{

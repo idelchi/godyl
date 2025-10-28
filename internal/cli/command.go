@@ -52,7 +52,6 @@ func Command(files *core.Embedded, version string) *cobra.Command {
 		return run(cmd, cfg, calledFrom)
 	}
 
-	cmd.CompletionOptions.DisableDefaultCmd = false
 	cmd.SetVersionTemplate("{{ .Version }}\n")
 
 	root.Flags(cmd)

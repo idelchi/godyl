@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/hashicorp/go-getter/v2"
 
@@ -51,11 +50,9 @@ func Download(d Data) (found file.File, err error) {
 		}()
 	}
 
-	const downloadTimeout = 30 * time.Minute
-
 	options := []download.Option{
 		download.WithProgress(d.ProgressListener),
-		download.WithContextTimeout(downloadTimeout),
+		download.WithContextTimeout(download.DefaultTimeout),
 	}
 	if d.NoVerifySSL {
 		options = append(options, download.WithInsecureSkipVerify())

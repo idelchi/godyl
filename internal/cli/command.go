@@ -36,9 +36,6 @@ func Command(files *core.Embedded, version string) *cobra.Command {
 		SilenceUsage:     true,
 		SilenceErrors:    true,
 		TraverseChildren: true,
-		// PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// 	return run(cmd, cfg)
-		// },
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if core.ExitOnShow(cfg.ShowFunc, args...) {
 				return nil
@@ -48,11 +45,12 @@ func Command(files *core.Embedded, version string) *cobra.Command {
 		},
 	}
 
+	cmd.CompletionOptions.HiddenDefaultCmd = true
+
 	cmd.PersistentPreRunE = func(calledFrom *cobra.Command, _ []string) error {
 		return run(cmd, cfg, calledFrom)
 	}
 
-	cmd.CompletionOptions.DisableDefaultCmd = false
 	cmd.SetVersionTemplate("{{ .Version }}\n")
 
 	root.Flags(cmd)

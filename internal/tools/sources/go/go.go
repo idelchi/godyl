@@ -5,6 +5,8 @@
 package goc
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -188,6 +190,11 @@ func (g *Go) Install(
 			)
 
 			return output, found, findErr
+		}
+
+		// If timeout occurred, don't try other paths
+		if errors.Is(err, context.DeadlineExceeded) {
+			return output, "", err
 		}
 	}
 

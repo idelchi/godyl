@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+
+	"github.com/idelchi/godyl/pkg/download"
 )
 
 // Installer handles the installation of Go binaries using the provided Binary.
@@ -20,8 +22,11 @@ type Installer struct {
 func (i *Installer) Install(path string) (output string, err error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 
+	ctx, cancel := context.WithTimeout(context.Background(), download.DefaultTimeout)
+	defer cancel()
+
 	// Prepare the command
-	cmd := exec.CommandContext(context.Background(), //nolint:gosec // Path is validated by upstream tool configuration
+	cmd := exec.CommandContext(ctx, //nolint:gosec // Path is validated by upstream tool configuration
 		i.Binary.File.Path(),
 		"install",
 		"-modcacherw",
@@ -45,6 +50,15 @@ func (i *Installer) Install(path string) (output string, err error) {
 
 	// Run the command
 	if err := cmd.Run(); err != nil {
+		// Check if it was a timeout
+		if ctx.Err() == context.DeadlineExceeded {
+			return stdoutBuf.String() + "\n" + stderrBuf.String(), fmt.Errorf(
+				"go install timed out after %s: %w",
+				download.DefaultTimeout,
+				context.DeadlineExceeded,
+			)
+		}
+
 		return stdoutBuf.String() + "\n" + stderrBuf.String(), fmt.Errorf(
 			"go install: %w: %s",
 			err,

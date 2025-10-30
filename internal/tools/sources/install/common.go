@@ -50,7 +50,10 @@ func Download(d Data) (found file.File, err error) {
 		}()
 	}
 
-	options := []download.Option{download.WithProgress(d.ProgressListener)}
+	options := []download.Option{
+		download.WithProgress(d.ProgressListener),
+		download.WithContextTimeout(download.DefaultTimeout),
+	}
 	if d.NoVerifySSL {
 		options = append(options, download.WithInsecureSkipVerify())
 	}

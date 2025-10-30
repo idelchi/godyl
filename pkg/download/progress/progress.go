@@ -48,10 +48,11 @@ type Tracker struct {
 	trackers map[string]*gpp.Tracker
 	wg       *sync.WaitGroup
 	lock     sync.Mutex
+	timeout  time.Duration
 }
 
 // New initializes and returns a Tracker with default styles and settings.
-func New() *Tracker {
+func New(timeout time.Duration) *Tracker {
 	pw := gpp.NewWriter()
 
 	const MessageLength = 60
@@ -102,6 +103,7 @@ func New() *Tracker {
 		pw:       pw,
 		trackers: make(map[string]*gpp.Tracker),
 		wg:       &sync.WaitGroup{},
+		timeout:  timeout,
 	}
 }
 
@@ -124,6 +126,8 @@ func (pt *Tracker) Wait() {
 }
 
 // TrackProgress wraps the given ReadCloser to update the progress bar during read and on close.
+//
+//nolint:gocognit // Complexity is acceptable for this function.
 func (pt *Tracker) TrackProgress(
 	src string,
 	currentSize, totalSize int64,
@@ -137,7 +141,7 @@ func (pt *Tracker) TrackProgress(
 	srcPretty := file.New(src).Unescape()
 
 	tracker, ok := pt.trackers[src]
-	if !ok {
+	if !ok { //nolint:nestif,gocognit // Includes the timeout tracking logic
 		var sizeStr string
 
 		if totalSize >= 0 {
@@ -160,11 +164,45 @@ func (pt *Tracker) TrackProgress(
 
 		pt.trackers[src] = tracker
 		pt.pw.AppendTracker(tracker)
+
+		// Update message with timeout warning when close to timeout
+		if pt.timeout > 0 {
+			stopTime := make(chan struct{})
+			startTime := time.Now()
+
+			go func() {
+				ticker := time.NewTicker(1 * time.Second)
+				defer ticker.Stop()
+
+				for {
+					select {
+					case <-stopTime:
+						return
+					case <-ticker.C:
+						elapsed := time.Since(startTime)
+						percentUsed := float64(elapsed) / float64(pt.timeout)
+
+						if percentUsed >= 0.90 { //nolint:mnd // 90% threshold is clear
+							remaining := pt.timeout - elapsed
+							msg := fmt.Sprintf("%-35s [%s] ⚠ %s remaining", srcPretty, sizeStr,
+								remaining.Round(time.Second))
+							tracker.UpdateMessage(msg)
+						}
+					}
+				}
+			}()
+
+			return &readCloserWithProgress{
+				Reader:  stream,
+				Closer:  &closeWrapper{stream, pt.wg, tracker, stopTime},
+				Tracker: tracker,
+			}
+		}
 	}
 
 	return &readCloserWithProgress{
 		Reader:  stream,
-		Closer:  &closeWrapper{stream, pt.wg, tracker},
+		Closer:  &closeWrapper{stream, pt.wg, tracker, nil},
 		Tracker: tracker,
 	}
 }
@@ -290,12 +328,17 @@ func StartSynthetic(
 type closeWrapper struct {
 	io.Closer
 
-	wg      *sync.WaitGroup
-	tracker *gpp.Tracker
+	wg       *sync.WaitGroup
+	tracker  *gpp.Tracker
+	stopTime chan struct{}
 }
 
 // Close closes the wrapped resource, marks the tracker as done if needed, and signals via WaitGroup.
 func (c *closeWrapper) Close() error {
+	if c.stopTime != nil {
+		close(c.stopTime)
+	}
+
 	err := c.Closer.Close()
 
 	if c.tracker.Value() < c.tracker.Total {

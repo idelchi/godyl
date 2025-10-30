@@ -74,7 +74,6 @@ default:
       type: contains
 
     # Matches strings starting with 'arm' followed by any single character except 'v'
-    # TODO(Idelchi): Why?
     - pattern: arm[^v]
       type: regex
 

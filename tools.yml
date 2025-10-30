@@ -1050,6 +1050,11 @@
   tags:
     - terminal
 
+- name: dlvhdr/gh-dash
+  description: A rich terminal UI for GitHub that doesn't break your flow
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

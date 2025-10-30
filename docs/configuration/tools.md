@@ -214,6 +214,7 @@ Many fields in the configuration support templating with variables like:
 - `{{ .Output }}` - The output path (`output`)
 - `{{ .Tokens }}` - The tokens for the source type (`source.tokens`), accessed with `{{ .Tokens.<source> }}`
 - `{{ .Version }}` - The version to fetch (`version.version`).
+- `{{ .URL }}` - The download URL (`url`), only available after the URL has been rendered.
 
 > **Note:** If the `version.version` field is unset, the template variable will only be available after the API call has been made.
 
@@ -221,6 +222,7 @@ Special cases, only available in `checksum.value` and `checksum.entry`:
 
 - `{{ .File }}` is the base name of the file in the `url`
 - `{{ .Base }}` is the full url without `{{ .File }}`
+- `{{ .URLWithoutExtensions }}` is the full url without any file extensions (multiple extensions removed)
 
 Platform-specific variables are upper-cased and available as:
 

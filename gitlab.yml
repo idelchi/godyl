@@ -44,3 +44,15 @@
 - name: apps/templ
   inherit:
     - gitlab:selfhosted
+
+- name: mcp/portainer
+  inherit:
+    - gitlab:selfhosted
+
+- name: mcp/github
+  inherit:
+    - gitlab:selfhosted
+
+- name: mcp/gitlab
+  inherit:
+    - gitlab:selfhosted

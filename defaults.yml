@@ -123,6 +123,9 @@ gitlab:
 
 gitlab:selfhosted:
   inherit: default
+  skip:
+    reason: "gitlab tools are not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
   version:
     commands: []
   source:

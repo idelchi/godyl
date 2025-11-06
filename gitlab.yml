@@ -56,3 +56,19 @@
 - name: mcp/gitlab
   inherit:
     - gitlab:selfhosted
+
+- name: apps/dircmp
+  inherit:
+    - gitlab:selfhosted
+
+- name: apps/classifier
+  inherit:
+    - gitlab:selfhosted
+
+- name: apps/taskboard
+  inherit:
+    - gitlab:selfhosted
+
+- name: apps/uploader
+  inherit:
+    - gitlab:selfhosted

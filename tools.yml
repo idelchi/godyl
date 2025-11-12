@@ -56,6 +56,11 @@
   tags:
     - docker
 
+- name: containerd/nerdctl
+  description: A Docker-compatible CLI for containerd
+  tags:
+    - docker
+
 - name: ahmetb/kubectx
   description: Faster way to switch between clusters and namespaces in kubectl
   exe: kubectx

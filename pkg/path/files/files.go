@@ -116,3 +116,16 @@ func (fs *Files) Expanded() {
 		s[i] = s[i].Expanded()
 	}
 }
+
+// Existing prunes the collection to only include existing files.
+func (fs *Files) Existing() {
+	var existing Files
+
+	for _, f := range *fs {
+		if f.Exists() {
+			existing = append(existing, f)
+		}
+	}
+
+	*fs = existing
+}

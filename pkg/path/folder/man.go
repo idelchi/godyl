@@ -53,6 +53,11 @@ func (f Folder) Base() string {
 	return filepath.Base(f.Path())
 }
 
+// Up returns the parent directory of this folder.
+func (f Folder) Up() Folder {
+	return New(filepath.Dir(f.Path()))
+}
+
 // RelativeTo returns the path from base to this folder.
 // Returns an error if it can't be computed.
 func (f Folder) RelativeTo(base Folder) (Folder, error) {

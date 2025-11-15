@@ -53,8 +53,8 @@ func (f Folder) Base() string {
 	return filepath.Base(f.Path())
 }
 
-// Up returns the parent directory of this folder.
-func (f Folder) Up() Folder {
+// Dir returns the parent directory of this folder.
+func (f Folder) Dir() Folder {
 	return New(filepath.Dir(f.Path()))
 }
 

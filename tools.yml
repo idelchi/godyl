@@ -260,6 +260,8 @@
 
 - name: mikefarah/yq
   description: YAML, JSON, and XML processor
+  exe:
+    patterns: yq_*
   hints:
     pattern: .zip
     match: '{{ if eq .OS "windows" }}required{{ else }}weighted{{ end }}'

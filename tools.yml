@@ -934,9 +934,15 @@
 - name: openai/codex
   description: A CLI tool for interacting with OpenAI's Codex models
   hints:
-    pattern: proxy
-    match: excluded
-    type: contains
+    - pattern: proxy
+      match: excluded
+      type: contains
+    - pattern: command-runner
+      match: excluded
+      type: contains
+    - pattern: sandbox
+      match: excluded
+      type: contains
   tags:
     - terminal
 

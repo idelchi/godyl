@@ -81,9 +81,9 @@ Use `config` and `auth` to manage the tool configuration.
 Authentication tokens default to the following values (in order of precedence),
 if not set anywhere else in the [configuration]({{ site.baseurl }}/configuration/index#configuration):
 
-- `--github-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)) (when using the keyring), or the environment variables (`GITHUB_TOKEN`, `GH_TOKEN`)
-- `--gitlab-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)) (when using the keyring), or the environment variables (`GITLAB_TOKEN`, `CI_JOB_TOKEN`)
-- `--url-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)) (when using the keyring), or the environment variable `URL_TOKEN`
+- `--github-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)) (when using the keyring), or the environment variables (`GODYL_GITHUB_TOKEN`, `GITHUB_TOKEN`, `GH_TOKEN`)
+- `--gitlab-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)) (when using the keyring), or the environment variables (`GODYL_GITLAB_TOKEN`, `GITLAB_TOKEN`, `CI_JOB_TOKEN`)
+- `--url-token` defaults to the keyring value (see [auth]({{ site.baseurl }}/commands/auth)) (when using the keyring), or the environment variables (`GODYL_URL_TOKEN`, `URL_TOKEN`)
 
 If you'd like to use the keyring for authentication, it's more convenient to set the value in the `yaml` configuration file:
 

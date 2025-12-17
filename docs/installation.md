@@ -26,7 +26,7 @@ You can test out the tool using Docker:
 
 ```sh
 export GITHUB_TOKEN=<your_github_token>
-docker run -it --rm --name godyl --env GITHUB_TOKEN docker.io/idelchi/godyl:main
+docker run -it --rm --name godyl --env GITHUB_TOKEN docker.io/idelchi/godyl:latest
 
 # Inside the container, install the default set of tools:
 godyl dump tools -e | godyl install - --output=~/.local/bin

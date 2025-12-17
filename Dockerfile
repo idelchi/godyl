@@ -2,7 +2,7 @@
 # Description : Docker image containing the godyl binary
 #]=======================================================================]
 
-ARG GO_VERSION=1.25.3
+ARG GO_VERSION=1.25.5
 ARG DISTRO=trixie
 
 #### ---- Build ---- ####

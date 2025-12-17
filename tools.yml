@@ -58,6 +58,10 @@
 
 - name: containerd/nerdctl
   description: A Docker-compatible CLI for containerd
+  hints:
+    pattern: full
+    match: excluded
+    type: contains
   tags:
     - docker
 

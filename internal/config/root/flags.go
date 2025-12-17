@@ -21,9 +21,11 @@ func Flags(cmd *cobra.Command) {
 
 	cmd.Flags().StringP("cache-dir", "", data.UserDataDir().Path(), "path to cache directory")
 
-	cmd.Flags().String("github-token", "", "github api token, defaulting to keyring, GITHUB_TOKEN or GH_TOKEN")
-	cmd.Flags().String("gitlab-token", "", "gitlab api token, default to keyring, GITLAB_TOKEN or CI_JOB_TOKEN")
-	cmd.Flags().String("url-token", "", "url api token, defaulting to keyring or URL_TOKEN")
+	cmd.Flags().
+		String("github-token", "", "github api token, defaulting to keyring, GODYL_GITHUB_TOKEN, GITHUB_TOKEN or GH_TOKEN")
+	cmd.Flags().
+		String("gitlab-token", "", "gitlab api token, default to keyring, GODYL_GITLAB_TOKEN, GITLAB_TOKEN or CI_JOB_TOKEN")
+	cmd.Flags().String("url-token", "", "url api token, defaulting to keyring, GODYL_URL_TOKEN, or URL_TOKEN")
 
 	cmd.Flags().Bool("keyring", false, "enable token retrieval from keyring")
 	cmd.Flags().IntP("parallel", "j", 0, "parallelism, 0 means unlimited.")

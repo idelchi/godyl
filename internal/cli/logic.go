@@ -233,7 +233,6 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	// set with .env files or the keyring without unnecessary checks
 
 	// TODO(Idelchi): Allow also GITHUB_TOKEN_FILE, GITLAB_TOKEN_FILE, URL_TOKEN_FILE
-	// provides valuable context for future development
 	githubToken := menv.GetAny("GITHUB_TOKEN", "GH_TOKEN")
 	gitlabToken := menv.GetAny("GITLAB_TOKEN", "CI_JOB_TOKEN")
 	urlToken := menv.GetAny("URL_TOKEN")

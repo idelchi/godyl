@@ -56,6 +56,18 @@
   tags:
     - docker
 
+- name: containerd/nerdctl
+  description: A Docker-compatible CLI for containerd
+  skip:
+    reason: "nerdctl is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
+  hints:
+    pattern: full
+    match: excluded
+    type: contains
+  tags:
+    - docker
+
 - name: ahmetb/kubectx
   description: Faster way to switch between clusters and namespaces in kubectl
   exe: kubectx
@@ -255,6 +267,8 @@
 
 - name: mikefarah/yq
   description: YAML, JSON, and XML processor
+  exe:
+    patterns: yq_*
   hints:
     pattern: .zip
     match: '{{ if eq .OS "windows" }}required{{ else }}weighted{{ end }}'
@@ -927,9 +941,15 @@
 - name: openai/codex
   description: A CLI tool for interacting with OpenAI's Codex models
   hints:
-    pattern: proxy
-    match: excluded
-    type: contains
+    - pattern: proxy
+      match: excluded
+      type: contains
+    - pattern: command-runner
+      match: excluded
+      type: contains
+    - pattern: sandbox
+      match: excluded
+      type: contains
   tags:
     - terminal
 

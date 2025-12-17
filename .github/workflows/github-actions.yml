@@ -20,6 +20,7 @@ jobs:
 
   test:
     needs: lint
+    if: ${{ !cancelled() }}
     strategy:
       max-parallel: 1
       matrix:

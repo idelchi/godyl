@@ -114,6 +114,16 @@ func (f File) Read() ([]byte, error) {
 	return file, nil
 }
 
+// ReadString retrieves the entire contents of the file as a string.
+func (f File) ReadString() (string, error) {
+	data, err := f.Read()
+	if err != nil {
+		return "", fmt.Errorf("reading file %q as string: %w", f, err)
+	}
+
+	return string(data), nil
+}
+
 // Lines retrieves the file contents as a slice of strings.
 func (f File) Lines() ([]string, error) {
 	data, err := f.Read()

@@ -58,6 +58,9 @@
 
 - name: containerd/nerdctl
   description: A Docker-compatible CLI for containerd
+  skip:
+    reason: "nerdctl is not available on darwin"
+    condition: '{{ eq .OS "darwin" }}'
   hints:
     pattern: full
     match: excluded

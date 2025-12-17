@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 	"sort"
+	"strings"
 )
 
 var (
@@ -30,22 +31,27 @@ type Results []Result
 
 // ToString converts the results into a formatted string for output.
 func (m Results) ToString() string {
-	var result string
+	var (
+		result     string
+		resultSb35 strings.Builder
+	)
 
 	for _, res := range m {
-		result += fmt.Sprintf("	- %s\n", res.Asset.Name)
-		result += fmt.Sprintf("		score: %d\n", res.Score)
-		result += fmt.Sprintf("		qualified: %t\n", res.Qualified)
-		result += "		detected as:\n"
-		result += fmt.Sprintf("		  os: %v\n", res.Asset.Platform.OS)
-		result += fmt.Sprintf("		  arch: %v\n", res.Asset.Platform.Architecture)
-		result += fmt.Sprintf("		  library: %s\n", res.Asset.Platform.Library)
-		result += fmt.Sprintf("		  extension: %s\n", res.Asset.Platform.Extension)
+		resultSb35.WriteString(fmt.Sprintf("	- %s\n", res.Asset.Name))
+		resultSb35.WriteString(fmt.Sprintf("		score: %d\n", res.Score))
+		resultSb35.WriteString(fmt.Sprintf("		qualified: %t\n", res.Qualified))
+		resultSb35.WriteString("		detected as:\n")
+		resultSb35.WriteString(fmt.Sprintf("		  os: %v\n", res.Asset.Platform.OS))
+		resultSb35.WriteString(fmt.Sprintf("		  arch: %v\n", res.Asset.Platform.Architecture))
+		resultSb35.WriteString(fmt.Sprintf("		  library: %s\n", res.Asset.Platform.Library))
+		resultSb35.WriteString(fmt.Sprintf("		  extension: %s\n", res.Asset.Platform.Extension))
 
 		if res.Error != nil {
-			result += fmt.Sprintf("		error: %s\n", res.Error)
+			resultSb35.WriteString(fmt.Sprintf("		error: %s\n", res.Error))
 		}
 	}
+
+	result += resultSb35.String()
 
 	return result
 }

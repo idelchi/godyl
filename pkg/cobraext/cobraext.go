@@ -3,6 +3,7 @@ package cobraext
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -25,9 +26,13 @@ func UnknownSubcommandAction(cmd *cobra.Command, args []string) error {
 	if suggestions := cmd.SuggestionsFor(args[0]); len(suggestions) > 0 {
 		err += "\n\nDid you mean this?\n"
 
+		var errSb28 strings.Builder
+
 		for _, s := range suggestions {
-			err += fmt.Sprintf("\t%v\n", s)
+			errSb28.WriteString(fmt.Sprintf("\t%v\n", s))
 		}
+
+		err += errSb28.String()
 	}
 
 	return errors.New(err) //nolint: err113 	 // The error should be returned as is

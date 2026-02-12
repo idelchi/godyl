@@ -33,6 +33,17 @@ linters:
     - goprintffuncname
 
   settings:
+    revive:
+      rules:
+        - name: var-naming
+          arguments:
+            - ["ID"] # allow list (keep if you want)
+            - [] # deny list
+            - - skip-initialism-name-checks: true
+                upper-case-const: true
+                skip-package-name-checks: true
+                skip-package-name-collision-with-go-std: true
+
     wsl_v5:
       allow-first-in-block: false
       allow-whole-block: false

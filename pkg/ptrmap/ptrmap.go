@@ -55,7 +55,7 @@ func (c *Collector) collect(v any, prefix string) map[string]any {
 	out := make(map[string]any)
 	val := reflect.ValueOf(v)
 
-	if val.Kind() != reflect.Ptr || val.Elem().Kind() != reflect.Struct {
+	if val.Kind() != reflect.Pointer || val.Elem().Kind() != reflect.Struct {
 		panic("collect expects a pointer to a struct")
 	}
 

@@ -950,6 +950,9 @@
     - pattern: sandbox
       match: excluded
       type: contains
+    - pattern: npm
+      match: excluded
+      type: contains
   tags:
     - terminal
 

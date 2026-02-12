@@ -120,7 +120,7 @@ func (m Results) HasQualified() bool {
 
 // Errors returns a combined error from all results.
 func (m Results) Errors() []error {
-	var errs []error //nolint:prealloc // Size unknown as it depends on error count
+	var errs []error
 
 	for _, result := range m {
 		if result.Error == nil {

@@ -58,7 +58,7 @@ func excludeFields(s any, tag string) any {
 	v := reflect.ValueOf(s)
 	t := reflect.TypeOf(s)
 
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		v = v.Elem()
 		t = t.Elem()
 	}

@@ -286,7 +286,10 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 		} else {
 			logWarning = append(
 				logWarning,
-				fmt.Sprintf("GitHub token is not set. Make sure you don't hit rate limits with current level: %v", cfg.Parallel),
+				fmt.Sprintf(
+					"GitHub token is not set. Make sure you don't hit rate limits with current level: %v",
+					cfg.Parallel,
+				),
 			)
 		}
 	}

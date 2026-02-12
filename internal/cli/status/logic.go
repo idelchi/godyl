@@ -43,6 +43,7 @@ func run(input core.Input) error {
 	if err := runner.Resolve(cfg.Defaults, &tools); err != nil {
 		return err
 	}
+
 	// At this point, all tools have been resolved and can be processed by the processor
 	proc := processor.New(tools, *cfg, runner.Logger())
 

@@ -46,7 +46,7 @@ func getTools(embeddedTools []byte, rendered bool, tags tags.IncludeTags) (any, 
 		return nil, err
 	}
 
-	var included []int //nolint:prealloc  		// Size is unknown
+	var included []int
 
 	for i, tool := range tools {
 		tool.Tags.Append(tool.Name)

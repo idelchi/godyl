@@ -95,7 +95,7 @@ func (g *Repository) getReleasesWithOptions(_ context.Context, perPage int) ([]*
 
 	releases, _, err := g.client.Releases.ListReleases(
 		path,
-		&gitlab.ListReleasesOptions{ListOptions: gitlab.ListOptions{PerPage: perPage}},
+		&gitlab.ListReleasesOptions{ListOptions: gitlab.ListOptions{PerPage: int64(perPage)}},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list releases: %w", err)

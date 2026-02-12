@@ -958,6 +958,10 @@
   skip:
     reason: "atuin is not available on windows"
     condition: '{{ eq .OS "windows" }}'
+  hints:
+    - pattern: server
+      match: excluded
+      type: contains
   tags:
     - terminal
 

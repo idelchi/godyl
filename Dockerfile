@@ -2,7 +2,7 @@
 # Description : Docker image containing the godyl binary
 #]=======================================================================]
 
-ARG GO_VERSION=1.25.5
+ARG GO_VERSION=1.26.0
 ARG DISTRO=trixie
 
 #### ---- Build ---- ####
@@ -28,9 +28,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnome-keyring \
     dbus-x11 \
     && rm -rf /var/lib/apt/lists/*
-
-ARG TASK_VERSION=v3.41.0
-RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TARGETARCH}.tar.gz | tar -xz -C /usr/local/bin
 
 WORKDIR /work
 

@@ -82,7 +82,7 @@ func (e Executable) Parse(parser *Parser) (string, error) {
 
 		if match, err := parser.Parse(output); err == nil {
 			return match, nil
-		} else { //nolint:revive		// Unindenting would then result in shadowing not appending the correct one.
+		} else {
 			// Collect errors
 			errs = append(errs, err)
 		}

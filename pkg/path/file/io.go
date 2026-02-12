@@ -283,6 +283,7 @@ func (f File) Links(links ...File) error {
 		if err := f.Softlinks(link); err == nil {
 			continue
 		}
+
 		// Try hard link
 		if err := f.Hardlinks(link); err == nil {
 			continue

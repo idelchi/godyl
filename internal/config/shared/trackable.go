@@ -1,4 +1,3 @@
-//nolint:revive // Package name is appropriate
 package shared
 
 import (

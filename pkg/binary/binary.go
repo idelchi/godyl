@@ -1,4 +1,5 @@
-package file
+// Package binary provides utilities for determining if a file is binary-like.
+package binary
 
 import (
 	"bytes"
@@ -6,20 +7,22 @@ import (
 	"unicode/utf8"
 
 	"github.com/gabriel-vasile/mimetype"
+
+	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// IsBinaryLike checks if the file is binary-like.
+// IsLike checks if the file is binary-like.
 //
 //nolint:gocognit // Complex logic to determine if a file is binary-like
-func (f File) IsBinaryLike() bool {
-	if !f.Exists() || !f.IsFile() {
+func IsLike(file file.File) bool {
+	if !file.Exists() || !file.IsFile() {
 		return false
 	}
 
 	// MIME allow-list
 	var textish bool
 
-	if m, err := mimetype.DetectFile(f.Path()); err == nil {
+	if m, err := mimetype.DetectFile(file.Path()); err == nil {
 		for p := m; p != nil; p = p.Parent() {
 			s := p.String()
 
@@ -40,7 +43,7 @@ func (f File) IsBinaryLike() bool {
 	}
 
 	// Always run content sanity check
-	r, err := f.Open()
+	r, err := file.Open()
 	if err == nil { //nolint:nestif  	// Necessary nesting to handle all cases
 		defer r.Close()
 

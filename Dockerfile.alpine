@@ -2,7 +2,7 @@
 # Description : Docker image containing the godyl binary (Alpine version)
 #]=======================================================================]
 
-ARG GO_VERSION=1.26.0
+ARG GO_VERSION=1.26.1
 ARG DISTRO=alpine
 #### ---- Build ---- ####
 FROM golang:${GO_VERSION}-${DISTRO} AS build

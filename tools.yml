@@ -1,6 +1,10 @@
 - name: moncho/dry
   description: A Docker manager for the terminal
   checksum: none
+  hints:
+    pattern: .zip
+    match: '{{ if eq .OS "windows" }}required{{ end }}'
+    type: endswith
   tags:
     - docker
 

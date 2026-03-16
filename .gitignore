@@ -1,33 +1,22 @@
-# Binaries for programs and plugins
-*.exe
-*.lnk
-*.bat
-
 # Ignored files
-.bash_history
-.gitconfig
+*.exe*
+/.bash_history
+/.bashrc
+/.gitconfig
 *.env
-
-.clinerules
-.clineignore
-.bashrc
 .sass-cache
 .jekyll-metadata
-# *___generated.go
 
 # Ignored folders
-.build
-.cache
-.task
-dist/
-.bin-*
-.bin
-.local
-bin
-.logs
-*.exe.old
-example-other-apps-by-me
-.depr
-.ai
-.devcontainer
-assets/gifs/
+/.build/
+/.cache/
+/.task/
+/dist/
+/bin/
+/.bin-*/
+/.bin/
+/.local/
+/.logs/
+/.devcontainer/
+/assets/gifs/
+/.analysis/

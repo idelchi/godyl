@@ -1,16 +1,36 @@
-// Package results manages result collection and aggregation.
-package results
+package processor
 
 import (
 	"errors"
 	"fmt"
 
-	"github.com/idelchi/godyl/internal/runner"
+	"github.com/idelchi/godyl/internal/tools/tool"
+)
+
+// Result represents the outcome of a tool operation.
+type Result struct {
+	Error    error
+	Tool     *tool.Tool
+	Metadata map[string]any
+	Message  string
+	Status   Status
+}
+
+// Status represents the possible states of a tool operation.
+type Status int
+
+const (
+	// StatusOK indicates a successful operation.
+	StatusOK Status = iota
+	// StatusSkipped indicates the operation was skipped.
+	StatusSkipped
+	// StatusFailed indicates the operation failed.
+	StatusFailed
 )
 
 // Summary provides an aggregated view of all results.
 type Summary struct {
-	Results    []runner.Result
+	Results    []Result
 	Errors     []ErrorDetail
 	Total      int
 	Successful int
@@ -63,8 +83,8 @@ func (s Summary) DetailedError() error {
 }
 
 // ByStatus returns all results with the given status.
-func (s Summary) ByStatus(status runner.Status) []runner.Result {
-	var results []runner.Result
+func (s Summary) ByStatus(status Status) []Result {
+	var results []Result
 
 	for _, r := range s.Results {
 		if r.Status == status {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/idelchi/godyl/internal/cli/core"
 	"github.com/idelchi/godyl/internal/iutils"
+	"github.com/idelchi/godyl/internal/presentation"
 	"github.com/idelchi/godyl/internal/processor"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/tool"
@@ -50,9 +51,15 @@ func run(input core.Input) error {
 	proc.NoDownload = true
 	proc.Options = []tool.ResolveOption{tool.WithoutURL()}
 
-	if err := proc.Process(iutils.SplitTags(cfg.Status.Tags)); err != nil {
+	summary, err := proc.Process(iutils.SplitTags(cfg.Status.Tags))
+	if err != nil {
 		return fmt.Errorf("processing tools: %w", err)
 	}
 
-	return nil
+	presentation.ShowSummary(summary, presentation.ShowConfig{
+		Verbose:   cfg.Verbose,
+		ErrorFile: cfg.ErrorFile,
+	}, runner.Logger())
+
+	return summary.Error()
 }

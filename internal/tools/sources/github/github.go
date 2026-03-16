@@ -11,6 +11,7 @@ import (
 	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/release"
 	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
@@ -18,7 +19,7 @@ import (
 // GitHub represents a GitHub repository configuration and state.
 type GitHub struct {
 	Data                install.Metadata `mapstructure:"-" yaml:"-"`
-	latestStoredRelease *github.Release
+	latestStoredRelease *release.Release
 	Repo                string `mapstructure:"repo"  yaml:"repo"`
 	Owner               string `mapstructure:"owner" yaml:"owner"`
 	Token               string `mapstructure:"token" mask:"fixed" yaml:"token"`
@@ -91,7 +92,7 @@ func (g *GitHub) LatestVersion(ctx context.Context, version string) (string, err
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
-	var release *github.Release
+	var release *release.Release
 
 	var err error
 
@@ -141,7 +142,7 @@ func (g *GitHub) MatchAssetsToRequirements(
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
-	var release *github.Release
+	var release *release.Release
 
 	if g.latestStoredRelease == nil { //nolint:nestif // Multiple checks are necessary
 		var err error

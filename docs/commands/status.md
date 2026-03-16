@@ -26,9 +26,9 @@ The `status` command checks the status of the tools defined in the provided YAML
 
 ## Flags
 
-| Flag             | Environment Variable  | Default | Description                                 |
-| :--------------- | :-------------------- | :------ | :------------------------------------------ |
-| `--output`, `-o` | `GODYL_STATUS_OUTPUT` | `./bin` | Output path for the downloaded tools        |
+| Flag             | Environment Variable  | Default     | Description                                 |
+| :--------------- | :-------------------- | :---------- | :------------------------------------------ |
+| `--output`, `-o` | `GODYL_STATUS_OUTPUT` | `./bin`     | Output path for the downloaded tools        |
 | `--tags`, `-t`   | `GODYL_STATUS_TAGS`   | `[!native]` | Tags to filter tools by. Use `!` to exclude |
 
 `tags` may use wildcards `*` which matches any sequence of characters.

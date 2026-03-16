@@ -1,51 +1,37 @@
 package gitlab
 
 import (
-	"errors"
 	"fmt"
+
+	"github.com/idelchi/godyl/internal/release"
 
 	gitlab "gitlab.com/gitlab-org/api/client-go"
 )
 
-// ErrRelease is returned when a release issue is encountered.
-var ErrRelease = errors.New("release")
-
-// Release represents a GitLab release, containing the release name, tag, and associated assets.
-type Release struct {
-	// Name is the name of the release.
-	Name string `json:"name"`
-	// Tag is the tag associated with the release (e.g., version number).
-	Tag string `json:"tag_name"`
-	// Assets is a collection of assets attached to the release.
-	Assets Assets `json:"assets"`
-}
-
-// FromRepositoryRelease converts a GitLab repository release to a Release object.
-func (r *Release) FromRepositoryRelease(release *gitlab.Release) error {
-	if release == nil {
-		return fmt.Errorf("%w: repository release is nil", ErrRelease)
+// FromRepositoryRelease converts a GitLab repository release to a shared Release object.
+func FromRepositoryRelease(repoRelease *gitlab.Release) (*release.Release, error) {
+	if repoRelease == nil {
+		return nil, fmt.Errorf("%w: repository release is nil", release.ErrRelease)
 	}
 
-	if release.TagName == "" {
-		return fmt.Errorf("%w: release tag name is empty", ErrRelease)
+	if repoRelease.TagName == "" {
+		return nil, fmt.Errorf("%w: release tag name is empty", release.ErrRelease)
 	}
 
 	// Convert GitLab assets to our Asset type
-	assets := make(Assets, 0, len(release.Assets.Links))
+	assets := make(release.Assets, 0, len(repoRelease.Assets.Links))
 
-	for _, link := range release.Assets.Links {
-		assets = append(assets, Asset{
+	for _, link := range repoRelease.Assets.Links {
+		assets = append(assets, release.Asset{
 			Name: link.Name,
 			URL:  link.DirectAssetURL,
 			Type: string(link.LinkType), // Convert LinkTypeValue to string
 		})
 	}
 
-	*r = Release{
-		Name:   release.Name,
-		Tag:    release.TagName,
+	return &release.Release{
+		Name:   repoRelease.Name,
+		Tag:    repoRelease.TagName,
 		Assets: assets,
-	}
-
-	return nil
+	}, nil
 }

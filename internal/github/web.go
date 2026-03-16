@@ -13,6 +13,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
+	"github.com/idelchi/godyl/internal/release"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
@@ -37,7 +38,7 @@ func newHTTPClient() *http.Client {
 }
 
 // GetReleaseFromWeb retrieves a specific release for the repository based on the provided tag.
-func (r *Repository) GetReleaseFromWeb(ctx context.Context, tag string) (*Release, error) {
+func (r *Repository) GetReleaseFromWeb(ctx context.Context, tag string) (*release.Release, error) {
 	url := fmt.Sprintf("https://github.com/%s/%s/releases/expanded_assets/%s", r.Owner, r.Repo, tag)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
@@ -75,14 +76,12 @@ func (r *Repository) GetReleaseFromWeb(ctx context.Context, tag string) (*Releas
 	}
 
 	// Create the Release object
-	release := &Release{
+	return &release.Release{
 		Tag:    tag,
 		Name:   tag, // GitHub web interface doesn't provide release name in this endpoint
 		Assets: assets,
 		// Body is not available from this endpoint
-	}
-
-	return release, nil
+	}, nil
 }
 
 // LatestVersionFromWebHTML retrieves the latest release for the repository using the GitHub website
@@ -195,13 +194,13 @@ func (r *Repository) getLatestReleaseInfoFromWebJSON(ctx context.Context) (*WebR
 // parseGitHubReleaseAssets parses the HTML of a GitHub release page to extract asset information.
 //
 //nolint:gocognit // Complexity is acceptable for this function
-func parseGitHubReleaseAssets(html string) ([]Asset, error) {
+func parseGitHubReleaseAssets(html string) (release.Assets, error) {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse HTML: %w", err)
 	}
 
-	var assets []Asset
+	var assets release.Assets
 
 	// Find all list items in the assets box
 	doc.Find("li.Box-row").Each(func(_ int, s *goquery.Selection) {
@@ -236,7 +235,7 @@ func parseGitHubReleaseAssets(html string) ([]Asset, error) {
 					}
 				})
 
-				assets = append(assets, Asset{
+				assets = append(assets, release.Asset{
 					Name:   name,
 					URL:    url,
 					Type:   "text/plain", // GitHub does not provide MIME type in this context

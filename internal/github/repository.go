@@ -7,6 +7,8 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/google/go-github/v74/github"
+
+	"github.com/idelchi/godyl/internal/release"
 )
 
 // Repository represents a GitHub repository with its owner and name.
@@ -28,14 +30,14 @@ func NewRepository(owner, repo string, client *github.Client) *Repository {
 }
 
 // LatestRelease retrieves the latest release for the repository.
-func (r *Repository) LatestRelease(ctx context.Context) (*Release, error) {
+func (r *Repository) LatestRelease(ctx context.Context) (*release.Release, error) {
 	repositoryRelease, _, err := r.client.Repositories.GetLatestRelease(ctx, r.Owner, r.Repo)
 	if err != nil {
 		return nil, fmt.Errorf("getting latest release: %w", err)
 	}
 
-	release := &Release{}
-	if err := release.FromRepositoryRelease(repositoryRelease); err != nil {
+	release, err := FromRepositoryRelease(repositoryRelease)
+	if err != nil {
 		return nil, fmt.Errorf("parsing release: %w", err)
 	}
 
@@ -43,14 +45,14 @@ func (r *Repository) LatestRelease(ctx context.Context) (*Release, error) {
 }
 
 // GetRelease retrieves a specific release for the repository based on the provided tag.
-func (r *Repository) GetRelease(ctx context.Context, tag string) (*Release, error) {
+func (r *Repository) GetRelease(ctx context.Context, tag string) (*release.Release, error) {
 	repositoryRelease, _, err := r.client.Repositories.GetReleaseByTag(ctx, r.Owner, r.Repo, tag)
 	if err != nil {
 		return nil, fmt.Errorf("getting assets for release tag %q: %w", tag, err)
 	}
 
-	release := &Release{}
-	if err := release.FromRepositoryRelease(repositoryRelease); err != nil {
+	release, err := FromRepositoryRelease(repositoryRelease)
+	if err != nil {
 		return nil, fmt.Errorf("parsing release: %w", err)
 	}
 
@@ -60,7 +62,7 @@ func (r *Repository) GetRelease(ctx context.Context, tag string) (*Release, erro
 // LatestIncludingPreRelease retrieves the most recently published release for the repository,
 // including pre-releases. This returns the newest release by published date, regardless of
 // whether it's a regular release or pre-release.
-func (r *Repository) LatestIncludingPreRelease(ctx context.Context, perPage int) (*Release, error) {
+func (r *Repository) LatestIncludingPreRelease(ctx context.Context, perPage int) (*release.Release, error) {
 	var allReleases []*github.RepositoryRelease
 
 	page := 1
@@ -107,8 +109,8 @@ func (r *Repository) LatestIncludingPreRelease(ctx context.Context, perPage int)
 	}
 
 	// Convert to our Release type
-	release := &Release{}
-	if err := release.FromRepositoryRelease(latestRelease); err != nil {
+	release, err := FromRepositoryRelease(latestRelease)
+	if err != nil {
 		return nil, fmt.Errorf("parsing release: %w", err)
 	}
 
@@ -117,7 +119,7 @@ func (r *Repository) LatestIncludingPreRelease(ctx context.Context, perPage int)
 
 // GetReleasesByWildcard retrieves the latest release matching a wildcard pattern.
 // It returns the highest version that matches the pattern.
-func (r *Repository) GetReleasesByWildcard(ctx context.Context, pattern string, perPage int) (*Release, error) {
+func (r *Repository) GetReleasesByWildcard(ctx context.Context, pattern string, perPage int) (*release.Release, error) {
 	pattern = strings.ReplaceAll(pattern, "*", "X")
 
 	c, err := semver.NewConstraint(pattern)
@@ -187,8 +189,8 @@ func (r *Repository) GetReleasesByWildcard(ctx context.Context, pattern string, 
 	}
 
 	// Convert to our Release type
-	release := &Release{}
-	if err := release.FromRepositoryRelease(highestRelease); err != nil {
+	release, err := FromRepositoryRelease(highestRelease)
+	if err != nil {
 		return nil, fmt.Errorf("parsing release: %w", err)
 	}
 

@@ -1,4 +1,4 @@
-package github
+package release
 
 import (
 	"path"
@@ -10,7 +10,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/checksum"
 )
 
-// Assets represents a collection of GitHub release assets.
+// Assets represents a collection of release assets.
 type Assets []Asset
 
 // FilterByName returns the assets that match the given name.
@@ -32,39 +32,43 @@ func (as Assets) Match(requirements match.Requirements) (matches match.Results) 
 
 	for _, a := range as {
 		asset := match.Asset{Name: a.Name}
-		asset.Parse() // Parse the asset name to extract additional info (platform, architecture, etc.)
+		asset.Parse()
 
 		asset.Platform.Extension = platform.Extension(
 			filepath.Ext(a.Name),
-		) // Assign the file extension to the platform field
+		)
 
 		assets = append(assets, asset)
 	}
 
-	// Select the assets that satisfy the given requirements.
 	matches = assets.Select(requirements)
 
 	return matches
 }
 
 // Checksums returns all assets that appear to be checksum files.
+// When pattern is non-empty, only checksum-like assets matching the pattern are returned.
 func (as Assets) Checksums(pattern string) checksum.Checksums {
-	checksums := checksum.Checksums{}
+	var names checksum.Checksums
 
-	if pattern != "" {
-		for _, checksum := range checksums {
-			match, err := path.Match(pattern, checksum)
-			if err == nil && match {
-				checksums = append(checksums, checksum)
-			}
-		}
+	for _, asset := range as {
+		names = append(names, asset.Name)
+	}
 
+	checksums := names.IsChecksumLike()
+
+	if pattern == "" {
 		return checksums
 	}
 
-	for _, asset := range as {
-		checksums = append(checksums, asset.Name)
+	var filtered checksum.Checksums
+
+	for _, cs := range checksums {
+		matched, err := path.Match(pattern, cs)
+		if err == nil && matched {
+			filtered = append(filtered, cs)
+		}
 	}
 
-	return checksums.IsChecksumLike()
+	return filtered
 }

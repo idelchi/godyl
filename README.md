@@ -6,7 +6,7 @@
 
 ---
 
-[![GitHub release](https://img.shields.io/github/v/release/idelchi/godyl)](https://github.com/idelchi/envprof/godyl)
+[![GitHub release](https://img.shields.io/github/v/release/idelchi/godyl)](https://github.com/idelchi/godyl)
 [![Homepage](https://img.shields.io/badge/homepage-visit-blue)](https://idelchi.github.io/godyl)
 [![Go Reference](https://pkg.go.dev/badge/github.com/idelchi/godyl.svg)](https://pkg.go.dev/github.com/idelchi/godyl)
 [![Go Report Card](https://goreportcard.com/badge/github.com/idelchi/godyl)](https://goreportcard.com/report/github.com/idelchi/godyl)

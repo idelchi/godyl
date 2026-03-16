@@ -20,3 +20,5 @@
 /.devcontainer/
 /assets/gifs/
 /.analysis/
+/.experiments/
+/.tasks/

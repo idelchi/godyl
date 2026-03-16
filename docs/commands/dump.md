@@ -15,6 +15,11 @@ The `dump` command displays various configuration settings and information about
 godyl [flags] dump [auth|cache|config|defaults|env|platform|tools] [flags]
 ```
 
+## Aliases
+
+- `ls`
+- `show`
+
 ## Description
 
 The `dump` command provides a way to inspect `godyl`'s configuration, available tools, and system information. This can be helpful for debugging, understanding the current setup, or creating custom tool configurations.
@@ -33,11 +38,11 @@ The `dump` command provides a way to inspect `godyl`'s configuration, available 
 
 ## Flags for `dump tools`
 
-| Flag             | Environment Variable        | Default | Description                |
-| :--------------- | :-------------------------- | :------ | :------------------------- |
-| `--embedded,`-e` | `GODYL_DUMP_TOOLS_EMBEDDED` | `true`  | Show only embedded tools   |
-| `--tags`, `-t`   | `GODYL_DUMP_TOOLS_TAGS`     | `false` | Filter by tags             |
-| `--full`, `-f`   | `GODYL_DUMP_TOOLS_FULL`     | `false` | Show full tool information |
+| Flag               | Environment Variable        | Default | Description                |
+| :----------------- | :-------------------------- | :------ | :------------------------- |
+| `--embedded`, `-e` | `GODYL_DUMP_TOOLS_EMBEDDED` | `false` | Show the embedded tools    |
+| `--tags`, `-t`     | `GODYL_DUMP_TOOLS_TAGS`     | `[""]`  | Filter by tags             |
+| `--full`, `-f`     | `GODYL_DUMP_TOOLS_FULL`     | `false` | Show full tool information |
 
 `tags` may use wildcards `*` which matches any sequence of characters.
 

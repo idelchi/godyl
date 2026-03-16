@@ -1086,6 +1086,11 @@
   tags:
     - terminal
 
+- name: rtk-ai/rtk
+  description: CLI proxy that reduces LLM token consumption by 60-90% on common dev commands.
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

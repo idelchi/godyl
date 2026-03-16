@@ -1,4 +1,4 @@
-package gitlab
+package release
 
 import (
 	"fmt"
@@ -6,14 +6,12 @@ import (
 	"strings"
 )
 
-// Asset represents a GitLab release asset with its name, download URL, and content type.
+// Asset represents a release asset with its name, download URL, content type, and optional digest.
 type Asset struct {
-	// Name is the name of the asset.
-	Name string `json:"name"`
-	// URL is the browser download URL for the asset.
-	URL string `json:"url"`
-	// Type is the content type of the asset.
-	Type string `json:"content_type"`
+	Name   string
+	URL    string
+	Type   string
+	Digest string
 }
 
 // Match checks if the asset name matches the given pattern.
@@ -28,11 +26,9 @@ func (a Asset) Match(pattern string) (bool, error) {
 
 // HasExtension checks if the asset has the given file extension.
 func (a Asset) HasExtension(extension string) (bool, error) {
-	// If the extension contains one or fewer dots, check the file extension.
 	if strings.Count(extension, ".") <= 1 {
 		return filepath.Ext(a.Name) == extension, nil
 	}
 
-	// Otherwise, check if the name ends with the specified extension.
 	return strings.HasSuffix(a.Name, extension), nil
 }

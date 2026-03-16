@@ -2,7 +2,7 @@ package progress
 
 import "io"
 
-// Noop is a dummy progress tracker that implements the Trackable interface
+// Noop is a dummy progress tracker that implements the ProgressTracker interface
 // but performs no tracking. Useful when progress display is disabled.
 type Noop struct{}
 

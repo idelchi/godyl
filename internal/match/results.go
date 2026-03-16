@@ -31,29 +31,24 @@ type Results []Result
 
 // ToString converts the results into a formatted string for output.
 func (m Results) ToString() string {
-	var (
-		result     string
-		resultSb35 strings.Builder
-	)
+	var sb strings.Builder
 
 	for _, res := range m {
-		resultSb35.WriteString(fmt.Sprintf("	- %s\n", res.Asset.Name))
-		resultSb35.WriteString(fmt.Sprintf("		score: %d\n", res.Score))
-		resultSb35.WriteString(fmt.Sprintf("		qualified: %t\n", res.Qualified))
-		resultSb35.WriteString("		detected as:\n")
-		resultSb35.WriteString(fmt.Sprintf("		  os: %v\n", res.Asset.Platform.OS))
-		resultSb35.WriteString(fmt.Sprintf("		  arch: %v\n", res.Asset.Platform.Architecture))
-		resultSb35.WriteString(fmt.Sprintf("		  library: %s\n", res.Asset.Platform.Library))
-		resultSb35.WriteString(fmt.Sprintf("		  extension: %s\n", res.Asset.Platform.Extension))
+		sb.WriteString(fmt.Sprintf("	- %s\n", res.Asset.Name))
+		sb.WriteString(fmt.Sprintf("		score: %d\n", res.Score))
+		sb.WriteString(fmt.Sprintf("		qualified: %t\n", res.Qualified))
+		sb.WriteString("		detected as:\n")
+		sb.WriteString(fmt.Sprintf("		  os: %v\n", res.Asset.Platform.OS))
+		sb.WriteString(fmt.Sprintf("		  arch: %v\n", res.Asset.Platform.Architecture))
+		sb.WriteString(fmt.Sprintf("		  library: %s\n", res.Asset.Platform.Library))
+		sb.WriteString(fmt.Sprintf("		  extension: %s\n", res.Asset.Platform.Extension))
 
 		if res.Error != nil {
-			resultSb35.WriteString(fmt.Sprintf("		error: %s\n", res.Error))
+			sb.WriteString(fmt.Sprintf("		error: %s\n", res.Error))
 		}
 	}
 
-	result += resultSb35.String()
-
-	return result
+	return sb.String()
 }
 
 // Best returns the best qualified results based on the highest score.

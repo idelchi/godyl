@@ -10,8 +10,6 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// Handler manages the common operations for CLI commands including configuration resolution,
-// logging, and embedded resource management.
 // Handler manages configuration resolution, logging, and embedded resources for CLI operations.
 type Handler struct {
 	config   root.Config
@@ -20,7 +18,6 @@ type Handler struct {
 }
 
 // NewHandler creates a new Handler instance with the provided configuration and embedded resources.
-// NewHandler creates a new Handler instance with the provided configuration and embedded resources.
 func NewHandler(cfg root.Config, embedded Embedded) *Handler {
 	return &Handler{
 		config:   cfg,
@@ -28,8 +25,6 @@ func NewHandler(cfg root.Config, embedded Embedded) *Handler {
 	}
 }
 
-// Resolve loads and processes the configuration for tools, including defaults, inheritance, and platform-specific
-// settings.
 // Resolve processes the configuration hierarchy by loading defaults, applying inheritance,
 // and merging platform-specific settings for all tools.
 func (c *Handler) Resolve(defaultFile file.File, tools *tools.Tools) (err error) {
@@ -45,9 +40,8 @@ func (c *Handler) Resolve(defaultFile file.File, tools *tools.Tools) (err error)
 	8. Assign default inheritance to all tools
 	9. Resolve the inheritance scheme of all the tools. Important is to do the final
 	   merge with the defaults as a "UnmarshalYAML", to have the custom unmarshalling mechanisms kick in.
-	10. Finally, ensure that no nil points are left in the tools
-	11. Now we can merge the platform settings
-	12. Finally, we can merge the platform settings
+	10. Ensure that no nil pointers are left in the tools
+	11. Merge the platform settings
 	*/
 	// Continue with setting up the defaults
 	defaultMap := c.embedded.Defaults

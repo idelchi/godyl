@@ -129,6 +129,7 @@ A complete reference for all fields is available below.
       # Inferred from last part of `name` if not provided
       repo: envprof
       token: secret # [`--github-token`]
+      pre: false # Consider pre-releases
     gitlab:
       # Inferred from first part of `name` if not provided
       namespace: idelchi/go-projects
@@ -137,6 +138,7 @@ A complete reference for all fields is available below.
       token: secret # [`--gitlab-token`]
       server: https://gitlab.self-hosted.com
       no-token: false # Suppress usage of token
+      pre: false # Consider pre-releases
     url:
       token: secret # [`--url-token`]
       headers:
@@ -159,9 +161,9 @@ A complete reference for all fields is available below.
     commands:
       - "mkdir -p {{ .Output }}"
     # Whether to suppress failures in the commands.
-    allow_failure: true
+    allow-failure: true
     # Whether to exit immediately on error.
-    exit_on_error: false
+    exit-on-error: false
   # List of tags to filter tools.
   tags:
     - env
@@ -189,12 +191,18 @@ A complete reference for all fields is available below.
   # Will be accessible as `{{ .Env.<ENV_VAR> }}` anywhere templating is supported.
   env:
     GH_TOKEN: $GODYL_GITHUB_TOKEN
+  # Platform overrides for OS and architecture matching.
+  platform:
+    os:
+      name: linux
+    architecture:
+      name: amd64
   # Disable SSL verification.
-  no_verify_ssl: true
+  no-verify-ssl: true
   # Disable cache usage
-  no_cache: true
+  no-cache: true
   # Disable checksum verification
-  no_verify_checksum: true
+  no-verify-checksum: true
   # A list of defaults to inherit from.
   inherit:
     - default
@@ -267,7 +275,7 @@ Used for inference in [`exe`](#exe) and [`source`](#source)
 A description of the tool, for documentation purposes.
 
 ```yaml
-description: Asset downloader for GitHub releases, URLs, and Go projects
+description: Asset downloader for GitHub releases, GitLab releases, URLs, and Go projects
 ```
 
 ### `version`
@@ -395,6 +403,7 @@ source:
     repo: envprof
     owner: idelchi
     token:
+    pre: false # Consider pre-releases
 ```
 
 URL source:
@@ -505,6 +514,42 @@ Valid values:
 
 - `find`: Download, extract, and find the executable
 - `extract`: Download and extract directly to the output directory
+
+### `platform`
+
+Platform overrides for OS and architecture matching. When set, `godyl` will match assets against the specified platform instead of the detected one.
+
+```yaml
+platform:
+  os:
+    name: linux
+  architecture:
+    name: amd64
+```
+
+### `no-verify-ssl`
+
+Disable SSL verification for this tool.
+
+```yaml
+no-verify-ssl: true
+```
+
+### `no-cache`
+
+Disable cache interaction for this tool.
+
+```yaml
+no-cache: true
+```
+
+### `no-verify-checksum`
+
+Disable checksum verification for this tool.
+
+```yaml
+no-verify-checksum: true
+```
 
 ### `checksum`
 

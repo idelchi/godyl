@@ -18,7 +18,6 @@ import (
 	"github.com/idelchi/godyl/internal/tools/hints"
 	"github.com/idelchi/godyl/internal/tools/inherit"
 	"github.com/idelchi/godyl/internal/tools/mode"
-	"github.com/idelchi/godyl/internal/tools/result"
 	"github.com/idelchi/godyl/internal/tools/skip"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/strategy"
@@ -81,8 +80,6 @@ type Tool struct {
 	Checksum checksum.Checksum `json:"checksum" mapstructure:"checksum" yaml:"checksum"`
 	// Cache can be carried around for various checks
 	cache *cache.Cache `json:"-"`
-	// currentResult stores the latest operation result
-	currentResult result.Result `json:"-"`
 	// populator stores the last successful populator
 	populator sources.Populator `json:"-"`
 }
@@ -113,18 +110,6 @@ func (t *Tool) DisableCache() {
 	t.cache = nil
 }
 
-// SetResult sets the current result of the Tool instance.
-//
-// TODO(Idelchi): Get rid of currentResult.
-func (t *Tool) SetResult(res result.Result) {
-	t.currentResult = res
-}
-
-// Result returns the current result of the Tool instance.
-func (t *Tool) Result() *result.Result {
-	return &t.currentResult
-}
-
 // Exists checks if the tool's executable exists in the configured output path.
 // Returns true if the file exists and is a regular file.
 func (t Tool) Exists() bool {
@@ -137,13 +122,6 @@ func (t Tool) Exists() bool {
 	f := file.New(t.Output, name)
 
 	return f.Exists() && f.IsFile()
-}
-
-// Debug prints debug information for the tool if the tool name matches the specified tool.
-func (t Tool) Debug(tool, s string) {
-	if t.Name == tool {
-		fmt.Println(tool + ": " + s) //nolint:forbidigo // Tool output intentionally uses fmt.Println for user feedback
-	}
 }
 
 // GetCurrentVersion attempts to retrieve the current version of the tool.
@@ -166,6 +144,8 @@ func (t Tool) GetCurrentVersion() string {
 
 	// No cache hit, check if we have commands to determine version
 	if t.Version.Commands == nil || len(*t.Version.Commands) == 0 {
+		debug.Debug("no version commands configured for %q", t.Name)
+
 		return ""
 	}
 
@@ -177,6 +157,8 @@ func (t Tool) GetCurrentVersion() string {
 
 	parsed, err := exe.Parse(parser)
 	if err != nil {
+		debug.Debug("version parse failed for %q: %v", t.Name, err)
+
 		return ""
 	}
 

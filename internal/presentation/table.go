@@ -8,7 +8,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 
-	"github.com/idelchi/godyl/internal/runner"
+	"github.com/idelchi/godyl/internal/processor"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
@@ -31,21 +31,21 @@ func NewTableFormatter(config TableConfig) *TableFormatter {
 }
 
 // RenderResults renders a collection of results as formatted tables split by status.
-func (f *TableFormatter) RenderResults(results []runner.Result) string {
+func (f *TableFormatter) RenderResults(results []processor.Result) string {
 	if len(results) == 0 {
 		return ""
 	}
 
 	// Split results by status
-	var errors, warnings, successes []runner.Result
+	var errors, warnings, successes []processor.Result
 
 	for _, result := range results {
 		switch result.Status {
-		case runner.StatusFailed:
+		case processor.StatusFailed:
 			errors = append(errors, result)
-		case runner.StatusSkipped:
+		case processor.StatusSkipped:
 			warnings = append(warnings, result)
-		case runner.StatusOK:
+		case processor.StatusOK:
 			successes = append(successes, result)
 		}
 	}
@@ -80,7 +80,7 @@ func (f *TableFormatter) RenderResults(results []runner.Result) string {
 }
 
 // renderTable renders a single table for a set of results.
-func (f *TableFormatter) renderTable(results []runner.Result) string {
+func (f *TableFormatter) renderTable(results []processor.Result) string {
 	if len(results) == 0 {
 		return ""
 	}
@@ -156,7 +156,7 @@ func (f *TableFormatter) renderTable(results []runner.Result) string {
 }
 
 // formatResultRow formats a single result into a table row.
-func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
+func (f *TableFormatter) formatResultRow(result processor.Result) table.Row {
 	tool := result.Tool
 
 	const na = "n/a"
@@ -176,7 +176,7 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 
 	// Format message
 	message := result.Message
-	if result.Status == runner.StatusFailed && f.config.Verbose {
+	if result.Status == processor.StatusFailed && f.config.Verbose {
 		message = "failed, see below for details"
 	}
 
@@ -209,13 +209,13 @@ func (f *TableFormatter) formatResultRow(result runner.Result) table.Row {
 }
 
 // getColorForStatus returns the appropriate color for a given status.
-func (f *TableFormatter) getColorForStatus(status runner.Status) text.Colors {
+func (f *TableFormatter) getColorForStatus(status processor.Status) text.Colors {
 	switch status {
-	case runner.StatusOK:
+	case processor.StatusOK:
 		return text.Colors{text.FgGreen}
-	case runner.StatusFailed:
+	case processor.StatusFailed:
 		return text.Colors{text.FgRed}
-	case runner.StatusSkipped:
+	case processor.StatusSkipped:
 		return text.Colors{text.FgYellow}
 	default:
 		return text.Colors{text.BgBlack}

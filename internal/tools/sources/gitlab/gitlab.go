@@ -11,6 +11,7 @@ import (
 	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/gitlab"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/release"
 	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
@@ -18,7 +19,7 @@ import (
 // GitLab represents a GitLab project configuration and state.
 type GitLab struct {
 	Data                install.Metadata `mapstructure:"-" yaml:"-"`
-	latestStoredRelease *gitlab.Release
+	latestStoredRelease *release.Release
 	Project             string `mapstructure:"project"   yaml:"project"`
 	Namespace           string `mapstructure:"namespace" yaml:"namespace"`
 	Token               string `mapstructure:"token"     mask:"fixed"     yaml:"token"`
@@ -102,7 +103,7 @@ func (g *GitLab) LatestVersion(ctx context.Context) (string, error) {
 
 	repository := gitlab.NewRepository(g.Namespace, g.Project, client)
 
-	var release *gitlab.Release
+	var release *release.Release
 
 	if g.Pre {
 		const PerPage = 1000
@@ -138,7 +139,7 @@ func (g *GitLab) MatchAssetsToRequirements(
 
 	repository := gitlab.NewRepository(g.Namespace, g.Project, client)
 
-	var release *gitlab.Release
+	var release *release.Release
 
 	if g.latestStoredRelease == nil {
 		var releaseErr error
@@ -154,17 +155,11 @@ func (g *GitLab) MatchAssetsToRequirements(
 	assets := release.Assets
 
 	matches := assets.Match(requirements)
+
 	if matches.Status() != nil {
-		return "", matches.WithoutZero().Status()
-	}
-
-	if len(matches) == 0 {
-		return "", fmt.Errorf("no assets found for requirements: %v", requirements)
-	}
-
-	err = matches.Status()
-	if err != nil {
-		err = fmt.Errorf("status: %w", err)
+		if err := matches.WithoutZero().Status(); err != nil {
+			return "", err
+		}
 	}
 
 	asset := assets.FilterByName(matches[0].Asset.Name)[0]
@@ -180,7 +175,7 @@ func (g *GitLab) MatchAssetsToRequirements(
 		}
 	}
 
-	return asset.URL, err
+	return asset.URL, nil
 }
 
 // PopulateNamespaceAndRepo sets the Namespace and Project fields from a name string.

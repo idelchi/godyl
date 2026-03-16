@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/idelchi/godyl/internal/results"
+	"github.com/idelchi/godyl/internal/processor"
 )
 
 // ErrorFormatter handles error message formatting.
@@ -37,7 +37,7 @@ func NewErrorFormatter(config ErrorConfig) *ErrorFormatter {
 }
 
 // FormatErrors formats error details based on the configured format.
-func (f *ErrorFormatter) FormatErrors(errors []results.ErrorDetail) (string, error) {
+func (f *ErrorFormatter) FormatErrors(errors []processor.ErrorDetail) (string, error) {
 	if len(errors) == 0 {
 		return "", nil
 	}
@@ -53,7 +53,7 @@ func (f *ErrorFormatter) FormatErrors(errors []results.ErrorDetail) (string, err
 }
 
 // FormatSummary formats a summary message.
-func (f *ErrorFormatter) FormatSummary(summary results.Summary) string {
+func (f *ErrorFormatter) FormatSummary(summary processor.Summary) string {
 	var parts []string
 
 	if summary.Successful > 0 {
@@ -76,7 +76,7 @@ func (f *ErrorFormatter) FormatSummary(summary results.Summary) string {
 }
 
 // formatJSON formats errors as JSON.
-func (f *ErrorFormatter) formatJSON(errors []results.ErrorDetail) (string, error) {
+func (f *ErrorFormatter) formatJSON(errors []processor.ErrorDetail) (string, error) {
 	type jsonError struct {
 		Tool    string `json:"tool"`
 		Message string `json:"message"`
@@ -106,7 +106,7 @@ func (f *ErrorFormatter) formatJSON(errors []results.ErrorDetail) (string, error
 }
 
 // formatText formats errors as plain text.
-func (f *ErrorFormatter) formatText(errors []results.ErrorDetail) string {
+func (f *ErrorFormatter) formatText(errors []processor.ErrorDetail) string {
 	var sb strings.Builder
 
 	for i, e := range errors {

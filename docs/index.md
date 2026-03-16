@@ -2,7 +2,7 @@
 layout: default
 title: Home
 nav_order: 1
-description: "Asset downloader for GitHub releases, GitLab release, URLs, and Go projects."
+description: "Asset downloader for GitHub releases, GitLab releases, URLs, and Go projects."
 permalink: /
 ---
 
@@ -11,7 +11,7 @@ permalink: /
 
 # Godyl
 
-Asset downloader for GitHub releases, GitLab release, URLs, and Go projects.
+Asset downloader for GitHub releases, GitLab releases, URLs, and Go projects.
 {: .fs-6 .fw-300 }
 
 [Get started now](#getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .me-2 } [View it on GitHub](https://github.com/idelchi/godyl){: .btn .fs-5 .mb-4 .mb-md-0 }
@@ -104,5 +104,3 @@ to bring down the latest version, if the current one is out of date.
 {% endraw %}
 
 For a sample, see [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) or run `godyl dump tools -e > tools.yml` to inspect the default configuration.
-
-> **Note**: Tool is currently in development, and the code-base is rather chaotic, until it is cleaned up.

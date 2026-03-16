@@ -11,22 +11,19 @@ import (
 	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/internal/data"
-	"github.com/idelchi/godyl/internal/presentation"
-	"github.com/idelchi/godyl/internal/progress"
-	"github.com/idelchi/godyl/internal/results"
-	"github.com/idelchi/godyl/internal/runner"
 	"github.com/idelchi/godyl/internal/tools"
+	"github.com/idelchi/godyl/internal/tools/result"
 	"github.com/idelchi/godyl/internal/tools/tags"
 	"github.com/idelchi/godyl/internal/tools/tool"
 	"github.com/idelchi/godyl/pkg/logger"
+	"github.com/idelchi/godyl/pkg/pretty"
 )
 
 // Processor is a thin orchestrator that coordinates tool processing.
 type Processor struct {
-	runner     runner.Runner
-	results    results.Collector
+	results    *collector
 	cache      *cache.Cache
-	progress   progress.Manager
+	progress   *progressMgr
 	config     root.Config
 	log        *logger.Logger
 	tools      tools.Tools
@@ -43,32 +40,23 @@ func New(toolsList tools.Tools, cfg root.Config, log *logger.Logger) *Processor 
 		cacheManager = cache.New(data.CacheFile(cfg.Cache.Dir))
 	}
 
-	// Initialize progress manager
-	progressMgr := progress.NewDefaultManager(cfg.NoProgress)
-
-	// Initialize runner
-	runnerImpl := runner.NewDefaultRunner(cacheManager, log)
-
-	// Initialize results collector
-	collector := results.NewCollector()
-
 	return &Processor{
 		tools:    toolsList,
 		config:   cfg,
 		log:      log,
-		runner:   runnerImpl,
-		results:  collector,
+		results:  newCollector(),
 		cache:    cacheManager,
-		progress: progressMgr,
+		progress: newProgressMgr(cfg.NoProgress),
 	}
 }
 
 // Process installs and manages tools with the given tags.
-func (p *Processor) Process(tags tags.IncludeTags) error {
+// Returns the aggregated summary and any infrastructure error (e.g. cache load failure).
+func (p *Processor) Process(tags tags.IncludeTags) (Summary, error) {
 	// 1. Setup
 	if p.cache != nil {
 		if err := p.cache.Load(); err != nil {
-			return fmt.Errorf("loading cache: %w", err)
+			return Summary{}, fmt.Errorf("loading cache: %w", err)
 		}
 	}
 
@@ -92,27 +80,14 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 	for _, t := range p.tools {
 		// capture
 		g.Go(func() error {
-			// Build run options
-			var runOpts []runner.RunOption
-
-			runOpts = append(runOpts, runner.WithProgressTracker(p.progress.Tracker()))
-
-			if p.NoDownload {
-				runOpts = append(runOpts, runner.WithNoDownload())
-			}
-
-			if p.Options != nil {
-				runOpts = append(runOpts, runner.WithResolveOptions(p.Options...))
-			}
-
 			// Run the tool operation
-			result := p.runner.Run(ctx, t, tags, runOpts...)
+			result := p.runTool(ctx, t, tags)
 
 			// Collect the result
 			p.results.Add(result)
 
 			// Update cache if successful
-			if result.Status == runner.StatusOK && p.cache != nil {
+			if result.Status == StatusOK && p.cache != nil {
 				p.updateCache(result) //nolint:contextcheck	// Unclear what this is about.
 			}
 
@@ -122,25 +97,76 @@ func (p *Processor) Process(tags tags.IncludeTags) error {
 
 	// 3. Wait for completion
 	if err := g.Wait(); err != nil {
-		return fmt.Errorf("processing tools: %w", err)
+		return Summary{}, fmt.Errorf("processing tools: %w", err)
 	}
 
 	p.progress.Wait()
 
-	// 4. Present results
-	p.presentResults()
+	return p.results.Summary(), nil
+}
 
-	// 5. Return summary
-	summary := p.results.Summary()
-	if summary.HasErrors() {
-		return summary.Error()
+// runTool executes a tool operation and returns the result.
+func (p *Processor) runTool(ctx context.Context, t *tool.Tool, tags tags.IncludeTags) Result {
+	// Enable cache if available
+	if p.cache != nil {
+		t.EnableCache(p.cache)
 	}
 
-	return nil
+	// Log tool configuration
+	p.log.Debug("Tool:")
+	p.log.Debug("-------")
+	p.log.Debugf("%s", pretty.YAML(t))
+	p.log.Debug("-------")
+
+	// Resolve the tool
+	resolveResult := t.Resolve(tags, p.Options...)
+
+	// Convert internal result to Result
+	if !resolveResult.IsOK() {
+		return p.convertResult(t, resolveResult)
+	}
+
+	// Check if we should skip download
+	if p.NoDownload || p.Options != nil {
+		t.DisableCache()
+
+		return p.convertResult(t, resolveResult)
+	}
+
+	// Download the tool
+	downloadResult := t.Download(ctx, p.progress.Tracker())
+
+	return p.convertResult(t, downloadResult)
+}
+
+// convertResult converts an internal result.Result to a processor Result.
+func (p *Processor) convertResult(t *tool.Tool, res result.Result) Result {
+	var status Status
+
+	switch {
+	case res.IsOK():
+		status = StatusOK
+	case res.IsSkipped():
+		status = StatusSkipped
+	case res.IsFailed():
+		status = StatusFailed
+	}
+
+	return Result{
+		Tool:    t,
+		Status:  status,
+		Message: res.Message,
+		Error:   res.AsError(),
+		Metadata: map[string]any{
+			"url":     t.URL,
+			"version": t.Version.Version,
+			"output":  t.Output,
+		},
+	}
 }
 
 // updateCache updates the cache with a successful result.
-func (p *Processor) updateCache(result runner.Result) {
+func (p *Processor) updateCache(result Result) {
 	if result.Tool.Version.Version == "" {
 		result.Tool.Version.Version = result.Tool.GetCurrentVersion()
 	}
@@ -165,80 +191,5 @@ func (p *Processor) updateCache(result runner.Result) {
 
 	if err := p.cache.Add(item); err != nil {
 		p.log.Errorf("failed to update cache for %s: %v", result.Tool.Name, err)
-	}
-}
-
-// presentResults formats and displays the results.
-func (p *Processor) presentResults() {
-	const tableMaxWidth = 100
-
-	summary := p.results.Summary()
-
-	// Create table formatter
-	tableFormatter := presentation.NewTableFormatter(presentation.TableConfig{
-		MaxWidth: tableMaxWidth,
-		Verbose:  p.config.Verbose > 0,
-	})
-
-	// Render table
-	tableOutput := tableFormatter.RenderResults(summary.Results)
-
-	if tableOutput == "" {
-		p.log.Info("Nothing of interest to show")
-
-		return
-	}
-
-	// Display results
-	if p.config.Verbose > 0 {
-		p.log.Info("")
-		p.log.Info("Installation Summary:")
-		p.log.Info(tableOutput)
-
-		p.log.Infof("%d tools processed", len(summary.Results))
-	} else {
-		p.log.Info("Done!")
-	}
-
-	// Handle errors
-	if summary.HasErrors() {
-		p.presentErrors(summary)
-	}
-}
-
-// presentErrors formats and displays error messages.
-func (p *Processor) presentErrors(summary results.Summary) {
-	// Determine error format
-	format := presentation.ErrorFormatText
-
-	if p.config.ErrorFile.Path() != "" {
-		format = presentation.ErrorFormatJSON
-	}
-
-	const errorWrapWidth = 120
-
-	// Create error formatter
-	errorFormatter := presentation.NewErrorFormatter(presentation.ErrorConfig{
-		WrapWidth: errorWrapWidth,
-		Format:    format,
-	})
-
-	// Format errors
-	errorOutput, err := errorFormatter.FormatErrors(summary.Errors)
-	if err != nil {
-		p.log.Errorf("failed to format errors: %v", err)
-
-		return
-	}
-
-	// Output errors
-	if p.config.ErrorFile.Path() == "" {
-		p.log.Error(errorOutput)
-	} else {
-		if err := p.config.ErrorFile.Write([]byte(errorOutput)); err != nil {
-			p.log.Errorf("failed to write error output to %q: %v", p.config.ErrorFile.Path(), err)
-		} else {
-			p.log.Errorf("See error file %q for details", p.config.ErrorFile.Path())
-		}
 	}
 }

@@ -40,13 +40,13 @@ The following global flags are available:
 | :--------------------------- | :------------------------- | :------------------------------------ | :--------------------------------------------------- |
 | `--log-level`, `-l`          | `GODYL_LOG_LEVEL`          | `info`                                | Log level (silent, debug, info, warn, error, always) |
 | `--parallel`, `-j`           | `GODYL_PARALLEL`           | `0`                                   | Parallelism. 0 means unlimited.                      |
-| `--cache-dir`                | `GODYL_CACHE_DIR`          | `${XDG_CACHE_HOME}/godyl`             | Path to cache directory                              |
+| `--cache-dir`                | `GODYL_CACHE_DIR`          | `~/.local/share/godyl`                | Path to cache directory                              |
 | `--no-cache`                 | `GODYL_NO_CACHE`           | `false`                               | Disable cache                                        |
 | `--no-verify-ssl`, `-k`      | `GODYL_NO_VERIFY_SSL`      | `false`                               | Skip SSL verification                                |
 | `--no-progress`              | `GODYL_NO_PROGRESS`        | `false`                               | Disable progress bar                                 |
 | `--no-verify-checksum`, `-C` | `GODYL_NO_VERIFY_CHECKSUM` | `false`                               | Skip checksum verification                           |
-| `--show`, `-s`               | `GODYL_SHOW`               | `false`                               | Show the parsed configuration and exit               |
-| `--config-file`, `-c`        | `GODYL_CONFIG_FILE`        | `${XDG_CONFIG_HOME}/godyl/godyl.yml`  | Path to config file                                  |
+| `--show`, `-s`               | `GODYL_SHOW`               | `0`                                   | Show the parsed configuration and exit               |
+| `--config-file`, `-c`        | `GODYL_CONFIG_FILE`        | `godyl.yml`                           | Path to config file                                  |
 | `--env-file`, `-e`           | `GODYL_ENV_FILE`           | `[".env"]`                            | Paths to .env files                                  |
 | `--defaults`, `-d`           | `GODYL_DEFAULTS`           | `defaults.yml`                        | Path to defaults file                                |
 | `--inherit`                  | `GODYL_INHERIT`            | `default`                             | Default to inherit from when unset in the tool spec  |
@@ -55,9 +55,9 @@ The following global flags are available:
 | `--url-token`                | `GODYL_URL_TOKEN`          | See [authentication](#authentication) | URL token for authentication                         |
 | `--error-file`               | `GODYL_ERROR_FILE`         | ``                                    | Path to error log file. Empty means stdout.          |
 | `--keyring`                  | `GODYL_KEYRING`            | `false`                               | Enable usage of system keyring                       |
-| `--verbose`, `-v`            | `GODYL_VERBOSE`            | `false`                               | Increase verbosity (can be used multiple times)      |
-| `--version`                  | `GODYL_VERSION`            | `false`                               | Show the current version and exit                    |
-| `--help`, `-h`               | `GODYL_HELP`               | `false`                               | Show help for the command and exit                   |
+| `--verbose`, `-v`            | `GODYL_VERBOSE`            | `0`                                   | Increase verbosity (can be used multiple times)      |
+| `--version`                  |                            |                                       | Show the current version and exit                    |
+| `--help`, `-h`               |                            |                                       | Show help for the command and exit                   |
 
 `--show` will display the configuration of the current command and all it's parents, and exit. Also available for all subcommands.
 Can be repeated to unmask tokens and other sensitive data.

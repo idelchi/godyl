@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/idelchi/godyl/internal/release"
+
 	gitlab "gitlab.com/gitlab-org/api/client-go"
 )
 
@@ -26,7 +28,7 @@ func NewRepository(namespace, repo string, client *gitlab.Client) *Repository {
 }
 
 // GetRelease retrieves a specific release for the repository based on the provided tag.
-func (g *Repository) GetRelease(_ context.Context, tag string) (*Release, error) {
+func (g *Repository) GetRelease(_ context.Context, tag string) (*release.Release, error) {
 	path := fmt.Sprintf("%s/%s", g.Namespace, g.Repo)
 
 	gitlabRelease, _, err := g.client.Releases.GetRelease(path, tag)
@@ -34,8 +36,8 @@ func (g *Repository) GetRelease(_ context.Context, tag string) (*Release, error)
 		return nil, fmt.Errorf("failed to get assets for release tag %q: %w", tag, err)
 	}
 
-	release := &Release{}
-	if err := release.FromRepositoryRelease(gitlabRelease); err != nil {
+	release, err := FromRepositoryRelease(gitlabRelease)
+	if err != nil {
 		return nil, fmt.Errorf("failed to parse release: %w", err)
 	}
 
@@ -43,7 +45,7 @@ func (g *Repository) GetRelease(_ context.Context, tag string) (*Release, error)
 }
 
 // LatestRelease retrieves the latest release for the repository.
-func (g *Repository) LatestRelease(ctx context.Context) (*Release, error) {
+func (g *Repository) LatestRelease(ctx context.Context) (*release.Release, error) {
 	const PerPage = 1000
 
 	releases, err := g.getReleasesWithOptions(ctx, PerPage)
@@ -54,8 +56,8 @@ func (g *Repository) LatestRelease(ctx context.Context) (*Release, error) {
 	// Get the first release (should be the latest)
 	latestRelease := releases[0]
 
-	release := &Release{}
-	if err := release.FromRepositoryRelease(latestRelease); err != nil {
+	release, err := FromRepositoryRelease(latestRelease)
+	if err != nil {
 		return nil, fmt.Errorf("failed to parse release: %w", err)
 	}
 
@@ -65,7 +67,7 @@ func (g *Repository) LatestRelease(ctx context.Context) (*Release, error) {
 // GetLatestIncludingPreRelease retrieves the most recently published release for the repository,
 // including pre-releases. This returns the newest release by published date, regardless of
 // whether it's a regular release or pre-release.
-func (g *Repository) GetLatestIncludingPreRelease(ctx context.Context, perPage int) (*Release, error) {
+func (g *Repository) GetLatestIncludingPreRelease(ctx context.Context, perPage int) (*release.Release, error) {
 	releases, err := g.getReleasesWithOptions(ctx, perPage)
 	if err != nil {
 		return nil, err
@@ -81,8 +83,8 @@ func (g *Repository) GetLatestIncludingPreRelease(ctx context.Context, perPage i
 	}
 
 	// Convert to our Release type
-	release := &Release{}
-	if err := release.FromRepositoryRelease(latestRelease); err != nil {
+	release, err := FromRepositoryRelease(latestRelease)
+	if err != nil {
 		return nil, fmt.Errorf("failed to parse release: %w", err)
 	}
 

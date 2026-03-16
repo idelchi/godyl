@@ -1,43 +1,32 @@
 package github
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/google/go-github/v74/github"
 
+	"github.com/idelchi/godyl/internal/release"
 	"github.com/idelchi/godyl/pkg/generic"
 )
 
-// ErrRelease is returned when a release issue is encountered.
-var ErrRelease = errors.New("release")
-
-// Release represents a GitHub release, containing the release name, tag, and associated assets.
-type Release struct {
-	Name   string `json:"name"`
-	Tag    string `json:"tag_name"`
-	Body   string `json:"body"`
-	Assets Assets `json:"assets"`
-}
-
-// FromRepositoryRelease converts a GitHub repository release to a Release object.
-func (r *Release) FromRepositoryRelease(release *github.RepositoryRelease) error {
-	if release == nil {
-		return fmt.Errorf("%w: repository release is nil", ErrRelease)
+// FromRepositoryRelease converts a GitHub repository release to a shared Release object.
+func FromRepositoryRelease(repoRelease *github.RepositoryRelease) (*release.Release, error) {
+	if repoRelease == nil {
+		return nil, fmt.Errorf("%w: repository release is nil", release.ErrRelease)
 	}
 
-	if release.TagName == nil {
-		return fmt.Errorf("%w: release tag name is nil", ErrRelease)
+	if repoRelease.TagName == nil {
+		return nil, fmt.Errorf("%w: release tag name is nil", release.ErrRelease)
 	}
 
-	assets := make(Assets, 0, len(release.Assets))
+	assets := make(release.Assets, 0, len(repoRelease.Assets))
 
-	for _, asset := range release.Assets {
+	for _, asset := range repoRelease.Assets {
 		if asset.Name == nil || asset.BrowserDownloadURL == nil || asset.ContentType == nil {
 			continue // Skip assets with missing required fields
 		}
 
-		assets = append(assets, Asset{
+		assets = append(assets, release.Asset{
 			Name:   generic.SafeDereference(asset.Name),
 			URL:    generic.SafeDereference(asset.BrowserDownloadURL),
 			Type:   generic.SafeDereference(asset.ContentType),
@@ -45,12 +34,10 @@ func (r *Release) FromRepositoryRelease(release *github.RepositoryRelease) error
 		})
 	}
 
-	*r = Release{
-		Name:   generic.SafeDereference(release.Name),
-		Tag:    generic.SafeDereference(release.TagName),
+	return &release.Release{
+		Name:   generic.SafeDereference(repoRelease.Name),
+		Tag:    generic.SafeDereference(repoRelease.TagName),
 		Assets: assets,
-		Body:   generic.SafeDereference(release.Body),
-	}
-
-	return nil
+		Body:   generic.SafeDereference(repoRelease.Body),
+	}, nil
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/idelchi/godyl/internal/debug"
 	"github.com/idelchi/godyl/internal/github"
 	"github.com/idelchi/godyl/internal/match"
+	"github.com/idelchi/godyl/internal/release"
 	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/pkg/path/file"
 )
@@ -18,7 +19,7 @@ import (
 // GitHub represents a GitHub repository configuration and state.
 type GitHub struct {
 	Data                install.Metadata `mapstructure:"-" yaml:"-"`
-	latestStoredRelease *github.Release
+	latestStoredRelease *release.Release
 	Repo                string `mapstructure:"repo"  yaml:"repo"`
 	Owner               string `mapstructure:"owner" yaml:"owner"`
 	Token               string `mapstructure:"token" mask:"fixed" yaml:"token"`
@@ -91,7 +92,7 @@ func (g *GitHub) LatestVersion(ctx context.Context, version string) (string, err
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
-	var release *github.Release
+	var release *release.Release
 
 	var err error
 
@@ -141,7 +142,7 @@ func (g *GitHub) MatchAssetsToRequirements(
 	client := github.NewClient(g.Token)
 	repository := github.NewRepository(g.Owner, g.Repo, client)
 
-	var release *github.Release
+	var release *release.Release
 
 	if g.latestStoredRelease == nil { //nolint:nestif // Multiple checks are necessary
 		var err error
@@ -174,16 +175,9 @@ func (g *GitHub) MatchAssetsToRequirements(
 	}
 
 	if matches.Status() != nil {
-		return "", matches.WithoutZero().Status()
-	}
-
-	if len(matches) == 0 {
-		return "", fmt.Errorf("no assets found for requirements: %v", requirements)
-	}
-
-	err := matches.Status()
-	if err != nil {
-		err = fmt.Errorf("status: %w", err)
+		if err := matches.WithoutZero().Status(); err != nil {
+			return "", err
+		}
 	}
 
 	asset := assets.FilterByName(matches[0].Asset.Name)[0]
@@ -203,7 +197,7 @@ func (g *GitHub) MatchAssetsToRequirements(
 		}
 	}
 
-	return asset.URL, err
+	return asset.URL, nil
 }
 
 // PopulateOwnerAndRepo sets the Owner and Repo fields from a name string.

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/cli/core"
+	"github.com/idelchi/godyl/internal/presentation"
 	"github.com/idelchi/godyl/internal/processor"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/checksum"
@@ -78,9 +79,16 @@ func run(input core.Input) error {
 	proc := processor.New(tools, *cfg, runner.Logger())
 
 	proc.NoDownload = cfg.Download.Dry
-	if err := proc.Process(tags.IncludeTags{}); err != nil {
+
+	summary, err := proc.Process(tags.IncludeTags{})
+	if err != nil {
 		return fmt.Errorf("processing tools: %w", err)
 	}
 
-	return nil
+	presentation.ShowSummary(summary, presentation.ShowConfig{
+		Verbose:   cfg.Verbose,
+		ErrorFile: cfg.ErrorFile,
+	}, runner.Logger())
+
+	return summary.Error()
 }

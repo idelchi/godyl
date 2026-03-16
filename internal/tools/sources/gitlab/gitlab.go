@@ -156,8 +156,10 @@ func (g *GitLab) MatchAssetsToRequirements(
 
 	matches := assets.Match(requirements)
 
-	if err := matches.WithoutZero().Status(); err != nil {
-		return "", err
+	if matches.Status() != nil {
+		if err := matches.WithoutZero().Status(); err != nil {
+			return "", err
+		}
 	}
 
 	asset := assets.FilterByName(matches[0].Asset.Name)[0]

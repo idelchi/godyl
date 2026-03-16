@@ -97,7 +97,7 @@ func (l *Library) ParseFrom(name string, comparisons ...func(string, string) boo
 		}
 	}
 
-	return fmt.Errorf("unable to parse library from name: %q", name)
+	return fmt.Errorf("%w: library from %q", ErrParse, name)
 }
 
 // Parse extracts operating system information from a string identifier.

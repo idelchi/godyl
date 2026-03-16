@@ -39,7 +39,7 @@ func getCache(file file.File, names ...string) (content any, err error) {
 
 	content, err = cache.GetByName(names...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to display cache: %w", err)
+		return nil, fmt.Errorf("getting cache entries: %w", err)
 	}
 
 	return content, nil

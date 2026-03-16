@@ -98,7 +98,7 @@ func (g *GitLab) Get(attribute string) string {
 func (g *GitLab) LatestVersion(ctx context.Context) (string, error) {
 	client, err := gitlab.NewClient(g.Token, g.Server)
 	if err != nil {
-		return "", fmt.Errorf("failed to create GitLab client: %w", err)
+		return "", fmt.Errorf("creating GitLab client: %w", err)
 	}
 
 	repository := gitlab.NewRepository(g.Namespace, g.Project, client)
@@ -114,7 +114,7 @@ func (g *GitLab) LatestVersion(ctx context.Context) (string, error) {
 	}
 
 	if err != nil {
-		return "", fmt.Errorf("failed to get latest release: %w", err)
+		return "", fmt.Errorf("retrieving latest release: %w", err)
 	}
 
 	// Store the latest release for future use
@@ -134,7 +134,7 @@ func (g *GitLab) MatchAssetsToRequirements(
 ) (string, error) {
 	client, err := gitlab.NewClient(g.Token, g.Server)
 	if err != nil {
-		return "", fmt.Errorf("failed to create GitLab client: %w", err)
+		return "", fmt.Errorf("creating GitLab client: %w", err)
 	}
 
 	repository := gitlab.NewRepository(g.Namespace, g.Project, client)
@@ -146,7 +146,7 @@ func (g *GitLab) MatchAssetsToRequirements(
 
 		release, releaseErr = repository.GetRelease(ctx, version)
 		if releaseErr != nil {
-			return "", fmt.Errorf("failed to get release: %w", releaseErr)
+			return "", fmt.Errorf("getting release: %w", releaseErr)
 		}
 	} else {
 		release = g.latestStoredRelease

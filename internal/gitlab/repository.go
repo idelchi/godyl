@@ -33,12 +33,12 @@ func (g *Repository) GetRelease(_ context.Context, tag string) (*release.Release
 
 	gitlabRelease, _, err := g.client.Releases.GetRelease(path, tag)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get assets for release tag %q: %w", tag, err)
+		return nil, fmt.Errorf("getting release %q: %w", tag, err)
 	}
 
 	release, err := FromRepositoryRelease(gitlabRelease)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse release: %w", err)
+		return nil, fmt.Errorf("parsing release: %w", err)
 	}
 
 	return release, nil
@@ -58,7 +58,7 @@ func (g *Repository) LatestRelease(ctx context.Context) (*release.Release, error
 
 	release, err := FromRepositoryRelease(latestRelease)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse release: %w", err)
+		return nil, fmt.Errorf("parsing release: %w", err)
 	}
 
 	return release, nil
@@ -85,7 +85,7 @@ func (g *Repository) GetLatestIncludingPreRelease(ctx context.Context, perPage i
 	// Convert to our Release type
 	release, err := FromRepositoryRelease(latestRelease)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse release: %w", err)
+		return nil, fmt.Errorf("parsing release: %w", err)
 	}
 
 	return release, nil
@@ -100,7 +100,7 @@ func (g *Repository) getReleasesWithOptions(_ context.Context, perPage int) ([]*
 		&gitlab.ListReleasesOptions{ListOptions: gitlab.ListOptions{PerPage: int64(perPage)}},
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list releases: %w", err)
+		return nil, fmt.Errorf("listing releases: %w", err)
 	}
 
 	if len(releases) == 0 {

@@ -15,8 +15,8 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// Trackable defines the interface for progress tracking implementations.
-type Trackable interface {
+// ProgressTracker defines the interface for progress tracking implementations.
+type ProgressTracker interface {
 	Start()
 	Wait()
 	TrackProgress(src string, currentSize, totalSize int64, stream io.ReadCloser) io.ReadCloser

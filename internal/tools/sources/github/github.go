@@ -174,17 +174,8 @@ func (g *GitHub) MatchAssetsToRequirements(
 		return "", matches.Errors()[0]
 	}
 
-	if matches.Status() != nil {
-		return "", matches.WithoutZero().Status()
-	}
-
-	if len(matches) == 0 {
-		return "", fmt.Errorf("no assets found for requirements: %v", requirements)
-	}
-
-	err := matches.Status()
-	if err != nil {
-		err = fmt.Errorf("status: %w", err)
+	if err := matches.WithoutZero().Status(); err != nil {
+		return "", err
 	}
 
 	asset := assets.FilterByName(matches[0].Asset.Name)[0]
@@ -204,7 +195,7 @@ func (g *GitHub) MatchAssetsToRequirements(
 		}
 	}
 
-	return asset.URL, err
+	return asset.URL, nil
 }
 
 // PopulateOwnerAndRepo sets the Owner and Repo fields from a name string.

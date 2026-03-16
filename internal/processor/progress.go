@@ -9,12 +9,12 @@ import (
 
 // progressMgr wraps progress tracking functionality.
 type progressMgr struct {
-	trackable progress.Trackable
+	trackable progress.ProgressTracker
 }
 
 // newProgressMgr creates a new progressMgr.
 func newProgressMgr(noProgress bool) *progressMgr {
-	var trackable progress.Trackable
+	var trackable progress.ProgressTracker
 
 	if noProgress {
 		trackable = progress.NewNoop()

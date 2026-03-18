@@ -99,11 +99,10 @@ func TestBuild(t *testing.T) {
 
 			g, err := dag.Build(tc.nodes, parentMap(tc.parents))
 
-			if tc.wantError {
-				if err == nil {
-					t.Fatal("Build() error = nil, want error")
-				}
-
+			switch {
+			case tc.wantError && err == nil:
+				t.Fatal("Build() error = nil, want error")
+			case tc.wantError:
 				if tc.wantCycleErr {
 					var cycleErr *dag.CycleError[string]
 					if !errors.As(err, &cycleErr) {
@@ -116,9 +115,7 @@ func TestBuild(t *testing.T) {
 				}
 
 				return
-			}
-
-			if err != nil {
+			case err != nil:
 				t.Fatalf("Build() unexpected error: %v", err)
 			}
 

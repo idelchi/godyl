@@ -29,7 +29,7 @@ func Validate(validations ...any) error {
 	var errList strings.Builder
 
 	for _, err := range allErrors {
-		errList.WriteString(fmt.Sprintf("  • %s\n", err))
+		fmt.Fprintf(&errList, "  • %s\n", err)
 	}
 
 	// Add help text

@@ -13,7 +13,7 @@ import (
 
 // IsInteractive reports whether the program is attached to a real terminal.
 func IsInteractive() bool {
-	return term.IsTerminal(int(os.Stdin.Fd()))
+	return term.IsTerminal(int(os.Stdin.Fd())) //nolint:gosec // fd values are small integers, overflow is not possible
 }
 
 // HasInput reports true when stdin is **not** a terminal.

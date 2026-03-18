@@ -30,7 +30,7 @@ type assetJSON struct {
 	ContentType        string `json:"content_type"`
 }
 
-func newTestServer(t *testing.T, owner, repo string, mux *http.ServeMux) *internalgithub.Repository {
+func newTestServer(t *testing.T, mux *http.ServeMux) *internalgithub.Repository {
 	t.Helper()
 
 	server := httptest.NewServer(mux)
@@ -38,7 +38,7 @@ func newTestServer(t *testing.T, owner, repo string, mux *http.ServeMux) *intern
 
 	client := internalgithub.NewClient("", server.URL+"/")
 
-	return internalgithub.NewRepository(owner, repo, client)
+	return internalgithub.NewRepository("myowner", "myrepo", client)
 }
 
 func TestLatestRelease(t *testing.T) {
@@ -70,7 +70,7 @@ func TestLatestRelease(t *testing.T) {
 		}
 	})
 
-	repo := newTestServer(t, "myowner", "myrepo", mux)
+	repo := newTestServer(t, mux)
 
 	got, err := repo.LatestRelease(t.Context())
 	if err != nil {
@@ -129,7 +129,7 @@ func TestGetRelease(t *testing.T) {
 		}
 	})
 
-	repo := newTestServer(t, "myowner", "myrepo", mux)
+	repo := newTestServer(t, mux)
 
 	got, err := repo.GetRelease(t.Context(), "v1.5.0")
 	if err != nil {
@@ -180,7 +180,7 @@ func TestLatestRelease_NotFound(t *testing.T) {
 		http.Error(w, `{"message": "Not Found"}`, http.StatusNotFound)
 	})
 
-	repo := newTestServer(t, "myowner", "myrepo", mux)
+	repo := newTestServer(t, mux)
 
 	got, err := repo.LatestRelease(t.Context())
 	if err == nil {
@@ -202,7 +202,7 @@ func TestLatestRelease_ServerError(t *testing.T) {
 		http.Error(w, `{"message": "Service Unavailable"}`, http.StatusServiceUnavailable)
 	})
 
-	repo := newTestServer(t, "myowner", "myrepo", mux)
+	repo := newTestServer(t, mux)
 
 	got, err := repo.LatestRelease(t.Context())
 	if err == nil {
@@ -224,7 +224,7 @@ func TestGetRelease_NotFound(t *testing.T) {
 		http.Error(w, `{"message": "Not Found"}`, http.StatusNotFound)
 	})
 
-	repo := newTestServer(t, "myowner", "myrepo", mux)
+	repo := newTestServer(t, mux)
 
 	got, err := repo.GetRelease(t.Context(), "v9.9.9")
 	if err == nil {
@@ -249,7 +249,7 @@ func TestLatestIncludingPreRelease_EmptyReleases(t *testing.T) {
 		_, _ = w.Write([]byte("[]"))
 	})
 
-	repo := newTestServer(t, "myowner", "myrepo", mux)
+	repo := newTestServer(t, mux)
 
 	got, err := repo.LatestIncludingPreRelease(t.Context(), 100)
 	if err == nil {
@@ -312,7 +312,7 @@ func TestLatestIncludingPreRelease(t *testing.T) {
 		}
 	})
 
-	repo := newTestServer(t, "myowner", "myrepo", mux)
+	repo := newTestServer(t, mux)
 
 	got, err := repo.LatestIncludingPreRelease(t.Context(), 100)
 	if err != nil {
@@ -437,7 +437,7 @@ func TestGetReleasesByWildcard(t *testing.T) {
 		}
 	})
 
-	repo := newTestServer(t, "myowner", "myrepo", mux)
+	repo := newTestServer(t, mux)
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -532,7 +532,7 @@ func TestLatestIncludingPreRelease_MultiPage(t *testing.T) {
 		}
 	})
 
-	repo := newTestServer(t, "myowner", "myrepo", mux)
+	repo := newTestServer(t, mux)
 
 	got, err := repo.LatestIncludingPreRelease(t.Context(), 1)
 	if err != nil {
@@ -581,7 +581,7 @@ func TestLatestRelease_EmptyTagName(t *testing.T) {
 		}
 	})
 
-	repo := newTestServer(t, "myowner", "myrepo", mux)
+	repo := newTestServer(t, mux)
 
 	got, err := repo.LatestRelease(t.Context())
 	if err != nil {

@@ -328,22 +328,22 @@ func TestFilesExisting(t *testing.T) {
 
 	dir := t.TempDir()
 
-	real := file.New(filepath.Join(dir, "real.txt"))
-	if err := real.Write([]byte("x")); err != nil {
+	existing := file.New(filepath.Join(dir, "real.txt"))
+	if err := existing.Write([]byte("x")); err != nil {
 		t.Fatalf("Write() unexpected error: %v", err)
 	}
 
 	fake := file.New(filepath.Join(dir, "does-not-exist.txt"))
 
-	fs := files.Files{real, fake}
+	fs := files.Files{existing, fake}
 	fs.Existing()
 
 	if len(fs) != 1 {
 		t.Fatalf("Existing() left %d files, want 1", len(fs))
 	}
 
-	if fs[0].Path() != real.Path() {
-		t.Errorf("Existing()[0].Path() = %q, want %q", fs[0].Path(), real.Path())
+	if fs[0].Path() != existing.Path() {
+		t.Errorf("Existing()[0].Path() = %q, want %q", fs[0].Path(), existing.Path())
 	}
 }
 
@@ -352,22 +352,22 @@ func TestFilesExists(t *testing.T) {
 
 	dir := t.TempDir()
 
-	real := file.New(filepath.Join(dir, "present.txt"))
-	if err := real.Write([]byte("data")); err != nil {
+	present := file.New(filepath.Join(dir, "present.txt"))
+	if err := present.Write([]byte("data")); err != nil {
 		t.Fatalf("Write() unexpected error: %v", err)
 	}
 
 	fake := file.New(filepath.Join(dir, "absent.txt"))
 
-	fs := files.Files{fake, real}
+	fs := files.Files{fake, present}
 
 	got, ok := fs.Exists()
 	if !ok {
 		t.Fatal("Exists() = _, false, want _, true")
 	}
 
-	if got.Path() != real.Path() {
-		t.Errorf("Exists() returned %q, want %q", got.Path(), real.Path())
+	if got.Path() != present.Path() {
+		t.Errorf("Exists() returned %q, want %q", got.Path(), present.Path())
 	}
 }
 

@@ -130,6 +130,8 @@ linters:
       - linters:
           - funlen
           - wrapcheck
+          - dupl
+          - gocognit
         path: _test.go
 
       # Exceptions for `main.go` and `config.go`

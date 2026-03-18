@@ -28,7 +28,7 @@ func (as Assets) FilterByName(name string) (assets Assets) {
 // Match checks if the assets match the given requirements.
 // It processes each asset to extract platform and extension information.
 func (as Assets) Match(requirements match.Requirements) (matches match.Results) {
-	var assets match.Assets
+	assets := make(match.Assets, 0, len(as))
 
 	for _, a := range as {
 		asset := match.Asset{Name: a.Name}
@@ -49,7 +49,7 @@ func (as Assets) Match(requirements match.Requirements) (matches match.Results) 
 // Checksums returns all assets that appear to be checksum files.
 // When pattern is non-empty, only checksum-like assets matching the pattern are returned.
 func (as Assets) Checksums(pattern string) checksum.Checksums {
-	var names checksum.Checksums
+	names := make(checksum.Checksums, 0, len(as))
 
 	for _, asset := range as {
 		names = append(names, asset.Name)

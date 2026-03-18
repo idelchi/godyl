@@ -435,7 +435,7 @@ func TestChecksumResolvePath(t *testing.T) {
 		// Use a 64-char hex string so ParseChecksumFile recognises the GNU format.
 		hash := strings.Repeat("ab", 32) // 64 hex chars
 
-		if err := os.WriteFile(checksumFile, []byte(hash+"  tool.tar.gz\n"), 0o644); err != nil {
+		if err := os.WriteFile(checksumFile, []byte(hash+"  tool.tar.gz\n"), 0o600); err != nil {
 			t.Fatalf("WriteFile() error: %v", err)
 		}
 
@@ -456,7 +456,7 @@ func TestChecksumResolvePath(t *testing.T) {
 		dir := t.TempDir()
 		checksumFile := filepath.Join(dir, "sha.txt")
 
-		if err := os.WriteFile(checksumFile, []byte("deadbeef\n"), 0o644); err != nil {
+		if err := os.WriteFile(checksumFile, []byte("deadbeef\n"), 0o600); err != nil {
 			t.Fatalf("WriteFile() error: %v", err)
 		}
 
@@ -477,7 +477,7 @@ func TestChecksumResolvePath(t *testing.T) {
 		dir := t.TempDir()
 		checksumFile := filepath.Join(dir, "checksums.txt")
 
-		if err := os.WriteFile(checksumFile, []byte("abc123  other.tar.gz\n"), 0o644); err != nil {
+		if err := os.WriteFile(checksumFile, []byte("abc123  other.tar.gz\n"), 0o600); err != nil {
 			t.Fatalf("WriteFile() error: %v", err)
 		}
 

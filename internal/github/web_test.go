@@ -105,8 +105,9 @@ func TestParseGitHubReleaseAssets(t *testing.T) {
 			wantAssets: nil,
 		},
 		{
-			name:       "no Box-row elements returns no assets",
-			html:       `<ul><li class="some-other-class"><a href="/owner/repo/releases/download/v1.0.0/tool.tar.gz">tool.tar.gz</a></li></ul>`,
+			name: "no Box-row elements returns no assets",
+			html: `<ul><li class="some-other-class">` +
+				`<a href="/owner/repo/releases/download/v1.0.0/tool.tar.gz">tool.tar.gz</a></li></ul>`,
 			wantAssets: nil,
 		},
 		{
@@ -297,11 +298,13 @@ func TestGetReleaseFromWeb(t *testing.T) {
 	}
 }
 
+const latestReleasePath = "/owner/repo/releases/latest"
+
 func TestLatestVersionFromWebHTML(t *testing.T) {
 	t.Parallel()
 
 	repo := newWebTestRepo(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/owner/repo/releases/latest" {
+		if r.URL.Path != latestReleasePath {
 			http.NotFound(w, r)
 
 			return
@@ -324,7 +327,7 @@ func TestLatestVersionFromWebHTML_NonRedirectStatus(t *testing.T) {
 	t.Parallel()
 
 	repo := newWebTestRepo(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/owner/repo/releases/latest" {
+		if r.URL.Path != latestReleasePath {
 			http.NotFound(w, r)
 
 			return
@@ -350,7 +353,7 @@ func TestLatestVersionFromWebJSON(t *testing.T) {
 		t.Parallel()
 
 		repo := newWebTestRepo(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path != "/owner/repo/releases/latest" {
+			if r.URL.Path != latestReleasePath {
 				http.NotFound(w, r)
 
 				return
@@ -376,7 +379,7 @@ func TestLatestVersionFromWebJSON(t *testing.T) {
 		t.Parallel()
 
 		repo := newWebTestRepo(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path != "/owner/repo/releases/latest" {
+			if r.URL.Path != latestReleasePath {
 				http.NotFound(w, r)
 
 				return
@@ -420,7 +423,7 @@ func TestLatestVersionFromWebHTML_EmptyLocationHeader(t *testing.T) {
 	t.Parallel()
 
 	repo := newWebTestRepo(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/owner/repo/releases/latest" {
+		if r.URL.Path != latestReleasePath {
 			http.NotFound(w, r)
 
 			return

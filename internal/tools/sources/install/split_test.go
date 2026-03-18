@@ -133,11 +133,11 @@ func TestSplitNameUnicode(t *testing.T) {
 		{
 			// CJK characters are valid in component names.
 			name:        "CJK characters",
-			input:       "所有者/仓库",
-			splitFirst:  "所有者",
-			splitSecond: "仓库",
-			cutFirst:    "所有者",
-			cutSecond:   "仓库",
+			input:       "\u6240\u6709\u8005/\u4ed3\u5e93",
+			splitFirst:  "\u6240\u6709\u8005",
+			splitSecond: "\u4ed3\u5e93",
+			cutFirst:    "\u6240\u6709\u8005",
+			cutSecond:   "\u4ed3\u5e93",
 		},
 		{
 			// Three slash-separated parts: SplitName errors, CutName returns remainder.
@@ -156,15 +156,12 @@ func TestSplitNameUnicode(t *testing.T) {
 			// --- SplitName ---
 			sFirst, sSecond, sErr := install.SplitName(tc.input)
 
-			if tc.splitWantErr {
-				if sErr == nil {
-					t.Errorf("SplitName(%q) expected error, got nil", tc.input)
-				}
-			} else {
-				if sErr != nil {
-					t.Fatalf("SplitName(%q) unexpected error: %v", tc.input, sErr)
-				}
-
+			switch {
+			case tc.splitWantErr && sErr == nil:
+				t.Errorf("SplitName(%q) expected error, got nil", tc.input)
+			case !tc.splitWantErr && sErr != nil:
+				t.Fatalf("SplitName(%q) unexpected error: %v", tc.input, sErr)
+			case !tc.splitWantErr:
 				if sFirst != tc.splitFirst {
 					t.Errorf("SplitName(%q) first = %q, want %q", tc.input, sFirst, tc.splitFirst)
 				}
@@ -177,15 +174,12 @@ func TestSplitNameUnicode(t *testing.T) {
 			// --- CutName ---
 			cFirst, cSecond, cErr := install.CutName(tc.input)
 
-			if tc.cutWantErr {
-				if cErr == nil {
-					t.Errorf("CutName(%q) expected error, got nil", tc.input)
-				}
-			} else {
-				if cErr != nil {
-					t.Fatalf("CutName(%q) unexpected error: %v", tc.input, cErr)
-				}
-
+			switch {
+			case tc.cutWantErr && cErr == nil:
+				t.Errorf("CutName(%q) expected error, got nil", tc.input)
+			case !tc.cutWantErr && cErr != nil:
+				t.Fatalf("CutName(%q) unexpected error: %v", tc.input, cErr)
+			case !tc.cutWantErr:
 				if cFirst != tc.cutFirst {
 					t.Errorf("CutName(%q) first = %q, want %q", tc.input, cFirst, tc.cutFirst)
 				}

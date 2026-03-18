@@ -103,6 +103,7 @@ func createBatchFile(templateContent []byte, batchFilePath string, data cleanupD
 // ExecuteScript runs the cleanup batch script in a minimized window.
 // Uses cmd.exe to start the script with minimal UI visibility.
 func executeScript(scriptPath string) error {
+	//nolint:gosec // scriptPath is constructed internally, not from user input
 	cmd := exec.CommandContext(context.Background(), "cmd", "/C", "start", "/MIN", scriptPath)
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("starting cleanup script: %w", err)

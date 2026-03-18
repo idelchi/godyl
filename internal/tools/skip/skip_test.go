@@ -111,7 +111,7 @@ func TestSkipHas(t *testing.T) {
 		},
 		{
 			name: "Skip with one condition has conditions",
-			build: func(t *testing.T) skip.Skip {
+			build: func(t *testing.T) skip.Skip { //nolint:thelper // not a test helper, it's a builder
 				c := makeCondition(t, "true")
 
 				c.Reason = "always"
@@ -122,7 +122,7 @@ func TestSkipHas(t *testing.T) {
 		},
 		{
 			name: "Skip with multiple conditions has conditions",
-			build: func(t *testing.T) skip.Skip {
+			build: func(t *testing.T) skip.Skip { //nolint:thelper // not a test helper, it's a builder
 				c1 := makeCondition(t, "true")
 				c2 := makeCondition(t, "false")
 

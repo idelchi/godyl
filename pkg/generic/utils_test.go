@@ -200,9 +200,13 @@ func TestDeepCopy(t *testing.T) {
 		t.Fatalf("DeepCopy(): unexpected error: %v", err)
 	}
 
-	// Mutate the copy.
+	// Mutate the copy and verify the copy took effect.
 	copied.Name = "mutated"
 	copied.Nested.Values[0] = 99
+
+	if copied.Name != "mutated" {
+		t.Errorf("DeepCopy copy.Name: got %q, want \"mutated\"", copied.Name)
+	}
 
 	// Original must be unchanged.
 	if original.Name != "original" {
@@ -426,7 +430,7 @@ func TestExpandHomeHermetic(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range tests { //nolint:paralleltest // t.Setenv is incompatible with t.Parallel
 		t.Run(tc.name, func(t *testing.T) {
 			got := generic.ExpandHome(tc.input)
 			if got != tc.want {

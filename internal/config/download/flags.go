@@ -7,11 +7,11 @@ func Flags(cmd *cobra.Command) {
 	cmd.Flags().SortFlags = false
 
 	cmd.Flags().StringP("output", "o", "./bin", "output path for the downloaded tools")
-	cmd.Flags().String("source", "github", "source from which to install the tools (github, gitlab, url)")
-	cmd.Flags().String("os", "", "operating system to install the tools for")
-	cmd.Flags().String("arch", "", "architecture to install the tools for")
-	cmd.Flags().StringSlice("hints", []string{""}, "hints to use for tool resolution")
-	cmd.Flags().String("version", "", "version of the tool to install, leave empty for latest")
-	cmd.Flags().Bool("dry", false, "perform a dry run without downloading tools")
-	cmd.Flags().Bool("pre", false, "Consider pre-releases when downloading tools")
+	cmd.Flags().String("source", "github", "source from which to download the tools (github, gitlab, url)")
+	cmd.Flags().String("os", "", "override the OS to match")
+	cmd.Flags().String("arch", "", "override the architecture to match")
+	cmd.Flags().StringSlice("hints", []string{""}, "hint patterns with weight 1 and type glob")
+	cmd.Flags().String("version", "", "version to download, leave empty for latest")
+	cmd.Flags().Bool("dry", false, "dry run, show what would be done without downloading")
+	cmd.Flags().Bool("pre", false, "consider pre-releases when downloading tools")
 }

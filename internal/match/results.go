@@ -34,17 +34,17 @@ func (m Results) ToString() string {
 	var sb strings.Builder
 
 	for _, res := range m {
-		sb.WriteString(fmt.Sprintf("	- %s\n", res.Asset.Name))
-		sb.WriteString(fmt.Sprintf("		score: %d\n", res.Score))
-		sb.WriteString(fmt.Sprintf("		qualified: %t\n", res.Qualified))
+		fmt.Fprintf(&sb, "	- %s\n", res.Asset.Name)
+		fmt.Fprintf(&sb, "		score: %d\n", res.Score)
+		fmt.Fprintf(&sb, "		qualified: %t\n", res.Qualified)
 		sb.WriteString("		detected as:\n")
-		sb.WriteString(fmt.Sprintf("		  os: %v\n", res.Asset.Platform.OS))
-		sb.WriteString(fmt.Sprintf("		  arch: %v\n", res.Asset.Platform.Architecture))
-		sb.WriteString(fmt.Sprintf("		  library: %s\n", res.Asset.Platform.Library))
-		sb.WriteString(fmt.Sprintf("		  extension: %s\n", res.Asset.Platform.Extension))
+		fmt.Fprintf(&sb, "		  os: %v\n", res.Asset.Platform.OS)
+		fmt.Fprintf(&sb, "		  arch: %v\n", res.Asset.Platform.Architecture)
+		fmt.Fprintf(&sb, "		  library: %s\n", res.Asset.Platform.Library)
+		fmt.Fprintf(&sb, "		  extension: %s\n", res.Asset.Platform.Extension)
 
 		if res.Error != nil {
-			sb.WriteString(fmt.Sprintf("		error: %s\n", res.Error))
+			fmt.Fprintf(&sb, "		error: %s\n", res.Error)
 		}
 	}
 

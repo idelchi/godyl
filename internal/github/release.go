@@ -22,7 +22,7 @@ func FromRepositoryRelease(repoRelease *github.RepositoryRelease) (*release.Rele
 	assets := make(release.Assets, 0, len(repoRelease.Assets))
 
 	for _, asset := range repoRelease.Assets {
-		if asset.Name == nil || asset.BrowserDownloadURL == nil || asset.ContentType == nil {
+		if asset == nil || asset.Name == nil || asset.BrowserDownloadURL == nil || asset.ContentType == nil {
 			continue // Skip assets with missing required fields
 		}
 

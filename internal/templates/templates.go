@@ -24,8 +24,12 @@ func Apply(field string, values any) (string, error) {
 }
 
 // ApplyAndSet processes a template field and updates the field in place.
-func ApplyAndSet(field *string, values any) (err error) {
-	*field, err = Apply(*field, values)
+// If Apply returns an error, the field is left unchanged.
+func ApplyAndSet(field *string, values any) error {
+	result, err := Apply(*field, values)
+	if err == nil {
+		*field = result
+	}
 
 	return err
 }

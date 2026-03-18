@@ -133,7 +133,7 @@ func (c *Cache) GetByName(names ...string) ([]*Item, error) {
 	items := make([]*Item, 0, len(names))
 
 	if len(names) == 0 {
-		return c.Get()
+		return c.items.AsSlice(), nil
 	}
 
 	var errs []error

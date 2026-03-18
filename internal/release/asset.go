@@ -18,7 +18,7 @@ type Asset struct {
 func (a Asset) Match(pattern string) (bool, error) {
 	match, err := filepath.Match(pattern, a.Name)
 	if err != nil {
-		return false, fmt.Errorf("failed to match pattern: %w", err)
+		return false, fmt.Errorf("matching pattern: %w", err)
 	}
 
 	return match, nil

@@ -3,6 +3,7 @@ package github
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -14,18 +15,20 @@ import (
 // Repository represents a GitHub repository with its owner and name.
 // It contains a GitHub client for making API calls.
 type Repository struct {
-	client *github.Client
-	Owner  string
-	Repo   string
+	client    *github.Client
+	transport http.RoundTripper // HTTP transport for web scraping; defaults to http.DefaultTransport.
+	Owner     string
+	Repo      string
 }
 
 // NewRepository creates a new instance of Repository.
 // It requires the repository owner, repository name, and a GitHub client.
 func NewRepository(owner, repo string, client *github.Client) *Repository {
 	return &Repository{
-		Owner:  owner,
-		Repo:   repo,
-		client: client,
+		Owner:     owner,
+		Repo:      repo,
+		client:    client,
+		transport: http.DefaultTransport,
 	}
 }
 

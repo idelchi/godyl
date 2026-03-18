@@ -16,7 +16,7 @@ import (
 )
 
 // ErrParse indicates a failure to parse platform-specific information.
-var ErrParse = errors.New("unable to parse")
+var ErrParse = errors.New("parsing platform information")
 
 // Architecture-related constants.
 const (
@@ -148,7 +148,7 @@ func (a *Architecture) ParseFrom(name string, comparisons ...func(string, string
 		}
 	}
 
-	return fmt.Errorf("%w: architecture from name: %s", ErrParse, name)
+	return fmt.Errorf("%w: architecture from %q", ErrParse, name)
 }
 
 // Parse extracts operating system information from a string identifier.

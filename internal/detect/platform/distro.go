@@ -104,7 +104,7 @@ func (d *Distribution) ParseFrom(name string, comparisons ...func(string, string
 		}
 	}
 
-	return fmt.Errorf("unable to parse distribution from name: %q", name)
+	return fmt.Errorf("%w: distribution from %q", ErrParse, name)
 }
 
 // Parse extracts operating system information from a string identifier.

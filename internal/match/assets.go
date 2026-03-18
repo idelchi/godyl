@@ -34,7 +34,7 @@ func (as Assets) Select(req Requirements) Results {
 // Match evaluates all assets against the provided requirements and returns a list of results.
 // Each result contains the asset's name, its matching score, and whether it qualifies.
 func (as Assets) Match(req Requirements) Results {
-	var results Results
+	results := make(Results, 0, len(as))
 
 	for _, a := range as {
 		score, qualified, err := a.Match(req)

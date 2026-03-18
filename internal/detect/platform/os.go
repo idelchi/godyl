@@ -100,7 +100,7 @@ func (o *OS) ParseFrom(name string, comparisons ...func(string, string) bool) er
 		}
 	}
 
-	return fmt.Errorf("%w: OS from name: %s", ErrParse, name)
+	return fmt.Errorf("%w: OS from %q", ErrParse, name)
 }
 
 // Parse extracts operating system information from a string identifier.

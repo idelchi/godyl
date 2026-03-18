@@ -24,17 +24,24 @@ type WebReleaseInfo struct {
 	Tag string `json:"tag_name"`
 }
 
-// newHTTPClient returns a new HTTP client with reasonable timeouts.
-func newHTTPClient() *http.Client {
+// newHTTPClient returns a new HTTP client using the repository's transport.
+// When followRedirects is false, the client returns the redirect response
+// without following it (useful for reading the Location header).
+func (r *Repository) newHTTPClient(followRedirects bool) *http.Client {
 	const Timeout = 10 * time.Second
 
-	return &http.Client{
-		Timeout: Timeout,
-		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
-			// Don't follow redirects, we just want the Location header
-			return http.ErrUseLastResponse
-		},
+	c := &http.Client{
+		Timeout:   Timeout,
+		Transport: r.transport,
 	}
+
+	if !followRedirects {
+		c.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+			return http.ErrUseLastResponse
+		}
+	}
+
+	return c
 }
 
 // GetReleaseFromWeb retrieves a specific release for the repository based on the provided tag.
@@ -43,19 +50,17 @@ func (r *Repository) GetReleaseFromWeb(ctx context.Context, tag string) (*releas
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
 	// Set Accept header to get JSON-like response
 	req.Header.Set("Accept", "application/json")
 
-	client := newHTTPClient()
-
-	client.CheckRedirect = nil // Allow redirects for this request
+	client := r.newHTTPClient(true) // follow redirects
 
 	res, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %w", err)
+		return nil, fmt.Errorf("sending request: %w", err)
 	}
 	defer res.Body.Close()
 
@@ -66,13 +71,13 @@ func (r *Repository) GetReleaseFromWeb(ctx context.Context, tag string) (*releas
 	// Read the response body
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err)
+		return nil, fmt.Errorf("reading response body: %w", err)
 	}
 
 	// Parse the HTML to extract assets
 	assets, err := parseGitHubReleaseAssets(string(body))
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse assets: %w", err)
+		return nil, fmt.Errorf("parsing assets: %w", err)
 	}
 
 	// Create the Release object
@@ -89,7 +94,7 @@ func (r *Repository) GetReleaseFromWeb(ctx context.Context, tag string) (*releas
 func (r *Repository) LatestVersionFromWebHTML(ctx context.Context) (string, error) {
 	webReleaseInfo, err := r.getLatestReleaseFromWebHTML(ctx)
 	if err != nil {
-		return "", fmt.Errorf("failed to get latest release info from web: %w", err)
+		return "", fmt.Errorf("getting latest release from web: %w", err)
 	}
 
 	// Now that we have the tag, we can use the existing method to get the full release details
@@ -102,7 +107,7 @@ func (r *Repository) LatestVersionFromWebHTML(ctx context.Context) (string, erro
 func (r *Repository) LatestVersionFromWebJSON(ctx context.Context) (string, error) {
 	webReleaseInfo, err := r.getLatestReleaseInfoFromWebJSON(ctx)
 	if err != nil {
-		return "", fmt.Errorf("failed to get latest release info from web: %w", err)
+		return "", fmt.Errorf("getting latest release from web: %w", err)
 	}
 
 	// Now that we have the tag, we can use the existing method to get the full release details
@@ -116,14 +121,14 @@ func (r *Repository) getLatestReleaseFromWebHTML(ctx context.Context) (*WebRelea
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodHead, url, http.NoBody)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	client := newHTTPClient()
+	client := r.newHTTPClient(false) // don't follow redirects
 
 	res, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %w", err)
+		return nil, fmt.Errorf("sending request: %w", err)
 	}
 
 	defer res.Body.Close()
@@ -134,7 +139,7 @@ func (r *Repository) getLatestReleaseFromWebHTML(ctx context.Context) (*WebRelea
 
 	loc := res.Header.Get("Location")
 	if loc == "" {
-		return nil, errors.New("unable to determine release version (empty Location header)")
+		return nil, errors.New("empty Location header")
 	}
 
 	// Extract the tag from the Location header
@@ -144,7 +149,7 @@ func (r *Repository) getLatestReleaseFromWebHTML(ctx context.Context) (*WebRelea
 	const expectedParts = 2
 
 	if len(parts) < expectedParts {
-		return nil, fmt.Errorf("unable to parse release tag from URL: %q", loc)
+		return nil, fmt.Errorf("parsing release tag from URL: %q", loc)
 	}
 
 	tag := parts[len(parts)-1]
@@ -159,18 +164,16 @@ func (r *Repository) getLatestReleaseInfoFromWebJSON(ctx context.Context) (*WebR
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
 	req.Header.Set("Accept", "application/json")
 
-	client := newHTTPClient()
-	// Remove the CheckRedirect since we want to follow the redirect and get JSON
-	client.CheckRedirect = nil
+	client := r.newHTTPClient(true) // follow redirects
 
 	res, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %w", err)
+		return nil, fmt.Errorf("sending request: %w", err)
 	}
 	defer res.Body.Close()
 
@@ -181,7 +184,7 @@ func (r *Repository) getLatestReleaseInfoFromWebJSON(ctx context.Context) (*WebR
 	release := &WebReleaseInfo{}
 
 	if err := json.NewDecoder(res.Body).Decode(&release); err != nil {
-		return nil, fmt.Errorf("failed to decode JSON: %w", err)
+		return nil, fmt.Errorf("decoding JSON: %w", err)
 	}
 
 	if release.Tag == "" {
@@ -197,7 +200,7 @@ func (r *Repository) getLatestReleaseInfoFromWebJSON(ctx context.Context) (*WebR
 func parseGitHubReleaseAssets(html string) (release.Assets, error) {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse HTML: %w", err)
+		return nil, fmt.Errorf("parsing HTML: %w", err)
 	}
 
 	var assets release.Assets

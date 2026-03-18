@@ -120,7 +120,7 @@ func (g *GitHub) LatestVersion(ctx context.Context, version string) (string, err
 	}
 
 	if err != nil {
-		return "", fmt.Errorf("failed to retrieve latest release: %w", err)
+		return "", fmt.Errorf("retrieving latest release: %w", err)
 	}
 
 	// Store the latest release for future use
@@ -156,11 +156,11 @@ func (g *GitHub) MatchAssetsToRequirements(
 		}
 
 		if err != nil {
-			return "", fmt.Errorf("failed to get release: %w", err)
+			return "", fmt.Errorf("getting release: %w", err)
 		}
 
 		if release == nil {
-			return "", errors.New("failed to get release: release is nil")
+			return "", errors.New("getting release: release is nil")
 		}
 	} else {
 		release = g.latestStoredRelease

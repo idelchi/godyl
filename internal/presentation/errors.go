@@ -119,7 +119,7 @@ func (f *ErrorFormatter) formatText(errors []processor.ErrorDetail) string {
 
 		// Error details if present
 		if e.Error != nil {
-			sb.WriteString(fmt.Sprintf("%v", e.Error))
+			fmt.Fprintf(&sb, "%v", e.Error)
 		}
 	}
 

@@ -29,7 +29,7 @@ func UnknownSubcommandAction(cmd *cobra.Command, args []string) error {
 		var errSb28 strings.Builder
 
 		for _, s := range suggestions {
-			errSb28.WriteString(fmt.Sprintf("\t%v\n", s))
+			fmt.Fprintf(&errSb28, "\t%v\n", s)
 		}
 
 		err += errSb28.String()

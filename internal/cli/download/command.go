@@ -12,7 +12,7 @@ import (
 // Command returns the `download` command.
 func Command(global *root.Config, local any, embedded *core.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "download [tool]",
+		Use:     "download [tool]...",
 		Aliases: []string{"dl", "x"},
 		Short:   "Download and extract tools",
 		Args:    cobra.MinimumNArgs(1),

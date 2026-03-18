@@ -406,6 +406,20 @@ source:
     pre: false # Consider pre-releases
 ```
 
+GitLab source:
+
+```yaml
+source:
+  type: gitlab
+  gitlab:
+    namespace: idelchi/go-projects
+    project: envprof
+    token:
+    server: https://gitlab.self-hosted.com
+    no-token: false # Suppress usage of token
+    pre: false # Consider pre-releases
+```
+
 URL source:
 
 ```yaml
@@ -566,5 +580,14 @@ checksum:
 ```
 
 The combination `type: file` and empty `value` will fetch the checksum file from the source (only `github` & `gitlab` supported).
+
+The `value` field also supports algorithm prefixes for inline checksums:
+
+```yaml
+checksum:
+  value: "sha256:abc123..."
+```
+
+When a prefix like `sha256:`, `sha512:`, `sha1:`, or `md5:` is detected, the `type` is set automatically from the prefix.
 
 {% endraw %}

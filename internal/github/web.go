@@ -24,17 +24,24 @@ type WebReleaseInfo struct {
 	Tag string `json:"tag_name"`
 }
 
-// newHTTPClient returns a new HTTP client with reasonable timeouts.
-func newHTTPClient() *http.Client {
+// newHTTPClient returns a new HTTP client using the repository's transport.
+// When followRedirects is false, the client returns the redirect response
+// without following it (useful for reading the Location header).
+func (r *Repository) newHTTPClient(followRedirects bool) *http.Client {
 	const Timeout = 10 * time.Second
 
-	return &http.Client{
-		Timeout: Timeout,
-		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
-			// Don't follow redirects, we just want the Location header
-			return http.ErrUseLastResponse
-		},
+	c := &http.Client{
+		Timeout:   Timeout,
+		Transport: r.transport,
 	}
+
+	if !followRedirects {
+		c.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+			return http.ErrUseLastResponse
+		}
+	}
+
+	return c
 }
 
 // GetReleaseFromWeb retrieves a specific release for the repository based on the provided tag.
@@ -49,9 +56,7 @@ func (r *Repository) GetReleaseFromWeb(ctx context.Context, tag string) (*releas
 	// Set Accept header to get JSON-like response
 	req.Header.Set("Accept", "application/json")
 
-	client := newHTTPClient()
-
-	client.CheckRedirect = nil // Allow redirects for this request
+	client := r.newHTTPClient(true) // follow redirects
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -119,7 +124,7 @@ func (r *Repository) getLatestReleaseFromWebHTML(ctx context.Context) (*WebRelea
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	client := newHTTPClient()
+	client := r.newHTTPClient(false) // don't follow redirects
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -164,9 +169,7 @@ func (r *Repository) getLatestReleaseInfoFromWebJSON(ctx context.Context) (*WebR
 
 	req.Header.Set("Accept", "application/json")
 
-	client := newHTTPClient()
-	// Remove the CheckRedirect since we want to follow the redirect and get JSON
-	client.CheckRedirect = nil
+	client := r.newHTTPClient(true) // follow redirects
 
 	res, err := client.Do(req)
 	if err != nil {

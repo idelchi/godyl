@@ -31,8 +31,14 @@ func Parse(name string) *semver.Version {
 // Equal compares two version strings for equality.
 // A failure will always return false.
 func Equal(a, b string) bool {
-	// Compare the two versions.
-	return Parse(a).Equal(Parse(b))
+	aVersion := Parse(a)
+	bVersion := Parse(b)
+
+	if generic.AnyNil(aVersion, bVersion) {
+		return false
+	}
+
+	return aVersion.Equal(bVersion)
 }
 
 // LessThan tests if one version is less than another one.

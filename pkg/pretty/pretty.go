@@ -69,13 +69,15 @@ func JSONMasked(obj any) string {
 func MaskJSON(obj any) any {
 	masker := mask.NewMasker()
 
-	// Set the masking character to "-"
+	// Set the masking character to "-".
 	masker.SetMaskChar("-")
 
-	// Register a function to mask strings by filling them with the masking character.
+	// Register masking functions on the instance masker so that SetMaskChar
+	// takes effect and calls do not race on the package-level defaultMasker.
 	masker.RegisterMaskStringFunc(mask.MaskTypeFilled, masker.MaskFilledString)
+	masker.RegisterMaskStringFunc(mask.MaskTypeFixed, masker.MaskFixedString)
 
-	t, err := mask.Mask(obj)
+	t, err := masker.Mask(obj)
 	if err != nil {
 		return err.Error()
 	}

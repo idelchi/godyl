@@ -1,6 +1,7 @@
 package folder_test
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -281,6 +282,118 @@ func TestAsFile(t *testing.T) {
 				t.Errorf("New(%q).AsFile().Path() = %q, want %q", tc.input, got, tc.want)
 			}
 		})
+	}
+}
+
+func TestFolderIsAbs(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		input string
+		want  bool
+	}{
+		{
+			name:  "absolute path",
+			input: "/absolute/dir",
+			want:  true,
+		},
+		{
+			name:  "relative path",
+			input: "relative/dir",
+			want:  false,
+		},
+		{
+			name:  "root",
+			input: "/",
+			want:  true,
+		},
+		{
+			name:  "dot",
+			input: ".",
+			want:  false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := folder.New(tc.input).IsAbs()
+			if got != tc.want {
+				t.Errorf("New(%q).IsAbs() = %v, want %v", tc.input, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestFolderAbsolute(t *testing.T) {
+	t.Parallel()
+
+	t.Run("relative becomes absolute", func(t *testing.T) {
+		t.Parallel()
+
+		f := folder.New("relative/dir")
+		got := f.Absolute()
+
+		if !got.IsAbs() {
+			t.Errorf("Absolute() returned non-absolute path %q", got.Path())
+		}
+	})
+
+	t.Run("absolute stays absolute", func(t *testing.T) {
+		t.Parallel()
+
+		f := folder.New("/already/absolute")
+		got := f.Absolute()
+
+		if got.Path() != "/already/absolute" {
+			t.Errorf("Absolute() = %q, want %q", got.Path(), "/already/absolute")
+		}
+	})
+}
+
+func TestCwd(t *testing.T) {
+	t.Parallel()
+
+	got, err := folder.Cwd()
+	if err != nil {
+		t.Fatalf("Cwd() unexpected error: %v", err)
+	}
+
+	want, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("os.Getwd() unexpected error: %v", err)
+	}
+
+	if got.Path() != filepath.ToSlash(want) {
+		t.Errorf("Cwd().Path() = %q, want %q", got.Path(), filepath.ToSlash(want))
+	}
+
+	if !got.IsAbs() {
+		t.Errorf("Cwd() returned non-absolute path %q", got.Path())
+	}
+}
+
+func TestHome(t *testing.T) {
+	t.Parallel()
+
+	got, err := folder.Home()
+	if err != nil {
+		t.Fatalf("Home() unexpected error: %v", err)
+	}
+
+	want, err := os.UserHomeDir()
+	if err != nil {
+		t.Fatalf("os.UserHomeDir() unexpected error: %v", err)
+	}
+
+	if got.Path() != filepath.ToSlash(want) {
+		t.Errorf("Home().Path() = %q, want %q", got.Path(), filepath.ToSlash(want))
+	}
+
+	if !got.Exists() {
+		t.Errorf("Home() returned path %q that does not exist", got.Path())
 	}
 }
 
@@ -689,6 +802,251 @@ func TestFolderListFilesNonExistent(t *testing.T) {
 	if err == nil {
 		t.Error("ListFiles() on non-existent directory returned nil, want error")
 	}
+}
+
+func TestFolderCreateWithPerm(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+
+	t.Run("default permission is 0755", func(t *testing.T) {
+		t.Parallel()
+
+		f := folder.New(dir, "default-perm")
+
+		if err := f.Create(); err != nil {
+			t.Fatalf("Create() unexpected error: %v", err)
+		}
+
+		info, err := os.Stat(f.Path())
+		if err != nil {
+			t.Fatalf("Stat() unexpected error: %v", err)
+		}
+
+		if got := info.Mode().Perm(); got != 0o755 {
+			t.Errorf("default permissions = %o, want %o", got, 0o755)
+		}
+	})
+
+	t.Run("explicit permission", func(t *testing.T) {
+		t.Parallel()
+
+		f := folder.New(dir, "custom-perm")
+
+		if err := f.Create(0o700); err != nil {
+			t.Fatalf("Create(0o700) unexpected error: %v", err)
+		}
+
+		if !f.Exists() {
+			t.Fatal("Exists() = false after Create(0o700), want true")
+		}
+
+		info, err := os.Stat(f.Path())
+		if err != nil {
+			t.Fatalf("Stat() unexpected error: %v", err)
+		}
+
+		if got := info.Mode().Perm(); got != 0o700 {
+			t.Errorf("directory permissions = %o, want %o", got, 0o700)
+		}
+	})
+}
+
+func TestFolderChmod(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	f := folder.New(dir, "chmod-test")
+
+	if err := f.Create(); err != nil {
+		t.Fatalf("Create() unexpected error: %v", err)
+	}
+
+	if err := f.Chmod(0o700); err != nil {
+		t.Fatalf("Chmod() unexpected error: %v", err)
+	}
+
+	info, err := os.Stat(f.Path())
+	if err != nil {
+		t.Fatalf("Stat() unexpected error: %v", err)
+	}
+
+	if got := info.Mode().Perm(); got != 0o700 {
+		t.Errorf("permissions after Chmod = %o, want %o", got, 0o700)
+	}
+}
+
+func TestFolderList(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	f := folder.New(dir)
+
+	// Create a file and a subdirectory.
+	if err := file.New(dir, "afile.txt").Write([]byte("x")); err != nil {
+		t.Fatalf("Write() unexpected error: %v", err)
+	}
+
+	if err := folder.New(dir, "asubdir").Create(); err != nil {
+		t.Fatalf("Create() unexpected error: %v", err)
+	}
+
+	entries, err := f.List()
+	if err != nil {
+		t.Fatalf("List() unexpected error: %v", err)
+	}
+
+	if len(entries) != 2 {
+		t.Fatalf("List() returned %d entries, want 2", len(entries))
+	}
+
+	// Verify we got both a file and a directory.
+	var hasFile, hasDir bool
+
+	for _, e := range entries {
+		if e.IsDir() {
+			hasDir = true
+		} else {
+			hasFile = true
+		}
+	}
+
+	if !hasFile {
+		t.Error("List() missing file entry")
+	}
+
+	if !hasDir {
+		t.Error("List() missing directory entry")
+	}
+}
+
+func TestFolderGlob(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	f := folder.New(dir)
+
+	// Create test files.
+	for _, name := range []string{"a.go", "b.go", "c.txt"} {
+		if err := file.New(dir, name).Write([]byte("x")); err != nil {
+			t.Fatalf("Write(%q) unexpected error: %v", name, err)
+		}
+	}
+
+	// Also create a subdirectory to confirm it doesn't interfere.
+	if err := folder.New(dir, "sub").Create(); err != nil {
+		t.Fatalf("Create() unexpected error: %v", err)
+	}
+
+	t.Run("matches go files", func(t *testing.T) {
+		t.Parallel()
+
+		got, err := f.Glob("*.go")
+		if err != nil {
+			t.Fatalf("Glob(*.go) unexpected error: %v", err)
+		}
+
+		if len(got) != 2 {
+			t.Fatalf("Glob(*.go) returned %d files, want 2", len(got))
+		}
+	})
+
+	t.Run("no matches returns empty", func(t *testing.T) {
+		t.Parallel()
+
+		got, err := f.Glob("*.rs")
+		if err != nil {
+			t.Fatalf("Glob(*.rs) unexpected error: %v", err)
+		}
+
+		if len(got) != 0 {
+			t.Errorf("Glob(*.rs) returned %d files, want 0", len(got))
+		}
+	})
+
+	t.Run("bad pattern returns error", func(t *testing.T) {
+		t.Parallel()
+
+		_, err := f.Glob("[invalid")
+		if err == nil {
+			t.Error("Glob([invalid) returned nil, want error")
+		}
+	})
+}
+
+func TestFolderWalk(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	root := folder.New(dir)
+
+	// Build: dir/a.txt, dir/sub/b.txt
+	if err := file.New(dir, "a.txt").Write([]byte("a")); err != nil {
+		t.Fatalf("Write(a.txt) unexpected error: %v", err)
+	}
+
+	sub := folder.New(dir, "sub")
+	if err := sub.Create(); err != nil {
+		t.Fatalf("Create(sub) unexpected error: %v", err)
+	}
+
+	if err := file.New(dir, "sub", "b.txt").Write([]byte("b")); err != nil {
+		t.Fatalf("Write(b.txt) unexpected error: %v", err)
+	}
+
+	t.Run("collects all entries", func(t *testing.T) {
+		t.Parallel()
+
+		var paths []string
+
+		err := root.Walk(func(path file.File, d os.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+
+			paths = append(paths, path.Base())
+
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("Walk() unexpected error: %v", err)
+		}
+
+		// Should have: root dir, a.txt, sub dir, b.txt = 4 entries.
+		if len(paths) != 4 {
+			t.Errorf("Walk() visited %d entries %v, want 4", len(paths), paths)
+		}
+	})
+
+	t.Run("SkipDir skips subtree", func(t *testing.T) {
+		t.Parallel()
+
+		var fileNames []string
+
+		err := root.Walk(func(path file.File, d os.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+
+			if d.IsDir() && path.Base() == "sub" {
+				return filepath.SkipDir
+			}
+
+			if !d.IsDir() {
+				fileNames = append(fileNames, path.Base())
+			}
+
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("Walk() unexpected error: %v", err)
+		}
+
+		// Only a.txt should be collected; b.txt is inside skipped "sub".
+		if len(fileNames) != 1 || fileNames[0] != "a.txt" {
+			t.Errorf("Walk() with SkipDir collected %v, want [a.txt]", fileNames)
+		}
+	})
 }
 
 func TestFolderRelativeTo(t *testing.T) {

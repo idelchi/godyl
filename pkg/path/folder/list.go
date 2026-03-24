@@ -2,12 +2,23 @@ package folder
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"slices"
 
 	"github.com/idelchi/godyl/pkg/path/file"
 	"github.com/idelchi/godyl/pkg/path/files"
 )
+
+// List returns all entries (files and directories) in the folder.
+func (f Folder) List() ([]fs.DirEntry, error) {
+	entries, err := os.ReadDir(f.Path())
+	if err != nil {
+		return nil, fmt.Errorf("reading directory %q: %w", f, err)
+	}
+
+	return entries, nil
+}
 
 // ListFolders returns all immediate subdirectories of the folder.
 // It excludes files and other non-directory entries.

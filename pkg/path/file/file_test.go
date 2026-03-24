@@ -402,6 +402,48 @@ func TestWithoutFolder(t *testing.T) {
 	}
 }
 
+func TestIsAbs(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		input string
+		want  bool
+	}{
+		{
+			name:  "absolute path",
+			input: "/absolute/path",
+			want:  true,
+		},
+		{
+			name:  "relative path",
+			input: "relative/path",
+			want:  false,
+		},
+		{
+			name:  "single dot",
+			input: ".",
+			want:  false,
+		},
+		{
+			name:  "root",
+			input: "/",
+			want:  true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := file.New(tc.input).IsAbs()
+			if got != tc.want {
+				t.Errorf("New(%q).IsAbs() = %v, want %v", tc.input, got, tc.want)
+			}
+		})
+	}
+}
+
 // ---------------------------------------------------------------------------
 // Section 2: Filesystem tests (use t.TempDir())
 // ---------------------------------------------------------------------------
@@ -972,6 +1014,126 @@ func TestFileHashEmpty(t *testing.T) {
 	if got != want {
 		t.Errorf("Hash() on empty file = %q, want %q", got, want)
 	}
+}
+
+func TestFileWhich(t *testing.T) {
+	t.Parallel()
+
+	t.Run("finds binary in PATH", func(t *testing.T) {
+		t.Parallel()
+
+		// "sh" should be universally available on Linux.
+		f := file.New("sh")
+
+		got, err := f.Which()
+		if err != nil {
+			t.Fatalf("Which() unexpected error: %v", err)
+		}
+
+		if !got.IsAbs() {
+			t.Errorf("Which() returned non-absolute path %q", got.Path())
+		}
+
+		if !got.Exists() {
+			t.Errorf("Which() returned path %q that does not exist", got.Path())
+		}
+	})
+
+	t.Run("not found returns error", func(t *testing.T) {
+		t.Parallel()
+
+		f := file.New("definitely-not-a-binary-xyz-123")
+
+		_, err := f.Which()
+		if err == nil {
+			t.Error("Which() on non-existent binary returned nil, want error")
+		}
+	})
+
+	t.Run("InPath delegates to Which", func(t *testing.T) {
+		t.Parallel()
+
+		if !file.New("sh").InPath() {
+			t.Error("InPath() = false for 'sh', want true")
+		}
+
+		if file.New("definitely-not-a-binary-xyz-123").InPath() {
+			t.Error("InPath() = true for non-existent binary, want false")
+		}
+	})
+}
+
+func TestFileWriteWithPerm(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+
+	t.Run("default permission is 0600", func(t *testing.T) {
+		t.Parallel()
+
+		f := file.New(filepath.Join(dir, "default.txt"))
+
+		if err := f.Write([]byte("hello")); err != nil {
+			t.Fatalf("Write() unexpected error: %v", err)
+		}
+
+		info, err := os.Stat(f.Path())
+		if err != nil {
+			t.Fatalf("Stat() unexpected error: %v", err)
+		}
+
+		if got := info.Mode().Perm(); got != 0o600 {
+			t.Errorf("default permissions = %o, want %o", got, 0o600)
+		}
+	})
+
+	t.Run("explicit permission", func(t *testing.T) {
+		t.Parallel()
+
+		f := file.New(filepath.Join(dir, "explicit.txt"))
+		content := []byte("hello perm")
+
+		if err := f.Write(content, 0o644); err != nil {
+			t.Fatalf("Write(data, 0o644) unexpected error: %v", err)
+		}
+
+		got, err := f.Read()
+		if err != nil {
+			t.Fatalf("Read() unexpected error: %v", err)
+		}
+
+		if string(got) != string(content) {
+			t.Errorf("Read() = %q, want %q", got, content)
+		}
+
+		info, err := os.Stat(f.Path())
+		if err != nil {
+			t.Fatalf("Stat() unexpected error: %v", err)
+		}
+
+		if got := info.Mode().Perm(); got != 0o644 {
+			t.Errorf("file permissions = %o, want %o", got, 0o644)
+		}
+	})
+
+	t.Run("multiple perms uses first", func(t *testing.T) {
+		t.Parallel()
+
+		f := file.New(filepath.Join(dir, "multi.txt"))
+
+		if err := f.Write([]byte("x"), 0o644, 0o777); err != nil {
+			t.Fatalf("Write() unexpected error: %v", err)
+		}
+
+		info, err := os.Stat(f.Path())
+		if err != nil {
+			t.Fatalf("Stat() unexpected error: %v", err)
+		}
+
+		if got := info.Mode().Perm(); got != 0o644 {
+			t.Errorf("permissions = %o, want %o (should use first perm)", got, 0o644)
+		}
+	})
 }
 
 func TestFileLinesEmpty(t *testing.T) {

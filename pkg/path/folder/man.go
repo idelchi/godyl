@@ -9,6 +9,21 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
+// IsAbs reports whether the folder path is absolute.
+func (f Folder) IsAbs() bool {
+	return filepath.IsAbs(f.Path())
+}
+
+// Absolute returns the absolute path of the folder.
+func (f Folder) Absolute() Folder {
+	absPath, err := filepath.Abs(f.Path())
+	if err != nil {
+		return f
+	}
+
+	return New(absPath)
+}
+
 // WithFile creates a File path within this directory.
 // Combines the directory path with the provided filename.
 func (f Folder) WithFile(path string) file.File {

@@ -1091,6 +1091,18 @@
   tags:
     - terminal
 
+- name: coder/coder
+  description: Secure environments for developers and their agents
+  exe:
+    name: coder-cli
+    patterns: "*coder*"
+  hints:
+    pattern: installer
+    match: excluded
+    type: contains
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

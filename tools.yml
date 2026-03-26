@@ -1093,9 +1093,6 @@
 
 - name: coder/coder
   description: Secure environments for developers and their agents
-  exe:
-    name: coder-cli
-    patterns: "*coder*"
   hints:
     pattern: installer
     match: excluded

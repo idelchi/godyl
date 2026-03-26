@@ -28,12 +28,29 @@ func CreateRandomInDir(dir, pattern string) (Folder, error) {
 }
 
 // Create ensures the directory and its parents exist.
-// Creates all necessary directories with 0755 permissions.
-func (f Folder) Create() error {
-	const perm = 0o755
+//
+// An optional permission mode can be provided (default 0o755).
+// If multiple values are given, only the first is used.
+func (f Folder) Create(perm ...fs.FileMode) error {
+	const defaultPerm = 0o755
 
-	if err := os.MkdirAll(f.Path(), perm); err != nil {
+	mode := fs.FileMode(defaultPerm)
+
+	if len(perm) > 0 {
+		mode = perm[0]
+	}
+
+	if err := os.MkdirAll(f.Path(), mode); err != nil {
 		return fmt.Errorf("creating directory %q: %w", f, err)
+	}
+
+	return nil
+}
+
+// Chmod modifies the directory's permission bits.
+func (f Folder) Chmod(mode fs.FileMode) error {
+	if err := os.Chmod(f.Path(), mode); err != nil {
+		return fmt.Errorf("changing permissions of directory %q: %w", f, err)
 	}
 
 	return nil

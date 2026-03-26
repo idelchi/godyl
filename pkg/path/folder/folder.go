@@ -1,11 +1,32 @@
 package folder
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/idelchi/godyl/pkg/path/file"
 )
+
+// Cwd returns the current working directory as a Folder.
+func Cwd() (Folder, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("getting working directory: %w", err)
+	}
+
+	return New(dir), nil
+}
+
+// Home returns the user's home directory as a Folder.
+func Home() (Folder, error) {
+	dir, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("getting home directory: %w", err)
+	}
+
+	return New(dir), nil
+}
 
 // New creates a Folder from one or more path components.
 // Joins the paths using filepath.Join and normalizes the result to use forward slashes.

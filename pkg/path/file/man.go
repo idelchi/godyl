@@ -12,9 +12,16 @@ import (
 	"github.com/idelchi/godyl/pkg/generic"
 )
 
-// Matches checks if the file path matches the given (extended glob) pattern.
+// Matches checks if the file path matches the given pattern using extended glob syntax.
+// Supports ** for recursive directory matching, in addition to standard *, ?, and [...] patterns.
+// See https://github.com/bmatcuk/doublestar for full pattern syntax.
 func (f File) Matches(pattern string) (bool, error) {
 	return doublestar.Match(pattern, f.Path())
+}
+
+// IsAbs reports whether the file path is absolute.
+func (f File) IsAbs() bool {
+	return filepath.IsAbs(f.Path())
 }
 
 // RelativeTo computes the relative path from base to this file.

@@ -73,3 +73,29 @@ func (f Folder) FindFiles(criteria ...CriteriaFunc) (files.Files, error) {
 
 	return found, nil
 }
+
+// Glob returns all files matching the given pattern within the folder.
+// Uses filepath.Glob semantics (non-recursive, standard glob syntax).
+func (f Folder) Glob(pattern string) (files.Files, error) {
+	matches, err := filepath.Glob(filepath.Join(f.Path(), pattern))
+	if err != nil {
+		return nil, fmt.Errorf("glob %q in %q: %w", pattern, f, err)
+	}
+
+	result := make(files.Files, 0, len(matches))
+	for _, m := range matches {
+		result = append(result, file.New(m))
+	}
+
+	return result, nil
+}
+
+// Walk traverses the directory tree rooted at f, calling fn for each entry.
+// The error parameter from filepath.WalkDir is passed through — return nil to
+// skip the error, or return it to abort the walk. Return filepath.SkipDir to
+// skip a directory.
+func (f Folder) Walk(fn func(path file.File, d fs.DirEntry, err error) error) error {
+	return filepath.WalkDir(f.Path(), func(p string, d fs.DirEntry, err error) error {
+		return fn(file.New(p), d, err)
+	})
+}

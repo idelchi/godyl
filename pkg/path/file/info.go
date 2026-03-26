@@ -57,7 +57,8 @@ func (f File) IsDir() bool {
 	return info.Mode().IsDir()
 }
 
-// Extension returns the file's extension as a string, without the leading dot.
+// Extension returns the file's extension without the leading dot (e.g. "go", not ".go").
+// Returns empty string if no extension.
 func (f File) Extension() string {
 	return strings.TrimPrefix(filepath.Ext(f.Path()), ".")
 }
@@ -118,10 +119,20 @@ func (f File) Hash() (string, error) {
 	return hex.EncodeToString(hash[:]), nil
 }
 
+// Which resolves the file name in the system PATH and returns the full path.
+// Returns empty File and an error if not found.
+func (f File) Which() (File, error) {
+	path, err := exec.LookPath(f.Path())
+	if err != nil {
+		return "", fmt.Errorf("looking up %q in PATH: %w", f, err)
+	}
+
+	return New(path), nil
+}
+
 // InPath checks if the file can be found in the system PATH.
-// Returns true if the file is found in PATH, false otherwise.
 func (f File) InPath() bool {
-	_, err := exec.LookPath(f.Path())
+	_, err := f.Which()
 
 	return err == nil
 }

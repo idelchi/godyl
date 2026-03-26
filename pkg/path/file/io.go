@@ -60,10 +60,19 @@ func (f File) Create() error {
 // If the file doesn't exist, it will be created.
 // If it exists, it will be truncated.
 // The user must close the file after use.
-func (f File) OpenForWriting() (*os.File, error) {
-	const perm = 0o600
+//
+// An optional permission mode can be provided (default 0o600).
+// If multiple values are given, only the first is used.
+func (f File) OpenForWriting(perm ...fs.FileMode) (*os.File, error) {
+	const defaultPerm = 0o600
 
-	file, err := os.OpenFile(f.Path(), os.O_RDWR|os.O_CREATE|os.O_TRUNC, perm)
+	mode := fs.FileMode(defaultPerm)
+
+	if len(perm) > 0 {
+		mode = perm[0]
+	}
+
+	file, err := os.OpenFile(f.Path(), os.O_RDWR|os.O_CREATE|os.O_TRUNC, mode)
 	if err != nil {
 		return nil, fmt.Errorf("opening file %q for writing: %w", f, err)
 	}
@@ -73,8 +82,11 @@ func (f File) OpenForWriting() (*os.File, error) {
 
 // Write stores binary data in the file.
 // Creates or truncates the file before writing.
-func (f File) Write(data []byte) (err error) {
-	file, err := f.OpenForWriting()
+//
+// An optional permission mode can be provided (default 0o600).
+// If multiple values are given, only the first is used.
+func (f File) Write(data []byte, perm ...fs.FileMode) (err error) {
+	file, err := f.OpenForWriting(perm...)
 	if err != nil {
 		return err
 	}

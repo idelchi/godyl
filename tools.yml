@@ -957,6 +957,9 @@
     - pattern: npm
       match: excluded
       type: contains
+    - pattern: zsh
+      match: excluded
+      type: contains
   tags:
     - terminal
 

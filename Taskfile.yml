@@ -156,9 +156,9 @@ tasks:
 
         git push origin ${next}
 
-        goreleaser release --skip=validate --clean --config ./.devenv/settings/.goreleaser.yaml
+        # goreleaser release --skip=validate --clean --config ./.devenv/settings/.goreleaser.yaml
 
-        rm -rf dist
+        # rm -rf dist
 
   # docs:
   #   - |

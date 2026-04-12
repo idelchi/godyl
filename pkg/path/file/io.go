@@ -176,6 +176,20 @@ func (f *File) Chmod(mode fs.FileMode) error {
 	return nil
 }
 
+// Rename moves or renames the file to the given destination.
+// Parent directories of the destination are created if needed.
+func (f File) Rename(dest File) error {
+	if err := dest.createFolder(); err != nil {
+		return err
+	}
+
+	if err := os.Rename(f.Path(), dest.Path()); err != nil {
+		return fmt.Errorf("renaming file %q to %q: %w", f, dest, err)
+	}
+
+	return nil
+}
+
 // Copy duplicates the file to a new location.
 // It copies contents and preserves the original file's permissions.
 // Timestamps and ownership are not preserved for cross-platform compatibility.

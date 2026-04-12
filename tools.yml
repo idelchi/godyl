@@ -140,6 +140,12 @@
   tags:
     - kubernetes
 
+- name: fluxcd/flux2
+  description: Open and extensible continuous delivery solution for Kubernetes. Powered by GitOps Toolkit.
+  exe: flux
+  tags:
+    - kubernetes
+
 - name: kubernetes-sigs/krew
   description: Find and install kubectl plugins
   tags:
@@ -726,6 +732,10 @@
 
 - name: jdx/mise
   description: The front-end to your dev env
+  hints:
+    pattern: .zip
+    match: '{{ if eq .OS "windows" }}required{{ end }}'
+    type: endswith
   tags:
     - terminal
 
@@ -955,6 +965,9 @@
       match: excluded
       type: contains
     - pattern: npm
+      match: excluded
+      type: contains
+    - pattern: zsh
       match: excluded
       type: contains
   tags:

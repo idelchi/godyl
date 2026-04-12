@@ -55,6 +55,10 @@ func (y *YAML) Load() error {
 		return err
 	}
 
+	if y.data == nil {
+		y.data = make(map[string]any)
+	}
+
 	return nil
 }
 

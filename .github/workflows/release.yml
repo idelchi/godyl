@@ -6,7 +6,7 @@ on:
     # For the release
     tags:
       - "*"
-      - "!*-beta"
+      # - "!*-beta"
     # For the docker image
     branches:
       - main
@@ -14,7 +14,8 @@ on:
 jobs:
   release:
     uses: idelchi/devenv/.github/workflows/gorelease.yml@main
-    if: startsWith(github.ref, 'refs/tags/') && !endsWith(github.ref, '-beta')
+    # if: startsWith(github.ref, 'refs/tags/') && !endsWith(github.ref, '-beta')
+    if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
     with:

@@ -732,6 +732,10 @@
 
 - name: jdx/mise
   description: The front-end to your dev env
+  hints:
+    pattern: .zip
+    match: '{{ if eq .OS "windows" }}required{{ end }}'
+    type: endswith
   tags:
     - terminal
 

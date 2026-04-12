@@ -9,6 +9,8 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
+const wantKeyValue = "key: value\n"
+
 func TestMerge(t *testing.T) {
 	t.Parallel()
 
@@ -30,8 +32,8 @@ func TestMerge(t *testing.T) {
 			t.Fatalf("ReadString(): unexpected error: %v", err)
 		}
 
-		if got != "key: value\n" {
-			t.Errorf("Merge() wrote %q, want %q", got, "key: value\n")
+		if got != wantKeyValue {
+			t.Errorf("Merge() wrote %q, want %q", got, wantKeyValue)
 		}
 	})
 
@@ -49,8 +51,8 @@ func TestMerge(t *testing.T) {
 			t.Fatalf("ReadString(): unexpected error: %v", err)
 		}
 
-		if got != "key: value\n" {
-			t.Errorf("Merge() wrote %q, want %q", got, "key: value\n")
+		if got != wantKeyValue {
+			t.Errorf("Merge() wrote %q, want %q", got, wantKeyValue)
 		}
 	})
 
@@ -105,7 +107,7 @@ func TestWrite_EmptyFile(t *testing.T) {
 		t.Fatalf("ReadString(): unexpected error: %v", err)
 	}
 
-	if got != "key: value\n" {
-		t.Errorf("Write() wrote %q, want %q", got, "key: value\n")
+	if got != wantKeyValue {
+		t.Errorf("Write() wrote %q, want %q", got, wantKeyValue)
 	}
 }

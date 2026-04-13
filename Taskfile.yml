@@ -127,6 +127,7 @@ tasks:
     dotenv:
       - tokens.env
     cmds:
+      - defer: rm -rf dist
       - |
         git config --global credential.helper '!f() { sleep 1; echo "username=git"; echo "password=${GITHUB_TOKEN}"; }; f'
 
@@ -156,9 +157,7 @@ tasks:
 
         git push origin ${next}
 
-        # goreleaser release --skip=validate --clean --config ./.devenv/settings/.goreleaser.yaml
-
-        # rm -rf dist
+        goreleaser release --skip=validate --clean --config ./.devenv/settings/.goreleaser.yaml
 
   # docs:
   #   - |

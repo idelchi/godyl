@@ -6,7 +6,7 @@ on:
     # For the release
     tags:
       - "*"
-      # - "!*-beta"
+      - "!*-beta"
     # For the docker image
     branches:
       - main

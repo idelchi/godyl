@@ -975,9 +975,6 @@
 
 - name: atuinsh/atuin
   description: A next-generation shell history
-  skip:
-    reason: "atuin is not available on windows"
-    condition: '{{ eq .OS "windows" }}'
   hints:
     - pattern: server
       match: excluded

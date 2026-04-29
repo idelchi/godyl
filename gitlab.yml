@@ -2,6 +2,7 @@
   skip:
     reason: "recovery is not available on windows"
     condition: '{{ eq .OS "windows" }}'
+  checksum: none
   exe: recovery
   version:
     version: v0.0.0

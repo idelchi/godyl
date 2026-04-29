@@ -72,8 +72,3 @@
 - name: apps/uploader
   inherit:
     - gitlab:selfhosted
-
-- name: agents/aura/aura
-  exe: aura
-  inherit:
-    - gitlab:selfhosted

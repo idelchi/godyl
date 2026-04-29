@@ -624,8 +624,13 @@
 - name: coredns/coredns
   description: DNS server that chains plugins
   hints:
-    pattern: .tgz
-    type: endswith
+    - pattern: .zip
+      weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
+      type: endswith
+    - pattern: .tgz
+      weight: '{{ if eq .OS "windows" }}0{{ else }}1{{ end }}'
+      type: endswith
+
   tags:
     - terminal
 

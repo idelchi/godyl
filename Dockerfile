@@ -33,7 +33,7 @@ WORKDIR /work
 
 # Create User (Debian/Ubuntu)
 ARG USER=user
-ARG UID=1001
+ARG UID=1000
 RUN groupadd -r -g ${UID} ${USER} && \
     useradd -r -u ${UID} -g ${UID} -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 
@@ -44,8 +44,8 @@ ENV GOMODCACHE=/home/${USER}/.cache/.go-mod
 ENV GOCACHE=/home/${USER}/.cache/.go
 
 COPY go.mod go.sum ./
-RUN --mount=type=cache,target=${GOMODCACHE},uid=1001,gid=1001 \
-    --mount=type=cache,target=${GOCACHE},uid=1001,gid=1001 \
+RUN --mount=type=cache,target=${GOMODCACHE},uid=1000,gid=1000 \
+    --mount=type=cache,target=${GOCACHE},uid=1000,gid=1000 \
     go mod download
 
 RUN go mod download
@@ -88,7 +88,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Create User (Debian/Ubuntu)
 ARG USER=user
-ARG UID=1001
+ARG UID=1000
 RUN groupadd -r -g ${UID} ${USER} && \
     useradd -r -u ${UID} -g ${UID} -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 

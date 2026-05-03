@@ -975,6 +975,9 @@
     - pattern: zsh
       match: excluded
       type: contains
+    - pattern: app-server
+      match: excluded
+      type: contains
   tags:
     - terminal
 
@@ -1112,6 +1115,11 @@
     pattern: installer
     match: excluded
     type: contains
+  tags:
+    - terminal
+
+- name: programmersd21/kairo
+  description: Kairo is a fast, keyboard-first terminal task manager in Go
   tags:
     - terminal
 

@@ -978,6 +978,9 @@
     - pattern: app-server
       match: excluded
       type: contains
+    - pattern: codex
+      match: required
+      type: contains
   tags:
     - terminal
 

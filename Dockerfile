@@ -88,7 +88,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Create User (Debian/Ubuntu)
 ARG USER=user
-ARG UID=1000
+ARG UID=1001
 RUN groupadd -r -g ${UID} ${USER} && \
     useradd -r -u ${UID} -g ${UID} -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 

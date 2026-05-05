@@ -12,9 +12,5 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("%w: %q does not exist", ierrors.ErrUsage, c.Defaults)
 	}
 
-	if c.IsSet("go") && !c.Go.Expanded().Exists() {
-		return fmt.Errorf("%w: %q does not exist", ierrors.ErrUsage, c.Go)
-	}
-
 	return nil
 }

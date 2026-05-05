@@ -17,6 +17,7 @@ func SplitName(name string) (first, second string, err error) {
 
 	// Check if the name is in the correct format
 	const expectedParts = 2
+
 	if len(split) != expectedParts {
 		return first, second, fmt.Errorf("invalid name: %s", name)
 	}

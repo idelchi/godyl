@@ -135,37 +135,37 @@ func TestInferAlgoFromHex(t *testing.T) {
 	tests := []struct {
 		name  string
 		input string
-		want  string
+		want  checksum.Type
 	}{
 		{
 			name:  "64-char hex infers sha256",
 			input: strings.Repeat("a", 64),
-			want:  "sha256",
+			want:  checksum.SHA256,
 		},
 		{
 			name:  "128-char hex infers sha512",
 			input: strings.Repeat("a", 128),
-			want:  "sha512",
+			want:  checksum.SHA512,
 		},
 		{
 			name:  "40-char hex infers sha1",
 			input: strings.Repeat("a", 40),
-			want:  "sha1",
+			want:  checksum.SHA1,
 		},
 		{
 			name:  "32-char hex infers md5",
 			input: strings.Repeat("a", 32),
-			want:  "md5",
+			want:  checksum.MD5,
 		},
 		{
 			name:  "10-char hex falls through to default sha256",
 			input: strings.Repeat("a", 10),
-			want:  "sha256",
+			want:  checksum.SHA256,
 		},
 		{
 			name:  "empty string falls through to default sha256",
 			input: "",
-			want:  "sha256",
+			want:  checksum.SHA256,
 		},
 		{
 			// InferAlgoFromHex dispatches on length only; it does not validate
@@ -173,7 +173,7 @@ func TestInferAlgoFromHex(t *testing.T) {
 			// of non-hex characters still returns sha256.
 			name:  "64-char non-hex string still infers sha256 (length-only behavior)",
 			input: strings.Repeat("z", 64),
-			want:  "sha256",
+			want:  checksum.SHA256,
 		},
 	}
 

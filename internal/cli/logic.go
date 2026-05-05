@@ -109,6 +109,7 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	// We can already validate the config file here by unmarshalling it with koanfx.WithErrorUnused()
 	// This will throw an error if there are any unused fields in the config file.
 	var tmpConfig root.Config
+
 	if err := k.Unmarshal(&tmpConfig, koanfx.WithErrorUnused()); err != nil {
 		return fmt.Errorf("unmarshalling config file %q: %w", configFile, err)
 	}
@@ -164,8 +165,8 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	// - Env vars from env-file (in order from right to left overwriting)
 	dotenvs := penv.Env{}
 
-	for i := len(tmpConfig.EnvFile) - 1; i >= 0; i-- {
-		file := tmpConfig.EnvFile[i]
+	for _, v := range slices.Backward(tmpConfig.EnvFile) {
+		file := v
 		dotenv, err := iutils.LoadDotEnv(file)
 
 		if failureCriteria(err) {

@@ -580,6 +580,7 @@ func TestChecksumUnmarshalYAML(t *testing.T) {
 		t.Parallel()
 
 		var c checksum.Checksum
+
 		if err := yaml.Unmarshal([]byte(`sha256`), &c); err != nil {
 			t.Fatalf("Unmarshal() unexpected error: %v", err)
 		}
@@ -599,6 +600,7 @@ func TestChecksumUnmarshalYAML(t *testing.T) {
 		`)
 
 		var c checksum.Checksum
+
 		if err := yaml.Unmarshal([]byte(input), &c); err != nil {
 			t.Fatalf("Unmarshal() unexpected error: %v", err)
 		}
@@ -620,6 +622,7 @@ func TestChecksumUnmarshalYAML(t *testing.T) {
 		t.Parallel()
 
 		var c checksum.Checksum
+
 		if err := yaml.Unmarshal([]byte(`none`), &c); err != nil {
 			t.Fatalf("Unmarshal() unexpected error: %v", err)
 		}

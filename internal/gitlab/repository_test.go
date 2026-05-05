@@ -363,6 +363,7 @@ func TestGetLatestIncludingPreRelease_NilCreatedAt(t *testing.T) {
 		mux := http.NewServeMux()
 		mux.HandleFunc("/api/v4/projects/mygroup%2Fmyrepo/releases", func(w http.ResponseWriter, _ *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
+
 			// Omit created_at so it deserialises as nil.
 			if err := json.NewEncoder(w).Encode([]gitlabReleaseJSON{
 				{

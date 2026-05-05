@@ -105,6 +105,7 @@ func TestBuild(t *testing.T) {
 			case tc.wantError:
 				if tc.wantCycleErr {
 					var cycleErr *dag.CycleError[string]
+
 					if !errors.As(err, &cycleErr) {
 						t.Errorf("Build() error type = %T, want *dag.CycleError[string]; err = %v", err, err)
 					}

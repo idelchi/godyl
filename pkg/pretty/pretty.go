@@ -96,6 +96,7 @@ func Env(obj any) string {
 	}
 
 	var data map[string]any
+
 	if err = json.Unmarshal(jsonData, &data); err != nil {
 		return err.Error()
 	}

@@ -114,6 +114,7 @@ func (p *Processor) Apply(templateStr string) (string, error) {
 	}
 
 	var buf bytes.Buffer
+
 	if err := tmpl.Execute(&buf, p.values); err != nil {
 		return "", err
 	}

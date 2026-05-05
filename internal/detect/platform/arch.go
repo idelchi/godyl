@@ -20,6 +20,9 @@ var ErrParse = errors.New("parsing platform information")
 
 // Architecture-related constants.
 const (
+	arch386    = "386"
+	archAMD64  = "amd64"
+	archARM64  = "arm64"
 	armString  = "arm"
 	armelValue = 5
 	armhfValue = 7
@@ -71,15 +74,15 @@ type ArchInfo struct {
 func (ArchInfo) Supported() []ArchInfo {
 	return []ArchInfo{
 		{
-			Type:    "amd64",
+			Type:    archAMD64,
 			Aliases: []string{"x86_64", "x64", "win64"},
 		},
 		{
-			Type:    "386",
+			Type:    arch386,
 			Aliases: []string{"amd32", "x86", "i386", "i686", "win32"},
 		},
 		{
-			Type:    "arm64",
+			Type:    archARM64,
 			Aliases: []string{"aarch64"},
 		},
 		{
@@ -214,9 +217,9 @@ func (a *Architecture) To32BitUserLand() {
 	a.is32BitUserLand = true
 
 	switch a.canonical {
-	case "amd64":
-		a.canonical = "386"
-	case "arm64":
+	case archAMD64:
+		a.canonical = arch386
+	case archARM64:
 		a.canonical = armString
 		a.version = armhfValue
 		a.alias = "armv7"
@@ -257,13 +260,13 @@ func (a *Architecture) Is64Bit() bool {
 // IsX86 checks if the architecture is x86-based.
 // Returns true for both 32-bit (386) and 64-bit (amd64) variants.
 func (a *Architecture) IsX86() bool {
-	return a.canonical == "amd64" || a.canonical == "386"
+	return a.canonical == archAMD64 || a.canonical == arch386
 }
 
 // IsARM checks if the architecture is ARM-based.
 // Returns true for both 32-bit (arm) and 64-bit (arm64) variants.
 func (a *Architecture) IsARM() bool {
-	return a.canonical == armString || a.canonical == "arm64"
+	return a.canonical == armString || a.canonical == archARM64
 }
 
 // Is32Bit detects if the system is running in 32-bit mode.

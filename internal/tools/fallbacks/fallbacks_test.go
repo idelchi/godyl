@@ -140,6 +140,7 @@ func TestFallbacksUnmarshalYAML(t *testing.T) {
 			t.Parallel()
 
 			var got fallbacks.Fallbacks
+
 			if err := yaml.Unmarshal([]byte(tc.input), &got); err != nil {
 				t.Fatalf("yaml.Unmarshal(%q) unexpected error: %v", tc.input, err)
 			}

@@ -223,7 +223,7 @@ func (pt *Tracker) SetManualDisplay(src, message, valueLabel, speedLabel string)
 
 	tracker.UpdateMessage(message)
 
-	var counter uint64
+	var counter atomic.Uint64
 
 	tracker.Units.Notation = ""
 	tracker.Units.NotationPosition = gpp.UnitsNotationPositionBefore
@@ -232,7 +232,7 @@ func (pt *Tracker) SetManualDisplay(src, message, valueLabel, speedLabel string)
 			return valueLabel
 		}
 
-		if atomic.AddUint64(&counter, 1)&1 == 1 {
+		if counter.Add(1)&1 == 1 {
 			return valueLabel
 		}
 

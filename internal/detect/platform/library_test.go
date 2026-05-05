@@ -446,6 +446,7 @@ func TestLibraryDefault(t *testing.T) {
 			t.Parallel()
 
 			var o platform.OS
+
 			if err := o.ParseFrom(tc.osName, strings.EqualFold); err != nil {
 				t.Fatalf("OS.ParseFrom(%q) unexpected error: %v", tc.osName, err)
 			}

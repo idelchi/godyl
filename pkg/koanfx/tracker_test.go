@@ -476,6 +476,7 @@ func TestKoanfUnmarshal(t *testing.T) {
 	}
 
 	var got cfg
+
 	if err := k.Unmarshal(&got); err != nil {
 		t.Fatalf("Unmarshal() error: %v", err)
 	}
@@ -604,6 +605,7 @@ func TestUnmarshalStandalone(t *testing.T) {
 	}
 
 	var got cfg
+
 	if err := koanfx.Unmarshal(k, "", &got); err != nil {
 		t.Fatalf("Unmarshal() error: %v", err)
 	}
@@ -630,6 +632,7 @@ func TestUnmarshalAllStandalone(t *testing.T) {
 	}
 
 	var got cfg
+
 	if err := koanfx.UnmarshalAll(k, &got); err != nil {
 		t.Fatalf("UnmarshalAll() error: %v", err)
 	}

@@ -1068,6 +1068,7 @@ func TestFolderRelativeTo(t *testing.T) {
 	}
 
 	const want = "a/b"
+
 	if got.Path() != want {
 		t.Errorf("RelativeTo(%q).Path() = %q, want %q", parent.Path(), got.Path(), want)
 	}

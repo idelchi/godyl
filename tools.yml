@@ -624,8 +624,12 @@
 - name: coredns/coredns
   description: DNS server that chains plugins
   hints:
-    pattern: .tgz
-    type: endswith
+    - pattern: .zip
+      weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
+      type: endswith
+    - pattern: .tgz
+      weight: '{{ if eq .OS "windows" }}0{{ else }}1{{ end }}'
+      type: endswith
   tags:
     - terminal
 
@@ -970,14 +974,17 @@
     - pattern: zsh
       match: excluded
       type: contains
+    - pattern: app-server
+      match: excluded
+      type: contains
+    - pattern: codex
+      match: required
+      type: contains
   tags:
     - terminal
 
 - name: atuinsh/atuin
   description: A next-generation shell history
-  skip:
-    reason: "atuin is not available on windows"
-    condition: '{{ eq .OS "windows" }}'
   hints:
     - pattern: server
       match: excluded
@@ -1110,6 +1117,11 @@
     pattern: installer
     match: excluded
     type: contains
+  tags:
+    - terminal
+
+- name: programmersd21/kairo
+  description: Kairo is a fast, keyboard-first terminal task manager in Go
   tags:
     - terminal
 

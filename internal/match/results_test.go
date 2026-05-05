@@ -467,6 +467,7 @@ func TestToString(t *testing.T) {
 		}
 
 		const wantName = "tool-linux-amd64.tar.gz"
+
 		if !strings.Contains(got, wantName) {
 			t.Errorf("ToString() = %q, want it to contain asset name %q", got, wantName)
 		}

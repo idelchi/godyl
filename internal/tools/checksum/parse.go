@@ -71,17 +71,17 @@ func parseBSD(input string) map[string]string {
 // InferAlgoFromHex infers the checksum algorithm from the length of the hex string.
 //
 //nolint:mnd // Magic numbers are fine here
-func InferAlgoFromHex(h string) string {
+func InferAlgoFromHex(h string) Type {
 	switch len(h) {
 	case 32:
-		return "md5"
+		return MD5
 	case 40:
-		return "sha1"
+		return SHA1
 	case 64:
-		return "sha256"
+		return SHA256
 	case 128:
-		return "sha512"
+		return SHA512
 	default:
-		return "sha256"
+		return SHA256
 	}
 }

@@ -269,6 +269,7 @@ func TestSingleStringOrStruct(t *testing.T) {
 			node := f.Docs[0].Body
 
 			var out named
+
 			if err := unmarshal.SingleStringOrStruct(node, &out); err != nil {
 				t.Fatalf("SingleStringOrStruct(%q): unexpected error: %v", tc.yaml, err)
 			}
@@ -358,6 +359,7 @@ func TestTemplatable(t *testing.T) {
 		t.Parallel()
 
 		var tpl unmarshal.Templatable[bool]
+
 		tpl.Set("true")
 
 		if err := tpl.Parse(); err != nil {
@@ -388,6 +390,7 @@ func TestTemplatable(t *testing.T) {
 		t.Parallel()
 
 		var tpl unmarshal.Templatable[string]
+
 		tpl.Set("")
 
 		// Set("") assigns an empty Template, so IsUnset should still be true.
@@ -400,6 +403,7 @@ func TestTemplatable(t *testing.T) {
 		t.Parallel()
 
 		var tpl unmarshal.Templatable[string]
+
 		tpl.Set("hello")
 
 		// Parse has not been called, so Get must return an error.
@@ -418,6 +422,7 @@ func TestTemplatable(t *testing.T) {
 		t.Parallel()
 
 		var tpl unmarshal.Templatable[string]
+
 		tpl.Set("hello")
 
 		if err := tpl.Parse(); err != nil {
@@ -438,6 +443,7 @@ func TestTemplatable(t *testing.T) {
 		t.Parallel()
 
 		var tpl unmarshal.Templatable[int]
+
 		tpl.Set("not_a_number")
 
 		if err := tpl.Parse(); err == nil {

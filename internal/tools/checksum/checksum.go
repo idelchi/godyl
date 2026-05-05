@@ -64,7 +64,7 @@ func (c *Checksum) IsSet() bool {
 
 // IsMandatory returns true if the checksum is mandatory.
 func (c *Checksum) IsMandatory() bool {
-	return c.Type != "none"
+	return c.Type != None
 }
 
 // Resolve determines the actual checksum value based on its type and value.
@@ -72,26 +72,26 @@ func (c *Checksum) IsMandatory() bool {
 //nolint:gocognit,funlen // TODO(Idelchi): Refactor this whole package
 func (c *Checksum) Resolve(skipVerifySSL bool) error {
 	// For none and file type, do nothing
-	if c.Type == "none" {
+	if c.Type == None {
 		return nil
 	}
 
 	// If the value starts with sha256 sha512 sha1 md5, strip it and set the type and value
-	for _, algo := range []string{"sha256", "sha512", "sha1", "md5"} {
-		if value, ok := strings.CutPrefix(c.Value, algo+":"); ok {
-			c.Type = Type(algo)
+	for _, algo := range []Type{SHA256, SHA512, SHA1, MD5} {
+		if value, ok := strings.CutPrefix(c.Value, algo.String()+":"); ok {
+			c.Type = algo
 			c.Value = strings.TrimSpace(value)
 
 			return nil
 		}
 	}
 
-	if c.Type == "file" && c.Entry != "" {
+	if c.Type == File && c.Entry != "" {
 		return errors.New("cannot use 'entry' with checksum type 'file'")
 	}
 
 	// For file type, do nothing
-	if c.Type == "file" {
+	if c.Type == File {
 		return nil
 	}
 

@@ -55,6 +55,12 @@ type Config struct {
 	// ErrorFile specifies the file to log errors
 	ErrorFile file.File `mapstructure:"error-file" yaml:"error-file"`
 
+	// Go specifies the go binary to use for go source installs
+	Go file.File `mapstructure:"go" yaml:"go"`
+
+	// Tmp specifies the temporary directory to use
+	Tmp folder.Folder `mapstructure:"tmp" yaml:"tmp"`
+
 	// Tools specifies the tools file to be used
 	Tools string `mapstructure:"tools" yaml:"tools"`
 
@@ -158,6 +164,10 @@ func (c *Config) ToTool(forced bool) *tool.Tool {
 
 	if isSet(c)("url-token") {
 		tool.Source.URL.Token = c.Tokens.URL
+	}
+
+	if isSet(c)("go") {
+		tool.Source.Go.Binary = c.Go
 	}
 
 	if isSet(c)("no-cache") {

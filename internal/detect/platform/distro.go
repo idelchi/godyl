@@ -9,6 +9,8 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
+const distroAlpine = "alpine"
+
 // Distribution represents a Linux distribution configuration.
 type Distribution struct {
 	Name string `single:"true"`
@@ -69,7 +71,7 @@ func (DistroInfo) Supported() []DistroInfo {
 			Type: "arch",
 		},
 		{
-			Type: "alpine",
+			Type: distroAlpine,
 		},
 		{
 			Type:    "raspbian",

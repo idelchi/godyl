@@ -630,7 +630,6 @@
     - pattern: .tgz
       weight: '{{ if eq .OS "windows" }}0{{ else }}1{{ end }}'
       type: endswith
-
   tags:
     - terminal
 

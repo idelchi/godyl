@@ -41,6 +41,8 @@ The following global flags are available:
 | `--log-level`, `-l`          | `GODYL_LOG_LEVEL`          | `info`                                | Log level (silent, debug, info, warn, error, always) |
 | `--parallel`, `-j`           | `GODYL_PARALLEL`           | `0`                                   | Parallelism. 0 means unlimited.                      |
 | `--cache-dir`                | `GODYL_CACHE_DIR`          | `~/.local/share/godyl`                | Path to cache directory                              |
+| `--go`                       | `GODYL_GO`                 | ``                                    | Path to go binary for go source installs             |
+| `--tmp`                      | `GODYL_TMP`                | ``                                    | Path to temporary directory                          |
 | `--no-cache`                 | `GODYL_NO_CACHE`           | `false`                               | Disable cache                                        |
 | `--no-verify-ssl`, `-k`      | `GODYL_NO_VERIFY_SSL`      | `false`                               | Skip SSL verification                                |
 | `--no-progress`              | `GODYL_NO_PROGRESS`        | `false`                               | Disable progress bar                                 |

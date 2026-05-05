@@ -18,6 +18,7 @@ func SingleStringOrStruct[T any](node ast.Node, out *T) error {
 		}
 
 		var value string
+
 		// for scalars only
 		if sn, ok := node.(*ast.StringNode); ok {
 			value = sn.Value

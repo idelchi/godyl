@@ -93,6 +93,7 @@ func TestParseZeroVersion(t *testing.T) {
 	}
 
 	const want = "0.0.0"
+
 	if got.String() != want {
 		t.Errorf("Parse(\"0.0.0\").String() = %q, want %q", got.String(), want)
 	}

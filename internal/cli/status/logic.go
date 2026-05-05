@@ -29,6 +29,7 @@ func run(input core.Input) error {
 
 	// The tools can now be unmarshalled into a tools.Tools instance
 	var tools tools.Tools
+
 	if err := unmarshal.Strict(data, &tools); err != nil {
 		return fmt.Errorf("unmarshalling tools: %w", err)
 	}

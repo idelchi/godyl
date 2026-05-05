@@ -27,6 +27,7 @@ func run(input core.Input) error {
 func validate(koanf *koanfx.Koanf, path, value string) error {
 	// First unmarshal the value string as YAML to get proper typing
 	var typedValue any
+
 	if err := unmarshal.Lax([]byte(value), &typedValue); err != nil {
 		return fmt.Errorf("parsing value as YAML: %w", err)
 	}

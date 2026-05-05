@@ -377,6 +377,7 @@ func TestFilesExistingEmpty(t *testing.T) {
 	// An empty collection passed to Existing() must remain empty — no panic,
 	// no spurious entries added.
 	var fs files.Files
+
 	fs.Existing()
 
 	if len(fs) != 0 {

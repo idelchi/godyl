@@ -338,6 +338,7 @@ func TestMetadataSet(t *testing.T) {
 		t.Parallel()
 
 		var m install.Metadata
+
 		m.Set("key", "val")
 
 		if got := m.Get("key"); got != "val" {

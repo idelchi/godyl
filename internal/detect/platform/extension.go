@@ -8,7 +8,7 @@ type Extension string
 // Returns ".exe" for Windows systems and empty string for Unix-like systems.
 func (e *Extension) ParseFrom(os OS) {
 	switch os.Type() {
-	case "windows":
+	case osWindows:
 		*e = Extension(".exe")
 	default:
 		*e = Extension("")

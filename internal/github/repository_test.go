@@ -163,6 +163,7 @@ func assertGitHubError(t *testing.T, err error, wantStatus int) {
 	t.Helper()
 
 	var ghErr *gogithub.ErrorResponse
+
 	if !errors.As(err, &ghErr) {
 		t.Fatalf("expected *github.ErrorResponse, got %T: %v", err, err)
 	}

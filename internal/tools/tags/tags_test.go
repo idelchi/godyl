@@ -253,6 +253,7 @@ func TestTagsUnmarshalYAMLEdgeCases(t *testing.T) {
 			t.Parallel()
 
 			var got tags.Tags
+
 			if err := yaml.Unmarshal([]byte(tc.input), &got); err != nil {
 				if tc.wantErr {
 					return
@@ -297,6 +298,7 @@ func TestTagsUnmarshalYAML(t *testing.T) {
 			t.Parallel()
 
 			var got tags.Tags
+
 			if err := yaml.Unmarshal([]byte(tc.input), &got); err != nil {
 				t.Fatalf("yaml.Unmarshal(%q) unexpected error: %v", tc.input, err)
 			}

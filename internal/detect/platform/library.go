@@ -9,6 +9,14 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
+const (
+	libAndroid = osAndroid
+	libGNU     = "gnu"
+	libMSVC    = "msvc"
+	libMusl    = "musl"
+	libSystem  = "libSystem"
+)
+
 // Library represents a system's standard library or ABI configuration.
 type Library struct {
 	Name string `single:"true"`
@@ -52,21 +60,21 @@ type LibraryInfo struct {
 func (LibraryInfo) Supported() []LibraryInfo {
 	return []LibraryInfo{
 		{
-			Type:    "gnu",
+			Type:    libGNU,
 			Aliases: []string{"glibc"},
 		},
 		{
-			Type: "musl",
+			Type: libMusl,
 		},
 		{
-			Type:    "msvc",
+			Type:    libMSVC,
 			Aliases: []string{"visualcpp"},
 		},
 		{
-			Type: "android",
+			Type: libAndroid,
 		},
 		{
-			Type: "libSystem",
+			Type: libSystem,
 		},
 	}
 }
@@ -122,25 +130,25 @@ func (l *Library) Is(other Library) bool {
 }
 
 var compatibilityMatrix = map[string]map[string]bool{ //nolint:gochecknoglobals,lll // Compatibility matrix lookup table is appropriate as global
-	"gnu": {
-		"gnu":  true,
-		"musl": true,
+	libGNU: {
+		libGNU:  true,
+		libMusl: true,
 	},
-	"musl": {
-		"gnu":  true,
-		"musl": true,
+	libMusl: {
+		libGNU:  true,
+		libMusl: true,
 	},
-	"msvc": {
-		"msvc": true,
-		"gnu":  true,
+	libMSVC: {
+		libMSVC: true,
+		libGNU:  true,
 	},
-	"android": {
-		"android": true,
+	libAndroid: {
+		libAndroid: true,
 	},
-	"libSystem": {
-		"libSystem": true,
-		"gnu":       true,
-		"musl":      true,
+	libSystem: {
+		libSystem: true,
+		libGNU:    true,
+		libMusl:   true,
 	},
 }
 
@@ -176,19 +184,19 @@ func (l *Library) String() string {
 // system library (e.g., GNU for Linux, MSVC for Windows).
 func (l *Library) Default(os OS, distro Distribution) Library {
 	switch os.Type() {
-	case "windows":
-		return Library{Name: "msvc", canonical: "msvc", alias: "msvc"}
-	case "android":
-		return Library{Name: "android", canonical: "android", alias: "android"}
-	case "linux":
+	case osWindows:
+		return Library{Name: libMSVC, canonical: libMSVC, alias: libMSVC}
+	case osAndroid:
+		return Library{Name: libAndroid, canonical: libAndroid, alias: libAndroid}
+	case osLinux:
 		switch distro.canonical {
-		case "alpine":
-			return Library{Name: "musl", canonical: "musl", alias: "musl"}
+		case distroAlpine:
+			return Library{Name: libMusl, canonical: libMusl, alias: libMusl}
 		default:
-			return Library{Name: "gnu", canonical: "gnu", alias: "gnu"}
+			return Library{Name: libGNU, canonical: libGNU, alias: libGNU}
 		}
-	case "darwin":
-		return Library{Name: "libSystem", canonical: "libSystem", alias: "libSystem"}
+	case osDarwin:
+		return Library{Name: libSystem, canonical: libSystem, alias: libSystem}
 	default:
 		return Library{}
 	}

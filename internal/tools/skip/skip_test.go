@@ -13,6 +13,7 @@ func makeCondition(t *testing.T, template string) skip.Condition {
 	t.Helper()
 
 	var c skip.Condition
+
 	c.Condition.Set(template)
 
 	return c
@@ -70,6 +71,7 @@ func TestConditionUnmarshalYAML(t *testing.T) {
 	`)
 
 	var c skip.Condition
+
 	if err := yaml.Unmarshal([]byte(input), &c); err != nil {
 		t.Fatalf("yaml.Unmarshal() unexpected error: %v", err)
 	}

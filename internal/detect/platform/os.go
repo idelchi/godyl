@@ -9,6 +9,13 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
+const (
+	osLinux   = "linux"
+	osDarwin  = "darwin"
+	osWindows = "windows"
+	osAndroid = "android"
+)
+
 // OS represents an operating system configuration.
 type OS struct {
 	Name string `single:"true"`
@@ -51,21 +58,21 @@ type OSInfo struct {
 func (OSInfo) Supported() []OSInfo {
 	return []OSInfo{
 		{
-			Type: "linux",
+			Type: osLinux,
 		},
 		{
-			Type:    "darwin",
+			Type:    osDarwin,
 			Aliases: []string{"macos", "mac", "osx"},
 		},
 		{
-			Type:    "windows",
+			Type:    osWindows,
 			Aliases: []string{"win"},
 		},
 		{
 			Type: "freebsd",
 		},
 		{
-			Type: "android",
+			Type: osAndroid,
 		},
 		{
 			Type: "netbsd",

@@ -13,6 +13,7 @@ linters:
     - noinlineerr
     # Deprecated
     - wsl
+    - gomodguard
     # Occasional dynamic errors are fine
     - err113
     # Most errors don't need additional wrapping
@@ -132,6 +133,7 @@ linters:
           - wrapcheck
           - dupl
           - gocognit
+          - goconst
         path: _test.go
 
       # Exceptions for `main.go` and `config.go`

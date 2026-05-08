@@ -650,7 +650,7 @@
 
 - name: bitwarden/clients
   description: The Bitwarden command-line interface
-  version: cli-v2025.8.0
+  version: cli-v2026.4.1
   exe: bw
   hints:
     - pattern: .zip
@@ -1122,6 +1122,17 @@
 
 - name: programmersd21/kairo
   description: Kairo is a fast, keyboard-first terminal task manager in Go
+  tags:
+    - terminal
+
+- name: deuxfleurs-org/garage
+  description: S3-compatible object store for small self-hosted geo-distributed deployments
+  version: v2.3.0
+  url: https://garagehq.deuxfleurs.fr/_releases/{{ .Version }}/{{ index .ARCH_ALIASES 0 }}-unknown-{{ .OS }}-musl/garage
+  checksum: none
+  skip:
+    - reason: "garage is only available on linux"
+      condition: '{{ ne .OS "linux" }}'
   tags:
     - terminal
 

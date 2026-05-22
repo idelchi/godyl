@@ -569,6 +569,8 @@
 
 - name: hashicorp/terraform
   description: Infrastructure as Code tool
+  # TODO(Idelchi): v2.0.1 for CE does not provide binaries for all platforms. We have to wait for v2.0.2 for this to happen.
+  version: 2.0.0
   url: https://releases.hashicorp.com/terraform/{{ .Version | trimPrefix "v" }}/terraform_{{ .Version | trimPrefix "v" }}_{{ .OS }}_{{ .ARCH }}.zip
   checksum:
     type: file
@@ -959,24 +961,9 @@
 - name: openai/codex
   description: A CLI tool for interacting with OpenAI's Codex models
   hints:
-    - pattern: proxy
+    - pattern: proxy|command-runner|sandbox|npm|zsh|app-server|package
       match: excluded
-      type: contains
-    - pattern: command-runner
-      match: excluded
-      type: contains
-    - pattern: sandbox
-      match: excluded
-      type: contains
-    - pattern: npm
-      match: excluded
-      type: contains
-    - pattern: zsh
-      match: excluded
-      type: contains
-    - pattern: app-server
-      match: excluded
-      type: contains
+      type: regex
     - pattern: codex
       match: required
       type: contains

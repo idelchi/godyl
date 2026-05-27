@@ -262,6 +262,13 @@
   tags:
     - terminal
 
+- name: FiloSottile/age
+  description: A simple, modern and secure encryption tool
+  exe: age-keygen
+  checksum: none
+  tags:
+    - terminal
+
 - name: chmln/sd
   description: Intuitive find & replace CLI
   checksum: none

@@ -1135,6 +1135,11 @@
   tags:
     - terminal
 
+- name: yannh/kubeconform
+  description: A FAST Kubernetes manifests validator, with support for Custom Resources!
+  tags:
+    - kubernetes
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

@@ -780,6 +780,12 @@
   tags:
     - terminal
 
+- name: astral-sh/uv
+  description: Alias for 'uv tool run'
+  exe: uvx
+  tags:
+    - terminal
+
 - name: astral-sh/ruff
   description: An extremely fast Python linter and code formatter, written in Rust
   tags:

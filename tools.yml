@@ -974,7 +974,7 @@
 - name: openai/codex
   description: A CLI tool for interacting with OpenAI's Codex models
   hints:
-    - pattern: proxy|command-runner|sandbox|npm|zsh|app-server|package
+    - pattern: proxy|command-runner|sandbox|npm|zsh|app-server|package|symbols
       match: excluded
       type: regex
     - pattern: codex

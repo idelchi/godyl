@@ -1144,6 +1144,11 @@
   tags:
     - kubernetes
 
+- name: home-operations/flate
+  description: A Flux resource validator and inflator
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

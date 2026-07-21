@@ -73,3 +73,7 @@
 - name: apps/uploader
   inherit:
     - gitlab:selfhosted
+
+- name: apps/notes
+  inherit:
+    - gitlab:selfhosted

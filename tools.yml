@@ -1149,6 +1149,11 @@
   tags:
     - terminal
 
+- name: ankitpokhrel/jira-cli
+  description: Feature-rich interactive Jira command line
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none

@@ -50,4 +50,4 @@ jobs:
 
       - name: Install tools
         shell: bash
-        run: ./godyl dump tools -e | ./godyl -j 1 -v i -
+        run: ./godyl dump tools -e | ./godyl --no-progress -j 1 -v i -

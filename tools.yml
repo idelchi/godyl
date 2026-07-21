@@ -1151,6 +1151,7 @@
 
 - name: ankitpokhrel/jira-cli
   description: Feature-rich interactive Jira command line
+  exe: glab
   tags:
     - terminal
 

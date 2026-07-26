@@ -87,6 +87,54 @@ func TestArtifactKey(t *testing.T) {
 	if key == headerKey {
 		t.Fatal("newArtifactKey() should differ when headers differ")
 	}
+
+	differentURL := base
+
+	differentURL.Path = "https://example.com/other.zip"
+
+	urlKey, err := newArtifactKey(sources.URL, differentURL)
+	if err != nil {
+		t.Fatalf("newArtifactKey() with different URL: %v", err)
+	}
+
+	if key == urlKey {
+		t.Fatal("newArtifactKey() should differ when URL differs")
+	}
+
+	sourceKey, err := newArtifactKey(sources.GITHUB, base)
+	if err != nil {
+		t.Fatalf("newArtifactKey() with different source: %v", err)
+	}
+
+	if key == sourceKey {
+		t.Fatal("newArtifactKey() should differ when source differs")
+	}
+
+	noVerifySSL := base
+
+	noVerifySSL.NoVerifySSL = true
+
+	noVerifySSLKey, err := newArtifactKey(sources.URL, noVerifySSL)
+	if err != nil {
+		t.Fatalf("newArtifactKey() with no-verify-ssl: %v", err)
+	}
+
+	if key == noVerifySSLKey {
+		t.Fatal("newArtifactKey() should differ when no-verify-ssl differs")
+	}
+
+	noVerifyChecksum := base
+
+	noVerifyChecksum.NoVerifyChecksum = true
+
+	noVerifyChecksumKey, err := newArtifactKey(sources.URL, noVerifyChecksum)
+	if err != nil {
+		t.Fatalf("newArtifactKey() with no-verify-checksum: %v", err)
+	}
+
+	if key == noVerifyChecksumKey {
+		t.Fatal("newArtifactKey() should differ when no-verify-checksum differs")
+	}
 }
 
 func TestIsReusableArtifact(t *testing.T) {

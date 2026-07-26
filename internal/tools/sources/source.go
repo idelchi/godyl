@@ -6,6 +6,7 @@ package sources
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/hashicorp/go-getter/v2"
 
@@ -59,6 +60,18 @@ func (t Type) SupportsChecksum() bool {
 	}
 }
 
+// SupportsArtifactReuse returns true if source artifacts can be reused after URL resolution.
+func (t Type) SupportsArtifactReuse() bool {
+	switch t {
+	case GITHUB, GITLAB, URL:
+		return true
+	case NONE, GO:
+		return false
+	default:
+		return false
+	}
+}
+
 // Source represents the configuration for various source types used to retrieve tools.
 // TODO(Idelchi): Add validation.
 type Source struct {
@@ -67,6 +80,20 @@ type Source struct {
 	Go     goc.Go
 	Type   Type `validate:"oneof=github gitlab url none go"`
 	GitLab gitlab.GitLab
+}
+
+// Headers returns the HTTP headers used by the active source during artifact download.
+func (s *Source) Headers() http.Header {
+	switch s.Type {
+	case GITLAB:
+		return s.GitLab.GetHeaders().Clone()
+	case URL:
+		return s.URL.Headers.Clone()
+	case GITHUB, NONE, GO:
+		return http.Header{}
+	default:
+		return http.Header{}
+	}
 }
 
 // Populator defines the interface that all source types must implement.

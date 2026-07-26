@@ -2,6 +2,7 @@ package tool
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"slices"
 	"strings"
@@ -259,31 +260,15 @@ func (t *Tool) CheckSkipConditions(tags tags.IncludeTags) result.Result {
 // Download retrieves and installs the tool using its configured source and installer.
 // It handles progress tracking and executes any post-installation commands.
 // Returns a Result indicating success or failure with detailed messages.
-func (t *Tool) Download(_ context.Context, progressListener getter.ProgressTracker) result.Result {
+func (t *Tool) Download(ctx context.Context, progressListener getter.ProgressTracker) result.Result {
 	installer, err := t.Source.Installer()
 	if err != nil {
 		return result.WithFailed("getting installer").Wrap(err)
 	}
 
-	if t.Exe.Patterns == nil {
-		return result.WithFailed("no exe.patterns defined for")
-	}
-
-	data := install.Data{
-		Path:             t.URL,
-		Name:             t.Name,
-		Exe:              t.Exe.Name,
-		Patterns:         *t.Exe.Patterns,
-		Output:           t.Output,
-		Mode:             t.Mode.String(),
-		Env:              t.Env,
-		Checksum:         t.Checksum,
-		NoVerifySSL:      t.NoVerifySSL,
-		NoVerifyChecksum: t.NoVerifyChecksum,
-		// TODO(Idelchi): Pass OS and Architecture as they are and let downstream decide if they want Type(), or
-		// String(), or whatever.
-		OS:   t.Platform.OS.Type(),
-		Arch: t.Platform.Architecture.Type(),
+	data, err := t.InstallData()
+	if err != nil {
+		return result.WithFailed(err.Error())
 	}
 
 	// Pass the progress listener to the specific source's Install method
@@ -292,10 +277,38 @@ func (t *Tool) Download(_ context.Context, progressListener getter.ProgressTrack
 		return result.WithFailed("installing tool").Wrap(err).Wrapped(output)
 	}
 
-	// Execute post-installation commands if any exist
+	return t.CompleteInstall(ctx)
+}
+
+// InstallData builds the install data used by source installers.
+func (t *Tool) InstallData() (install.Data, error) {
+	if t.Exe.Patterns == nil {
+		return install.Data{}, errors.New("no exe.patterns defined for")
+	}
+
+	return install.Data{
+		Path:             t.URL,
+		Name:             t.Name,
+		Exe:              t.Exe.Name,
+		Patterns:         *t.Exe.Patterns,
+		Output:           t.Output,
+		Mode:             t.Mode.String(),
+		Env:              t.Env,
+		Checksum:         t.Checksum,
+		Header:           t.Source.Headers(),
+		NoVerifySSL:      t.NoVerifySSL,
+		NoVerifyChecksum: t.NoVerifyChecksum,
+		// TODO(Idelchi): Pass OS and Architecture as they are and let downstream decide if they want Type(), or
+		// String(), or whatever.
+		OS:   t.Platform.OS.Type(),
+		Arch: t.Platform.Architecture.Type(),
+	}, nil
+}
+
+// CompleteInstall runs post-install commands and returns the final install result.
+func (t *Tool) CompleteInstall(ctx context.Context) result.Result {
 	if len(t.Commands.Commands) > 0 {
-		//nolint:contextcheck 	// TODO(Idelchi): Address this later
-		if output, err := t.Commands.Run(context.Background(), t.Env); err != nil {
+		if output, err := t.Commands.Run(ctx, t.Env); err != nil {
 			return result.WithFailed("executing post-installation commands").Wrap(err).Wrapped(output)
 		}
 	}

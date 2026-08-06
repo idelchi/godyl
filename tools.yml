@@ -658,7 +658,7 @@
 
 - name: bitwarden/clients
   description: The Bitwarden command-line interface
-  version: cli-v2026.7.0
+  version: "cli-v*"
   exe: bw
   hints:
     - pattern: .zip

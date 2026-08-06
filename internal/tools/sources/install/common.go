@@ -50,6 +50,20 @@ func Download(d Data) (found file.File, err error) {
 		}()
 	}
 
+	destination, err := Acquire(d, dir)
+	if err != nil {
+		return "", err
+	}
+
+	if d.Mode == "find" {
+		found, err = Find(destination, d)
+	}
+
+	return found, err
+}
+
+// Acquire downloads and extracts a tool artifact into dir.
+func Acquire(d Data, dir folder.Folder) (file.File, error) {
 	options := []download.Option{
 		download.WithProgress(d.ProgressListener),
 		download.WithContextTimeout(download.DefaultTimeout),
@@ -69,11 +83,7 @@ func Download(d Data) (found file.File, err error) {
 		return "", fmt.Errorf("downloading %q: %w", d.Path, err)
 	}
 
-	if d.Mode == "find" {
-		found, err = Find(destination, d)
-	}
-
-	return found, err
+	return destination, nil
 }
 
 // findExecutableInDir searches for an executable file in a directory using the provided patterns.

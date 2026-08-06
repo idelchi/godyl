@@ -3,6 +3,7 @@ package processor
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -63,6 +64,7 @@ func (p *Processor) Process(tags tags.IncludeTags) (Summary, error) {
 	// 2. Process tools concurrently
 	ctx := context.Background()
 	g, ctx := errgroup.WithContext(ctx)
+	artifacts := newArtifactStore()
 
 	if p.config.Tokens.GitHub == "" {
 		p.config.Parallel = 1
@@ -81,7 +83,7 @@ func (p *Processor) Process(tags tags.IncludeTags) (Summary, error) {
 		// capture
 		g.Go(func() error {
 			// Run the tool operation
-			result := p.runTool(ctx, t, tags)
+			result := p.runTool(ctx, t, tags, artifacts)
 
 			// Collect the result
 			p.results.Add(result)
@@ -97,16 +99,31 @@ func (p *Processor) Process(tags tags.IncludeTags) (Summary, error) {
 
 	// 3. Wait for completion
 	if err := g.Wait(); err != nil {
-		return Summary{}, fmt.Errorf("processing tools: %w", err)
+		return Summary{}, errors.Join(
+			fmt.Errorf("processing tools: %w", err),
+			artifacts.cleanup(),
+		)
 	}
 
 	p.progress.Wait()
 
-	return p.results.Summary(), nil
+	summary := p.results.Summary()
+
+	if err := artifacts.cleanup(); err != nil {
+		if summary.HasErrors() {
+			p.log.Errorf("failed to clean artifact downloads: %v", err)
+
+			return summary, nil
+		}
+
+		return summary, fmt.Errorf("cleaning artifact downloads: %w", err)
+	}
+
+	return summary, nil
 }
 
 // runTool executes a tool operation and returns the result.
-func (p *Processor) runTool(ctx context.Context, t *tool.Tool, tags tags.IncludeTags) Result {
+func (p *Processor) runTool(ctx context.Context, t *tool.Tool, tags tags.IncludeTags, artifacts *artifactStore) Result {
 	// Enable cache if available
 	if p.cache != nil {
 		t.EnableCache(p.cache)
@@ -133,8 +150,7 @@ func (p *Processor) runTool(ctx context.Context, t *tool.Tool, tags tags.Include
 		return p.convertResult(t, resolveResult)
 	}
 
-	// Download the tool
-	downloadResult := t.Download(ctx, p.progress.Tracker())
+	downloadResult := p.downloadTool(ctx, t, artifacts)
 
 	return p.convertResult(t, downloadResult)
 }

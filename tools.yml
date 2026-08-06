@@ -484,6 +484,10 @@
 
 - name: tidwall/jj
   description: JSON Stream Editor
+  exe:
+    name: jjs
+    patterns:
+      - "**/jj{{ .EXTENSION }}"
   checksum: none
   skip:
     reason: "jj not available on arm based architectures"
@@ -1153,6 +1157,24 @@
 - name: ankitpokhrel/jira-cli
   description: Feature-rich interactive Jira command line
   exe: jira
+  tags:
+    - terminal
+
+- name: rgwood/systemctl-tui
+  description: Fast TUI for interacting with systemd services and logs
+  skip:
+    reason: "systemctl-tui is only available on linux"
+    condition: '{{ ne .OS "linux" }}'
+  tags:
+    - terminal
+
+- name: tlipinski/rura
+  description: Interactive TUI pipeline editor for rapid shell iteration
+  tags:
+    - terminal
+
+- name: jj-vcs/jj
+  description: A Git-compatible VCS that is both simple and powerful
   tags:
     - terminal
 

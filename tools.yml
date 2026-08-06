@@ -262,6 +262,13 @@
   tags:
     - terminal
 
+- name: FiloSottile/age
+  description: A simple, modern and secure encryption tool
+  exe: age-keygen
+  checksum: none
+  tags:
+    - terminal
+
 - name: chmln/sd
   description: Intuitive find & replace CLI
   checksum: none
@@ -772,6 +779,12 @@
   tags:
     - terminal
 
+- name: astral-sh/uv
+  description: Alias for 'uv tool run'
+  exe: uvx
+  tags:
+    - terminal
+
 - name: astral-sh/ruff
   description: An extremely fast Python linter and code formatter, written in Rust
   tags:
@@ -960,24 +973,9 @@
 - name: openai/codex
   description: A CLI tool for interacting with OpenAI's Codex models
   hints:
-    - pattern: proxy
+    - pattern: proxy|command-runner|sandbox|npm|zsh|app-server|package|symbols|code-mode-host
       match: excluded
-      type: contains
-    - pattern: command-runner
-      match: excluded
-      type: contains
-    - pattern: sandbox
-      match: excluded
-      type: contains
-    - pattern: npm
-      match: excluded
-      type: contains
-    - pattern: zsh
-      match: excluded
-      type: contains
-    - pattern: app-server
-      match: excluded
-      type: contains
+      type: regex
     - pattern: codex
       match: required
       type: contains
@@ -1126,6 +1124,38 @@
   tags:
     - terminal
 
+- name: deuxfleurs-org/garage
+  description: S3-compatible object store for small self-hosted geo-distributed deployments
+  version: v2.3.0
+  url: https://garagehq.deuxfleurs.fr/_releases/{{ .Version }}/{{ index .ARCH_ALIASES 0 }}-unknown-{{ .OS }}-musl/garage
+  checksum: none
+  skip:
+    - reason: "garage is only available on linux"
+      condition: '{{ ne .OS "linux" }}'
+  tags:
+    - terminal
+
+- name: terraform-linters/tflint
+  description: A Pluggable Terraform Linter
+  tags:
+    - terminal
+
+- name: yannh/kubeconform
+  description: A FAST Kubernetes manifests validator, with support for Custom Resources!
+  tags:
+    - kubernetes
+
+- name: home-operations/flate
+  description: A Flux resource validator and inflator
+  tags:
+    - terminal
+
+- name: ankitpokhrel/jira-cli
+  description: Feature-rich interactive Jira command line
+  exe: jira
+  tags:
+    - terminal
+
 - name: gitlab-org/release-cli
   description: A command-line tool for managing GitLab releases
   checksum: none
@@ -1143,6 +1173,17 @@
     - pattern: .tar.gz
       match: '{{ if ne .OS "windows" }}required{{ end }}'
       type: endswith
+  inherit: gitlab
+  tags:
+    - terminal
+
+- name: gitlab-org/ci-cd/runner-tools/glci
+  description: Run GitLab CI/CD pipelines locally
+  exe: glci
+  checksum: none
+  skip:
+    reason: "glci is not available on windows"
+    condition: '{{ eq .OS "windows" }}'
   inherit: gitlab
   tags:
     - terminal

@@ -1185,6 +1185,8 @@
     reason: "glci is not available on windows"
     condition: '{{ eq .OS "windows" }}'
   inherit: gitlab
+  tags:
+    - terminal
 
 - idelchi/dotgen
 - idelchi/slot

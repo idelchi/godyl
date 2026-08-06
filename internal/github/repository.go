@@ -10,6 +10,8 @@ import (
 	"github.com/google/go-github/v74/github"
 
 	"github.com/idelchi/godyl/internal/release"
+	"github.com/idelchi/godyl/pkg/version"
+	"github.com/idelchi/godyl/pkg/wildcard"
 )
 
 // Repository represents a GitHub repository with its owner and name.
@@ -123,12 +125,7 @@ func (r *Repository) LatestIncludingPreRelease(ctx context.Context, perPage int)
 // GetReleasesByWildcard retrieves the latest release matching a wildcard pattern.
 // It returns the highest version that matches the pattern.
 func (r *Repository) GetReleasesByWildcard(ctx context.Context, pattern string, perPage int) (*release.Release, error) {
-	pattern = strings.ReplaceAll(pattern, "*", "X")
-
-	c, err := semver.NewConstraint(pattern)
-	if err != nil {
-		return nil, fmt.Errorf("invalid version pattern %q: %w", pattern, err)
-	}
+	constraint, _ := semver.NewConstraint(strings.ReplaceAll(pattern, "*", "X"))
 
 	var allReleases []*github.RepositoryRelease
 
@@ -169,14 +166,8 @@ func (r *Repository) GetReleasesByWildcard(ctx context.Context, pattern string, 
 			continue
 		}
 
-		// Parse version (handles v prefix automatically)
-		v, err := semver.NewVersion(*release.TagName)
-		if err != nil {
-			continue // Skip non-semver tags
-		}
-
-		// Check if version matches constraint
-		if !c.Check(v) {
+		v := matchedReleaseVersion(pattern, constraint, *release.TagName)
+		if v == nil {
 			continue
 		}
 
@@ -198,4 +189,22 @@ func (r *Repository) GetReleasesByWildcard(ctx context.Context, pattern string, 
 	}
 
 	return release, nil
+}
+
+// matchedReleaseVersion returns the comparable version when tag matches pattern.
+func matchedReleaseVersion(pattern string, constraint *semver.Constraints, tag string) *semver.Version {
+	if constraint != nil {
+		version, err := semver.NewVersion(tag)
+		if err != nil || !constraint.Check(version) {
+			return nil
+		}
+
+		return version
+	}
+
+	if !wildcard.Match(pattern, tag) {
+		return nil
+	}
+
+	return version.Parse(tag)
 }

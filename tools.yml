@@ -539,6 +539,7 @@
 
 - name: Byron/dua-cli
   description: View disk space usage and delete unwanted data
+  version: v*
   exe: dua
   skip:
     reason: "dua-cli is not available on darwin"
@@ -650,7 +651,7 @@
 
 - name: bitwarden/clients
   description: The Bitwarden command-line interface
-  version: cli-v2025.8.0
+  version: cli-v*
   exe: bw
   hints:
     - pattern: .zip

@@ -375,8 +375,45 @@ func TestGetReleasesByWildcard(t *testing.T) {
 			Assets:  []assetJSON{},
 		},
 		{
+			TagName: "v2.41.1",
+			Name:    "Release v2.41.1",
+			Assets: []assetJSON{
+				{
+					Name:               "dua-v2.41.1-x86_64-unknown-linux-musl.tar.gz",
+					BrowserDownloadURL: "https://example.com/releases/download/v2.41.1/dua-v2.41.1.tar.gz",
+					ContentType:        "application/gzip",
+				},
+			},
+		},
+		{
+			TagName: "dua-core-v2.41.1",
+			Name:    "dua-core v2.41.1",
+			Assets:  []assetJSON{},
+		},
+		{
 			TagName: "not-semver",
 			Name:    "Non-semver tag",
+			Assets:  []assetJSON{},
+		},
+		{
+			TagName: "cli-v2026.6.0",
+			Name:    "CLI v2026.6.0",
+			Assets:  []assetJSON{},
+		},
+		{
+			TagName: "cli-v2026.7.0",
+			Name:    "CLI v2026.7.0",
+			Assets: []assetJSON{
+				{
+					Name:               "bw-linux-2026.7.0.zip",
+					BrowserDownloadURL: "https://example.com/releases/download/cli-v2026.7.0/bw-linux-2026.7.0.zip",
+					ContentType:        "application/zip",
+				},
+			},
+		},
+		{
+			TagName: "web-v2026.7.1",
+			Name:    "Web v2026.7.1",
 			Assets:  []assetJSON{},
 		},
 	}
@@ -417,9 +454,54 @@ func TestGetReleasesByWildcard(t *testing.T) {
 			wantErrFrag: "no releases match",
 		},
 		{
-			name:        "invalid wildcard pattern returns constraint error",
+			name:    "semver wildcard ignores tags with embedded semver",
+			pattern: "v*",
+			want: &release.Release{
+				Tag:  "v2.41.1",
+				Name: "Release v2.41.1",
+				Assets: release.Assets{
+					{
+						Name: "dua-v2.41.1-x86_64-unknown-linux-musl.tar.gz",
+						URL:  "https://example.com/releases/download/v2.41.1/dua-v2.41.1.tar.gz",
+						Type: "application/gzip",
+					},
+				},
+			},
+		},
+		{
+			name:    "tag wildcard returns highest matching parsed version",
+			pattern: "cli-v*",
+			want: &release.Release{
+				Tag:  "cli-v2026.7.0",
+				Name: "CLI v2026.7.0",
+				Assets: release.Assets{
+					{
+						Name: "bw-linux-2026.7.0.zip",
+						URL:  "https://example.com/releases/download/cli-v2026.7.0/bw-linux-2026.7.0.zip",
+						Type: "application/zip",
+					},
+				},
+			},
+		},
+		{
+			name:    "tag wildcard ignores other matching product prefixes",
+			pattern: "cli-v2026.*",
+			want: &release.Release{
+				Tag:  "cli-v2026.7.0",
+				Name: "CLI v2026.7.0",
+				Assets: release.Assets{
+					{
+						Name: "bw-linux-2026.7.0.zip",
+						URL:  "https://example.com/releases/download/cli-v2026.7.0/bw-linux-2026.7.0.zip",
+						Type: "application/zip",
+					},
+				},
+			},
+		},
+		{
+			name:        "tag wildcard with no matching tags returns error",
 			pattern:     "not-valid-*",
-			wantErrFrag: "invalid version pattern",
+			wantErrFrag: "no releases match",
 		},
 	}
 

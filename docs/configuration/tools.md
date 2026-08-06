@@ -54,7 +54,8 @@ A complete reference for all fields is available below.
     # For `github` and `gitlab` sources, leave empty to fetch the latest release from the API.
     # The version is always available as {{ .Version }}, except when not set.
     # It is then only available after the version has been determined.
-    # Allows for using wildcards like `v1.*` or `1.2.*` to fetch the latest matching version.
+    # GitHub sources allow wildcards like `v1.*`, `1.2.*`, or `cli-v*`
+    # to fetch the highest matching release.
     version: v0.1.0
     # Commands to run to get the current installed version (for syncs),
     # whenever not available in the cache.
@@ -283,6 +284,7 @@ description: Asset downloader for GitHub releases, GitLab releases, URLs, and Go
 📤 Exports as: `{{ .Version }}`
 
 The version of the tool to download. Will be inferred by the source type if not provided.
+When provided without `*`, the value is used as an exact release tag for API-backed sources.
 
 Simple form:
 
@@ -301,6 +303,12 @@ version:
     # Match "anything-v0.1.0" or "anything-0.1.0"
     - '.*?(v?\d+\.\d+).*'
 ```
+
+For GitHub sources, a version containing `*` selects the highest matching release instead of using GitHub's latest release pointer.
+
+Semver wildcards such as `v2.*` and `1.2.*` are treated as semantic-version constraints. Only release tags that are themselves valid semver tags are considered, so tags like `dua-core-v2.41.1` do not match `v*`.
+
+Tag-family wildcards such as `cli-v*` are matched against the full release tag first. Matching tags must contain a parseable semantic version, and the highest parsed version is selected. This is useful for repositories that publish several products from one release list, for example `cli-v2026.7.0`, `web-v2026.7.1`, and `desktop-v2026.7.0`.
 
 ### `url`
 

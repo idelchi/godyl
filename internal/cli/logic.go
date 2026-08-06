@@ -3,6 +3,7 @@ package cli
 import (
 	"errors"
 	"fmt"
+	"os"
 	"slices"
 	"strings"
 
@@ -298,6 +299,16 @@ func run(cmd *cobra.Command, cfg *root.Config, calledFrom *cobra.Command) error 
 	// Parse last time
 	if err := core.KCreateSubcommandPreRunE(cmd, cfg, cfg.ShowFunc)(cmd, []string{}); err != nil {
 		return err
+	}
+
+	if cfg.IsSet("tmp") {
+		tmp := cfg.Tmp.Expanded().Path()
+
+		for _, key := range []string{"TMPDIR", "TMP", "TEMP"} {
+			if err := os.Setenv(key, tmp); err != nil {
+				return fmt.Errorf("setting %s: %w", key, err)
+			}
+		}
 	}
 
 	// Full config available here

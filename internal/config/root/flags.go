@@ -19,6 +19,8 @@ func Flags(cmd *cobra.Command) {
 	cmd.Flags().StringP("inherit", "i", "default", "default to inherit from when unset in the tool spec")
 	cmd.PersistentFlags().CountP("show", "s", "show the parsed configuration and exit, repeat for unmasking tokens.")
 
+	cmd.Flags().String("go", "", "path to go binary for go source installs")
+	cmd.Flags().String("tmp", "", "path to temporary directory")
 	cmd.Flags().StringP("cache-dir", "", data.UserDataDir().Path(), "path to cache directory")
 
 	cmd.Flags().

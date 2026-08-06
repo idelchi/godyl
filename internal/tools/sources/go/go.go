@@ -35,6 +35,7 @@ type Go struct {
 	Data              install.Metadata `yaml:"-"`
 	Command           string           `yaml:"command"`
 	Base              string           `yaml:"base"`
+	Binary            file.File        `yaml:"binary"`
 	DownloadIfMissing bool             `yaml:"download_if_missing"`
 }
 
@@ -87,7 +88,7 @@ func (g *Go) Install(
 
 	debug.Debug("Searching for go binary...")
 
-	binary, err := goi.New(d.NoVerifySSL, g.DownloadIfMissing, d.NoVerifyChecksum, progressListener)
+	binary, err := goi.New(g.Binary, d.NoVerifySSL, g.DownloadIfMissing, d.NoVerifyChecksum, progressListener)
 	if err != nil {
 		mu.Unlock()
 

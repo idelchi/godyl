@@ -1151,6 +1151,7 @@
 
 - name: home-operations/flate
   description: A Flux resource validator and inflator
+  version: v0.4.12
   tags:
     - terminal
 
@@ -1178,13 +1179,6 @@
   tags:
     - terminal
 
-- name: gitlab-org/release-cli
-  description: A command-line tool for managing GitLab releases
-  checksum: none
-  inherit: gitlab
-  tags:
-    - terminal
-
 - name: gitlab-org/cli
   description: glab is an open source GitLab CLI tool
   exe: glab
@@ -1195,6 +1189,13 @@
     - pattern: .tar.gz
       match: '{{ if ne .OS "windows" }}required{{ end }}'
       type: endswith
+  inherit: gitlab
+  tags:
+    - terminal
+
+- name: gitlab-org/release-cli
+  description: A command-line tool for managing GitLab releases
+  checksum: none
   inherit: gitlab
   tags:
     - terminal

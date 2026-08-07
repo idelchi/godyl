@@ -1151,7 +1151,6 @@
 
 - name: home-operations/flate
   description: A Flux resource validator and inflator
-  version: v0.4.12
   tags:
     - terminal
 

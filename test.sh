@@ -2,18 +2,16 @@
 
 set -eu
 
-if [ "${#}" -eq 0 ]; then
-	printf 'Usage: %s <tool-name> [tool-name ...]\n' "${0##*/}" >&2
-	exit 2
-fi
-
 TEST_DIR=$(mktemp -d)
 trap 'rm -rf "${TEST_DIR}"' EXIT
 
-TAGS=$(printf ',%s' "${@}")
-TAGS=${TAGS#,}
-
-go run . dump tools --embedded --tags="${TAGS}" >"${TEST_DIR}/tools.yml"
+if [ "${#}" -eq 0 ]; then
+	go run . dump tools --embedded >"${TEST_DIR}/tools.yml"
+else
+	TAGS=$(printf ',%s' "${@}")
+	TAGS=${TAGS#,}
+	go run . dump tools --embedded --tags="${TAGS}" >"${TEST_DIR}/tools.yml"
+fi
 
 while read -r OS ARCH; do
 	go run . \

@@ -1178,6 +1178,11 @@
   tags:
     - terminal
 
+- name: dandavison/delta
+  description: A syntax-highlighting pager for git, diff, grep, rg --json, and blame output
+  tags:
+    - terminal
+
 - name: gitlab-org/cli
   description: glab is an open source GitLab CLI tool
   exe: glab

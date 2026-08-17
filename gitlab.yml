@@ -77,3 +77,7 @@
 - name: apps/notes
   inherit:
     - gitlab:selfhosted
+
+- name: agents/agent-finder
+  inherit:
+    - gitlab:selfhosted

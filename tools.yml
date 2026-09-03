@@ -959,18 +959,30 @@
 - name: regclient/regclient
   description: Docker and OCI Registry Client in Go and tooling using those libraries
   exe: regctl
+  hints:
+    # No extension for the binary
+    pattern: ^[^.]+$
+    type: regex
   tags:
     - terminal
 
 - name: regclient/regclient
   description: Docker and OCI Registry Client in Go and tooling using those libraries
   exe: regsync
+  hints:
+    # No extension for the binary
+    pattern: ^[^.]+$
+    type: regex
   tags:
     - terminal
 
 - name: regclient/regclient
   description: Docker and OCI Registry Client in Go and tooling using those libraries
   exe: regbot
+  hints:
+    # No extension for the binary
+    pattern: ^[^.]+$
+    type: regex
   tags:
     - terminal
 

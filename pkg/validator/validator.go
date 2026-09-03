@@ -54,9 +54,8 @@ func New() *Validator {
 // It translates the validation errors into human-readable messages using the
 // configured translator. Returns nil if there are no errors to format.
 func (v *Validator) FormatErrors(err error) []error {
-	var validationErrors validator.ValidationErrors
-
-	if !errors.As(err, &validationErrors) {
+	validationErrors, ok := errors.AsType[validator.ValidationErrors](err)
+	if !ok {
 		// If the error is not a ValidationErrors type, return it as a single error
 		return []error{err}
 	}

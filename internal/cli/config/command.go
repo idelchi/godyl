@@ -10,7 +10,7 @@ import (
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
-// Command returns the `config` command.
+// Command constructs the configuration-file command group for path, set, and remove operations.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "config [command]",

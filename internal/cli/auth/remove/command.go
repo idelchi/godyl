@@ -13,7 +13,7 @@ import (
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
-// Command returns the `auth remove` command.
+// Command constructs token removal with validated token names and keyring selection.
 func Command(global *root.Config, local any) *cobra.Command {
 	tokens, _ := iutils.StructToKoanf(global.Tokens)
 

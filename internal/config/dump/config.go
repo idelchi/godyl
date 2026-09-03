@@ -8,8 +8,7 @@ import (
 
 // Dump holds the configuration for the `dump` command.
 type Dump struct {
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
+	// Tracker records which dump options were supplied explicitly.
 	shared.Tracker `mapstructure:"-" yaml:"-"`
 
 	// Tools contains the configuration for the `godyl dump tools` command.

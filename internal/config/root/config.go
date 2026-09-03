@@ -13,14 +13,13 @@ import (
 	"github.com/idelchi/godyl/pkg/path/folder"
 )
 
-// TODO(Idelchi): Change all to be .Config instead of .Dump, .Update, etc.
-// valuable context for future development
+// TODO(Idelchi): Name command-specific configuration types consistently as Config
+// so callers do not need to remember a different type name for every command.
 
 // Config holds the root level configuration options.
 // It is split into sub-structs for each command.
 type Config struct {
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
+	// Tracker records which root options were supplied explicitly.
 	shared.Tracker `mapstructure:"-" yaml:"-"`
 
 	/* Subcommands */
@@ -126,7 +125,7 @@ type Tokens struct {
 	URL string `mapstructure:"url-token" mask:"fixed" yaml:"url-token"`
 }
 
-// AllTokensSet checks if all of the tokens are set.
+// AllTokensSet reports whether all three token keys were supplied explicitly, regardless of their values.
 func (c *Config) AllTokensSet() bool {
 	return c.IsSet("github-token") && c.IsSet("gitlab-token") && c.IsSet("url-token")
 }

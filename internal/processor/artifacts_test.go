@@ -28,6 +28,7 @@ import (
 	"github.com/idelchi/godyl/pkg/logger"
 )
 
+// TestArtifactKey verifies artifact key behavior.
 func TestArtifactKey(t *testing.T) {
 	t.Parallel()
 
@@ -137,6 +138,7 @@ func TestArtifactKey(t *testing.T) {
 	}
 }
 
+// TestIsReusableArtifact verifies is reusable artifact behavior.
 func TestIsReusableArtifact(t *testing.T) {
 	t.Parallel()
 
@@ -181,6 +183,7 @@ func TestIsReusableArtifact(t *testing.T) {
 	}
 }
 
+// TestProcessorReusesURLArtifactForFindMode verifies processor reuses url artifact for find mode behavior.
 func TestProcessorReusesURLArtifactForFindMode(t *testing.T) {
 	t.Parallel()
 
@@ -250,6 +253,7 @@ func TestProcessorReusesURLArtifactForFindMode(t *testing.T) {
 	assertFileContent(t, filepath.Join(output, toolB), "beta")
 }
 
+// testURLTool constructs a URL-backed tool configured for artifact-reuse tests.
 func testURLTool(t *testing.T, name, url, exeName, output string, mode mode.Mode) *tool.Tool {
 	t.Helper()
 
@@ -279,6 +283,7 @@ func testURLTool(t *testing.T, name, url, exeName, output string, mode mode.Mode
 	return tool
 }
 
+// testZip builds an in-memory ZIP archive containing the supplied files.
 func testZip(t *testing.T, files map[string]string) []byte {
 	t.Helper()
 
@@ -309,6 +314,7 @@ func testZip(t *testing.T, files map[string]string) []byte {
 	return buffer.Bytes()
 }
 
+// testLogger returns a silent logger suitable for processor tests.
 func testLogger(t *testing.T) *logger.Logger {
 	t.Helper()
 
@@ -320,6 +326,7 @@ func testLogger(t *testing.T) *logger.Logger {
 	return log
 }
 
+// assertFileContent verifies the complete contents of path.
 func assertFileContent(t *testing.T, path, want string) {
 	t.Helper()
 

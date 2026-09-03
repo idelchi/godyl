@@ -15,19 +15,19 @@ var ErrDag = errors.New("dag error")
 // DAG is an immutable, validated representation of a dependency graph.
 // The type parameter K must be comparable so it can act as a map key.
 type DAG[K comparable] struct {
-	// child → direct parents
+	// parents maps each child to a defensive copy of its direct parents.
 	parents map[K][]K
-	// memoised Chain results
+	// ancestorCache memoizes immutable Chain results.
 	ancestorCache map[K][]K
-	// every node, parents-first
+	// topo contains every node in parents-first topological order.
 	topo []K
 }
 
 // CycleError represents a cycle in the graph with the path that forms the cycle.
 type CycleError[K comparable] struct {
-	// The node where the cycle was detected
+	// Node is the node at which traversal detected the cycle.
 	Node K
-	// The path that forms the cycle
+	// Path contains the traversal path that forms the cycle.
 	Path []K
 }
 

@@ -8,6 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/detect/platform"
 )
 
+// TestLibraryParseFrom verifies library parse from behavior.
 func TestLibraryParseFrom(t *testing.T) {
 	t.Parallel()
 
@@ -95,6 +96,7 @@ func TestLibraryParseFrom(t *testing.T) {
 	}
 }
 
+// TestLibraryParse verifies library parse behavior.
 func TestLibraryParse(t *testing.T) {
 	t.Parallel()
 
@@ -136,6 +138,7 @@ func TestLibraryParse(t *testing.T) {
 	}
 }
 
+// TestLibraryIsCompatibleWith verifies library is compatible with behavior.
 func TestLibraryIsCompatibleWith(t *testing.T) {
 	t.Parallel()
 
@@ -247,6 +250,7 @@ func TestLibraryIsCompatibleWith(t *testing.T) {
 	}
 }
 
+// TestLibraryIsCompatibleWithZeroValue verifies library is compatible with zero value behavior.
 func TestLibraryIsCompatibleWithZeroValue(t *testing.T) {
 	t.Parallel()
 
@@ -269,6 +273,7 @@ func TestLibraryIsCompatibleWithZeroValue(t *testing.T) {
 	}
 }
 
+// TestLibraryIs verifies library is behavior.
 func TestLibraryIs(t *testing.T) {
 	t.Parallel()
 
@@ -344,6 +349,7 @@ func TestLibraryIs(t *testing.T) {
 	}
 }
 
+// TestLibraryIsNil verifies library is nil behavior.
 func TestLibraryIsNil(t *testing.T) {
 	t.Parallel()
 
@@ -386,6 +392,7 @@ func TestLibraryIsNil(t *testing.T) {
 	})
 }
 
+// TestLibraryDefault verifies library default behavior.
 func TestLibraryDefault(t *testing.T) {
 	t.Parallel()
 

@@ -8,6 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/result"
 )
 
+// TestResultStatus verifies result status behavior.
 func TestResultStatus(t *testing.T) {
 	t.Parallel()
 
@@ -60,6 +61,7 @@ func TestResultStatus(t *testing.T) {
 	}
 }
 
+// TestResultWrapped verifies result wrapped behavior.
 func TestResultWrapped(t *testing.T) {
 	t.Parallel()
 
@@ -120,6 +122,7 @@ func TestResultWrapped(t *testing.T) {
 	}
 }
 
+// TestResultWrap verifies result wrap behavior.
 func TestResultWrap(t *testing.T) {
 	t.Parallel()
 
@@ -192,6 +195,7 @@ func TestResultWrap(t *testing.T) {
 	}
 }
 
+// TestResultAsError verifies result as error behavior.
 func TestResultAsError(t *testing.T) {
 	t.Parallel()
 
@@ -230,6 +234,7 @@ func TestResultAsError(t *testing.T) {
 	}
 }
 
+// TestResultAsErrorMessage verifies result as error message behavior.
 func TestResultAsErrorMessage(t *testing.T) {
 	t.Parallel()
 
@@ -247,6 +252,7 @@ func TestResultAsErrorMessage(t *testing.T) {
 	}
 }
 
+// TestResultAsErrorJoined verifies result as error joined behavior.
 func TestResultAsErrorJoined(t *testing.T) {
 	t.Parallel()
 
@@ -347,6 +353,7 @@ func TestResultAsErrorVariants(t *testing.T) {
 	}
 }
 
+// TestResultError verifies result error behavior.
 func TestResultError(t *testing.T) {
 	t.Parallel()
 
@@ -387,6 +394,7 @@ func TestResultError(t *testing.T) {
 	}
 }
 
+// TestResultUnwrap verifies result unwrap behavior.
 func TestResultUnwrap(t *testing.T) {
 	t.Parallel()
 
@@ -429,6 +437,7 @@ func TestResultUnwrap(t *testing.T) {
 	})
 }
 
+// TestResultNew verifies result new behavior.
 func TestResultNew(t *testing.T) {
 	t.Parallel()
 
@@ -443,6 +452,7 @@ func TestResultNew(t *testing.T) {
 	}
 }
 
+// TestResultString verifies result string behavior.
 func TestResultString(t *testing.T) {
 	t.Parallel()
 

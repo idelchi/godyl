@@ -9,13 +9,17 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// Koanf is a wrapper around koanf.Koanf that tracks the keys that have been set.
+// Koanf wraps koanf.Koanf and records whether each loaded key came from explicit input or an untouched flag default.
 type Koanf struct {
+	// Koanf stores the merged configuration values.
 	*koanf.Koanf
 
-	flags   *pflag.FlagSet
+	// flags is the flag set inspected by TrackFlags.
+	flags *pflag.FlagSet
+	// Tracker stores explicit-input state for loaded keys.
 	Tracker *Tracker
 
+	// active is the tracking action applied after the next Load.
 	active func()
 }
 
@@ -74,21 +78,21 @@ func (kwt *Koanf) IsSet(key string) bool {
 	return kwt.Tracker.IsSet(key)
 }
 
-// TrackAll tracks all keys from the koanf instance.
+// TrackAll selects tracking of all keys produced by the next successful Load.
 func (kwt *Koanf) TrackAll() *Koanf {
 	kwt.active = kwt.withAll()
 
 	return kwt
 }
 
-// TrackFlags tracks changed flags from a FlagSet.
+// TrackFlags selects tracking of changed flags and untouched defaults after the next successful Load.
 func (kwt *Koanf) TrackFlags() *Koanf {
 	kwt.active = kwt.withFlags()
 
 	return kwt
 }
 
-// Track sets the active tracking function to the last one set.
+// Track executes the tracking mode most recently selected by TrackAll or TrackFlags.
 func (kwt *Koanf) Track() *Koanf {
 	if kwt.active != nil {
 		kwt.active()
@@ -97,7 +101,7 @@ func (kwt *Koanf) Track() *Koanf {
 	return kwt
 }
 
-// Load loads configuration from a provider and tracks the source.
+// Load merges a provider and applies the selected explicit-value tracking action.
 func (kwt *Koanf) Load(p koanf.Provider, pa koanf.Parser, opts ...koanf.Option) error {
 	if err := kwt.Koanf.Load(p, pa, opts...); err != nil {
 		return fmt.Errorf("loading config: %w", err)

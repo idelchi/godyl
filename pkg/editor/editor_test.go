@@ -9,8 +9,10 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
+// wantKeyValue is the serialized mapping expected by editor tests.
 const wantKeyValue = "key: value\n"
 
+// TestMerge verifies merge behavior.
 func TestMerge(t *testing.T) {
 	t.Parallel()
 
@@ -89,6 +91,7 @@ func TestMerge(t *testing.T) {
 	})
 }
 
+// TestWrite_EmptyFile verifies write empty file behavior.
 func TestWrite_EmptyFile(t *testing.T) {
 	t.Parallel()
 

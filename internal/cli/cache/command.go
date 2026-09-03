@@ -10,7 +10,7 @@ import (
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
-// Command returns the `cache` command.
+// Command constructs the cache command group for path, cleanup, and removal operations.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "cache",

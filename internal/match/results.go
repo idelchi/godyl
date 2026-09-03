@@ -17,12 +17,15 @@ var (
 	ErrNoQualified = errors.New("no qualified matches found")
 )
 
-// Result represents the outcome of matching an asset.
-// It contains the asset, its score, and whether it is qualified.
+// Result records an asset match, its score, qualification state, and any matching error.
 type Result struct {
-	Error     error
-	Asset     Asset
-	Score     int
+	// Error describes why the asset could not be evaluated fully.
+	Error error
+	// Asset is the candidate that was evaluated.
+	Asset Asset
+	// Score is the candidate's accumulated match score.
+	Score int
+	// Qualified reports whether the candidate met all mandatory criteria.
 	Qualified bool
 }
 

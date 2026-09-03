@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Command returns the `dump auth` command.
+// Command constructs masked output of the resolved authentication configuration.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auth",

@@ -8,8 +8,7 @@ import (
 
 // Update represents the configuration for the `update` command.
 type Update struct {
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
+	// Tracker records which update options were supplied explicitly.
 	shared.Tracker `mapstructure:"-" yaml:"-"`
 
 	// Version is the version to update to

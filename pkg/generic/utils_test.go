@@ -9,6 +9,7 @@ import (
 	"github.com/idelchi/godyl/pkg/generic"
 )
 
+// TestAnyNil verifies any nil behavior.
 func TestAnyNil(t *testing.T) {
 	t.Parallel()
 
@@ -54,6 +55,7 @@ func TestAnyNil(t *testing.T) {
 	}
 }
 
+// TestIsZero verifies is zero behavior.
 func TestIsZero(t *testing.T) {
 	t.Parallel()
 
@@ -85,6 +87,7 @@ func TestIsZero(t *testing.T) {
 	}
 }
 
+// TestSetIfZero verifies set if zero behavior.
 func TestSetIfZero(t *testing.T) {
 	t.Parallel()
 
@@ -122,6 +125,7 @@ func TestSetIfZero(t *testing.T) {
 	}
 }
 
+// TestExpandHome verifies expand home behavior.
 func TestExpandHome(t *testing.T) {
 	t.Parallel()
 
@@ -178,6 +182,7 @@ func TestExpandHome(t *testing.T) {
 	}
 }
 
+// TestDeepCopy verifies deep copy behavior.
 func TestDeepCopy(t *testing.T) {
 	t.Parallel()
 
@@ -218,6 +223,7 @@ func TestDeepCopy(t *testing.T) {
 	}
 }
 
+// TestDeepCopyPtr verifies deep copy ptr behavior.
 func TestDeepCopyPtr(t *testing.T) {
 	t.Parallel()
 
@@ -259,6 +265,7 @@ func TestDeepCopyPtr(t *testing.T) {
 	})
 }
 
+// TestIsURL verifies is url behavior.
 func TestIsURL(t *testing.T) {
 	t.Parallel()
 
@@ -288,6 +295,7 @@ func TestIsURL(t *testing.T) {
 	}
 }
 
+// TestIsSliceNilOrEmpty verifies is slice nil or empty behavior.
 func TestIsSliceNilOrEmpty(t *testing.T) {
 	t.Parallel()
 
@@ -316,6 +324,7 @@ func TestIsSliceNilOrEmpty(t *testing.T) {
 	}
 }
 
+// TestSafeDereference verifies safe dereference behavior.
 func TestSafeDereference(t *testing.T) {
 	t.Parallel()
 
@@ -342,6 +351,7 @@ func TestSafeDereference(t *testing.T) {
 	}
 }
 
+// TestPickByIndices verifies pick by indices behavior.
 func TestPickByIndices(t *testing.T) {
 	t.Parallel()
 
@@ -394,6 +404,7 @@ func TestPickByIndices(t *testing.T) {
 	})
 }
 
+// TestExpandHomeHermetic verifies expand home hermetic behavior.
 func TestExpandHomeHermetic(t *testing.T) {
 	// t.Setenv is incompatible with t.Parallel: the env mutation must not race
 	// with other parallel tests.  Run this test (and its subtests) serially.
@@ -440,6 +451,7 @@ func TestExpandHomeHermetic(t *testing.T) {
 	}
 }
 
+// TestIsURLMailto verifies is url mailto behavior.
 func TestIsURLMailto(t *testing.T) {
 	t.Parallel()
 

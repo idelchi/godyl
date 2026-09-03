@@ -14,13 +14,16 @@ import (
 
 // TableFormatter handles table rendering for results.
 type TableFormatter struct {
+	// config controls table width and verbosity.
 	config TableConfig
 }
 
 // TableConfig configures the table formatter.
 type TableConfig struct {
+	// MaxWidth limits each rendered column.
 	MaxWidth int
-	Verbose  bool
+	// Verbose includes detailed failure information.
+	Verbose bool
 }
 
 // NewTableFormatter creates a new table formatter.
@@ -224,7 +227,10 @@ func (f *TableFormatter) getColorForStatus(status processor.Status) text.Colors 
 
 // HeaderConfig defines the configuration for a table header column.
 type HeaderConfig struct {
-	Name     any
+	// Name is the rendered column heading.
+	Name any
+	// WidthMax limits the rendered column width.
 	WidthMax int
-	Bold     bool
+	// Bold renders the column using bold text.
+	Bold bool
 }

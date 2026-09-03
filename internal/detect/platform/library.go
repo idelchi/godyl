@@ -10,24 +10,30 @@ import (
 )
 
 const (
+	// libAndroid is the canonical Android ABI name.
 	libAndroid = osAndroid
-	libGNU     = "gnu"
-	libMSVC    = "msvc"
-	libMusl    = "musl"
-	libSystem  = "libSystem"
+	// libGNU is the canonical GNU C library name.
+	libGNU = "gnu"
+	// libMSVC is the canonical Microsoft Visual C++ runtime name.
+	libMSVC = "msvc"
+	// libMusl is the canonical musl C library name.
+	libMusl = "musl"
+	// libSystem is the canonical macOS system library name.
+	libSystem = "libSystem"
 )
 
 // Library represents a system's standard library or ABI configuration.
 type Library struct {
+	// Name retains the unparsed library name supplied by the user or detector.
 	Name string `single:"true"`
-	// Type is the canonical library name (e.g., gnu, musl, msvc).
+	// canonical is the normalized library name, such as gnu, musl, or msvc.
 	canonical string
 
-	// Raw contains the original string that was parsed.
+	// alias is the exact supported spelling that matched Name.
 	alias string
 }
 
-// IsNil returns true if the Library pointer is nil.
+// IsNil reports whether the unparsed library name is empty.
 func (l *Library) IsNil() bool {
 	return l.Name == ""
 }
@@ -51,7 +57,9 @@ func (l *Library) MarshalYAML() (any, error) {
 // LibraryInfo defines a system library's characteristics.
 // Includes the canonical type name and known aliases.
 type LibraryInfo struct {
-	Type    string
+	// Type is the canonical library name.
+	Type string
+	// Aliases contains additional recognized spellings.
 	Aliases []string
 }
 
@@ -108,7 +116,7 @@ func (l *Library) ParseFrom(name string, comparisons ...func(string, string) boo
 	return fmt.Errorf("%w: library from %q", ErrParse, name)
 }
 
-// Parse extracts operating system information from a string identifier.
+// Parse extracts library information from Name.
 func (l *Library) Parse() error {
 	return l.ParseFrom(l.Name, strings.EqualFold, strings.Contains)
 }
@@ -129,6 +137,7 @@ func (l *Library) Is(other Library) bool {
 	return other.alias == l.alias && !l.IsUnset() && !other.IsUnset()
 }
 
+// compatibilityMatrix records which target libraries can run binaries built against each source library.
 var compatibilityMatrix = map[string]map[string]bool{ //nolint:gochecknoglobals,lll // Compatibility matrix lookup table is appropriate as global
 	libGNU: {
 		libGNU:  true,

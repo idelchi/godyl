@@ -8,7 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/iutils"
 )
 
-// run executes the `dump env` command.
+// run separates and renders GODYL-prefixed values from dotenv files and the process environment.
 func run(input core.Input) error {
 	_, _, context, _, _ := input.Unpack()
 

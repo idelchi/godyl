@@ -8,9 +8,13 @@ import (
 
 // Asset represents a release asset with its name, download URL, content type, and optional digest.
 type Asset struct {
-	Name   string
-	URL    string
-	Type   string
+	// Name is the release asset filename.
+	Name string
+	// URL is the asset download location.
+	URL string
+	// Type is the asset media type.
+	Type string
+	// Digest is the optional publisher-provided checksum.
 	Digest string
 }
 

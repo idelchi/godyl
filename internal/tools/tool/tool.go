@@ -40,7 +40,7 @@ type Tool struct {
 	Description string `json:"description" mapstructure:"description" yaml:"description"`
 	// Version specifies the version of the tool.
 	Version version.Version `json:"version" mapstructure:"version" yaml:"version"`
-	// Path represents the URL where the tool can be downloaded from.
+	// URL is the resolved location from which the tool is downloaded.
 	URL string `json:"url" mapstructure:"url" yaml:"url"`
 	// Output defines the output path where the tool will be installed or extracted.
 	Output string `json:"output" mapstructure:"output" yaml:"output"`
@@ -54,13 +54,13 @@ type Tool struct {
 	Fallbacks fallbacks.Fallbacks `json:"fallbacks" mapstructure:"fallbacks" yaml:"fallbacks"`
 	// Hints provide additional matching patterns or heuristics for the tool.
 	Hints *hints.Hints `json:"hints" mapstructure:"hints" yaml:"hints"`
-	// Source defines the source configuration, which determines how the tool is fetched (e.g., GitHub, local files).
+	// Source selects and configures GitHub, GitLab, URL, Go-module, or no-source retrieval.
 	Source sources.Source `json:"source" mapstructure:"source" yaml:"source"`
 	// Commands contains a set of commands that can be executed in the context of the tool.
 	Commands command.Commands `json:"commands" mapstructure:"commands" yaml:"commands"`
 	// Tags are labels or markers that can be used to categorize or filter the tool.
 	Tags tags.Tags `json:"tags" mapstructure:"tags" yaml:"tags"`
-	// Strategy defines how the tool is deployed, fetched, or managed (e.g., download strategies, handling retries).
+	// Strategy controls how an existing installation is handled.
 	Strategy strategy.Strategy `json:"strategy" mapstructure:"strategy" yaml:"strategy"`
 	// Skip defines conditions under which certain steps (e.g., downloading, testing) are skipped.
 	Skip skip.Skip `json:"skip" mapstructure:"skip" yaml:"skip"`

@@ -8,10 +8,15 @@ import (
 
 // Platform encapsulates system-specific characteristics and capabilities.
 type Platform struct {
-	OS           platform.OS
-	Library      platform.Library
+	// OS identifies the target operating system.
+	OS platform.OS
+	// Library identifies the target C library or ABI.
+	Library platform.Library
+	// Distribution identifies the target Linux distribution.
 	Distribution platform.Distribution
-	Extension    platform.Extension
+	// Extension identifies the executable suffix used by the target.
+	Extension platform.Extension
+	// Architecture identifies the target CPU architecture.
 	Architecture platform.Architecture
 }
 

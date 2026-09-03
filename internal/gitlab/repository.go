@@ -9,16 +9,17 @@ import (
 	gitlab "gitlab.com/gitlab-org/api/client-go"
 )
 
-// Repository represents a GitLab repository with its owner and name.
-// It contains a GitLab client for making API calls.
+// Repository provides API access to a GitLab repository.
 type Repository struct {
-	client    *gitlab.Client
+	// client performs authenticated GitLab API requests.
+	client *gitlab.Client
+	// Namespace is the repository's enclosing GitLab namespace.
 	Namespace string
-	Repo      string
+	// Repo is the repository name.
+	Repo string
 }
 
-// NewRepository creates a new instance of Repository.
-// It requires the repository owner, repository name, and a GitLab client.
+// NewRepository creates a Repository for namespace and repo using client.
 func NewRepository(namespace, repo string, client *gitlab.Client) *Repository {
 	return &Repository{
 		Namespace: namespace,

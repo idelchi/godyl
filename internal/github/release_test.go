@@ -11,6 +11,7 @@ import (
 	"github.com/idelchi/godyl/internal/release"
 )
 
+// TestFromRepositoryRelease verifies from repository release behavior.
 func TestFromRepositoryRelease(t *testing.T) {
 	t.Parallel()
 

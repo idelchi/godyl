@@ -22,16 +22,25 @@ import (
 
 // Downloader manages download settings.
 type Downloader struct {
-	progressListener   getter.ProgressTracker
-	contextTimeout     time.Duration
-	readTimeout        time.Duration
-	headTimeout        time.Duration
+	// progressListener receives download progress updates.
+	progressListener getter.ProgressTracker
+	// contextTimeout bounds the complete download operation.
+	contextTimeout time.Duration
+	// readTimeout bounds reads performed by go-getter.
+	readTimeout time.Duration
+	// headTimeout bounds go-getter's initial HEAD request.
+	headTimeout time.Duration
+	// insecureSkipVerify disables TLS certificate verification.
 	insecureSkipVerify bool
-	checksum           string
+	// checksum is appended to the source URL for go-getter verification.
+	checksum string
 
 	// retry settings
-	maxRetries   int
+	// maxRetries limits retry attempts after the initial request.
+	maxRetries int
+	// retryWaitMin is the minimum delay between retries.
 	retryWaitMin time.Duration
+	// retryWaitMax is the maximum delay between retries.
 	retryWaitMax time.Duration
 }
 
@@ -66,7 +75,7 @@ func New(opts ...Option) *Downloader {
 // ErrDownload indicates a download operation failed.
 var ErrDownload = errors.New("download error")
 
-// URLWithChecksum  appends the checksum query parameter to the URL if a checksum is provided.
+// URLWithChecksum appends the checksum query parameter to the URL if a checksum is provided.
 func URLWithChecksum(url, query string) string {
 	if query == "" {
 		return url

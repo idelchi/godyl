@@ -9,6 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/skip"
 )
 
+// makeCondition constructs and parses a skip-condition fixture.
 func makeCondition(t *testing.T, template string) skip.Condition {
 	t.Helper()
 
@@ -23,6 +24,7 @@ func makeCondition(t *testing.T, template string) skip.Condition {
 // Condition tests
 // ---------------------------------------------------------------------------
 
+// TestConditionTrue verifies condition true behavior.
 func TestConditionTrue(t *testing.T) {
 	t.Parallel()
 
@@ -61,6 +63,7 @@ func TestConditionTrue(t *testing.T) {
 	}
 }
 
+// TestConditionUnmarshalYAML verifies condition unmarshal yaml behavior.
 func TestConditionUnmarshalYAML(t *testing.T) {
 	t.Parallel()
 
@@ -93,6 +96,7 @@ func TestConditionUnmarshalYAML(t *testing.T) {
 // Skip.Has tests
 // ---------------------------------------------------------------------------
 
+// TestSkipHas verifies skip has behavior.
 func TestSkipHas(t *testing.T) {
 	t.Parallel()
 
@@ -152,6 +156,7 @@ func TestSkipHas(t *testing.T) {
 // Skip.Evaluate tests
 // ---------------------------------------------------------------------------
 
+// TestEvaluate verifies evaluate behavior.
 func TestEvaluate(t *testing.T) {
 	t.Parallel()
 
@@ -305,6 +310,7 @@ func TestEvaluateMultipleErrorInputs(t *testing.T) {
 	}
 }
 
+// TestEvaluateErrorPath verifies evaluate error path behavior.
 func TestEvaluateErrorPath(t *testing.T) {
 	t.Parallel()
 

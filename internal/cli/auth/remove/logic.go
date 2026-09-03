@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/pkg/editor"
 )
 
-// run executes the `auth remove` command.
+// run removes selected tokens, or all tokens, from the configured keyring or YAML file.
 //
 //nolint:gocognit // Complex function - refactoring into smaller functions is a separate improvement task
 func run(input core.Input) error {

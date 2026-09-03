@@ -10,6 +10,7 @@ import (
 	"github.com/idelchi/godyl/pkg/koanfx"
 )
 
+// TestTrackerBasics verifies tracker basics behavior.
 func TestTrackerBasics(t *testing.T) {
 	t.Parallel()
 
@@ -28,6 +29,7 @@ func TestTrackerBasics(t *testing.T) {
 	}
 }
 
+// TestTrackerTrackAll verifies tracker track all behavior.
 func TestTrackerTrackAll(t *testing.T) {
 	t.Parallel()
 
@@ -68,6 +70,7 @@ func TestTrackerTrackAll(t *testing.T) {
 	}
 }
 
+// TestTrackerTrackFlags verifies tracker track flags behavior.
 func TestTrackerTrackFlags(t *testing.T) {
 	t.Parallel()
 
@@ -183,6 +186,7 @@ func TestTrackerFlagsThenAll(t *testing.T) {
 	}
 }
 
+// TestTrackerNames verifies tracker names behavior.
 func TestTrackerNames(t *testing.T) {
 	t.Parallel()
 
@@ -257,6 +261,7 @@ func TestTrackerTrackFlagsDuplicate(t *testing.T) {
 // Koanf wrapper tests
 // ---------------------------------------------------------------------------
 
+// TestKoanfNew verifies koanf new behavior.
 func TestKoanfNew(t *testing.T) {
 	t.Parallel()
 
@@ -276,6 +281,7 @@ func TestKoanfNew(t *testing.T) {
 	}
 }
 
+// TestKoanfFromStruct verifies koanf from struct behavior.
 func TestKoanfFromStruct(t *testing.T) {
 	t.Parallel()
 
@@ -298,6 +304,7 @@ func TestKoanfFromStruct(t *testing.T) {
 	}
 }
 
+// TestKoanfWithFlags verifies koanf with flags behavior.
 func TestKoanfWithFlags(t *testing.T) {
 	t.Parallel()
 
@@ -313,6 +320,7 @@ func TestKoanfWithFlags(t *testing.T) {
 	}
 }
 
+// TestKoanfClearTracker verifies koanf clear tracker behavior.
 func TestKoanfClearTracker(t *testing.T) {
 	t.Parallel()
 
@@ -334,6 +342,7 @@ func TestKoanfClearTracker(t *testing.T) {
 	}
 }
 
+// TestKoanfWithKoanf verifies koanf with koanf behavior.
 func TestKoanfWithKoanf(t *testing.T) {
 	t.Parallel()
 
@@ -351,6 +360,7 @@ func TestKoanfWithKoanf(t *testing.T) {
 	}
 }
 
+// TestKoanfWithKoanfNil verifies koanf with koanf nil behavior.
 func TestKoanfWithKoanfNil(t *testing.T) {
 	t.Parallel()
 
@@ -363,6 +373,7 @@ func TestKoanfWithKoanfNil(t *testing.T) {
 	}
 }
 
+// TestKoanfIsSet verifies koanf is set behavior.
 func TestKoanfIsSet(t *testing.T) {
 	t.Parallel()
 
@@ -382,6 +393,7 @@ func TestKoanfIsSet(t *testing.T) {
 	}
 }
 
+// TestKoanfFiltered verifies koanf filtered behavior.
 func TestKoanfFiltered(t *testing.T) {
 	t.Parallel()
 
@@ -413,6 +425,7 @@ func TestKoanfFiltered(t *testing.T) {
 	}
 }
 
+// TestKoanfMap verifies koanf map behavior.
 func TestKoanfMap(t *testing.T) {
 	t.Parallel()
 
@@ -427,6 +440,7 @@ func TestKoanfMap(t *testing.T) {
 	}
 }
 
+// TestKoanfTrackAllAndTrackFlags verifies koanf track all and track flags behavior.
 func TestKoanfTrackAllAndTrackFlags(t *testing.T) {
 	t.Parallel()
 
@@ -455,6 +469,7 @@ func TestKoanfTrackAllAndTrackFlags(t *testing.T) {
 	}
 }
 
+// TestKoanfTrackNilActive verifies koanf track nil active behavior.
 func TestKoanfTrackNilActive(t *testing.T) {
 	t.Parallel()
 
@@ -463,6 +478,7 @@ func TestKoanfTrackNilActive(t *testing.T) {
 	k.Track() // must not panic
 }
 
+// TestKoanfUnmarshal verifies koanf unmarshal behavior.
 func TestKoanfUnmarshal(t *testing.T) {
 	t.Parallel()
 
@@ -486,6 +502,7 @@ func TestKoanfUnmarshal(t *testing.T) {
 	}
 }
 
+// TestKoanfUnmarshalWithMetadata verifies koanf unmarshal with metadata behavior.
 func TestKoanfUnmarshalWithMetadata(t *testing.T) {
 	t.Parallel()
 
@@ -514,6 +531,7 @@ func TestKoanfUnmarshalWithMetadata(t *testing.T) {
 	}
 }
 
+// TestKoanfOptions verifies koanf options behavior.
 func TestKoanfOptions(t *testing.T) {
 	t.Parallel()
 
@@ -559,6 +577,7 @@ func TestKoanfOptions(t *testing.T) {
 	})
 }
 
+// TestKoanfNewDefaultUnmarshalConfig verifies koanf new default unmarshal config behavior.
 func TestKoanfNewDefaultUnmarshalConfig(t *testing.T) {
 	t.Parallel()
 
@@ -569,6 +588,7 @@ func TestKoanfNewDefaultUnmarshalConfig(t *testing.T) {
 	}
 }
 
+// TestKoanfNewUnmarshalConfig verifies koanf new unmarshal config behavior.
 func TestKoanfNewUnmarshalConfig(t *testing.T) {
 	t.Parallel()
 
@@ -587,6 +607,7 @@ func TestKoanfNewUnmarshalConfig(t *testing.T) {
 // Standalone unmarshal function tests
 // ---------------------------------------------------------------------------
 
+// TestUnmarshalStandalone verifies unmarshal standalone behavior.
 func TestUnmarshalStandalone(t *testing.T) {
 	t.Parallel()
 
@@ -619,6 +640,7 @@ func TestUnmarshalStandalone(t *testing.T) {
 	}
 }
 
+// TestUnmarshalAllStandalone verifies unmarshal all standalone behavior.
 func TestUnmarshalAllStandalone(t *testing.T) {
 	t.Parallel()
 
@@ -642,6 +664,7 @@ func TestUnmarshalAllStandalone(t *testing.T) {
 	}
 }
 
+// TestUnmarshalWithMetadataStandalone verifies unmarshal with metadata standalone behavior.
 func TestUnmarshalWithMetadataStandalone(t *testing.T) {
 	t.Parallel()
 
@@ -670,6 +693,7 @@ func TestUnmarshalWithMetadataStandalone(t *testing.T) {
 	}
 }
 
+// TestUnmarshalAllWithMetadataStandalone verifies unmarshal all with metadata standalone behavior.
 func TestUnmarshalAllWithMetadataStandalone(t *testing.T) {
 	t.Parallel()
 
@@ -698,6 +722,7 @@ func TestUnmarshalAllWithMetadataStandalone(t *testing.T) {
 	}
 }
 
+// TestUnmarshalWithOptions verifies unmarshal with options behavior.
 func TestUnmarshalWithOptions(t *testing.T) {
 	t.Parallel()
 

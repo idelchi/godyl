@@ -8,7 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Command returns the `dump config` command.
+// Command constructs output of the fully layered runtime configuration.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "config [key...]",

@@ -11,7 +11,7 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
-// run executes the `dump tools` command.
+// run loads embedded or supplied tool files, applies tag filtering, and renders the result.
 func run(input core.Input) (err error) {
 	cfg, embedded, _, _, args := input.Unpack()
 

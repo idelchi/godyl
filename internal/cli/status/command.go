@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/status"
 )
 
-// Command returns the `status` command.
+// Command constructs non-mutating comparison of installed tools with YAML definitions.
 func Command(global *root.Config, local any, embedded *core.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "status [tools.yml|-]...",

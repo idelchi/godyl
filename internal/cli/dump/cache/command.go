@@ -8,7 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Command returns the `dump cache` command.
+// Command constructs structured output of the persisted tool cache.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "cache [name...]",

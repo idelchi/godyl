@@ -10,12 +10,15 @@ import (
 
 // ErrorFormatter handles error message formatting.
 type ErrorFormatter struct {
+	// config controls the rendered error format.
 	config ErrorConfig
 }
 
 // ErrorConfig configures the error formatter.
 type ErrorConfig struct {
-	Format    ErrorFormat
+	// Format selects text or JSON output.
+	Format ErrorFormat
+	// WrapWidth is the preferred maximum width for textual errors.
 	WrapWidth int
 }
 

@@ -14,7 +14,9 @@ type Skip unmarshal.SingleOrSliceType[Condition]
 
 // Condition defines a condition and an optional reason for skipping an operation.
 type Condition struct {
-	Reason    string
+	// Reason explains why the operation is skipped when Condition is true.
+	Reason string
+	// Condition is the templated predicate that determines whether to skip.
 	Condition unmarshal.Templatable[bool]
 }
 

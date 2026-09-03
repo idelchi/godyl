@@ -11,9 +11,12 @@ import (
 
 // Processor handles template processing with configurable options.
 type Processor struct {
+	// funcMap contains functions available to parsed templates.
 	funcMap template.FuncMap
-	values  map[string]any
-	option  string
+	// values contains the data supplied to templates.
+	values map[string]any
+	// option controls behavior for missing template keys.
+	option string
 }
 
 // Option is a function that modifies a Processor.

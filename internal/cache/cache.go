@@ -49,7 +49,7 @@ type Item struct {
 // ErrItemNotFound is returned when an item is not found in the cache.
 var ErrItemNotFound = errors.New("item not found")
 
-// Items is a map of items indexed by their names.
+// Items is a map of cached items keyed by ID.
 type Items map[string]*Item
 
 // AsSlice converts the Items map to a slice of pointers to Item.
@@ -125,7 +125,7 @@ func (c *Cache) Get(identifiers ...string) ([]*Item, error) {
 	return items, errors.Join(errs...)
 }
 
-// GetByName retrieves items from the cache by name.
+// GetByName retrieves items whose names match the supplied wildcard patterns.
 func (c *Cache) GetByName(names ...string) ([]*Item, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
@@ -259,7 +259,7 @@ func (c *Cache) getByName(name string) (*Item, error) {
 	return nil, fmt.Errorf("%w: %q", ErrItemNotFound, name)
 }
 
-// Save stores an item in the cache.
+// add inserts an item by ID and persists the cache.
 func (c *Cache) add(item *Item) error {
 	c.items[item.ID] = item
 

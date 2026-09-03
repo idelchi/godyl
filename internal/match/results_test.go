@@ -9,10 +9,12 @@ import (
 	"github.com/idelchi/godyl/internal/match"
 )
 
+// makeResult constructs a match-result fixture with the requested outcome.
 func makeResult(score int, qualified bool) match.Result {
 	return match.Result{Score: score, Qualified: qualified}
 }
 
+// TestBest verifies best behavior.
 func TestBest(t *testing.T) {
 	t.Parallel()
 
@@ -96,6 +98,7 @@ func TestBest(t *testing.T) {
 	}
 }
 
+// TestStatus verifies status behavior.
 func TestStatus(t *testing.T) {
 	t.Parallel()
 
@@ -175,6 +178,7 @@ func TestStatus(t *testing.T) {
 	}
 }
 
+// TestWithoutZero verifies without zero behavior.
 func TestWithoutZero(t *testing.T) {
 	t.Parallel()
 
@@ -235,6 +239,7 @@ func TestWithoutZero(t *testing.T) {
 	}
 }
 
+// TestSorted verifies sorted behavior.
 func TestSorted(t *testing.T) {
 	t.Parallel()
 
@@ -305,6 +310,7 @@ func TestSorted(t *testing.T) {
 	}
 }
 
+// TestSuccess verifies success behavior.
 func TestSuccess(t *testing.T) {
 	t.Parallel()
 
@@ -345,6 +351,7 @@ func TestSuccess(t *testing.T) {
 	}
 }
 
+// TestIsAmbiguous verifies is ambiguous behavior.
 func TestIsAmbiguous(t *testing.T) {
 	t.Parallel()
 
@@ -394,6 +401,7 @@ func TestIsAmbiguous(t *testing.T) {
 	}
 }
 
+// TestHasQualified verifies has qualified behavior.
 func TestHasQualified(t *testing.T) {
 	t.Parallel()
 
@@ -437,6 +445,7 @@ func TestHasQualified(t *testing.T) {
 	}
 }
 
+// TestToString verifies to string behavior.
 func TestToString(t *testing.T) {
 	t.Parallel()
 

@@ -8,7 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Command returns the `dump env` command.
+// Command constructs diagnostic output for GODYL-prefixed environment values.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "env",

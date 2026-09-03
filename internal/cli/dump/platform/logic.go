@@ -8,7 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/iutils"
 )
 
-// run executes the `dump platform` command.
+// run detects and renders the current operating system, architecture, library, and distribution.
 func run(_ core.Input) error {
 	platform := &detect.Platform{}
 	if err := platform.Detect(); err != nil {

@@ -13,7 +13,7 @@ import (
 	"github.com/idelchi/godyl/internal/ierrors"
 )
 
-// Command returns the `dump tools` command.
+// Command constructs filtered output of raw or fully rendered tool definitions.
 func Command(global *root.Config, local any, embedded *core.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "tools [tools.yml|-]...",

@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Command returns the `paths` command.
+// Command constructs reporting of Godyl's config, cache, toolchain, and temporary paths.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "paths",

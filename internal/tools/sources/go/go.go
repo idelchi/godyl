@@ -31,18 +31,22 @@ import (
 
 // Go represents a Go project configuration that can be installed from GitHub.
 type Go struct {
-	github            *github.GitHub
-	Data              install.Metadata `yaml:"-"`
-	Command           string           `yaml:"command"`
-	Base              string           `yaml:"base"`
-	Binary            file.File        `yaml:"binary"`
-	DownloadIfMissing bool             `yaml:"download_if_missing"`
+	// github resolves GitHub-backed Go modules and release metadata.
+	github *github.GitHub
+	// Data contains metadata shared with the installer.
+	Data install.Metadata `yaml:"-"`
+	// Command selects a module subdirectory to install.
+	Command string `yaml:"command"`
+	// Base is the module-host prefix, such as github.com.
+	Base string `yaml:"base"`
+	// Binary selects an existing Go executable.
+	Binary file.File `yaml:"binary"`
+	// DownloadIfMissing permits downloading a Go toolchain when none is available.
+	DownloadIfMissing bool `yaml:"download_if_missing"`
 }
 
 // Initialize sets up the Go project configuration from the given name.
 // Uses the associated GitHub repository for initialization.
-//
-// TODO(Idelchi): This should be ignored if the version is already set. As a workaround, just return nil for now.
 func (g *Go) Initialize(name string) error {
 	if g.Base != "github.com" {
 		g.github.Repo = name
@@ -212,6 +216,7 @@ func (g *Go) SetGitHub(gh *github.GitHub) {
 	g.github = gh
 }
 
+// startGoInstallProgress starts synthetic progress reporting and returns its stop function.
 func startGoInstallProgress(progressListener getter.ProgressTracker, label string) func() {
 	valueLabel := "(go install)"
 	speedLabel := "(n/a)"

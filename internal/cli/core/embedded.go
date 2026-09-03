@@ -7,11 +7,11 @@ import (
 
 // Embedded holds the embedded files for the application.
 type Embedded struct {
-	// Defaults to be set for each tool (not flags).
+	// Defaults contains the embedded defaults.yml tool defaults.
 	Defaults []byte
-	// Default list of tools that can be used to either view or dump out.
+	// Tools contains the embedded tools.yml catalog.
 	Tools []byte
-	// A template for the cleanup script.
+	// Template contains the embedded Windows cleanup batch template.
 	Template []byte
 }
 

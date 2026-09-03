@@ -14,10 +14,13 @@ import (
 
 // YAML is a struct that provides methods to edit YAML files while preserving comments.
 type YAML struct {
+	// File is the YAML document being edited.
 	File file.File
 
+	// comments preserves comments across load and save operations.
 	comments yaml.CommentMap
 
+	// data contains the decoded YAML document.
 	data map[string]any
 }
 
@@ -30,7 +33,7 @@ func New(file file.File) *YAML {
 	}
 }
 
-// Load loads the YAML file along with its comments into the editor.
+// Load decodes the YAML file and its comments, creating the file and parent directory when absent.
 func (y *YAML) Load() error {
 	if !y.File.Exists() {
 		if err := folder.FromFile(y.File).Create(); err != nil {
@@ -73,7 +76,7 @@ func (y *YAML) Save() error {
 	return y.File.Write(result)
 }
 
-// Write updates the YAML file with the provided map.
+// Write replaces the document data while preserving comments loaded from the existing file.
 func (y *YAML) Write(input map[string]any) error {
 	if err := y.Load(); err != nil {
 		return err
@@ -84,8 +87,7 @@ func (y *YAML) Write(input map[string]any) error {
 	return y.Save()
 }
 
-// Merge updates the YAML file with the provided map.
-// It reads the existing YAML file, and merges the input map into it.
+// Merge overlays input on the existing YAML document while preserving its comments.
 func (y *YAML) Merge(input map[string]any) error {
 	if err := y.Load(); err != nil {
 		return err

@@ -15,10 +15,14 @@ import (
 
 // Commands represents a collection of shell commands that can be executed together.
 type Commands struct {
-	Data         install.Metadata                     `yaml:"-"`
-	Commands     unmarshal.SingleOrSliceType[Command] `yaml:"commands"`
-	AllowFailure bool                                 `yaml:"allow-failure"`
-	ExitOnError  bool                                 `yaml:"exit-on-error"`
+	// Data contains metadata shared with the active installer.
+	Data install.Metadata `yaml:"-"`
+	// Commands contains the shell fragments to run in order.
+	Commands unmarshal.SingleOrSliceType[Command] `yaml:"commands"`
+	// AllowFailure permits a non-zero command result.
+	AllowFailure bool `yaml:"allow-failure"`
+	// ExitOnError stops the combined shell command after its first failure.
+	ExitOnError bool `yaml:"exit-on-error"`
 }
 
 // UnmarshalYAML implements custom YAML unmarshaling for Commands.

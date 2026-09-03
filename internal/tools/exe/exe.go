@@ -9,8 +9,10 @@ import (
 
 // Exe defines the configuration for locating and naming tool executables.
 type Exe struct {
+	// Patterns contains candidate filenames used to locate the executable.
 	Patterns *Patterns
-	Name     string `single:"true"`
+	// Name is the installed executable name.
+	Name string `single:"true"`
 }
 
 // Patterns represents executable pattern matching rules.

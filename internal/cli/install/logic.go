@@ -11,7 +11,7 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
-// run executes the `install` command.
+// run loads, resolves, installs, and summarizes the tools selected by tags.
 func run(input core.Input) error {
 	cfg, embedded, _, _, args := input.Unpack()
 

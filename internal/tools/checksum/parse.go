@@ -7,7 +7,9 @@ import (
 )
 
 var (
+	// reBSD matches BSD-style checksum lines.
 	reBSD = regexp.MustCompile(`^[A-Za-z0-9_-]+ \((.+)\) = ([0-9A-Fa-f]{16,128})$`)
+	// reGNU matches GNU-style checksum lines.
 	reGNU = regexp.MustCompile(`^([0-9A-Fa-f]{16,128})[ \t]+[* ](.+)$`)
 )
 
@@ -34,6 +36,7 @@ func ParseChecksumFile(input string) map[string]string {
 	return map[string]string{}
 }
 
+// parseGNU extracts filename-to-digest mappings from GNU-style checksum text.
 func parseGNU(input string) map[string]string {
 	m := make(map[string]string)
 
@@ -52,6 +55,7 @@ func parseGNU(input string) map[string]string {
 	return m
 }
 
+// parseBSD extracts filename-to-digest mappings from BSD-style checksum text.
 func parseBSD(input string) map[string]string {
 	m := make(map[string]string)
 

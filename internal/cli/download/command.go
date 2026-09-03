@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Command returns the `download` command.
+// Command constructs single-artifact resolution and download with platform overrides.
 func Command(global *root.Config, local any, embedded *core.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "download [tool]...",

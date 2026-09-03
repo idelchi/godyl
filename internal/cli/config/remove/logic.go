@@ -7,7 +7,7 @@ import (
 	"github.com/idelchi/godyl/pkg/editor"
 )
 
-// run executes the `config remove` command.
+// run removes selected configuration keys, or the complete file when none are selected.
 func run(input core.Input) error {
 	cfg, _, context, _, args := input.Unpack()
 

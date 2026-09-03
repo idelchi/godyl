@@ -15,9 +15,12 @@ import (
 //
 //nolint:errname // Result is not an error type, it's a result type that can contain errors
 type Result struct {
-	err     error
+	// err is the underlying operation error.
+	err error
+	// Message summarizes the operation outcome.
 	Message string
-	Status  Status
+	// Status classifies the operation outcome.
+	Status Status
 }
 
 // New creates a new Result with the specified message and status.
@@ -42,6 +45,7 @@ const (
 	Failed
 )
 
+// String returns the status and message as a single line.
 func (r Result) String() string {
 	return fmt.Sprintf("%s: %s", r.Status, r.Message)
 }
@@ -56,7 +60,7 @@ func (r Result) Wrapped(message string) Result {
 	}
 }
 
-// Error implements the error interface.
+// Error formats the result status and message and includes the underlying error when present.
 func (r Result) Error() string {
 	if r.err != nil {
 		return fmt.Sprintf("%s: %s: %v", r.Status, r.Message, r.err)
@@ -79,7 +83,7 @@ func (r Result) AsError() error {
 	return nil
 }
 
-// Unwrap allows for error unwrapping.
+// Unwrap returns the underlying operation error.
 func (r Result) Unwrap() error {
 	return r.err
 }

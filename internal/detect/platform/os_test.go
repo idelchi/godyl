@@ -8,6 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/detect/platform"
 )
 
+// TestOSParseFrom verifies os parse from behavior.
 func TestOSParseFrom(t *testing.T) {
 	t.Parallel()
 
@@ -113,6 +114,7 @@ func TestOSParseFrom(t *testing.T) {
 	}
 }
 
+// TestOSParse verifies os parse behavior.
 func TestOSParse(t *testing.T) {
 	t.Parallel()
 
@@ -154,6 +156,7 @@ func TestOSParse(t *testing.T) {
 	}
 }
 
+// TestOSIsCompatibleWith verifies os is compatible with behavior.
 func TestOSIsCompatibleWith(t *testing.T) {
 	t.Parallel()
 
@@ -229,6 +232,7 @@ func TestOSIsCompatibleWith(t *testing.T) {
 	}
 }
 
+// TestOSIsCompatibleWithZeroValue verifies os is compatible with zero value behavior.
 func TestOSIsCompatibleWithZeroValue(t *testing.T) {
 	t.Parallel()
 
@@ -251,6 +255,7 @@ func TestOSIsCompatibleWithZeroValue(t *testing.T) {
 	}
 }
 
+// TestOSIs verifies os is behavior.
 func TestOSIs(t *testing.T) {
 	t.Parallel()
 
@@ -326,6 +331,7 @@ func TestOSIs(t *testing.T) {
 	}
 }
 
+// TestOSIsNil verifies os is nil behavior.
 func TestOSIsNil(t *testing.T) {
 	t.Parallel()
 
@@ -368,6 +374,7 @@ func TestOSIsNil(t *testing.T) {
 	})
 }
 
+// TestOSParseFromAliases verifies os parse from aliases behavior.
 func TestOSParseFromAliases(t *testing.T) {
 	t.Parallel()
 
@@ -410,6 +417,7 @@ func TestOSParseFromAliases(t *testing.T) {
 	}
 }
 
+// TestOSStringNetBSD verifies os string net bsd behavior.
 func TestOSStringNetBSD(t *testing.T) {
 	t.Parallel()
 
@@ -448,6 +456,7 @@ func TestOSStringNetBSD(t *testing.T) {
 	}
 }
 
+// TestOSString verifies os string behavior.
 func TestOSString(t *testing.T) {
 	t.Parallel()
 

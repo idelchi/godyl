@@ -22,13 +22,21 @@ import (
 
 // Processor is a thin orchestrator that coordinates tool processing.
 type Processor struct {
-	results    *collector
-	cache      *cache.Cache
-	progress   *progressMgr
-	config     root.Config
-	log        *logger.Logger
-	tools      tools.Tools
-	Options    []tool.ResolveOption
+	// results collects outcomes from concurrent tool operations.
+	results *collector
+	// cache persists successful tool resolutions when enabled.
+	cache *cache.Cache
+	// progress coordinates download progress rendering.
+	progress *progressMgr
+	// config contains the resolved root configuration.
+	config root.Config
+	// log records processing diagnostics and results.
+	log *logger.Logger
+	// tools contains the tools selected for this processing run.
+	tools tools.Tools
+	// Options customize tool resolution.
+	Options []tool.ResolveOption
+	// NoDownload stops after resolving tools without installing them.
 	NoDownload bool
 }
 

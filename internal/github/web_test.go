@@ -12,6 +12,7 @@ import (
 	"github.com/idelchi/godyl/internal/release"
 )
 
+// TestParseGitHubReleaseAssets verifies parse git hub release assets behavior.
 func TestParseGitHubReleaseAssets(t *testing.T) {
 	t.Parallel()
 
@@ -218,9 +219,11 @@ func TestParseGitHubReleaseAssets(t *testing.T) {
 // rewriteTransport redirects all requests to the given test server,
 // allowing per-Repository transport injection instead of global mutation.
 type rewriteTransport struct {
+	// server receives requests rewritten by RoundTrip.
 	server *httptest.Server
 }
 
+// RoundTrip redirects req to the test server before using the default transport.
 func (rt *rewriteTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req.URL.Scheme = "http"
 	req.URL.Host = rt.server.Listener.Addr().String()
@@ -243,6 +246,7 @@ func newWebTestRepo(t *testing.T, handler http.Handler) *internalgithub.Reposito
 	return repo
 }
 
+// TestGetReleaseFromWeb verifies get release from web behavior.
 func TestGetReleaseFromWeb(t *testing.T) {
 	t.Parallel()
 
@@ -298,8 +302,10 @@ func TestGetReleaseFromWeb(t *testing.T) {
 	}
 }
 
+// latestReleasePath is the redirect endpoint expected by web release tests.
 const latestReleasePath = "/owner/repo/releases/latest"
 
+// TestLatestVersionFromWebHTML verifies latest version from web html behavior.
 func TestLatestVersionFromWebHTML(t *testing.T) {
 	t.Parallel()
 
@@ -323,6 +329,7 @@ func TestLatestVersionFromWebHTML(t *testing.T) {
 	}
 }
 
+// TestLatestVersionFromWebHTML_NonRedirectStatus verifies latest version from web html non redirect status behavior.
 func TestLatestVersionFromWebHTML_NonRedirectStatus(t *testing.T) {
 	t.Parallel()
 
@@ -346,6 +353,7 @@ func TestLatestVersionFromWebHTML_NonRedirectStatus(t *testing.T) {
 	}
 }
 
+// TestLatestVersionFromWebJSON verifies latest version from web json behavior.
 func TestLatestVersionFromWebJSON(t *testing.T) {
 	t.Parallel()
 
@@ -402,6 +410,7 @@ func TestLatestVersionFromWebJSON(t *testing.T) {
 	})
 }
 
+// TestGetReleaseFromWeb_ServerError verifies get release from web server error behavior.
 func TestGetReleaseFromWeb_ServerError(t *testing.T) {
 	t.Parallel()
 
@@ -419,6 +428,7 @@ func TestGetReleaseFromWeb_ServerError(t *testing.T) {
 	}
 }
 
+// TestLatestVersionFromWebHTML_EmptyLocationHeader verifies latest version from web html empty location header behavior.
 func TestLatestVersionFromWebHTML_EmptyLocationHeader(t *testing.T) {
 	t.Parallel()
 

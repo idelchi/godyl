@@ -10,7 +10,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Command returns the `install` command.
+// Command constructs installation from one or more YAML or stdin tool definitions.
 func Command(global *root.Config, local any, embedded *core.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "install [tools.yml|-]...",

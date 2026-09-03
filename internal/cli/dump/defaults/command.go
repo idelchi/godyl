@@ -8,7 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Command returns the `dump defaults` command.
+// Command constructs filtered output of embedded installation defaults.
 func Command(global *root.Config, local any, embedded *core.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "defaults [default...]",

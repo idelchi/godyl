@@ -20,7 +20,9 @@ type FieldLevel = validator.FieldLevel
 // It holds both the validator instance and a translator for converting validation
 // errors into human-readable messages.
 type Validator struct {
-	validate   *validator.Validate
+	// validate performs structural validation.
+	validate *validator.Validate
+	// translator renders validation failures in English.
 	translator ut.Translator
 }
 
@@ -30,9 +32,8 @@ func (v *Validator) Validator() *validator.Validate {
 	return v.validate
 }
 
-// New creates and initializes a new Validator instance with English translations.
-// It sets up the universal translator with English locale and registers the default
-// English translations for validation error messages.
+// New creates a Validator with English translations.
+// It panics if the bundled translation registration fails.
 func New() *Validator {
 	en := en.New()
 	uni := ut.New(en, en)

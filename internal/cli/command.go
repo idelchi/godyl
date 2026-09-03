@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
-// Command returns the root `godyl` command.
+// Command constructs the root command, persistent configuration loading, and all subcommands.
 func Command(files *core.Embedded, version string) *cobra.Command {
 	cfg := &root.Config{}
 

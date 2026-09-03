@@ -9,9 +9,12 @@ import (
 
 // Version defines the target version of a tool, as well as how it can be parsed.
 type Version struct {
+	// Commands contains commands used to discover an installed version.
 	Commands *Commands `mapstructure:"commands" yaml:"commands"`
+	// Patterns contains expressions used to extract a version from command output.
 	Patterns *Patterns `mapstructure:"patterns" yaml:"patterns"`
-	Version  string    `mapstructure:"version"  single:"true"   yaml:"version"`
+	// Version is the desired version expression.
+	Version string `mapstructure:"version"  single:"true"   yaml:"version"`
 }
 
 type (

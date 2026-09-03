@@ -25,27 +25,40 @@ import (
 
 // acquiredArtifact tracks a downloaded artifact and the temp dir that owns it.
 type acquiredArtifact struct {
+	// destination is the downloaded artifact shared by matching tools.
 	destination file.File
-	dir         folder.Folder
+	// dir is the temporary directory that must be removed after processing.
+	dir folder.Folder
 }
 
 // artifactStore reuses resolved artifacts within a single processing run.
 type artifactStore struct {
-	group     singleflight.Group
+	// group coalesces concurrent downloads for the same artifact key.
+	group singleflight.Group
+	// artifacts caches completed downloads by artifact key.
 	artifacts map[string]acquiredArtifact
-	mu        sync.Mutex
+	// mu protects artifacts.
+	mu sync.Mutex
 }
 
 // artifactKeyData contains the stable inputs that affect downloaded bytes.
 type artifactKeyData struct {
-	Headers          map[string][]string `json:"headers"`
-	ChecksumQuery    string              `json:"checksum_query"`
-	ChecksumType     string              `json:"checksum_type"`
-	ChecksumValue    string              `json:"checksum_value"`
-	NoVerifyChecksum bool                `json:"no_verify_checksum"`
-	NoVerifySSL      bool                `json:"no_verify_ssl"`
-	Source           string              `json:"source"`
-	URL              string              `json:"url"`
+	// Headers contains normalized request headers.
+	Headers map[string][]string `json:"headers"`
+	// ChecksumQuery contains the source-specific checksum lookup expression.
+	ChecksumQuery string `json:"checksum_query"`
+	// ChecksumType names the digest algorithm.
+	ChecksumType string `json:"checksum_type"`
+	// ChecksumValue is the expected digest.
+	ChecksumValue string `json:"checksum_value"`
+	// NoVerifyChecksum records whether checksum validation is disabled.
+	NoVerifyChecksum bool `json:"no_verify_checksum"`
+	// NoVerifySSL records whether TLS certificate validation is disabled.
+	NoVerifySSL bool `json:"no_verify_ssl"`
+	// Source identifies the release provider.
+	Source string `json:"source"`
+	// URL is the resolved artifact URL.
+	URL string `json:"url"`
 }
 
 // newArtifactStore creates an empty per-run artifact store.

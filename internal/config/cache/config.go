@@ -7,5 +7,6 @@ import (
 
 // Cache represents the configuration for cache-related commands.
 type Cache struct {
+	// Tracker records which cache options were supplied explicitly.
 	shared.Tracker `mapstructure:"-" yaml:"-"`
 }

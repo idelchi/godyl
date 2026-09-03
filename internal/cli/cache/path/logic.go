@@ -7,7 +7,7 @@ import (
 	"github.com/idelchi/godyl/internal/data"
 )
 
-// run executes the `cache path` command.
+// run prints the cache file derived from the configured cache directory.
 func run(input core.Input) error {
 	cfg, _, _, _, _ := input.Unpack()
 

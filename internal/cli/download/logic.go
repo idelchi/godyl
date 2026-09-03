@@ -19,7 +19,7 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// run executes the `download` command.
+// run resolves one source release and downloads its best matching artifact.
 func run(input core.Input) error {
 	cfg, embedded, _, _, args := input.Unpack()
 

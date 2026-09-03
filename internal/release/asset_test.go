@@ -7,6 +7,7 @@ import (
 	"github.com/idelchi/godyl/internal/release"
 )
 
+// TestAssetMatch verifies asset match behavior.
 func TestAssetMatch(t *testing.T) {
 	t.Parallel()
 
@@ -75,6 +76,7 @@ func TestAssetMatch(t *testing.T) {
 	}
 }
 
+// TestAssetHasExtension verifies asset has extension behavior.
 func TestAssetHasExtension(t *testing.T) {
 	t.Parallel()
 
@@ -147,6 +149,7 @@ func TestAssetHasExtension(t *testing.T) {
 	}
 }
 
+// TestAssetsFilterByName verifies assets filter by name behavior.
 func TestAssetsFilterByName(t *testing.T) {
 	t.Parallel()
 
@@ -220,6 +223,7 @@ func TestAssetsFilterByName(t *testing.T) {
 	}
 }
 
+// TestAssetsChecksums verifies assets checksums behavior.
 func TestAssetsChecksums(t *testing.T) {
 	t.Parallel()
 

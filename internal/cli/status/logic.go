@@ -14,7 +14,7 @@ import (
 
 // TODO(Idelchi): Presentation must look different for status (green -> yellow, yellow -> green, red -> red).
 
-// run executes the `status` command.
+// run resolves desired tool versions without downloading and reports installation drift.
 func run(input core.Input) error {
 	cfg, embedded, _, _, args := input.Unpack()
 

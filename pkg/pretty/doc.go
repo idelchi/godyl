@@ -1,3 +1,3 @@
-// Package pretty contains functions for prettifying and visualizing data in JSON YAML, and ENV formats.
-// Includes support for masking sensitive fields when outputting data, if appropriately tagged.
+// Package pretty formats data as JSON, YAML, or environment variables and can
+// mask fields marked as sensitive.
 package pretty

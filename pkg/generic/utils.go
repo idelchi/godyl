@@ -64,7 +64,7 @@ func SetIfZero[S comparable](input *S, value S) {
 	}
 }
 
-// SafeDereference safely dereferences a pointer.
+// SafeDereference returns the pointed-to value, or T's zero value when ptr is nil.
 func SafeDereference[T any](ptr *T) (zero T) {
 	if ptr != nil {
 		return *ptr
@@ -102,7 +102,7 @@ func DeepCopy[T any](src T) (dst T, err error) {
 	return dst, nil
 }
 
-// DeepCopyPtr copies a pointer type object and returns a new pointer to the copied object.
+// DeepCopyPtr deep-copies src, returning (nil, nil) when src is nil.
 func DeepCopyPtr[T any](src *T) (*T, error) {
 	if src == nil {
 		return nil, nil //nolint:nilnil 	// Return nil if source is nil

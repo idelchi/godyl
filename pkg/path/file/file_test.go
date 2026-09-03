@@ -15,6 +15,7 @@ import (
 // Section 1: Pure path tests (no filesystem)
 // ---------------------------------------------------------------------------
 
+// TestNew verifies new behavior.
 func TestNew(t *testing.T) {
 	t.Parallel()
 
@@ -57,6 +58,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
+// TestBase verifies base behavior.
 func TestBase(t *testing.T) {
 	t.Parallel()
 
@@ -94,6 +96,7 @@ func TestBase(t *testing.T) {
 	}
 }
 
+// TestExtension verifies extension behavior.
 func TestExtension(t *testing.T) {
 	t.Parallel()
 
@@ -136,6 +139,7 @@ func TestExtension(t *testing.T) {
 	}
 }
 
+// TestWithoutExtension verifies without extension behavior.
 func TestWithoutExtension(t *testing.T) {
 	t.Parallel()
 
@@ -173,6 +177,7 @@ func TestWithoutExtension(t *testing.T) {
 	}
 }
 
+// TestWithoutExtensions verifies without extensions behavior.
 func TestWithoutExtensions(t *testing.T) {
 	t.Parallel()
 
@@ -210,6 +215,7 @@ func TestWithoutExtensions(t *testing.T) {
 	}
 }
 
+// TestHasExtension verifies has extension behavior.
 func TestHasExtension(t *testing.T) {
 	t.Parallel()
 
@@ -247,6 +253,7 @@ func TestHasExtension(t *testing.T) {
 	}
 }
 
+// TestWithExtension verifies with extension behavior.
 func TestWithExtension(t *testing.T) {
 	t.Parallel()
 
@@ -273,6 +280,7 @@ func TestWithExtension(t *testing.T) {
 	})
 }
 
+// TestUnescape verifies unescape behavior.
 func TestUnescape(t *testing.T) {
 	t.Parallel()
 
@@ -310,6 +318,7 @@ func TestUnescape(t *testing.T) {
 	}
 }
 
+// TestMatches verifies matches behavior.
 func TestMatches(t *testing.T) {
 	t.Parallel()
 
@@ -361,6 +370,7 @@ func TestMatches(t *testing.T) {
 	}
 }
 
+// TestWithoutFolder verifies without folder behavior.
 func TestWithoutFolder(t *testing.T) {
 	t.Parallel()
 
@@ -402,6 +412,7 @@ func TestWithoutFolder(t *testing.T) {
 	}
 }
 
+// TestIsAbs verifies is abs behavior.
 func TestIsAbs(t *testing.T) {
 	t.Parallel()
 
@@ -448,6 +459,7 @@ func TestIsAbs(t *testing.T) {
 // Section 2: Filesystem tests (use t.TempDir())
 // ---------------------------------------------------------------------------
 
+// TestFileCreateAndExists verifies file create and exists behavior.
 func TestFileCreateAndExists(t *testing.T) {
 	t.Parallel()
 
@@ -475,6 +487,7 @@ func TestFileCreateAndExists(t *testing.T) {
 	}
 }
 
+// TestFileWriteAndRead verifies file write and read behavior.
 func TestFileWriteAndRead(t *testing.T) {
 	t.Parallel()
 
@@ -496,6 +509,7 @@ func TestFileWriteAndRead(t *testing.T) {
 	}
 }
 
+// TestFileReadString verifies file read string behavior.
 func TestFileReadString(t *testing.T) {
 	t.Parallel()
 
@@ -517,6 +531,7 @@ func TestFileReadString(t *testing.T) {
 	}
 }
 
+// TestFileLines verifies file lines behavior.
 func TestFileLines(t *testing.T) {
 	t.Parallel()
 
@@ -565,6 +580,7 @@ func TestFileLines(t *testing.T) {
 	}
 }
 
+// TestFileCopy verifies file copy behavior.
 func TestFileCopy(t *testing.T) {
 	t.Parallel()
 
@@ -591,6 +607,7 @@ func TestFileCopy(t *testing.T) {
 	}
 }
 
+// TestFileCopy_SameDestination verifies file copy same destination behavior.
 func TestFileCopy_SameDestination(t *testing.T) {
 	t.Parallel()
 
@@ -618,6 +635,7 @@ func TestFileCopy_SameDestination(t *testing.T) {
 	}
 }
 
+// TestFileRemove verifies file remove behavior.
 func TestFileRemove(t *testing.T) {
 	t.Parallel()
 
@@ -641,6 +659,7 @@ func TestFileRemove(t *testing.T) {
 	}
 }
 
+// TestFileSize verifies file size behavior.
 func TestFileSize(t *testing.T) {
 	t.Parallel()
 
@@ -662,6 +681,7 @@ func TestFileSize(t *testing.T) {
 	}
 }
 
+// TestFileHash verifies file hash behavior.
 func TestFileHash(t *testing.T) {
 	t.Parallel()
 
@@ -687,6 +707,7 @@ func TestFileHash(t *testing.T) {
 	}
 }
 
+// TestFileIsExecutable verifies file is executable behavior.
 func TestFileIsExecutable(t *testing.T) {
 	t.Parallel()
 
@@ -725,6 +746,7 @@ func TestFileIsExecutable(t *testing.T) {
 	}
 }
 
+// TestFileLinks verifies file links behavior.
 func TestFileLinks(t *testing.T) {
 	t.Parallel()
 
@@ -755,6 +777,7 @@ func TestFileLinks(t *testing.T) {
 	}
 }
 
+// TestFileNumberOfLines verifies file number of lines behavior.
 func TestFileNumberOfLines(t *testing.T) {
 	t.Parallel()
 
@@ -778,6 +801,7 @@ func TestFileNumberOfLines(t *testing.T) {
 	}
 }
 
+// TestFileSet verifies file set behavior.
 func TestFileSet(t *testing.T) {
 	t.Parallel()
 
@@ -810,6 +834,7 @@ func TestFileSet(t *testing.T) {
 	}
 }
 
+// TestFileLargerThan verifies file larger than behavior.
 func TestFileLargerThan(t *testing.T) {
 	t.Parallel()
 
@@ -861,6 +886,7 @@ func TestFileLargerThan(t *testing.T) {
 	}
 }
 
+// TestFileSmallerThan verifies file smaller than behavior.
 func TestFileSmallerThan(t *testing.T) {
 	t.Parallel()
 
@@ -912,6 +938,7 @@ func TestFileSmallerThan(t *testing.T) {
 	}
 }
 
+// TestFileUp verifies file up behavior.
 func TestFileUp(t *testing.T) {
 	t.Parallel()
 
@@ -944,6 +971,7 @@ func TestFileUp(t *testing.T) {
 	}
 }
 
+// TestFileCopies verifies file copies behavior.
 func TestFileCopies(t *testing.T) {
 	t.Parallel()
 
@@ -973,6 +1001,7 @@ func TestFileCopies(t *testing.T) {
 	}
 }
 
+// TestFileCopyToNonExistentDir verifies file copy to non existent dir behavior.
 func TestFileCopyToNonExistentDir(t *testing.T) {
 	t.Parallel()
 
@@ -991,6 +1020,7 @@ func TestFileCopyToNonExistentDir(t *testing.T) {
 	}
 }
 
+// TestFileHashEmpty verifies file hash empty behavior.
 func TestFileHashEmpty(t *testing.T) {
 	t.Parallel()
 
@@ -1016,6 +1046,7 @@ func TestFileHashEmpty(t *testing.T) {
 	}
 }
 
+// TestFileWhich verifies file which behavior.
 func TestFileWhich(t *testing.T) {
 	t.Parallel()
 
@@ -1063,6 +1094,7 @@ func TestFileWhich(t *testing.T) {
 	})
 }
 
+// TestFileWriteWithPerm verifies file write with perm behavior.
 func TestFileWriteWithPerm(t *testing.T) {
 	t.Parallel()
 
@@ -1136,6 +1168,7 @@ func TestFileWriteWithPerm(t *testing.T) {
 	})
 }
 
+// TestFileLinesEmpty verifies file lines empty behavior.
 func TestFileLinesEmpty(t *testing.T) {
 	t.Parallel()
 

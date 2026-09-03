@@ -6,6 +6,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/hints"
 )
 
+// TestHintMatches verifies hint matches behavior.
 func TestHintMatches(t *testing.T) {
 	t.Parallel()
 
@@ -146,6 +147,7 @@ func TestHintMatches(t *testing.T) {
 	}
 }
 
+// TestHintParse verifies hint parse behavior.
 func TestHintParse(t *testing.T) {
 	t.Parallel()
 
@@ -462,6 +464,7 @@ func TestHintHas(t *testing.T) {
 	}
 }
 
+// TestHintsParseAndReduced verifies hints parse and reduced behavior.
 func TestHintsParseAndReduced(t *testing.T) {
 	t.Parallel()
 

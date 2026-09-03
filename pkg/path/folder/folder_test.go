@@ -13,6 +13,7 @@ import (
 // Section 1: Pure path tests (no filesystem)
 // ---------------------------------------------------------------------------
 
+// TestNew verifies new behavior.
 func TestNew(t *testing.T) {
 	t.Parallel()
 
@@ -60,6 +61,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
+// TestJoin verifies join behavior.
 func TestJoin(t *testing.T) {
 	t.Parallel()
 
@@ -101,6 +103,7 @@ func TestJoin(t *testing.T) {
 	}
 }
 
+// TestBase verifies base behavior.
 func TestBase(t *testing.T) {
 	t.Parallel()
 
@@ -138,6 +141,7 @@ func TestBase(t *testing.T) {
 	}
 }
 
+// TestDir verifies dir behavior.
 func TestDir(t *testing.T) {
 	t.Parallel()
 
@@ -175,6 +179,7 @@ func TestDir(t *testing.T) {
 	}
 }
 
+// TestWithFile verifies with file behavior.
 func TestWithFile(t *testing.T) {
 	t.Parallel()
 
@@ -216,6 +221,7 @@ func TestWithFile(t *testing.T) {
 	}
 }
 
+// TestIsSet verifies is set behavior.
 func TestIsSet(t *testing.T) {
 	t.Parallel()
 
@@ -253,6 +259,7 @@ func TestIsSet(t *testing.T) {
 	}
 }
 
+// TestAsFile verifies as file behavior.
 func TestAsFile(t *testing.T) {
 	t.Parallel()
 
@@ -285,6 +292,7 @@ func TestAsFile(t *testing.T) {
 	}
 }
 
+// TestFolderIsAbs verifies folder is abs behavior.
 func TestFolderIsAbs(t *testing.T) {
 	t.Parallel()
 
@@ -327,6 +335,7 @@ func TestFolderIsAbs(t *testing.T) {
 	}
 }
 
+// TestFolderAbsolute verifies folder absolute behavior.
 func TestFolderAbsolute(t *testing.T) {
 	t.Parallel()
 
@@ -353,6 +362,7 @@ func TestFolderAbsolute(t *testing.T) {
 	})
 }
 
+// TestCwd verifies cwd behavior.
 func TestCwd(t *testing.T) {
 	t.Parallel()
 
@@ -375,6 +385,7 @@ func TestCwd(t *testing.T) {
 	}
 }
 
+// TestHome verifies home behavior.
 func TestHome(t *testing.T) {
 	t.Parallel()
 
@@ -401,6 +412,7 @@ func TestHome(t *testing.T) {
 // Section 2: Filesystem tests (use t.TempDir)
 // ---------------------------------------------------------------------------
 
+// TestFolderCreate verifies folder create behavior.
 func TestFolderCreate(t *testing.T) {
 	t.Parallel()
 
@@ -420,6 +432,7 @@ func TestFolderCreate(t *testing.T) {
 	}
 }
 
+// TestFolderCreate_Nested verifies folder create nested behavior.
 func TestFolderCreate_Nested(t *testing.T) {
 	t.Parallel()
 
@@ -436,6 +449,7 @@ func TestFolderCreate_Nested(t *testing.T) {
 	}
 }
 
+// TestFolderRemove verifies folder remove behavior.
 func TestFolderRemove(t *testing.T) {
 	t.Parallel()
 
@@ -459,6 +473,7 @@ func TestFolderRemove(t *testing.T) {
 	}
 }
 
+// TestFolderListFiles verifies folder list files behavior.
 func TestFolderListFiles(t *testing.T) {
 	t.Parallel()
 
@@ -491,6 +506,7 @@ func TestFolderListFiles(t *testing.T) {
 	}
 }
 
+// TestFolderListFiles_ExcludesSubdirs verifies folder list files excludes subdirs behavior.
 func TestFolderListFiles_ExcludesSubdirs(t *testing.T) {
 	t.Parallel()
 
@@ -516,6 +532,7 @@ func TestFolderListFiles_ExcludesSubdirs(t *testing.T) {
 	}
 }
 
+// TestFolderListFolders verifies folder list folders behavior.
 func TestFolderListFolders(t *testing.T) {
 	t.Parallel()
 
@@ -547,6 +564,7 @@ func TestFolderListFolders(t *testing.T) {
 	}
 }
 
+// TestFolderListFolders_ExcludesFiles verifies folder list folders excludes files behavior.
 func TestFolderListFolders_ExcludesFiles(t *testing.T) {
 	t.Parallel()
 
@@ -572,6 +590,7 @@ func TestFolderListFolders_ExcludesFiles(t *testing.T) {
 	}
 }
 
+// TestFolderFindFile verifies folder find file behavior.
 func TestFolderFindFile(t *testing.T) {
 	t.Parallel()
 
@@ -609,6 +628,7 @@ func TestFolderFindFile(t *testing.T) {
 	}
 }
 
+// TestFolderFindFile_NotFound verifies folder find file not found behavior.
 func TestFolderFindFile_NotFound(t *testing.T) {
 	t.Parallel()
 
@@ -664,6 +684,7 @@ func TestFolderFindFile_SingleStar(t *testing.T) {
 	}
 }
 
+// TestFolderSize verifies folder size behavior.
 func TestFolderSize(t *testing.T) {
 	t.Parallel()
 
@@ -699,6 +720,7 @@ func TestFolderSize(t *testing.T) {
 	}
 }
 
+// TestFolderSize_EmptyDir verifies folder size empty dir behavior.
 func TestFolderSize_EmptyDir(t *testing.T) {
 	t.Parallel()
 
@@ -715,6 +737,7 @@ func TestFolderSize_EmptyDir(t *testing.T) {
 	}
 }
 
+// TestFolderFromFile verifies folder from file behavior.
 func TestFolderFromFile(t *testing.T) {
 	t.Parallel()
 
@@ -733,6 +756,7 @@ func TestFolderFromFile(t *testing.T) {
 	}
 }
 
+// TestFolderFindFiles verifies folder find files behavior.
 func TestFolderFindFiles(t *testing.T) {
 	t.Parallel()
 
@@ -772,6 +796,7 @@ func TestFolderFindFiles(t *testing.T) {
 	}
 }
 
+// TestFolderCreateIdempotent verifies folder create idempotent behavior.
 func TestFolderCreateIdempotent(t *testing.T) {
 	t.Parallel()
 
@@ -792,6 +817,7 @@ func TestFolderCreateIdempotent(t *testing.T) {
 	}
 }
 
+// TestFolderListFilesNonExistent verifies folder list files non existent behavior.
 func TestFolderListFilesNonExistent(t *testing.T) {
 	t.Parallel()
 
@@ -804,6 +830,7 @@ func TestFolderListFilesNonExistent(t *testing.T) {
 	}
 }
 
+// TestFolderCreateWithPerm verifies folder create with perm behavior.
 func TestFolderCreateWithPerm(t *testing.T) {
 	t.Parallel()
 
@@ -852,6 +879,7 @@ func TestFolderCreateWithPerm(t *testing.T) {
 	})
 }
 
+// TestFolderChmod verifies folder chmod behavior.
 func TestFolderChmod(t *testing.T) {
 	t.Parallel()
 
@@ -876,6 +904,7 @@ func TestFolderChmod(t *testing.T) {
 	}
 }
 
+// TestFolderList verifies folder list behavior.
 func TestFolderList(t *testing.T) {
 	t.Parallel()
 
@@ -920,6 +949,7 @@ func TestFolderList(t *testing.T) {
 	}
 }
 
+// TestFolderGlob verifies folder glob behavior.
 func TestFolderGlob(t *testing.T) {
 	t.Parallel()
 
@@ -974,6 +1004,7 @@ func TestFolderGlob(t *testing.T) {
 	})
 }
 
+// TestFolderWalk verifies folder walk behavior.
 func TestFolderWalk(t *testing.T) {
 	t.Parallel()
 
@@ -1049,6 +1080,7 @@ func TestFolderWalk(t *testing.T) {
 	})
 }
 
+// TestFolderRelativeTo verifies folder relative to behavior.
 func TestFolderRelativeTo(t *testing.T) {
 	t.Parallel()
 

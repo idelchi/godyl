@@ -11,6 +11,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/sources"
 )
 
+// TestCompact verifies compact behavior.
 func TestCompact(t *testing.T) {
 	t.Parallel()
 
@@ -59,6 +60,7 @@ func TestCompact(t *testing.T) {
 	}
 }
 
+// TestCompacted verifies compacted behavior.
 func TestCompacted(t *testing.T) {
 	t.Parallel()
 
@@ -152,6 +154,7 @@ func TestFallbacksUnmarshalYAML(t *testing.T) {
 	}
 }
 
+// TestBuild verifies build behavior.
 func TestBuild(t *testing.T) {
 	t.Parallel()
 

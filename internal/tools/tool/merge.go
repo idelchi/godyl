@@ -12,8 +12,7 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
-// MergeFrom merges the current tool with the provided tools,
-// the sequence being.
+// MergeFrom merges the provided tools into the receiver in argument order.
 //
 //	tool <-- others[0] <-- others[1] <-- others[2]...
 func (t *Tool) MergeFrom(others ...*Tool) error {
@@ -30,8 +29,7 @@ func (t *Tool) MergeFrom(others ...*Tool) error {
 	return nil
 }
 
-// MergeInto the current tool into the provided tools,
-// the sequence being.
+// MergeInto merges the receiver over the provided tools in argument order.
 //
 //	others[0] <-- others[1] <-- others[2]... <-- tool
 func (t *Tool) MergeInto(others ...*Tool) error {

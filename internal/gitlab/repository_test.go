@@ -14,25 +14,39 @@ import (
 	"github.com/idelchi/godyl/internal/release"
 )
 
+// gitlabReleaseJSON describes the subset of a GitLab release response used by test servers.
 type gitlabReleaseJSON struct {
-	TagName     string           `json:"tag_name"`
-	Name        string           `json:"name"`
-	Description string           `json:"description"`
-	CreatedAt   *time.Time       `json:"created_at,omitempty"`
-	Assets      gitlabAssetsJSON `json:"assets"`
+	// TagName identifies the release tag.
+	TagName string `json:"tag_name"`
+	// Name is the human-readable release name.
+	Name string `json:"name"`
+	// Description contains the release notes.
+	Description string `json:"description"`
+	// CreatedAt records the release creation time.
+	CreatedAt *time.Time `json:"created_at,omitempty"`
+	// Assets contains the release's downloadable links.
+	Assets gitlabAssetsJSON `json:"assets"`
 }
 
+// gitlabAssetsJSON groups the release asset links returned by GitLab.
 type gitlabAssetsJSON struct {
+	// Links contains the release's downloadable assets.
 	Links []gitlabLinkJSON `json:"links"`
 }
 
+// gitlabLinkJSON describes one GitLab release asset link used by test servers.
 type gitlabLinkJSON struct {
-	Name           string `json:"name"`
-	URL            string `json:"url"`
+	// Name is the asset filename.
+	Name string `json:"name"`
+	// URL is the asset link returned by GitLab.
+	URL string `json:"url"`
+	// DirectAssetURL is the resolved direct-download location.
 	DirectAssetURL string `json:"direct_asset_url"`
-	LinkType       string `json:"link_type"`
+	// LinkType classifies the GitLab release link.
+	LinkType string `json:"link_type"`
 }
 
+// newGitLabTestServer returns a repository client backed by an isolated HTTP test server.
 func newGitLabTestServer(t *testing.T, mux *http.ServeMux) *internalgitlab.Repository {
 	t.Helper()
 
@@ -47,6 +61,7 @@ func newGitLabTestServer(t *testing.T, mux *http.ServeMux) *internalgitlab.Repos
 	return internalgitlab.NewRepository("mygroup", "myrepo", client)
 }
 
+// TestGetRelease verifies get release behavior.
 func TestGetRelease(t *testing.T) {
 	t.Parallel()
 
@@ -114,6 +129,7 @@ func TestGetRelease(t *testing.T) {
 	}
 }
 
+// TestGetRelease_NotFound verifies get release not found behavior.
 func TestGetRelease_NotFound(t *testing.T) {
 	t.Parallel()
 
@@ -139,6 +155,7 @@ func TestGetRelease_NotFound(t *testing.T) {
 	}
 }
 
+// TestLatestRelease verifies latest release behavior.
 func TestLatestRelease(t *testing.T) {
 	t.Parallel()
 
@@ -201,6 +218,7 @@ func TestLatestRelease(t *testing.T) {
 	}
 }
 
+// TestLatestRelease_NoReleases verifies latest release no releases behavior.
 func TestLatestRelease_NoReleases(t *testing.T) {
 	t.Parallel()
 
@@ -224,6 +242,7 @@ func TestLatestRelease_NoReleases(t *testing.T) {
 	}
 }
 
+// TestLatestRelease_ServerError verifies latest release server error behavior.
 func TestLatestRelease_ServerError(t *testing.T) {
 	t.Parallel()
 
@@ -244,6 +263,7 @@ func TestLatestRelease_ServerError(t *testing.T) {
 	}
 }
 
+// TestGetLatestIncludingPreRelease_EmptyReleases verifies get latest including pre release empty releases behavior.
 func TestGetLatestIncludingPreRelease_EmptyReleases(t *testing.T) {
 	t.Parallel()
 
@@ -267,6 +287,7 @@ func TestGetLatestIncludingPreRelease_EmptyReleases(t *testing.T) {
 	}
 }
 
+// TestGetLatestIncludingPreRelease verifies get latest including pre release behavior.
 func TestGetLatestIncludingPreRelease(t *testing.T) {
 	t.Parallel()
 
@@ -343,6 +364,7 @@ func TestGetLatestIncludingPreRelease(t *testing.T) {
 	}
 }
 
+// TestGetLatestIncludingPreRelease_NilCreatedAt verifies get latest including pre release nil created at behavior.
 func TestGetLatestIncludingPreRelease_NilCreatedAt(t *testing.T) {
 	t.Parallel()
 

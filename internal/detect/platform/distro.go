@@ -9,20 +9,22 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
+// distroAlpine is the canonical name of Alpine Linux.
 const distroAlpine = "alpine"
 
 // Distribution represents a Linux distribution configuration.
 type Distribution struct {
+	// Name retains the unparsed distribution name supplied by the user or detector.
 	Name string `single:"true"`
 
-	// Type is the canonical distribution name (e.g., debian, ubuntu).
+	// canonical is the normalized distribution name, such as debian or ubuntu.
 	canonical string
 
-	// Raw contains the original string that was parsed.
+	// alias is the exact supported spelling that matched Name.
 	alias string
 }
 
-// IsNil returns true if the Distribution pointer is nil.
+// IsNil reports whether the unparsed distribution name is empty.
 func (d *Distribution) IsNil() bool {
 	return d.Name == ""
 }
@@ -46,7 +48,9 @@ func (d *Distribution) MarshalYAML() (any, error) {
 // DistroInfo defines a Linux distribution's characteristics.
 // Includes the canonical type name and known aliases.
 type DistroInfo struct {
-	Type    string
+	// Type is the canonical distribution name.
+	Type string
+	// Aliases contains additional recognized spellings.
 	Aliases []string
 }
 
@@ -109,7 +113,7 @@ func (d *Distribution) ParseFrom(name string, comparisons ...func(string, string
 	return fmt.Errorf("%w: distribution from %q", ErrParse, name)
 }
 
-// Parse extracts operating system information from a string identifier.
+// Parse extracts distribution information from Name.
 func (d *Distribution) Parse() error {
 	return d.ParseFrom(d.Name, strings.EqualFold, strings.Contains)
 }

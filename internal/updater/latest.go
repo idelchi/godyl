@@ -11,7 +11,9 @@ import (
 
 // Latest represents the latest version information including version and changelog.
 type Latest struct {
-	Version   string `json:"version"`
+	// Version is the newest published Godyl version.
+	Version string `json:"version"`
+	// Changelog describes changes in that version.
 	Changelog string `json:"changelog"`
 }
 

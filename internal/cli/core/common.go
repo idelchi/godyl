@@ -12,9 +12,9 @@ import (
 
 // Handler manages configuration resolution, logging, and embedded resources for CLI operations.
 type Handler struct {
-	config   root.Config
-	logger   *logger.Logger
-	embedded Embedded
+	config   root.Config    // config is the resolved root command configuration.
+	logger   *logger.Logger // logger is initialized by SetupLogger.
+	embedded Embedded       // embedded contains the compiled defaults and schemas.
 }
 
 // NewHandler creates a new Handler instance with the provided configuration and embedded resources.

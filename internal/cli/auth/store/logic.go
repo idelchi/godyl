@@ -10,7 +10,7 @@ import (
 	"github.com/idelchi/godyl/pkg/editor"
 )
 
-// run executes the `auth store` command.
+// run stores explicitly supplied token values in the selected keyring or YAML file.
 func run(input core.Input) error {
 	cfg, _, _, _, args := input.Unpack()
 

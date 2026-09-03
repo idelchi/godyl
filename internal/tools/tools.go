@@ -14,7 +14,7 @@ import (
 // Tools represents a collection of Tool configurations.
 type Tools []*tool.Tool
 
-// Append adds a tool to the collection.
+// Append adds a tool to the collection and panics when t is nil.
 func (ts *Tools) Append(t *tool.Tool) {
 	if t == nil {
 		panic("nil tool in tools collection")
@@ -23,7 +23,7 @@ func (ts *Tools) Append(t *tool.Tool) {
 	*ts = append(*ts, t)
 }
 
-// MergeWith merges all the stored defaults with the provided tools.
+// MergeWith merges all stored tools over the provided defaults and panics on nil collection members.
 // The sequence is:
 //
 //	others[0] <-- others[1] <-- others[2]... <-- tools[i]
@@ -52,7 +52,7 @@ func (ts Tools) Get(name string) *tool.Tool {
 	return nil
 }
 
-// GetFirst returns the first tool in the collection.
+// GetFirst returns the first tool and panics when the collection is empty.
 func (ts Tools) GetFirst() *tool.Tool {
 	if len(ts) > 0 {
 		return ts[0]
@@ -70,7 +70,7 @@ func (ts Tools) DefaultInheritance(inheritance string) {
 	}
 }
 
-// ResolveInheritance processes tool inheritance using the provided defaults.
+// ResolveInheritance applies the selected defaults and panics on nil collection members.
 func (ts Tools) ResolveInheritance(d *defaults.Defaults) error {
 	for _, t := range ts {
 		if t == nil {

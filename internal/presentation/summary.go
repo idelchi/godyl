@@ -8,7 +8,9 @@ import (
 
 // ShowConfig configures how results are presented.
 type ShowConfig struct {
-	Verbose   int
+	// Verbose controls the amount of result detail shown.
+	Verbose int
+	// ErrorFile receives machine-readable errors when set.
 	ErrorFile file.File
 }
 

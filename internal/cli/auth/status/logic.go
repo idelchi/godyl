@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/iutils"
 )
 
-// run executes the `auth status` command.
+// run prints whether each supported authentication token has a non-empty value.
 func run(input core.Input) error {
 	cfg, _, _, _, _ := input.Unpack()
 

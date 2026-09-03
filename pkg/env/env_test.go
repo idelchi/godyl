@@ -9,6 +9,7 @@ import (
 	"github.com/idelchi/godyl/pkg/env"
 )
 
+// TestAdd verifies add behavior.
 func TestAdd(t *testing.T) {
 	t.Parallel()
 
@@ -126,6 +127,7 @@ func TestAdd(t *testing.T) {
 	})
 }
 
+// TestGet verifies get behavior.
 func TestGet(t *testing.T) {
 	t.Parallel()
 
@@ -152,6 +154,7 @@ func TestGet(t *testing.T) {
 	}
 }
 
+// TestGetAny verifies get any behavior.
 func TestGetAny(t *testing.T) {
 	t.Parallel()
 
@@ -186,6 +189,7 @@ func TestGetAny(t *testing.T) {
 	}
 }
 
+// TestGetOrDefault verifies get or default behavior.
 func TestGetOrDefault(t *testing.T) {
 	t.Parallel()
 
@@ -213,6 +217,7 @@ func TestGetOrDefault(t *testing.T) {
 	}
 }
 
+// TestExists verifies exists behavior.
 func TestExists(t *testing.T) {
 	t.Parallel()
 
@@ -239,6 +244,7 @@ func TestExists(t *testing.T) {
 	}
 }
 
+// TestDelete verifies delete behavior.
 func TestDelete(t *testing.T) {
 	t.Parallel()
 
@@ -273,6 +279,7 @@ func TestDelete(t *testing.T) {
 	})
 }
 
+// TestMerge verifies merge behavior.
 func TestMerge(t *testing.T) {
 	t.Parallel()
 
@@ -327,6 +334,7 @@ func TestMerge(t *testing.T) {
 	})
 }
 
+// TestMergedWith verifies merged with behavior.
 func TestMergedWith(t *testing.T) {
 	t.Parallel()
 
@@ -368,6 +376,7 @@ func TestMergedWith(t *testing.T) {
 	})
 }
 
+// TestAsSlice verifies as slice behavior.
 func TestAsSlice(t *testing.T) {
 	t.Parallel()
 
@@ -385,6 +394,7 @@ func TestAsSlice(t *testing.T) {
 	})
 }
 
+// TestKeys verifies keys behavior.
 func TestKeys(t *testing.T) {
 	t.Parallel()
 
@@ -402,6 +412,7 @@ func TestKeys(t *testing.T) {
 	})
 }
 
+// TestMustGet verifies must get behavior.
 func TestMustGet(t *testing.T) {
 	t.Parallel()
 
@@ -446,6 +457,7 @@ func TestMustGet(t *testing.T) {
 	}
 }
 
+// TestGetWithPredicates verifies get with predicates behavior.
 func TestGetWithPredicates(t *testing.T) {
 	t.Parallel()
 
@@ -482,6 +494,7 @@ func TestGetWithPredicates(t *testing.T) {
 	})
 }
 
+// TestAddPair verifies add pair behavior.
 func TestAddPair(t *testing.T) {
 	t.Parallel()
 
@@ -515,6 +528,7 @@ func TestAddPair(t *testing.T) {
 	})
 }
 
+// TestGetAsEnv verifies get as env behavior.
 func TestGetAsEnv(t *testing.T) {
 	t.Parallel()
 
@@ -541,6 +555,7 @@ func TestGetAsEnv(t *testing.T) {
 	}
 }
 
+// TestAsEnv verifies as env behavior.
 func TestAsEnv(t *testing.T) {
 	t.Parallel()
 
@@ -598,6 +613,7 @@ func TestAsEnv(t *testing.T) {
 	}
 }
 
+// TestAddZeroPairs verifies add zero pairs behavior.
 func TestAddZeroPairs(t *testing.T) {
 	t.Parallel()
 
@@ -613,6 +629,7 @@ func TestAddZeroPairs(t *testing.T) {
 	}
 }
 
+// TestAsSliceEmpty verifies as slice empty behavior.
 func TestAsSliceEmpty(t *testing.T) {
 	t.Parallel()
 
@@ -625,6 +642,7 @@ func TestAsSliceEmpty(t *testing.T) {
 	}
 }
 
+// TestKeysEmpty verifies keys empty behavior.
 func TestKeysEmpty(t *testing.T) {
 	t.Parallel()
 

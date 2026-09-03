@@ -8,17 +8,29 @@ import (
 
 // mockTool implements strategy.Tool for use in tests.
 type mockTool struct {
-	exists         bool
+	// exists reports whether the mock tool is installed.
+	exists bool
+	// currentVersion is the mock installed version.
 	currentVersion string
-	start          strategy.Strategy
-	targetVersion  string
+	// start is the mock installation strategy.
+	start strategy.Strategy
+	// targetVersion is the mock desired version.
+	targetVersion string
 }
 
-func (m mockTool) Exists() bool                   { return m.exists }
-func (m mockTool) GetCurrentVersion() string      { return m.currentVersion }
-func (m mockTool) GetStrategy() strategy.Strategy { return m.start }
-func (m mockTool) GetTargetVersion() string       { return m.targetVersion }
+// Exists reports whether the mock tool is installed.
+func (m mockTool) Exists() bool { return m.exists }
 
+// GetCurrentVersion returns the mock installed version.
+func (m mockTool) GetCurrentVersion() string { return m.currentVersion }
+
+// GetStrategy returns the mock installation strategy.
+func (m mockTool) GetStrategy() strategy.Strategy { return m.start }
+
+// GetTargetVersion returns the mock desired version.
+func (m mockTool) GetTargetVersion() string { return m.targetVersion }
+
+// TestSync verifies sync behavior.
 func TestSync(t *testing.T) {
 	t.Parallel()
 

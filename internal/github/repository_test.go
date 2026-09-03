@@ -16,20 +16,31 @@ import (
 	"github.com/idelchi/godyl/internal/release"
 )
 
+// releaseJSON describes the subset of a GitHub release response used by test servers.
 type releaseJSON struct {
-	TagName     string      `json:"tag_name"`
-	Name        string      `json:"name"`
-	Body        string      `json:"body"`
-	PublishedAt *time.Time  `json:"published_at,omitempty"`
-	Assets      []assetJSON `json:"assets,omitempty"`
+	// TagName identifies the release tag.
+	TagName string `json:"tag_name"`
+	// Name is the human-readable release name.
+	Name string `json:"name"`
+	// Body contains the release notes.
+	Body string `json:"body"`
+	// PublishedAt records the release publication time.
+	PublishedAt *time.Time `json:"published_at,omitempty"`
+	// Assets contains the release's downloadable files.
+	Assets []assetJSON `json:"assets,omitempty"`
 }
 
+// assetJSON describes the subset of a GitHub asset response used by test servers.
 type assetJSON struct {
-	Name               string `json:"name"`
+	// Name is the asset filename.
+	Name string `json:"name"`
+	// BrowserDownloadURL is the public download location.
 	BrowserDownloadURL string `json:"browser_download_url"`
-	ContentType        string `json:"content_type"`
+	// ContentType is the asset media type.
+	ContentType string `json:"content_type"`
 }
 
+// newTestServer returns a repository client backed by an isolated HTTP test server.
 func newTestServer(t *testing.T, mux *http.ServeMux) *internalgithub.Repository {
 	t.Helper()
 
@@ -41,6 +52,7 @@ func newTestServer(t *testing.T, mux *http.ServeMux) *internalgithub.Repository 
 	return internalgithub.NewRepository("myowner", "myrepo", client)
 }
 
+// TestLatestRelease verifies latest release behavior.
 func TestLatestRelease(t *testing.T) {
 	t.Parallel()
 
@@ -95,6 +107,7 @@ func TestLatestRelease(t *testing.T) {
 	}
 }
 
+// TestGetRelease verifies get release behavior.
 func TestGetRelease(t *testing.T) {
 	t.Parallel()
 
@@ -159,6 +172,7 @@ func TestGetRelease(t *testing.T) {
 	}
 }
 
+// assertGitHubError verifies the status carried by a GitHub client error.
 func assertGitHubError(t *testing.T, err error, wantStatus int) {
 	t.Helper()
 
@@ -173,6 +187,7 @@ func assertGitHubError(t *testing.T, err error, wantStatus int) {
 	}
 }
 
+// TestLatestRelease_NotFound verifies latest release not found behavior.
 func TestLatestRelease_NotFound(t *testing.T) {
 	t.Parallel()
 
@@ -195,6 +210,7 @@ func TestLatestRelease_NotFound(t *testing.T) {
 	}
 }
 
+// TestLatestRelease_ServerError verifies latest release server error behavior.
 func TestLatestRelease_ServerError(t *testing.T) {
 	t.Parallel()
 
@@ -217,6 +233,7 @@ func TestLatestRelease_ServerError(t *testing.T) {
 	}
 }
 
+// TestGetRelease_NotFound verifies get release not found behavior.
 func TestGetRelease_NotFound(t *testing.T) {
 	t.Parallel()
 
@@ -239,6 +256,7 @@ func TestGetRelease_NotFound(t *testing.T) {
 	}
 }
 
+// TestLatestIncludingPreRelease_EmptyReleases verifies latest including pre release empty releases behavior.
 func TestLatestIncludingPreRelease_EmptyReleases(t *testing.T) {
 	t.Parallel()
 
@@ -262,6 +280,7 @@ func TestLatestIncludingPreRelease_EmptyReleases(t *testing.T) {
 	}
 }
 
+// TestLatestIncludingPreRelease verifies latest including pre release behavior.
 func TestLatestIncludingPreRelease(t *testing.T) {
 	t.Parallel()
 
@@ -337,6 +356,7 @@ func TestLatestIncludingPreRelease(t *testing.T) {
 	}
 }
 
+// TestGetReleasesByWildcard verifies get releases by wildcard behavior.
 func TestGetReleasesByWildcard(t *testing.T) {
 	t.Parallel()
 
@@ -555,6 +575,7 @@ func TestGetReleasesByWildcard(t *testing.T) {
 	}
 }
 
+// TestLatestIncludingPreRelease_MultiPage verifies latest including pre release multi page behavior.
 func TestLatestIncludingPreRelease_MultiPage(t *testing.T) {
 	t.Parallel()
 
@@ -639,6 +660,7 @@ func TestLatestIncludingPreRelease_MultiPage(t *testing.T) {
 	}
 }
 
+// TestLatestRelease_EmptyTagName verifies latest release empty tag name behavior.
 func TestLatestRelease_EmptyTagName(t *testing.T) {
 	t.Parallel()
 

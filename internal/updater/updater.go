@@ -30,7 +30,9 @@ import (
 
 // Godyl represents the godyl tool configuration for self-updating.
 type Godyl struct {
-	Tool    *tool.Tool
+	// Tool contains the source and installation configuration for Godyl itself.
+	Tool *tool.Tool
+	// Version is the currently running Godyl version.
 	Version string
 }
 
@@ -74,8 +76,11 @@ func (g *Godyl) IsUpToDate() bool {
 
 // Updater manages the self-update process for the godyl tool.
 type Updater struct {
-	godyl    *Godyl
-	log      *logger.Logger
+	// godyl contains current and target self-update state.
+	godyl *Godyl
+	// log records update progress and failures.
+	log *logger.Logger
+	// template contains the Windows cleanup script template.
 	template []byte
 }
 
@@ -134,7 +139,7 @@ func (u *Updater) Update(check bool) error {
 	return u.performUpdate(u.godyl.Tool)
 }
 
-// PerformUpdate downloads the new version and applies the update.
+// performUpdate downloads the new version and applies the update.
 // Handles temporary file management and platform-specific cleanup.
 func (u *Updater) performUpdate(tool *tool.Tool) error {
 	if res := tool.Resolve(tags.IncludeTags{}); !res.IsOK() {
@@ -180,7 +185,7 @@ func (u *Updater) performUpdate(tool *tool.Tool) error {
 	return nil
 }
 
-// DownloadTool retrieves the new version and stores it in a temporary directory.
+// downloadTool retrieves the new version and stores it in a temporary directory.
 // Sets up progress tracking for the download operation.
 func (u *Updater) downloadTool(tool *tool.Tool) (string, error) {
 	// Create a temporary directory based on the platform
@@ -207,7 +212,7 @@ func (u *Updater) downloadTool(tool *tool.Tool) (string, error) {
 	return tool.Output, nil
 }
 
-// CreateTempDir creates a temporary directory for the update process.
+// createTempDir creates a temporary directory for the update process.
 // Uses platform-specific logic to determine the appropriate location.
 func (u *Updater) createTempDir() (string, error) {
 	if IsWindows() {
@@ -234,7 +239,7 @@ func (u *Updater) createTempDir() (string, error) {
 	return dir.Path(), nil
 }
 
-// ReplaceBinary replaces the current executable with the new version.
+// replaceBinary replaces the current executable with the new version.
 // Uses go-update library to handle the replacement process safely.
 func (u *Updater) replaceBinary(newBinaryPath string) error {
 	file, err := os.Open(filepath.Clean(newBinaryPath))
@@ -251,7 +256,7 @@ func (u *Updater) replaceBinary(newBinaryPath string) error {
 	return nil
 }
 
-// CleanupWindows performs Windows-specific post-update cleanup operations.
+// cleanupWindows performs Windows-specific post-update cleanup operations.
 // Creates and executes a cleanup script to handle file replacement.
 func (u *Updater) cleanupWindows() error {
 	return createAndRunCleanupScript(u.template, u.log)

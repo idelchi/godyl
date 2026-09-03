@@ -13,7 +13,7 @@ import (
 	"github.com/idelchi/godyl/pkg/version"
 )
 
-// run executes the `cache clean` command.
+// run removes cache entries for missing tools and refreshes detectable installed versions.
 func run(input core.Input) error {
 	cfg, _, _, _, _ := input.Unpack()
 

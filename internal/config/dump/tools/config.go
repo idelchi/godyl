@@ -7,8 +7,7 @@ import (
 
 // Tools holds the configuration for the `dump tools` subcommand.
 type Tools struct {
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
+	// Tracker records which dump-tools options were supplied explicitly.
 	shared.Tracker `mapstructure:"-" yaml:"-"`
 
 	// Tags are the tags to consider when dumping tools

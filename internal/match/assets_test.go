@@ -86,10 +86,14 @@ func TestAssetsFromNames(t *testing.T) {
 
 // hintSpec captures hint parameters for deferred construction inside t.Run.
 type hintSpec struct {
-	pattern   string
-	typ       hints.Type
+	// pattern is the value matched against an asset property.
+	pattern string
+	// typ selects the asset property to inspect.
+	typ hints.Type
+	// matchKind selects positive or negative matching.
 	matchKind hints.Match
-	weight    int
+	// weight contributes to the match score.
+	weight int
 }
 
 // TestAssetsMatch verifies that Match returns one Result per asset and that

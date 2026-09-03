@@ -9,6 +9,7 @@ import (
 
 // progressMgr wraps progress tracking functionality.
 type progressMgr struct {
+	// trackable is either the interactive tracker or a no-op implementation.
 	trackable progress.ProgressTracker
 }
 

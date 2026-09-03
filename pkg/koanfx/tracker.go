@@ -5,11 +5,12 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// SetMap is a map that tracks the keys that have been set and whether they were changed.
+// SetMap maps observed keys to whether they came from explicit input rather than an untouched flag default.
 type SetMap map[string]bool
 
-// Tracker is a structure that tracks the keys in a koanf instance and their changed status.
+// Tracker records explicit-input state for keys observed while Koanf layers are loaded.
 type Tracker struct {
+	// track maps each observed key to its explicit-input state.
 	track SetMap
 }
 

@@ -10,6 +10,7 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
+// TestPrefix verifies prefix behavior.
 func TestPrefix(t *testing.T) {
 	t.Parallel()
 
@@ -167,6 +168,7 @@ func TestPrefix(t *testing.T) {
 	})
 }
 
+// TestMatchEnvToFlag verifies match env to flag behavior.
 func TestMatchEnvToFlag(t *testing.T) {
 	t.Parallel()
 
@@ -241,6 +243,7 @@ func TestMatchEnvToFlag(t *testing.T) {
 	})
 }
 
+// TestSplitTags verifies split tags behavior.
 func TestSplitTags(t *testing.T) {
 	t.Parallel()
 
@@ -293,6 +296,7 @@ func TestSplitTags(t *testing.T) {
 	}
 }
 
+// TestAny verifies any behavior.
 func TestAny(t *testing.T) {
 	t.Parallel()
 
@@ -342,6 +346,7 @@ func TestAny(t *testing.T) {
 	})
 }
 
+// TestBytesSource verifies bytes source behavior.
 func TestBytesSource(t *testing.T) {
 	t.Parallel()
 
@@ -377,6 +382,7 @@ func TestBytesSource(t *testing.T) {
 	})
 }
 
+// TestMultiSource verifies multi source behavior.
 func TestMultiSource(t *testing.T) {
 	t.Parallel()
 
@@ -433,6 +439,7 @@ func TestMultiSource(t *testing.T) {
 	})
 }
 
+// TestFileSourceRead verifies file source read behavior.
 func TestFileSourceRead(t *testing.T) {
 	t.Parallel()
 
@@ -470,6 +477,7 @@ func TestFileSourceRead(t *testing.T) {
 	})
 }
 
+// TestGetSourceFromPath verifies get source from path behavior.
 func TestGetSourceFromPath(t *testing.T) {
 	t.Parallel()
 
@@ -501,6 +509,7 @@ func TestGetSourceFromPath(t *testing.T) {
 	})
 }
 
+// TestReadPaths verifies read paths behavior.
 func TestReadPaths(t *testing.T) {
 	t.Parallel()
 
@@ -563,6 +572,7 @@ func TestReadPaths(t *testing.T) {
 	})
 }
 
+// TestReadPathsOrDefault verifies read paths or default behavior.
 func TestReadPathsOrDefault(t *testing.T) {
 	t.Parallel()
 
@@ -605,6 +615,7 @@ func TestReadPathsOrDefault(t *testing.T) {
 	})
 }
 
+// TestMerge verifies merge behavior.
 func TestMerge(t *testing.T) {
 	t.Parallel()
 

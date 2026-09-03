@@ -16,6 +16,7 @@ type Templatable[T any] struct {
 	// The template string to be parsed.
 	Template string
 
+	// parsed reports whether Parse has populated Value.
 	parsed bool
 }
 

@@ -13,7 +13,7 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// CleanupData contains the paths and filenames needed for Windows cleanup.
+// cleanupData contains the paths and filenames needed for Windows cleanup.
 // Used to populate the cleanup batch script template with the correct paths.
 type cleanupData struct {
 	// OldBinary is the path to the old executable to be removed.
@@ -29,7 +29,7 @@ type cleanupData struct {
 	LogFile string
 }
 
-// CreateAndRunCleanupScript handles Windows-specific cleanup after an update.
+// createAndRunCleanupScript handles Windows-specific cleanup after an update.
 // Creates a batch script from the template, populates it with the necessary paths,
 // and executes it in a minimized window. Returns an error if any step fails.
 func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error {
@@ -70,7 +70,7 @@ func createAndRunCleanupScript(templateContent []byte, log *logger.Logger) error
 	return executeScript(batchFile.Path())
 }
 
-// CreateBatchFile generates a cleanup batch script from the template.
+// createBatchFile generates a cleanup batch script from the template.
 // Takes the template content, output path, and cleanup data as input.
 // Returns an error if the file cannot be created or the template fails.
 func createBatchFile(templateContent []byte, batchFilePath string, data cleanupData) error {
@@ -100,7 +100,7 @@ func createBatchFile(templateContent []byte, batchFilePath string, data cleanupD
 	return nil
 }
 
-// ExecuteScript runs the cleanup batch script in a minimized window.
+// executeScript runs the cleanup batch script in a minimized window.
 // Uses cmd.exe to start the script with minimal UI visibility.
 func executeScript(scriptPath string) error {
 	//nolint:gosec // scriptPath is constructed internally, not from user input

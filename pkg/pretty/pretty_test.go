@@ -10,7 +10,9 @@ import (
 // maskedStruct has a field tagged with mask:"fixed".
 // The go-mask default masker replaces the field value with 8 '*' characters.
 type maskedStruct struct {
-	Name   string `json:"name"   yaml:"name"`
+	// Name is a visible fixture value.
+	Name string `json:"name"   yaml:"name"`
+	// Secret is a fixture value expected to be masked.
 	Secret string `json:"secret" mask:"fixed" yaml:"secret"`
 }
 
@@ -21,6 +23,7 @@ type maskedStruct struct {
 // so the result is 8 dashes.
 const maskedValue = "--------"
 
+// TestYAML verifies yaml behavior.
 func TestYAML(t *testing.T) {
 	t.Parallel()
 
@@ -69,6 +72,7 @@ func TestYAML(t *testing.T) {
 	}
 }
 
+// TestJSON verifies json behavior.
 func TestJSON(t *testing.T) {
 	t.Parallel()
 
@@ -117,6 +121,7 @@ func TestJSON(t *testing.T) {
 	}
 }
 
+// TestYAMLMasked verifies yaml masked behavior.
 func TestYAMLMasked(t *testing.T) {
 	t.Parallel()
 
@@ -157,6 +162,7 @@ func TestYAMLMasked(t *testing.T) {
 	}
 }
 
+// TestJSONMasked verifies json masked behavior.
 func TestJSONMasked(t *testing.T) {
 	t.Parallel()
 
@@ -197,6 +203,7 @@ func TestJSONMasked(t *testing.T) {
 	}
 }
 
+// TestYAMLNilInput verifies yaml nil input behavior.
 func TestYAMLNilInput(t *testing.T) {
 	t.Parallel()
 
@@ -210,6 +217,7 @@ func TestYAMLNilInput(t *testing.T) {
 	}
 }
 
+// TestJSONNilInput verifies json nil input behavior.
 func TestJSONNilInput(t *testing.T) {
 	t.Parallel()
 
@@ -223,6 +231,7 @@ func TestJSONNilInput(t *testing.T) {
 	}
 }
 
+// TestEnv verifies env behavior.
 func TestEnv(t *testing.T) {
 	t.Parallel()
 

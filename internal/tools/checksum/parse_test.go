@@ -9,6 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/checksum"
 )
 
+// TestParseChecksumFile verifies parse checksum file behavior.
 func TestParseChecksumFile(t *testing.T) {
 	t.Parallel()
 
@@ -129,6 +130,7 @@ func TestParseChecksumFile(t *testing.T) {
 	}
 }
 
+// TestInferAlgoFromHex verifies infer algo from hex behavior.
 func TestInferAlgoFromHex(t *testing.T) {
 	t.Parallel()
 

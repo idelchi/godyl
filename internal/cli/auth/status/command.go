@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Command returns the `auth status` command.
+// Command constructs token-status reporting against the fully resolved configuration.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "status [token...]",

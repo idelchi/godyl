@@ -10,6 +10,7 @@ import (
 	"github.com/idelchi/godyl/internal/defaults"
 )
 
+// TestPickHappyPath verifies pick happy path behavior.
 func TestPickHappyPath(t *testing.T) {
 	t.Parallel()
 
@@ -38,6 +39,7 @@ func TestPickHappyPath(t *testing.T) {
 	}
 }
 
+// TestPickMissingName verifies pick missing name behavior.
 func TestPickMissingName(t *testing.T) {
 	t.Parallel()
 
@@ -58,6 +60,7 @@ func TestPickMissingName(t *testing.T) {
 	}
 }
 
+// TestNewDefaultsFromBytesInvalidYAML verifies new defaults from bytes invalid yaml behavior.
 func TestNewDefaultsFromBytesInvalidYAML(t *testing.T) {
 	t.Parallel()
 
@@ -69,6 +72,7 @@ func TestNewDefaultsFromBytesInvalidYAML(t *testing.T) {
 	}
 }
 
+// TestBuildGraph verifies build graph behavior.
 func TestBuildGraph(t *testing.T) {
 	t.Parallel()
 
@@ -204,6 +208,7 @@ func TestBuildGraph(t *testing.T) {
 	}
 }
 
+// TestResolveInheritance verifies resolve inheritance behavior.
 func TestResolveInheritance(t *testing.T) {
 	t.Parallel()
 

@@ -32,9 +32,12 @@ const (
 // Logger holds the configuration for logging.
 // It includes the current logging level, the output writer, and color mappings for each log level.
 type Logger struct {
+	// output receives rendered log lines.
 	output io.Writer
+	// colors maps levels to their terminal styles.
 	colors map[Level]*color.Color
-	level  Level
+	// level is the minimum enabled severity.
+	level Level
 }
 
 // ErrInvalidLogLevel is returned when an invalid log level is provided.
@@ -122,12 +125,14 @@ func (l *Logger) log(level Level, format string, args ...any) {
 	}
 }
 
+// writeSilently writes a plain log line without terminal styling.
 func writeSilently(w io.Writer, msg string) error {
 	_, err := fmt.Fprintln(w, msg)
 
 	return err
 }
 
+// logPlain logs an unformatted message at level.
 func (l *Logger) logPlain(level Level, message string) {
 	l.log(level, "%s", message)
 }

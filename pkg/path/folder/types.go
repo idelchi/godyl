@@ -6,8 +6,7 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// Folder represents a filesystem directory path.
-// Provides methods for directory operations including creation removal, path manipulation, and file searching.
+// Folder represents a filesystem directory path with creation, removal, path manipulation, and search operations.
 type Folder string
 
 // CriteriaFunc defines a file matching predicate.

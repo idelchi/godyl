@@ -18,14 +18,22 @@ import (
 
 // GitLab represents a GitLab project configuration and state.
 type GitLab struct {
-	Data                install.Metadata `mapstructure:"-" yaml:"-"`
+	// Data contains metadata shared with the installer.
+	Data install.Metadata `mapstructure:"-" yaml:"-"`
+	// latestStoredRelease avoids fetching the same release twice during resolution.
 	latestStoredRelease *release.Release
-	Project             string `mapstructure:"project"   yaml:"project"`
-	Namespace           string `mapstructure:"namespace" yaml:"namespace"`
-	Token               string `mapstructure:"token"     mask:"fixed"     yaml:"token"`
-	Server              string `mapstructure:"server"    yaml:"server"`
-	Pre                 bool   `mapstructure:"pre"       yaml:"pre"`
-	NoToken             bool   `mapstructure:"no-token"  yaml:"no-token"`
+	// Project is the GitLab project name.
+	Project string `mapstructure:"project"   yaml:"project"`
+	// Namespace is the enclosing GitLab namespace.
+	Namespace string `mapstructure:"namespace" yaml:"namespace"`
+	// Token authenticates GitLab API requests.
+	Token string `mapstructure:"token"     mask:"fixed"     yaml:"token"`
+	// Server is the GitLab instance URL.
+	Server string `mapstructure:"server"    yaml:"server"`
+	// Pre permits prerelease versions.
+	Pre bool `mapstructure:"pre"       yaml:"pre"`
+	// NoToken forces unauthenticated GitLab requests.
+	NoToken bool `mapstructure:"no-token"  yaml:"no-token"`
 }
 
 // Initialize sets up the GitLab project configuration from the given name.

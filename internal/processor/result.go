@@ -9,11 +9,16 @@ import (
 
 // Result represents the outcome of a tool operation.
 type Result struct {
-	Error    error
-	Tool     *tool.Tool
+	// Error contains the underlying operation failure.
+	Error error
+	// Tool is the tool that was processed.
+	Tool *tool.Tool
+	// Metadata contains structured result details for consumers.
 	Metadata map[string]any
-	Message  string
-	Status   Status
+	// Message summarizes the operation outcome.
+	Message string
+	// Status classifies the operation outcome.
+	Status Status
 }
 
 // Status represents the possible states of a tool operation.
@@ -30,18 +35,27 @@ const (
 
 // Summary provides an aggregated view of all results.
 type Summary struct {
-	Results    []Result
-	Errors     []ErrorDetail
-	Total      int
+	// Results contains every processed tool result.
+	Results []Result
+	// Errors contains details for failed results.
+	Errors []ErrorDetail
+	// Total is the number of processed tools.
+	Total int
+	// Successful is the number of successful tools.
 	Successful int
-	Failed     int
-	Skipped    int
+	// Failed is the number of failed tools.
+	Failed int
+	// Skipped is the number of skipped tools.
+	Skipped int
 }
 
 // ErrorDetail contains detailed error information for a failed tool.
 type ErrorDetail struct {
-	Error   error
-	Tool    string
+	// Error is the underlying failure.
+	Error error
+	// Tool names the tool that failed.
+	Tool string
+	// Message describes the failed operation.
 	Message string
 }
 

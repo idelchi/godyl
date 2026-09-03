@@ -8,9 +8,8 @@ import (
 	"github.com/go-viper/mapstructure/v2"
 )
 
-// textUnmarshalerHookFunc is a fixed version of mapstructure.TextUnmarshallerHookFunc.
-// This hook allows to additionally unmarshal text into custom
-// string types that implement the encoding.Text(Un)Marshaler interface(s).
+// textUnmarshalerHookFunc mirrors Koanf's private default hook so a custom
+// DecoderConfig retains support for string types implementing text marshaling.
 func textUnmarshalerHookFunc() mapstructure.DecodeHookFuncType {
 	return func(
 		f reflect.Type,

@@ -17,6 +17,7 @@ import (
 // Type represents the type of checksum.
 type Type string
 
+// String returns the checksum type name.
 func (t Type) String() string {
 	return string(t)
 }

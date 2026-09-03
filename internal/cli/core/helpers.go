@@ -17,7 +17,8 @@ func ExitOnShow(show root.ShowFuncType, args ...string) bool {
 	return false
 }
 
-// SetSubcommandDefaults configures default settings for subcommands including pre-run hooks and configuration handling.
+// SetSubcommandDefaults installs configuration loading and validation on cmd.
+// It panics when a non-nil local value does not implement Trackable.
 func SetSubcommandDefaults(cmd *cobra.Command, local any, show root.ShowFuncType) {
 	var config Trackable
 
@@ -50,6 +51,7 @@ func (i Input) Unpack() (*root.Config, *Embedded, *Context, *cobra.Command, []st
 	return i.Global, i.Embedded, &GlobalContext, i.Cmd, i.Args
 }
 
+// excludeFields copies non-anonymous fields whose named tag is not "-" into a new value.
 func excludeFields(s any, tag string) any {
 	v := reflect.ValueOf(s)
 	t := reflect.TypeOf(s)

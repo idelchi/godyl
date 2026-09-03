@@ -8,11 +8,15 @@ import (
 	"github.com/idelchi/godyl/pkg/validator"
 )
 
+// testConfig contains fields exercised by validator tests.
 type testConfig struct {
-	Name  string `validate:"required"`
-	Count int    `validate:"min=1,max=100"`
+	// Name is required by the fixture validation rules.
+	Name string `validate:"required"`
+	// Count must remain within the fixture's accepted range.
+	Count int `validate:"min=1,max=100"`
 }
 
+// TestValidate verifies validate behavior.
 func TestValidate(t *testing.T) {
 	t.Parallel()
 
@@ -72,6 +76,7 @@ func TestValidate(t *testing.T) {
 	})
 }
 
+// TestValidateHelper verifies validate helper behavior.
 func TestValidateHelper(t *testing.T) {
 	t.Parallel()
 
@@ -116,6 +121,7 @@ func TestValidateHelper(t *testing.T) {
 	}
 }
 
+// TestRegisterValidationAndTranslation verifies register validation and translation behavior.
 func TestRegisterValidationAndTranslation(t *testing.T) {
 	t.Parallel()
 
@@ -186,6 +192,7 @@ func TestRegisterValidationAndTranslation(t *testing.T) {
 	}
 }
 
+// TestValidator_Accessor verifies validator accessor behavior.
 func TestValidator_Accessor(t *testing.T) {
 	t.Parallel()
 
@@ -196,6 +203,7 @@ func TestValidator_Accessor(t *testing.T) {
 	}
 }
 
+// TestFormatErrors verifies format errors behavior.
 func TestFormatErrors(t *testing.T) {
 	t.Parallel()
 
@@ -216,6 +224,7 @@ func TestFormatErrors(t *testing.T) {
 	})
 }
 
+// TestFormatErrorsNil verifies format errors nil behavior.
 func TestFormatErrorsNil(t *testing.T) {
 	t.Parallel()
 
@@ -235,6 +244,7 @@ func TestFormatErrorsNil(t *testing.T) {
 	}
 }
 
+// TestValidateErrorFieldInspection verifies validate error field inspection behavior.
 func TestValidateErrorFieldInspection(t *testing.T) {
 	t.Parallel()
 

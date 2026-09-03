@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/root"
 )
 
-// Command returns the `config set` command.
+// Command constructs parsing and persistence of dotted key=value configuration updates.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set <key> <value>",

@@ -6,6 +6,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/sources/install"
 )
 
+// TestSplitName verifies split name behavior.
 func TestSplitName(t *testing.T) {
 	t.Parallel()
 
@@ -192,6 +193,7 @@ func TestSplitNameUnicode(t *testing.T) {
 	}
 }
 
+// TestCutName verifies cut name behavior.
 func TestCutName(t *testing.T) {
 	t.Parallel()
 
@@ -269,6 +271,7 @@ func TestCutName(t *testing.T) {
 	}
 }
 
+// TestMetadataGet verifies metadata get behavior.
 func TestMetadataGet(t *testing.T) {
 	t.Parallel()
 
@@ -316,6 +319,7 @@ func TestMetadataGet(t *testing.T) {
 	}
 }
 
+// TestMetadataSet verifies metadata set behavior.
 func TestMetadataSet(t *testing.T) {
 	t.Parallel()
 

@@ -10,7 +10,7 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
-// run executes the `dump cache` command.
+// run loads and renders the current cache contents.
 func run(input core.Input) error {
 	cfg, _, _, _, args := input.Unpack()
 

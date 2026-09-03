@@ -22,15 +22,20 @@ const (
 	Force Strategy = "force"
 )
 
+// String returns the strategy name.
 func (s Strategy) String() string {
 	return string(s)
 }
 
 // Tool represents the interface required by the Strategy type.
 type Tool interface {
+	// Exists reports whether the tool is currently installed.
 	Exists() bool
+	// GetCurrentVersion returns the installed version when detectable.
 	GetCurrentVersion() string
+	// GetStrategy returns the requested installation strategy.
 	GetStrategy() Strategy
+	// GetTargetVersion returns the resolved desired version.
 	GetTargetVersion() string
 }
 

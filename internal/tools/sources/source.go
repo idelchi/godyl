@@ -75,10 +75,15 @@ func (t Type) SupportsArtifactReuse() bool {
 // Source represents the configuration for various source types used to retrieve tools.
 // TODO(Idelchi): Add validation.
 type Source struct {
+	// GitHub contains GitHub-specific source configuration.
 	GitHub github.GitHub
-	URL    url.URL
-	Go     goc.Go
-	Type   Type `validate:"oneof=github gitlab url none go"`
+	// URL contains direct-download source configuration.
+	URL url.URL
+	// Go contains Go-module source configuration.
+	Go goc.Go
+	// Type selects the active source implementation.
+	Type Type `validate:"oneof=github gitlab url none go"`
+	// GitLab contains GitLab-specific source configuration.
 	GitLab gitlab.GitLab
 }
 
@@ -100,10 +105,15 @@ func (s *Source) Headers() http.Header {
 // It provides methods for managing the complete lifecycle of tool installation,
 // from initialization through execution, versioning, path setup, and installation.
 type Populator interface {
+	// Initialize derives source state from the configured repository or URL.
 	Initialize(repo string) error
+	// Version resolves and stores the target version.
 	Version(version string) error
+	// URL resolves and stores the artifact location.
 	URL(name string, extensions []string, version string, requirements match.Requirements) error
+	// Install retrieves and installs the resolved artifact.
 	Install(data install.Data, progressListener getter.ProgressTracker) (string, file.File, error)
+	// Get returns a resolved metadata value.
 	Get(key string) string
 }
 

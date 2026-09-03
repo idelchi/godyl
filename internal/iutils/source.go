@@ -11,15 +11,17 @@ import (
 
 // Source represents a source of input data.
 type Source interface {
+	// Read returns all bytes available from the source.
 	Read() ([]byte, error)
 }
 
 // FileSource reads from a file.
 type FileSource struct {
+	// File is the path read by Read.
 	File file.File
 }
 
-// Read implements Source.
+// Read returns the complete contents of the configured file.
 func (s FileSource) Read() ([]byte, error) {
 	content, err := s.File.Read()
 	if err != nil {
@@ -32,7 +34,7 @@ func (s FileSource) Read() ([]byte, error) {
 // StdinSource reads from stdin.
 type StdinSource struct{}
 
-// Read implements Source.
+// Read returns all data currently piped through standard input.
 func (s StdinSource) Read() ([]byte, error) {
 	input, err := stdin.Read()
 	if err != nil {
@@ -44,16 +46,18 @@ func (s StdinSource) Read() ([]byte, error) {
 
 // BytesSource represents pre-loaded bytes.
 type BytesSource struct {
+	// Data contains the bytes returned by Read.
 	Data []byte
 }
 
-// Read implements Source.
+// Read returns the stored byte slice without copying it.
 func (s BytesSource) Read() ([]byte, error) {
 	return s.Data, nil
 }
 
 // MultiSource reads from multiple sources and concatenates the results.
 type MultiSource struct {
+	// Sources are read in order and separated with a newline.
 	Sources []Source
 }
 
@@ -62,7 +66,7 @@ func NewMultiSource(sources ...Source) *MultiSource {
 	return &MultiSource{Sources: sources}
 }
 
-// Read implements Source.
+// Read concatenates sources in order with one newline between each result.
 func (s MultiSource) Read() ([]byte, error) {
 	var buf bytes.Buffer
 

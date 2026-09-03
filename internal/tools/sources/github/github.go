@@ -18,12 +18,18 @@ import (
 
 // GitHub represents a GitHub repository configuration and state.
 type GitHub struct {
-	Data                install.Metadata `mapstructure:"-" yaml:"-"`
+	// Data contains metadata shared with the installer.
+	Data install.Metadata `mapstructure:"-" yaml:"-"`
+	// latestStoredRelease avoids fetching the same release twice during resolution.
 	latestStoredRelease *release.Release
-	Repo                string `mapstructure:"repo"  yaml:"repo"`
-	Owner               string `mapstructure:"owner" yaml:"owner"`
-	Token               string `mapstructure:"token" mask:"fixed" yaml:"token"`
-	Pre                 bool   `mapstructure:"pre"   yaml:"pre"`
+	// Repo is the GitHub repository name.
+	Repo string `mapstructure:"repo"  yaml:"repo"`
+	// Owner is the GitHub repository owner.
+	Owner string `mapstructure:"owner" yaml:"owner"`
+	// Token authenticates GitHub API requests.
+	Token string `mapstructure:"token" mask:"fixed" yaml:"token"`
+	// Pre permits prerelease versions.
+	Pre bool `mapstructure:"pre"   yaml:"pre"`
 }
 
 // Initialize sets up the GitHub repository configuration from the given name.

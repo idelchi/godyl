@@ -15,6 +15,7 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
+// newTestCache returns an empty cache backed by an isolated temporary file.
 func newTestCache(t *testing.T) *cache.Cache {
 	t.Helper()
 
@@ -29,6 +30,7 @@ func newTestCache(t *testing.T) *cache.Cache {
 	return c
 }
 
+// testItem constructs a representative cache item with stable timestamps.
 func testItem(id, name string) *cache.Item {
 	return &cache.Item{
 		ID:   id,
@@ -38,6 +40,7 @@ func testItem(id, name string) *cache.Item {
 	}
 }
 
+// TestCacheIsEmpty verifies cache is empty behavior.
 func TestCacheIsEmpty(t *testing.T) {
 	t.Parallel()
 
@@ -66,6 +69,7 @@ func TestCacheIsEmpty(t *testing.T) {
 	})
 }
 
+// TestCacheAddAndGet verifies cache add and get behavior.
 func TestCacheAddAndGet(t *testing.T) {
 	t.Parallel()
 
@@ -105,6 +109,7 @@ func TestCacheAddAndGet(t *testing.T) {
 	})
 }
 
+// TestCacheGetByName verifies cache get by name behavior.
 func TestCacheGetByName(t *testing.T) {
 	t.Parallel()
 
@@ -128,6 +133,7 @@ func TestCacheGetByName(t *testing.T) {
 	}
 }
 
+// TestCacheGetByNameWildcard verifies cache get by name wildcard behavior.
 func TestCacheGetByNameWildcard(t *testing.T) {
 	t.Parallel()
 
@@ -151,6 +157,7 @@ func TestCacheGetByNameWildcard(t *testing.T) {
 	}
 }
 
+// TestCacheDelete verifies cache delete behavior.
 func TestCacheDelete(t *testing.T) {
 	t.Parallel()
 
@@ -209,6 +216,7 @@ func TestCacheDelete(t *testing.T) {
 	})
 }
 
+// TestCacheDeleteAll verifies cache delete all behavior.
 func TestCacheDeleteAll(t *testing.T) {
 	t.Parallel()
 
@@ -227,6 +235,7 @@ func TestCacheDeleteAll(t *testing.T) {
 	}
 }
 
+// TestCacheDeleteByName verifies cache delete by name behavior.
 func TestCacheDeleteByName(t *testing.T) {
 	t.Parallel()
 
@@ -247,6 +256,7 @@ func TestCacheDeleteByName(t *testing.T) {
 	}
 }
 
+// TestCachePersistence verifies cache persistence behavior.
 func TestCachePersistence(t *testing.T) {
 	t.Parallel()
 
@@ -283,6 +293,7 @@ func TestCachePersistence(t *testing.T) {
 	}
 }
 
+// TestCacheTouched verifies cache touched behavior.
 func TestCacheTouched(t *testing.T) {
 	t.Parallel()
 
@@ -311,6 +322,7 @@ func TestCacheTouched(t *testing.T) {
 	})
 }
 
+// TestCacheGetAll verifies cache get all behavior.
 func TestCacheGetAll(t *testing.T) {
 	t.Parallel()
 
@@ -341,6 +353,7 @@ func TestCacheGetAll(t *testing.T) {
 	}
 }
 
+// TestCacheDeleteByNameAll verifies cache delete by name all behavior.
 func TestCacheDeleteByNameAll(t *testing.T) {
 	t.Parallel()
 
@@ -359,6 +372,7 @@ func TestCacheDeleteByNameAll(t *testing.T) {
 	}
 }
 
+// TestCacheDeleteByNameNotFound verifies cache delete by name not found behavior.
 func TestCacheDeleteByNameNotFound(t *testing.T) {
 	t.Parallel()
 
@@ -370,6 +384,7 @@ func TestCacheDeleteByNameNotFound(t *testing.T) {
 	}
 }
 
+// TestCacheAddDuplicateIDOverwrites verifies cache add duplicate id overwrites behavior.
 func TestCacheAddDuplicateIDOverwrites(t *testing.T) {
 	t.Parallel()
 
@@ -408,6 +423,7 @@ func TestCacheAddDuplicateIDOverwrites(t *testing.T) {
 	}
 }
 
+// TestCacheConcurrentAccess verifies cache concurrent access behavior.
 func TestCacheConcurrentAccess(t *testing.T) {
 	t.Parallel()
 
@@ -452,6 +468,7 @@ func TestCacheConcurrentAccess(t *testing.T) {
 	}
 }
 
+// TestCacheLoadCorruptJSON verifies cache load corrupt json behavior.
 func TestCacheLoadCorruptJSON(t *testing.T) {
 	t.Parallel()
 
@@ -474,6 +491,7 @@ func TestCacheLoadCorruptJSON(t *testing.T) {
 	}
 }
 
+// TestCacheAddZeroItems verifies cache add zero items behavior.
 func TestCacheAddZeroItems(t *testing.T) {
 	t.Parallel()
 
@@ -500,6 +518,7 @@ func TestCacheAddZeroItems(t *testing.T) {
 	}
 }
 
+// TestCacheGetByNameWildcardNoMatch verifies cache get by name wildcard no match behavior.
 func TestCacheGetByNameWildcardNoMatch(t *testing.T) {
 	t.Parallel()
 
@@ -515,6 +534,7 @@ func TestCacheGetByNameWildcardNoMatch(t *testing.T) {
 	}
 }
 
+// TestCacheDeleteByNameWildcard verifies cache delete by name wildcard behavior.
 func TestCacheDeleteByNameWildcard(t *testing.T) {
 	t.Parallel()
 
@@ -546,6 +566,7 @@ func TestCacheDeleteByNameWildcard(t *testing.T) {
 	}
 }
 
+// TestCachePersistenceAllFields verifies cache persistence all fields behavior.
 func TestCachePersistenceAllFields(t *testing.T) {
 	t.Parallel()
 
@@ -597,6 +618,7 @@ func TestCachePersistenceAllFields(t *testing.T) {
 	}
 }
 
+// TestCacheConcurrentAccessFinalCount verifies cache concurrent access final count behavior.
 func TestCacheConcurrentAccessFinalCount(t *testing.T) {
 	t.Parallel()
 

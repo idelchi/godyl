@@ -10,21 +10,28 @@ import (
 )
 
 const (
-	osLinux   = "linux"
-	osDarwin  = "darwin"
+	// osLinux is the canonical Linux operating-system name.
+	osLinux = "linux"
+	// osDarwin is the canonical macOS operating-system name.
+	osDarwin = "darwin"
+	// osWindows is the canonical Windows operating-system name.
 	osWindows = "windows"
+	// osAndroid is the canonical Android operating-system name.
 	osAndroid = "android"
 )
 
 // OS represents an operating system configuration.
 type OS struct {
+	// Name retains the unparsed operating-system name supplied by the user or detector.
 	Name string `single:"true"`
 
+	// canonical is the normalized operating-system name.
 	canonical string
-	alias     string
+	// alias is the exact supported spelling that matched Name.
+	alias string
 }
 
-// IsNil returns true if the OS pointer is nil.
+// IsNil reports whether the unparsed operating-system name is empty.
 func (o *OS) IsNil() bool {
 	return o.Name == ""
 }
@@ -48,7 +55,9 @@ func (o *OS) MarshalYAML() (any, error) {
 // OSInfo defines an operating system's characteristics.
 // Includes the canonical type name and known aliases.
 type OSInfo struct {
-	Type    string
+	// Type is the canonical operating-system name.
+	Type string
+	// Aliases contains additional recognized spellings.
 	Aliases []string
 }
 

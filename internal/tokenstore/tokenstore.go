@@ -12,10 +12,12 @@ import (
 // service is the name of the keyring service used to store tokens.
 const service = "godyl"
 
+// defaultTimeout bounds each keyring operation.
 const defaultTimeout = 3 * time.Second
 
 // TokenStore provides methods to manage authentication tokens using the keyring package.
 type TokenStore struct {
+	// Service namespaces the keys in the operating-system keyring.
 	Service string
 }
 

@@ -17,10 +17,12 @@ import (
 	"github.com/idelchi/godyl/pkg/path/file"
 )
 
+// gitHubLatestReleaseURLFormat formats the redirecting URL for a repository's latest release.
 const gitHubLatestReleaseURLFormat = "https://github.com/%s/%s/releases/latest"
 
 // WebReleaseInfo stores information about a release fetched from the GitHub web interface.
 type WebReleaseInfo struct {
+	// Tag is the release tag returned by GitHub.
 	Tag string `json:"tag_name"`
 }
 
@@ -97,8 +99,6 @@ func (r *Repository) LatestVersionFromWebHTML(ctx context.Context) (string, erro
 		return "", fmt.Errorf("getting latest release from web: %w", err)
 	}
 
-	// Now that we have the tag, we can use the existing method to get the full release details
-	// If you want to completely avoid the API, you would need to parse the HTML of the release page
 	return webReleaseInfo.Tag, nil
 }
 
@@ -110,8 +110,6 @@ func (r *Repository) LatestVersionFromWebJSON(ctx context.Context) (string, erro
 		return "", fmt.Errorf("getting latest release from web: %w", err)
 	}
 
-	// Now that we have the tag, we can use the existing method to get the full release details
-	// If you want to completely avoid the API, you would need to parse the HTML of the release page
 	return webReleaseInfo.Tag, nil
 }
 
@@ -159,6 +157,7 @@ func (r *Repository) getLatestReleaseFromWebHTML(ctx context.Context) (*WebRelea
 	}, nil
 }
 
+// getLatestReleaseInfoFromWebJSON retrieves the latest release tag from GitHub's web JSON response.
 func (r *Repository) getLatestReleaseInfoFromWebJSON(ctx context.Context) (*WebReleaseInfo, error) {
 	url := fmt.Sprintf(gitHubLatestReleaseURLFormat, r.Owner, r.Repo)
 

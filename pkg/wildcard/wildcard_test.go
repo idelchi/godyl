@@ -1,11 +1,5 @@
-// Package wildcard provides simple, safe string matching where only '*' is
-// treated as a wildcard matching any sequence of characters (excluding newlines).
-//
-// Example:
-//
-//	ok := wildcard.Match("foo*bar", "fooXYZbar")                // single
-//	okAny := wildcard.Match("foo*bar", "nope", "fooZZZbar")     // any-of
-//	okEmpty := wildcard.Match("foo*bar")                        // false (no inputs)
+// Package wildcard_test provides black-box coverage of wildcard's literal,
+// anchored, multiple-input, and zero-input matching contracts.
 package wildcard_test
 
 import (
@@ -14,6 +8,7 @@ import (
 	"github.com/idelchi/godyl/pkg/wildcard"
 )
 
+// TestMatch verifies match behavior.
 func TestMatch(t *testing.T) {
 	t.Parallel()
 
@@ -92,6 +87,7 @@ func TestMatch(t *testing.T) {
 	})
 }
 
+// TestMatchMultipleWildcards verifies match multiple wildcards behavior.
 func TestMatchMultipleWildcards(t *testing.T) {
 	t.Parallel()
 
@@ -137,6 +133,7 @@ func TestMatchMultipleWildcards(t *testing.T) {
 	}
 }
 
+// TestMatchEmptyPatternEmptyString verifies match empty pattern empty string behavior.
 func TestMatchEmptyPatternEmptyString(t *testing.T) {
 	t.Parallel()
 
@@ -152,6 +149,7 @@ func TestMatchEmptyPatternEmptyString(t *testing.T) {
 	}
 }
 
+// TestMatchMultipleInputsShortCircuit verifies match multiple inputs short circuit behavior.
 func TestMatchMultipleInputsShortCircuit(t *testing.T) {
 	t.Parallel()
 

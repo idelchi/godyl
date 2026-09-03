@@ -8,7 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/updater"
 )
 
-// run executes the `update` command.
+// run resolves the requested Godyl release and checks or applies the self-update.
 func run(input core.Input) error {
 	cfg, embedded, _, cmd, _ := input.Unpack()
 

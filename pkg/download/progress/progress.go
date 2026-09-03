@@ -17,14 +17,19 @@ import (
 
 // ProgressTracker defines the interface for progress tracking implementations.
 type ProgressTracker interface {
+	// Start begins rendering or collecting progress.
 	Start()
+	// Wait blocks until tracked work is complete.
 	Wait()
+	// TrackProgress wraps a download stream and records its byte progress.
 	TrackProgress(src string, currentSize, totalSize int64, stream io.ReadCloser) io.ReadCloser
 }
 
 // readCloserWithProgress wraps a reader to update a progress tracker as bytes are read.
 type readCloserWithProgress struct {
+	// Reader supplies the downloaded bytes.
 	io.Reader
+	// Closer releases the underlying download stream.
 	io.Closer
 
 	Tracker   *gpp.Tracker // associated tracker
@@ -44,11 +49,16 @@ func (r *readCloserWithProgress) Read(p []byte) (int, error) {
 
 // Tracker tracks multiple concurrent progress bars and renders them.
 type Tracker struct {
-	pw       gpp.Writer
+	// pw renders the collection of active progress bars.
+	pw gpp.Writer
+	// trackers stores one progress bar per source.
 	trackers map[string]*gpp.Tracker
-	wg       *sync.WaitGroup
-	lock     sync.Mutex
-	timeout  time.Duration
+	// wg tracks open download streams.
+	wg *sync.WaitGroup
+	// lock protects tracker creation and registration.
+	lock sync.Mutex
+	// timeout controls stalled-download handling.
+	timeout time.Duration
 }
 
 // New initializes and returns a Tracker with default styles and settings.
@@ -326,10 +336,14 @@ func StartSynthetic(
 
 // closeWrapper wraps an io.Closer to mark a tracker as done and signal completion.
 type closeWrapper struct {
+	// Closer is the underlying stream to close.
 	io.Closer
 
-	wg       *sync.WaitGroup
-	tracker  *gpp.Tracker
+	// wg is decremented after the stream closes.
+	wg *sync.WaitGroup
+	// tracker is marked complete when the stream closes.
+	tracker *gpp.Tracker
+	// stopTime terminates timeout monitoring when present.
 	stopTime chan struct{}
 }
 

@@ -10,10 +10,13 @@ import (
 // scoreExpect captures (Item, Score) pairs for comparison without
 // depending on the anonymous struct layout of score.Scores.
 type scoreExpect struct {
-	item  int
+	// item identifies the scored fixture.
+	item int
+	// score is the fixture's expected score.
 	score int
 }
 
+// extractScores converts public score entries to a directly comparable fixture type.
 func extractScores(s score.Scores[int]) []scoreExpect {
 	out := make([]scoreExpect, len(s))
 	for i, e := range s {
@@ -23,6 +26,7 @@ func extractScores(s score.Scores[int]) []scoreExpect {
 	return out
 }
 
+// TestScore verifies score behavior.
 func TestScore(t *testing.T) {
 	t.Parallel()
 
@@ -96,6 +100,7 @@ func TestScore(t *testing.T) {
 	}
 }
 
+// TestTop verifies top behavior.
 func TestTop(t *testing.T) {
 	t.Parallel()
 
@@ -178,6 +183,7 @@ func TestTop(t *testing.T) {
 	}
 }
 
+// TestTopSingleElement verifies top single element behavior.
 func TestTopSingleElement(t *testing.T) {
 	t.Parallel()
 
@@ -199,6 +205,7 @@ func TestTopSingleElement(t *testing.T) {
 	}
 }
 
+// TestScoreEmptyNilReturn verifies score empty nil return behavior.
 func TestScoreEmptyNilReturn(t *testing.T) {
 	t.Parallel()
 

@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/data"
 )
 
-// run executes the `cache remove` command.
+// run deletes all cache entries or exact names requested on the command line.
 func run(input core.Input) error {
 	cfg, _, _, _, args := input.Unpack()
 

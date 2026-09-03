@@ -9,8 +9,12 @@ var ErrRelease = errors.New("release")
 
 // Release represents a source release, containing the release name, tag, body, and associated assets.
 type Release struct {
-	Name   string
-	Tag    string
-	Body   string
+	// Name is the human-readable release name.
+	Name string
+	// Tag identifies the release version in its source repository.
+	Tag string
+	// Body contains the release notes.
+	Body string
+	// Assets lists the files published with the release.
 	Assets Assets
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
-// Command returns the `auth` command.
+// Command constructs the authentication command group for token storage, removal, and status.
 func Command(global *root.Config, local any) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auth",

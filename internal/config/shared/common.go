@@ -6,17 +6,23 @@ import (
 	"github.com/idelchi/godyl/internal/tools/strategy"
 )
 
-// Common contains configuration fields shared across multiple commands.
-// Common represents a shared configuration structure that provides
-// command-line arguments, show functionality, and validation.
+// Common contains installation and download options shared across commands.
 type Common struct {
+	// Tracker records which common options were supplied explicitly.
 	Tracker `mapstructure:"-" yaml:"-"`
 
-	Output   string
+	// Output specifies the destination path.
+	Output string
+	// Strategy defines how existing installations are handled.
 	Strategy strategy.Strategy
-	Source   sources.Type
-	OS       string
-	Arch     string
-	Hints    []string
-	Pre      bool
+	// Source selects the release provider.
+	Source sources.Type
+	// OS selects the target operating system.
+	OS string
+	// Arch selects the target architecture.
+	Arch string
+	// Hints help rank matching release assets.
+	Hints []string
+	// Pre allows prerelease versions.
+	Pre bool
 }

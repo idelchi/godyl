@@ -7,9 +7,7 @@ import (
 	"strings"
 )
 
-// Add parses and adds a key-value pairs to the environment.
-// Takes strings in the format "key=value" and adds it to the Env map.
-// Returns errors for strings that do not contain an '=' or have an empty key.
+// Add parses key=value pairs into the environment and reports malformed or empty keys.
 func (e *Env) Add(keyValues ...string) error {
 	var errs []error
 

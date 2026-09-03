@@ -7,7 +7,7 @@ import (
 // ShowFuncType declares the type for the ShowFunc function.
 type ShowFuncType func() func(any)
 
-// NoShow is a constant that represents a ShowFuncType that returns nil, meaning no output will be shown.
+// NoShow is the sentinel show function used when no diagnostic output should be rendered.
 var NoShow = ShowFuncType(func() func(any) { //nolint:gochecknoglobals // Package-level functional option is acceptable
 	return nil
 })

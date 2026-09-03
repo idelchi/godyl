@@ -6,7 +6,7 @@ import (
 	"github.com/idelchi/godyl/internal/cli/core"
 )
 
-// run executes the `config path` command.
+// run prints the resolved configuration file path.
 func run(input core.Input) error {
 	cfg, _, _, _, _ := input.Unpack()
 

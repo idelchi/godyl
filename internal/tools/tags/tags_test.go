@@ -9,6 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/tags"
 )
 
+// TestAppend verifies append behavior.
 func TestAppend(t *testing.T) {
 	t.Parallel()
 
@@ -65,6 +66,7 @@ func TestAppend(t *testing.T) {
 	}
 }
 
+// TestInclude verifies include behavior.
 func TestInclude(t *testing.T) {
 	t.Parallel()
 
@@ -273,6 +275,7 @@ func TestTagsUnmarshalYAMLEdgeCases(t *testing.T) {
 	}
 }
 
+// TestTagsUnmarshalYAML verifies tags unmarshal yaml behavior.
 func TestTagsUnmarshalYAML(t *testing.T) {
 	t.Parallel()
 

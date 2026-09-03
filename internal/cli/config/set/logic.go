@@ -10,7 +10,7 @@ import (
 	"github.com/idelchi/godyl/pkg/unmarshal"
 )
 
-// run executes the `config set` command.
+// run parses key=value arguments and merges them into the configuration file.
 func run(input core.Input) error {
 	cfg, _, context, _, args := input.Unpack()
 

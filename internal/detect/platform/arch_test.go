@@ -8,6 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/detect/platform"
 )
 
+// TestArchParseFrom verifies arch parse from behavior.
 func TestArchParseFrom(t *testing.T) {
 	t.Parallel()
 
@@ -101,6 +102,7 @@ func TestArchParseFrom(t *testing.T) {
 	}
 }
 
+// TestArchParseFromContains verifies arch parse from contains behavior.
 func TestArchParseFromContains(t *testing.T) {
 	t.Parallel()
 
@@ -143,6 +145,7 @@ func TestArchParseFromContains(t *testing.T) {
 	}
 }
 
+// TestArchIsCompatibleWith verifies arch is compatible with behavior.
 func TestArchIsCompatibleWith(t *testing.T) {
 	t.Parallel()
 
@@ -212,6 +215,7 @@ func TestArchIsCompatibleWith(t *testing.T) {
 	}
 }
 
+// TestArchIsCompatibleWithZeroValue verifies arch is compatible with zero value behavior.
 func TestArchIsCompatibleWithZeroValue(t *testing.T) {
 	t.Parallel()
 
@@ -234,6 +238,7 @@ func TestArchIsCompatibleWithZeroValue(t *testing.T) {
 	}
 }
 
+// TestArchString verifies arch string behavior.
 func TestArchString(t *testing.T) {
 	t.Parallel()
 
@@ -302,6 +307,7 @@ func TestArchString(t *testing.T) {
 	}
 }
 
+// TestArchIs64Bit verifies arch is64 bit behavior.
 func TestArchIs64Bit(t *testing.T) {
 	t.Parallel()
 
@@ -334,6 +340,7 @@ func TestArchIs64Bit(t *testing.T) {
 	}
 }
 
+// TestArchIsARM verifies arch is arm behavior.
 func TestArchIsARM(t *testing.T) {
 	t.Parallel()
 
@@ -367,6 +374,7 @@ func TestArchIsARM(t *testing.T) {
 	}
 }
 
+// TestArchIsX86 verifies arch is x86 behavior.
 func TestArchIsX86(t *testing.T) {
 	t.Parallel()
 
@@ -399,6 +407,7 @@ func TestArchIsX86(t *testing.T) {
 	}
 }
 
+// TestArchParse verifies arch parse behavior.
 func TestArchParse(t *testing.T) {
 	t.Parallel()
 
@@ -440,6 +449,7 @@ func TestArchParse(t *testing.T) {
 	}
 }
 
+// TestArchIs verifies arch is behavior.
 func TestArchIs(t *testing.T) {
 	t.Parallel()
 
@@ -509,6 +519,7 @@ func TestArchIs(t *testing.T) {
 	}
 }
 
+// TestArchAliases verifies arch aliases behavior.
 func TestArchAliases(t *testing.T) {
 	t.Parallel()
 
@@ -586,6 +597,7 @@ func TestArchAliases(t *testing.T) {
 	}
 }
 
+// TestArchIsNil verifies arch is nil behavior.
 func TestArchIsNil(t *testing.T) {
 	t.Parallel()
 
@@ -628,6 +640,7 @@ func TestArchIsNil(t *testing.T) {
 	})
 }
 
+// TestArchParseFromMixedCase verifies arch parse from mixed case behavior.
 func TestArchParseFromMixedCase(t *testing.T) {
 	t.Parallel()
 
@@ -675,6 +688,7 @@ func TestArchParseFromMixedCase(t *testing.T) {
 	}
 }
 
+// TestArchTo32BitUserLand verifies arch to32 bit user land behavior.
 func TestArchTo32BitUserLand(t *testing.T) {
 	t.Parallel()
 

@@ -20,12 +20,18 @@ import (
 
 // Binary represents a Go binary, including its associated file, directory, and environment variables.
 type Binary struct {
-	Env              Env
-	File             file.File
-	Dir              folder.Folder
-	noVerifySSL      bool
+	// Env contains environment overrides for the selected Go toolchain.
+	Env Env
+	// File points to the Go executable.
+	File file.File
+	// Dir is the root directory of a downloaded Go toolchain.
+	Dir folder.Folder
+	// noVerifySSL disables TLS certificate verification for downloads.
+	noVerifySSL bool
+	// noVerifyChecksum disables downloaded-toolchain checksum verification.
 	noVerifyChecksum bool
-	progress         getter.ProgressTracker
+	// progress receives download progress updates.
+	progress getter.ProgressTracker
 }
 
 // mutex is a mutex to prevent concurrent binary creation.

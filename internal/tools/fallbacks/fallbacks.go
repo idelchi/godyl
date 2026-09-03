@@ -15,8 +15,7 @@ import (
 // in specifying multiple fallback methods if the primary source fails.
 type Fallbacks []sources.Type
 
-// UnmarshalYAML implements custom unmarshaling for Tags,
-// allowing the field to be either a single string or a list of strings.
+// UnmarshalYAML accepts one source type or a list of fallback source types.
 func (f *Fallbacks) UnmarshalYAML(node ast.Node) (err error) {
 	*f, err = unmarshal.SingleOrSlice[sources.Type](node)
 	if err != nil {

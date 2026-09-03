@@ -12,6 +12,7 @@ import (
 	gitlab "gitlab.com/gitlab-org/api/client-go"
 )
 
+// TestFromRepositoryRelease verifies from repository release behavior.
 func TestFromRepositoryRelease(t *testing.T) {
 	t.Parallel()
 
@@ -204,6 +205,7 @@ func TestFromRepositoryRelease(t *testing.T) {
 	}
 }
 
+// TestFromRepositoryRelease_NilAssetLink verifies from repository release nil asset link behavior.
 func TestFromRepositoryRelease_NilAssetLink(t *testing.T) {
 	t.Parallel()
 
@@ -237,6 +239,7 @@ func TestFromRepositoryRelease_NilAssetLink(t *testing.T) {
 	_, _ = internalgitlab.FromRepositoryRelease(input)
 }
 
+// TestFromRepositoryRelease_EmptyDirectAssetURL verifies from repository release empty direct asset url behavior.
 func TestFromRepositoryRelease_EmptyDirectAssetURL(t *testing.T) {
 	t.Parallel()
 

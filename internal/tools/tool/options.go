@@ -5,9 +5,12 @@ type ResolveOption func(*resolveOptions)
 
 // resolveOptions holds all configurable options for the Resolve method.
 type resolveOptions struct {
-	skipVersion    bool
+	// skipVersion bypasses version resolution.
+	skipVersion bool
+	// upUntilVersion stops resolution after determining the version.
 	upUntilVersion bool
-	skipURL        bool
+	// skipURL bypasses artifact URL resolution.
+	skipURL bool
 }
 
 // WithoutVersion returns a ResolveOption that skips version resolution.

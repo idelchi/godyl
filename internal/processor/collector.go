@@ -4,8 +4,10 @@ import "sync"
 
 // collector safely collects results from concurrent operations.
 type collector struct {
+	// results contains every result collected during the run.
 	results []Result
-	mu      sync.Mutex
+	// mu protects results.
+	mu sync.Mutex
 }
 
 // newCollector creates a new collector.

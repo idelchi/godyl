@@ -6,6 +6,7 @@ import (
 	"github.com/idelchi/godyl/pkg/version"
 )
 
+// TestParse verifies parse behavior.
 func TestParse(t *testing.T) {
 	t.Parallel()
 
@@ -55,6 +56,7 @@ func TestParse(t *testing.T) {
 	}
 }
 
+// TestEqual verifies equal behavior.
 func TestEqual(t *testing.T) {
 	t.Parallel()
 
@@ -83,6 +85,7 @@ func TestEqual(t *testing.T) {
 	}
 }
 
+// TestParseZeroVersion verifies parse zero version behavior.
 func TestParseZeroVersion(t *testing.T) {
 	t.Parallel()
 
@@ -99,6 +102,7 @@ func TestParseZeroVersion(t *testing.T) {
 	}
 }
 
+// TestLessThan verifies less than behavior.
 func TestLessThan(t *testing.T) {
 	t.Parallel()
 
@@ -127,6 +131,7 @@ func TestLessThan(t *testing.T) {
 	}
 }
 
+// TestLessThanPreReleaseVsRelease verifies less than pre release vs release behavior.
 func TestLessThanPreReleaseVsRelease(t *testing.T) {
 	t.Parallel()
 
@@ -137,6 +142,7 @@ func TestLessThanPreReleaseVsRelease(t *testing.T) {
 	}
 }
 
+// TestEqualPreRelease verifies equal pre release behavior.
 func TestEqualPreRelease(t *testing.T) {
 	t.Parallel()
 

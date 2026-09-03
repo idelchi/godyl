@@ -9,6 +9,7 @@ import (
 	"github.com/showa-93/go-mask"
 )
 
+// indent is the default number of spaces used for nested YAML values.
 const indent = 2
 
 // DefaultYAMLOptions defines the default YAML encoding options for pretty printing.

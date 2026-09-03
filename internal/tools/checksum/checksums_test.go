@@ -16,6 +16,7 @@ import (
 	"github.com/idelchi/godyl/internal/tools/checksum"
 )
 
+// TestIsChecksumLike verifies is checksum like behavior.
 func TestIsChecksumLike(t *testing.T) {
 	t.Parallel()
 
@@ -135,6 +136,7 @@ func TestPreferredSingleNonScoring(t *testing.T) {
 	}
 }
 
+// TestIndicators verifies indicators behavior.
 func TestIndicators(t *testing.T) {
 	t.Parallel()
 
@@ -153,6 +155,7 @@ func TestIndicators(t *testing.T) {
 	}
 }
 
+// TestChecksumTypeString verifies checksum type string behavior.
 func TestChecksumTypeString(t *testing.T) {
 	t.Parallel()
 
@@ -179,6 +182,7 @@ func TestChecksumTypeString(t *testing.T) {
 	}
 }
 
+// TestChecksumIsSet verifies checksum is set behavior.
 func TestChecksumIsSet(t *testing.T) {
 	t.Parallel()
 
@@ -203,6 +207,7 @@ func TestChecksumIsSet(t *testing.T) {
 	}
 }
 
+// TestChecksumIsMandatory verifies checksum is mandatory behavior.
 func TestChecksumIsMandatory(t *testing.T) {
 	t.Parallel()
 
@@ -228,6 +233,7 @@ func TestChecksumIsMandatory(t *testing.T) {
 	}
 }
 
+// TestChecksumToQuery verifies checksum to query behavior.
 func TestChecksumToQuery(t *testing.T) {
 	t.Parallel()
 
@@ -269,6 +275,7 @@ func TestChecksumToQuery(t *testing.T) {
 	}
 }
 
+// TestPreferred verifies preferred behavior.
 func TestPreferred(t *testing.T) {
 	t.Parallel()
 
@@ -326,6 +333,7 @@ func TestPreferred(t *testing.T) {
 // Checksum.Resolve tests
 // ---------------------------------------------------------------------------
 
+// TestChecksumResolve verifies checksum resolve behavior.
 func TestChecksumResolve(t *testing.T) {
 	t.Parallel()
 
@@ -423,6 +431,7 @@ func TestChecksumResolve(t *testing.T) {
 	}
 }
 
+// TestChecksumResolvePath verifies checksum resolve path behavior.
 func TestChecksumResolvePath(t *testing.T) {
 	t.Parallel()
 
@@ -499,6 +508,7 @@ func TestChecksumResolvePath(t *testing.T) {
 	})
 }
 
+// TestChecksumResolveURL verifies checksum resolve url behavior.
 func TestChecksumResolveURL(t *testing.T) {
 	t.Parallel()
 
@@ -573,6 +583,7 @@ func TestChecksumResolveURL(t *testing.T) {
 // Checksum UnmarshalYAML tests
 // ---------------------------------------------------------------------------
 
+// TestChecksumUnmarshalYAML verifies checksum unmarshal yaml behavior.
 func TestChecksumUnmarshalYAML(t *testing.T) {
 	t.Parallel()
 

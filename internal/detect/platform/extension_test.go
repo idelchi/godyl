@@ -7,6 +7,7 @@ import (
 	"github.com/idelchi/godyl/internal/detect/platform"
 )
 
+// TestExtensionParseFrom verifies extension parse from behavior.
 func TestExtensionParseFrom(t *testing.T) {
 	t.Parallel()
 
@@ -62,6 +63,7 @@ func TestExtensionParseFrom(t *testing.T) {
 	}
 }
 
+// TestExtensionIsNil verifies extension is nil behavior.
 func TestExtensionIsNil(t *testing.T) {
 	t.Parallel()
 
@@ -94,6 +96,7 @@ func TestExtensionIsNil(t *testing.T) {
 	})
 }
 
+// TestExtensionIsNilAllOS verifies extension is nil all os behavior.
 func TestExtensionIsNilAllOS(t *testing.T) {
 	t.Parallel()
 
@@ -120,6 +123,7 @@ func TestExtensionIsNilAllOS(t *testing.T) {
 	}
 }
 
+// TestExtensionNonNil verifies extension non nil behavior.
 func TestExtensionNonNil(t *testing.T) {
 	t.Parallel()
 

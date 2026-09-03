@@ -27,7 +27,7 @@ func allSubCommands(cmd *cobra.Command) []*cobra.Command {
 	return cmds
 }
 
-// run executes the `validate` command.
+// run invokes each subcommand's configuration pre-run hook and joins all validation errors.
 func run(input core.Input) error {
 	_, _, _, cmd, _ := input.Unpack()
 

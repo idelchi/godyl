@@ -6,7 +6,7 @@ import (
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
-// run executes the `paths` command.
+// run renders the resolved config, cache, Go toolchain, and temporary paths.
 func run(input core.Input) error {
 	cfg, _, _, _, _ := input.Unpack()
 

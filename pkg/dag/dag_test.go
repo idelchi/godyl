@@ -16,6 +16,7 @@ func parentMap(m map[string][]string) func(string) []string {
 	}
 }
 
+// TestBuild verifies build behavior.
 func TestBuild(t *testing.T) {
 	t.Parallel()
 
@@ -127,6 +128,7 @@ func TestBuild(t *testing.T) {
 	}
 }
 
+// TestTopo verifies topo behavior.
 func TestTopo(t *testing.T) {
 	t.Parallel()
 
@@ -183,6 +185,7 @@ func TestTopo(t *testing.T) {
 	})
 }
 
+// TestChain verifies chain behavior.
 func TestChain(t *testing.T) {
 	t.Parallel()
 
@@ -247,6 +250,7 @@ func TestChain(t *testing.T) {
 	})
 }
 
+// TestCondense verifies condense behavior.
 func TestCondense(t *testing.T) {
 	t.Parallel()
 
@@ -310,6 +314,7 @@ func TestCondense(t *testing.T) {
 	}
 }
 
+// TestBuildEmpty verifies build empty behavior.
 func TestBuildEmpty(t *testing.T) {
 	t.Parallel()
 
@@ -330,6 +335,7 @@ func TestBuildEmpty(t *testing.T) {
 	}
 }
 
+// TestChainDiamond verifies chain diamond behavior.
 func TestChainDiamond(t *testing.T) {
 	t.Parallel()
 
@@ -410,6 +416,7 @@ func TestChainDiamond(t *testing.T) {
 	}
 }
 
+// TestCondenseEmpty verifies condense empty behavior.
 func TestCondenseEmpty(t *testing.T) {
 	t.Parallel()
 

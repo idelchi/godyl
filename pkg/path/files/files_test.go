@@ -9,6 +9,7 @@ import (
 	"github.com/idelchi/godyl/pkg/path/files"
 )
 
+// TestNew verifies new behavior.
 func TestNew(t *testing.T) {
 	t.Parallel()
 
@@ -62,6 +63,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
+// TestAdd verifies add behavior.
 func TestAdd(t *testing.T) {
 	t.Parallel()
 
@@ -102,6 +104,7 @@ func TestAdd(t *testing.T) {
 	}
 }
 
+// TestAddFile verifies add file behavior.
 func TestAddFile(t *testing.T) {
 	t.Parallel()
 
@@ -149,6 +152,7 @@ func TestAddFile(t *testing.T) {
 	}
 }
 
+// TestContains verifies contains behavior.
 func TestContains(t *testing.T) {
 	t.Parallel()
 
@@ -186,6 +190,7 @@ func TestContains(t *testing.T) {
 	}
 }
 
+// TestRemove verifies remove behavior.
 func TestRemove(t *testing.T) {
 	t.Parallel()
 
@@ -241,6 +246,7 @@ func TestRemove(t *testing.T) {
 	}
 }
 
+// TestAsSlice verifies as slice behavior.
 func TestAsSlice(t *testing.T) {
 	t.Parallel()
 
@@ -278,6 +284,7 @@ func TestAsSlice(t *testing.T) {
 	}
 }
 
+// TestRelativeTo verifies relative to behavior.
 func TestRelativeTo(t *testing.T) {
 	t.Parallel()
 
@@ -323,6 +330,7 @@ func TestRelativeTo(t *testing.T) {
 	}
 }
 
+// TestFilesExisting verifies files existing behavior.
 func TestFilesExisting(t *testing.T) {
 	t.Parallel()
 
@@ -347,6 +355,7 @@ func TestFilesExisting(t *testing.T) {
 	}
 }
 
+// TestFilesExists verifies files exists behavior.
 func TestFilesExists(t *testing.T) {
 	t.Parallel()
 
@@ -371,6 +380,7 @@ func TestFilesExists(t *testing.T) {
 	}
 }
 
+// TestFilesExistingEmpty verifies files existing empty behavior.
 func TestFilesExistingEmpty(t *testing.T) {
 	t.Parallel()
 
@@ -385,6 +395,7 @@ func TestFilesExistingEmpty(t *testing.T) {
 	}
 }
 
+// TestFilesRelativeToSameBase verifies files relative to same base behavior.
 func TestFilesRelativeToSameBase(t *testing.T) {
 	t.Parallel()
 

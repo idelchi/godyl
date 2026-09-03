@@ -10,7 +10,7 @@ import (
 	"github.com/idelchi/godyl/internal/config/update"
 )
 
-// Command returns the `update` command.
+// Command constructs self-update checks and installation, including Windows cleanup.
 func Command(global *root.Config, local any, embedded *core.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "update",

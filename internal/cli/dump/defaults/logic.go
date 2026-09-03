@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/internal/iutils"
 )
 
-// run executes the `dump defaults` command.
+// run decodes embedded defaults and renders only the requested entries when filtered.
 func run(input core.Input) error {
 	_, embedded, _, _, args := input.Unpack()
 

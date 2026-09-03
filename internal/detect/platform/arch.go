@@ -32,15 +32,20 @@ const (
 // Architecture represents a CPU architecture configuration.
 // Tracks architecture type, version, raw string, and user-land bitness.
 type Architecture struct {
+	// Name retains the unparsed architecture name supplied by the user or detector.
 	Name string `single:"true"`
 
-	canonical       string
-	alias           string
-	version         int
+	// canonical is the normalized architecture family.
+	canonical string
+	// alias is the exact supported spelling that matched Name.
+	alias string
+	// version is the parsed architecture version, primarily for ARM variants.
+	version int
+	// is32BitUserLand reports whether a 64-bit machine is running a 32-bit userland.
 	is32BitUserLand bool
 }
 
-// IsNil returns true if the Architecture pointer is nil.
+// IsNil reports whether the unparsed architecture name is empty.
 func (a *Architecture) IsNil() bool {
 	return a.Name == ""
 }
@@ -64,8 +69,11 @@ func (a *Architecture) MarshalYAML() (any, error) {
 // ArchInfo defines an architecture's characteristics and parsing rules.
 // Includes the canonical type name, known aliases, and version parsing logic.
 type ArchInfo struct {
-	Parse   func(string) (int, error)
-	Type    string
+	// Parse extracts an optional version from an architecture spelling.
+	Parse func(string) (int, error)
+	// Type is the canonical architecture family.
+	Type string
+	// Aliases contains additional recognized spellings.
 	Aliases []string
 }
 
@@ -154,7 +162,7 @@ func (a *Architecture) ParseFrom(name string, comparisons ...func(string, string
 	return fmt.Errorf("%w: architecture from %q", ErrParse, name)
 }
 
-// Parse extracts operating system information from a string identifier.
+// Parse extracts architecture information from Name.
 func (a *Architecture) Parse() error {
 	return a.ParseFrom(a.Name, strings.EqualFold)
 }

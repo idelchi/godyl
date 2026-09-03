@@ -42,7 +42,7 @@ func SingleStringOrStruct[T any](node ast.Node, out *T) error {
 	return Decode(node, out)
 }
 
-// Helper to check if node is a primitive value type.
+// isPrimitiveNode reports whether node is a string, integer, float, or Boolean YAML scalar.
 func isPrimitiveNode(node ast.Node) bool {
 	switch node.(type) {
 	case *ast.StringNode, *ast.IntegerNode, *ast.FloatNode, *ast.BoolNode:

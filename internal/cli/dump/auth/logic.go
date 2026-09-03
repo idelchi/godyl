@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
-// run executes the `dump auth` command.
+// run renders resolved authentication tokens with secret values masked.
 func run(input core.Input) error {
 	cfg, _, context, _, _ := input.Unpack()
 

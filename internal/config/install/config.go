@@ -9,31 +9,31 @@ import (
 
 // Install provides the configuration for the `install` command.
 type Install struct {
-	// Tracker embed the common tracker configuration, allowing to tracker
-	// whether configuration values have been explicitly set or defaulted
+	// Tracker records which install options were supplied explicitly.
 	shared.Tracker `mapstructure:"-" yaml:"-"`
 
-	// Strategy defines how the installation should be performed
+	// Strategy defines how the installation should be performed.
 	Strategy strategy.Strategy `mapstructure:"strategy" validate:"oneof=none sync existing force" yaml:"strategy"`
 
-	// OS defines the target operating system for the installation
+	// OS defines the target operating system for the installation.
 	OS string `mapstructure:"os" yaml:"os"`
 
-	// Arch defines the target architecture for the installation
+	// Arch defines the target architecture for the installation.
 	Arch string `mapstructure:"arch" yaml:"arch"`
 
-	// Output specifies the output directory for the installation
+	// Output specifies the output directory for the installation.
 	Output string `mapstructure:"output" yaml:"output"`
 
-	// Tags are used to filter the installation based on specific criteria
+	// Tags filter the tools selected for installation.
 	Tags []string `mapstructure:"tags" yaml:"tags"`
 
-	// Dry indicates whether the installation should be performed in dry-run mode
+	// Dry reports planned installation work without applying it.
 	Dry bool `mapstructure:"dry" yaml:"dry"`
 
-	// Pre indicates whether pre-releases should be considered during installation
+	// Pre allows prerelease versions.
 	Pre bool `mapstructure:"pre" yaml:"pre"`
 
+	// Source restricts installations to a release provider.
 	Source sources.Type `mapstructure:"source" validate:"oneof=github gitlab url none go" yaml:"source"`
 }
 

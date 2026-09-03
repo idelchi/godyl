@@ -6,7 +6,7 @@ import (
 	"github.com/idelchi/godyl/internal/cli/core"
 )
 
-// run executes the `version` command.
+// run prints the version stored on the root command.
 func run(input core.Input) {
 	_, _, _, cmd, _ := input.Unpack()
 

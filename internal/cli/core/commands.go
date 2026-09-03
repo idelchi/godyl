@@ -16,7 +16,9 @@ import (
 
 // Trackable defines the interface for configuration objects that can track and validate their state.
 type Trackable interface {
+	// Store retains the explicit-value tracker populated while loading configuration.
 	Store(tracker *koanfx.Tracker)
+	// Validate checks semantic constraints that cannot be expressed by struct tags.
 	Validate() error
 }
 

@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
-// run executes the `dump config` command.
+// run renders the resolved runtime configuration in the selected format.
 func run(input core.Input) error {
 	cfg, _, _, _, args := input.Unpack()
 

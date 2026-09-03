@@ -12,10 +12,13 @@ import (
 
 // testStruct is used by TestStrict and TestLax.
 type testStruct struct {
-	Name  string `yaml:"name"`
-	Value int    `yaml:"value"`
+	// Name is the fixture's string field.
+	Name string `yaml:"name"`
+	// Value is the fixture's numeric field.
+	Value int `yaml:"value"`
 }
 
+// TestStrict verifies strict behavior.
 func TestStrict(t *testing.T) {
 	t.Parallel()
 
@@ -84,6 +87,7 @@ func TestStrict(t *testing.T) {
 	}
 }
 
+// TestLax verifies lax behavior.
 func TestLax(t *testing.T) {
 	t.Parallel()
 
@@ -146,6 +150,7 @@ func TestLax(t *testing.T) {
 	}
 }
 
+// TestSingleOrSlice verifies single or slice behavior.
 func TestSingleOrSlice(t *testing.T) {
 	t.Parallel()
 
@@ -226,10 +231,13 @@ func TestSingleOrSlice_TypeMismatch(t *testing.T) {
 // named is used by TestSingleStringOrStruct.
 // The Name field carries single:"true" so that a bare string shorthand populates it.
 type named struct {
-	Name  string `single:"true" yaml:"name"`
+	// Name is populated by the scalar shorthand.
+	Name string `single:"true" yaml:"name"`
+	// Value is populated only by structured YAML.
 	Value string `yaml:"value"`
 }
 
+// TestSingleStringOrStruct verifies single string or struct behavior.
 func TestSingleStringOrStruct(t *testing.T) {
 	t.Parallel()
 
@@ -283,7 +291,9 @@ func TestSingleStringOrStruct(t *testing.T) {
 
 // noSingleTag is a struct with no field carrying the single:"true" tag.
 type noSingleTag struct {
-	Name  string `yaml:"name"`
+	// Name lacks the scalar-target tag intentionally.
+	Name string `yaml:"name"`
+	// Value confirms that no field is eligible for scalar decoding.
 	Value string `yaml:"value"`
 }
 
@@ -312,6 +322,7 @@ func TestSingleStringOrStruct_NoSingleTag(t *testing.T) {
 	}
 }
 
+// TestStrictMalformed verifies strict malformed behavior.
 func TestStrictMalformed(t *testing.T) {
 	t.Parallel()
 
@@ -325,6 +336,7 @@ func TestStrictMalformed(t *testing.T) {
 	}
 }
 
+// TestSingleOrSliceEmptyNode verifies single or slice empty node behavior.
 func TestSingleOrSliceEmptyNode(t *testing.T) {
 	t.Parallel()
 
@@ -352,6 +364,7 @@ func TestSingleOrSliceEmptyNode(t *testing.T) {
 	}
 }
 
+// TestTemplatable verifies templatable behavior.
 func TestTemplatable(t *testing.T) {
 	t.Parallel()
 

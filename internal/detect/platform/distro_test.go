@@ -8,6 +8,7 @@ import (
 	"github.com/idelchi/godyl/internal/detect/platform"
 )
 
+// TestDistributionParseFrom verifies distribution parse from behavior.
 func TestDistributionParseFrom(t *testing.T) {
 	t.Parallel()
 
@@ -119,6 +120,7 @@ func TestDistributionParseFrom(t *testing.T) {
 	}
 }
 
+// TestDistributionParse verifies distribution parse behavior.
 func TestDistributionParse(t *testing.T) {
 	t.Parallel()
 
@@ -160,6 +162,7 @@ func TestDistributionParse(t *testing.T) {
 	}
 }
 
+// TestDistributionIsUnset verifies distribution is unset behavior.
 func TestDistributionIsUnset(t *testing.T) {
 	t.Parallel()
 
@@ -188,6 +191,7 @@ func TestDistributionIsUnset(t *testing.T) {
 	})
 }
 
+// TestDistributionIs verifies distribution is behavior.
 func TestDistributionIs(t *testing.T) {
 	t.Parallel()
 
@@ -245,6 +249,7 @@ func TestDistributionIs(t *testing.T) {
 	}
 }
 
+// TestDistributionIsZeroValue verifies distribution is zero value behavior.
 func TestDistributionIsZeroValue(t *testing.T) {
 	t.Parallel()
 
@@ -267,6 +272,7 @@ func TestDistributionIsZeroValue(t *testing.T) {
 	}
 }
 
+// TestDistributionIsCompatibleWith verifies distribution is compatible with behavior.
 func TestDistributionIsCompatibleWith(t *testing.T) {
 	t.Parallel()
 
@@ -342,6 +348,7 @@ func TestDistributionIsCompatibleWith(t *testing.T) {
 	}
 }
 
+// TestDistributionIsCompatibleWithZeroValue verifies distribution is compatible with zero value behavior.
 func TestDistributionIsCompatibleWithZeroValue(t *testing.T) {
 	t.Parallel()
 
@@ -364,6 +371,7 @@ func TestDistributionIsCompatibleWithZeroValue(t *testing.T) {
 	}
 }
 
+// TestDistributionIsNil verifies distribution is nil behavior.
 func TestDistributionIsNil(t *testing.T) {
 	t.Parallel()
 
@@ -406,6 +414,7 @@ func TestDistributionIsNil(t *testing.T) {
 	})
 }
 
+// TestDistributionParseFromContains verifies distribution parse from contains behavior.
 func TestDistributionParseFromContains(t *testing.T) {
 	t.Parallel()
 

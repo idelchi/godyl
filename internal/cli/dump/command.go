@@ -9,7 +9,7 @@ import (
 	"github.com/idelchi/godyl/pkg/cobraext"
 )
 
-// Command returns the `dump` command.
+// Command constructs the diagnostic dump group for resolved and embedded state.
 func Command(global *root.Config, local any, embedded *core.Embedded) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "dump",

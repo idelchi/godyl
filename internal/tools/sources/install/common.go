@@ -18,20 +18,34 @@ import (
 
 // Data contains configuration for downloading and installing tools.
 type Data struct {
+	// ProgressListener receives download progress updates.
 	ProgressListener getter.ProgressTracker
-	Env              env.Env
-	Checksum         checksum.Checksum
-	Header           http.Header
-	Path             string
-	Name             string
-	Exe              string
-	Output           string
-	Mode             string
-	Patterns         []string
-	NoVerifySSL      bool
+	// Env contains environment overrides for installer commands.
+	Env env.Env
+	// Checksum defines artifact integrity verification.
+	Checksum checksum.Checksum
+	// Header contains HTTP headers sent with artifact requests.
+	Header http.Header
+	// Path is the resolved artifact URL or module path.
+	Path string
+	// Name is the configured tool name.
+	Name string
+	// Exe is the destination executable name.
+	Exe string
+	// Output is the installation directory.
+	Output string
+	// Mode controls how downloaded content is installed.
+	Mode string
+	// Patterns contains candidate executable filenames.
+	Patterns []string
+	// NoVerifySSL disables TLS certificate verification.
+	NoVerifySSL bool
+	// NoVerifyChecksum disables artifact checksum verification.
 	NoVerifyChecksum bool
-	OS               string // Target operating system for cross-compilation.
-	Arch             string // Target architecture for cross-compilation.
+	// OS is the target operating system for cross-compilation.
+	OS string
+	// Arch is the target architecture for cross-compilation.
+	Arch string
 }
 
 // Download retrieves files according to the InstallData configuration.

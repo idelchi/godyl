@@ -6,6 +6,7 @@ import (
 	"github.com/idelchi/godyl/internal/templates"
 )
 
+// TestApply verifies apply behavior.
 func TestApply(t *testing.T) {
 	t.Parallel()
 
@@ -91,6 +92,7 @@ func TestApply(t *testing.T) {
 	}
 }
 
+// TestApplyAndSet verifies apply and set behavior.
 func TestApplyAndSet(t *testing.T) {
 	t.Parallel()
 
@@ -151,6 +153,7 @@ func TestApplyAndSet(t *testing.T) {
 	}
 }
 
+// TestProcessorApply verifies processor apply behavior.
 func TestProcessorApply(t *testing.T) {
 	t.Parallel()
 
@@ -263,6 +266,7 @@ func TestProcessorApply(t *testing.T) {
 	}
 }
 
+// TestProcessorApplyAndSet verifies processor apply and set behavior.
 func TestProcessorApplyAndSet(t *testing.T) {
 	t.Parallel()
 
@@ -330,6 +334,7 @@ func TestProcessorApplyAndSet(t *testing.T) {
 	}
 }
 
+// TestProcessorAddValues verifies processor add values behavior.
 func TestProcessorAddValues(t *testing.T) {
 	t.Parallel()
 
@@ -421,6 +426,7 @@ func TestProcessorAddValues(t *testing.T) {
 	})
 }
 
+// TestApply_SprigAvailable verifies apply sprig available behavior.
 func TestApply_SprigAvailable(t *testing.T) {
 	t.Parallel()
 
@@ -435,6 +441,7 @@ func TestApply_SprigAvailable(t *testing.T) {
 	}
 }
 
+// TestProcessorWithOptions verifies processor with options behavior.
 func TestProcessorWithOptions(t *testing.T) {
 	t.Parallel()
 
@@ -460,6 +467,7 @@ func TestProcessorWithOptions(t *testing.T) {
 	}
 }
 
+// TestProcessorReset verifies processor reset behavior.
 func TestProcessorReset(t *testing.T) {
 	t.Parallel()
 

@@ -12,6 +12,7 @@ import (
 	"github.com/idelchi/godyl/pkg/download"
 )
 
+// TestURLWithChecksum verifies url with checksum behavior.
 func TestURLWithChecksum(t *testing.T) {
 	t.Parallel()
 
@@ -90,6 +91,7 @@ func TestURLWithChecksum(t *testing.T) {
 	}
 }
 
+// TestDownload verifies download behavior.
 func TestDownload(t *testing.T) {
 	t.Parallel()
 
@@ -156,6 +158,7 @@ func TestDownload(t *testing.T) {
 	})
 }
 
+// TestDownload500 verifies download500 behavior.
 func TestDownload500(t *testing.T) {
 	t.Parallel()
 
@@ -178,6 +181,7 @@ func TestDownload500(t *testing.T) {
 	}
 }
 
+// TestDownloadToSubdir verifies download to subdir behavior.
 func TestDownloadToSubdir(t *testing.T) {
 	t.Parallel()
 

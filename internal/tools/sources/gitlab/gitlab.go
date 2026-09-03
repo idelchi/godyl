@@ -23,17 +23,17 @@ type GitLab struct {
 	// latestStoredRelease avoids fetching the same release twice during resolution.
 	latestStoredRelease *release.Release
 	// Project is the GitLab project name.
-	Project string `mapstructure:"project"   yaml:"project"`
+	Project string `mapstructure:"project" yaml:"project"`
 	// Namespace is the enclosing GitLab namespace.
 	Namespace string `mapstructure:"namespace" yaml:"namespace"`
 	// Token authenticates GitLab API requests.
-	Token string `mapstructure:"token"     mask:"fixed"     yaml:"token"`
+	Token string `mapstructure:"token" mask:"fixed" yaml:"token"`
 	// Server is the GitLab instance URL.
-	Server string `mapstructure:"server"    yaml:"server"`
+	Server string `mapstructure:"server" yaml:"server"`
 	// Pre permits prerelease versions.
-	Pre bool `mapstructure:"pre"       yaml:"pre"`
+	Pre bool `mapstructure:"pre" yaml:"pre"`
 	// NoToken forces unauthenticated GitLab requests.
-	NoToken bool `mapstructure:"no-token"  yaml:"no-token"`
+	NoToken bool `mapstructure:"no-token" yaml:"no-token"`
 }
 
 // Initialize sets up the GitLab project configuration from the given name.

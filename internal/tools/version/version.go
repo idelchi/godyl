@@ -14,7 +14,7 @@ type Version struct {
 	// Patterns contains expressions used to extract a version from command output.
 	Patterns *Patterns `mapstructure:"patterns" yaml:"patterns"`
 	// Version is the desired version expression.
-	Version string `mapstructure:"version"  single:"true"   yaml:"version"`
+	Version string `mapstructure:"version" single:"true" yaml:"version"`
 }
 
 type (

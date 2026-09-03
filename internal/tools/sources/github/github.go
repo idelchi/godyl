@@ -23,13 +23,13 @@ type GitHub struct {
 	// latestStoredRelease avoids fetching the same release twice during resolution.
 	latestStoredRelease *release.Release
 	// Repo is the GitHub repository name.
-	Repo string `mapstructure:"repo"  yaml:"repo"`
+	Repo string `mapstructure:"repo" yaml:"repo"`
 	// Owner is the GitHub repository owner.
 	Owner string `mapstructure:"owner" yaml:"owner"`
 	// Token authenticates GitHub API requests.
 	Token string `mapstructure:"token" mask:"fixed" yaml:"token"`
 	// Pre permits prerelease versions.
-	Pre bool `mapstructure:"pre"   yaml:"pre"`
+	Pre bool `mapstructure:"pre" yaml:"pre"`
 }
 
 // Initialize sets up the GitHub repository configuration from the given name.

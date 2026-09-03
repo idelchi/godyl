@@ -29,33 +29,33 @@ func TestFromRepositoryRelease(t *testing.T) {
 		{
 			name: "nil tag name",
 			input: &gogithub.RepositoryRelease{
-				Name: gogithub.Ptr("Release with no tag"),
-				Body: gogithub.Ptr("Some body"),
+				Name: new("Release with no tag"),
+				Body: new("Some body"),
 			},
 			wantErrIs: release.ErrRelease,
 		},
 		{
 			name: "full release with two assets",
 			input: &gogithub.RepositoryRelease{
-				Name:    gogithub.Ptr("Release v1.2.3"),
-				TagName: gogithub.Ptr("v1.2.3"),
-				Body:    gogithub.Ptr("Release notes body"),
+				Name:    new("Release v1.2.3"),
+				TagName: new("v1.2.3"),
+				Body:    new("Release notes body"),
 				Assets: []*gogithub.ReleaseAsset{
 					{
-						Name: gogithub.Ptr("tool-linux-amd64.tar.gz"),
-						BrowserDownloadURL: gogithub.Ptr(
+						Name: new("tool-linux-amd64.tar.gz"),
+						BrowserDownloadURL: new(
 							"https://github.com/owner/repo/releases/download/v1.2.3/tool-linux-amd64.tar.gz",
 						),
-						ContentType: gogithub.Ptr("application/gzip"),
-						Digest:      gogithub.Ptr("sha256:abc123def456"),
+						ContentType: new("application/gzip"),
+						Digest:      new("sha256:abc123def456"),
 					},
 					{
-						Name: gogithub.Ptr("tool-darwin-arm64.tar.gz"),
-						BrowserDownloadURL: gogithub.Ptr(
+						Name: new("tool-darwin-arm64.tar.gz"),
+						BrowserDownloadURL: new(
 							"https://github.com/owner/repo/releases/download/v1.2.3/tool-darwin-arm64.tar.gz",
 						),
-						ContentType: gogithub.Ptr("application/gzip"),
-						Digest:      gogithub.Ptr("sha256:deadbeef1234"),
+						ContentType: new("application/gzip"),
+						Digest:      new("sha256:deadbeef1234"),
 					},
 				},
 			},
@@ -82,9 +82,9 @@ func TestFromRepositoryRelease(t *testing.T) {
 		{
 			name: "empty assets list",
 			input: &gogithub.RepositoryRelease{
-				Name:    gogithub.Ptr("Release v2.0.0"),
-				TagName: gogithub.Ptr("v2.0.0"),
-				Body:    gogithub.Ptr(""),
+				Name:    new("Release v2.0.0"),
+				TagName: new("v2.0.0"),
+				Body:    new(""),
 				Assets:  []*gogithub.ReleaseAsset{},
 			},
 			want: &release.Release{
@@ -96,7 +96,7 @@ func TestFromRepositoryRelease(t *testing.T) {
 		{
 			name: "nil optional fields",
 			input: &gogithub.RepositoryRelease{
-				TagName: gogithub.Ptr("v1.0.0"),
+				TagName: new("v1.0.0"),
 			},
 			want: &release.Release{
 				Tag:    "v1.0.0",
@@ -106,12 +106,12 @@ func TestFromRepositoryRelease(t *testing.T) {
 		{
 			name: "asset with nil Name is skipped",
 			input: &gogithub.RepositoryRelease{
-				TagName: gogithub.Ptr("v1.0.0"),
+				TagName: new("v1.0.0"),
 				Assets: []*gogithub.ReleaseAsset{
 					{
 						Name:               nil,
-						BrowserDownloadURL: gogithub.Ptr("https://example.com/file.tar.gz"),
-						ContentType:        gogithub.Ptr("application/gzip"),
+						BrowserDownloadURL: new("https://example.com/file.tar.gz"),
+						ContentType:        new("application/gzip"),
 					},
 				},
 			},
@@ -123,12 +123,12 @@ func TestFromRepositoryRelease(t *testing.T) {
 		{
 			name: "asset with nil BrowserDownloadURL is skipped",
 			input: &gogithub.RepositoryRelease{
-				TagName: gogithub.Ptr("v1.0.0"),
+				TagName: new("v1.0.0"),
 				Assets: []*gogithub.ReleaseAsset{
 					{
-						Name:               gogithub.Ptr("file.tar.gz"),
+						Name:               new("file.tar.gz"),
 						BrowserDownloadURL: nil,
-						ContentType:        gogithub.Ptr("application/gzip"),
+						ContentType:        new("application/gzip"),
 					},
 				},
 			},
@@ -140,11 +140,11 @@ func TestFromRepositoryRelease(t *testing.T) {
 		{
 			name: "asset with nil ContentType is skipped",
 			input: &gogithub.RepositoryRelease{
-				TagName: gogithub.Ptr("v1.0.0"),
+				TagName: new("v1.0.0"),
 				Assets: []*gogithub.ReleaseAsset{
 					{
-						Name:               gogithub.Ptr("file.tar.gz"),
-						BrowserDownloadURL: gogithub.Ptr("https://example.com/file.tar.gz"),
+						Name:               new("file.tar.gz"),
+						BrowserDownloadURL: new("https://example.com/file.tar.gz"),
 						ContentType:        nil,
 					},
 				},
@@ -157,15 +157,15 @@ func TestFromRepositoryRelease(t *testing.T) {
 		{
 			name: "nil asset pointer in Assets slice does not panic",
 			input: &gogithub.RepositoryRelease{
-				TagName: gogithub.Ptr("v1.0.0"),
+				TagName: new("v1.0.0"),
 				Assets: []*gogithub.ReleaseAsset{
 					nil,
 					{
-						Name: gogithub.Ptr("tool.tar.gz"),
-						BrowserDownloadURL: gogithub.Ptr(
+						Name: new("tool.tar.gz"),
+						BrowserDownloadURL: new(
 							"https://github.com/owner/repo/releases/download/v1.0.0/tool.tar.gz",
 						),
-						ContentType: gogithub.Ptr("application/gzip"),
+						ContentType: new("application/gzip"),
 					},
 				},
 			},
@@ -183,14 +183,14 @@ func TestFromRepositoryRelease(t *testing.T) {
 		{
 			name: "nil asset digest produces empty Digest field",
 			input: &gogithub.RepositoryRelease{
-				TagName: gogithub.Ptr("v1.0.0"),
+				TagName: new("v1.0.0"),
 				Assets: []*gogithub.ReleaseAsset{
 					{
-						Name: gogithub.Ptr("tool.tar.gz"),
-						BrowserDownloadURL: gogithub.Ptr(
+						Name: new("tool.tar.gz"),
+						BrowserDownloadURL: new(
 							"https://github.com/owner/repo/releases/download/v1.0.0/tool.tar.gz",
 						),
-						ContentType: gogithub.Ptr("application/gzip"),
+						ContentType: new("application/gzip"),
 						Digest:      nil,
 					},
 				},

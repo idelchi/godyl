@@ -58,7 +58,7 @@ func textUnmarshalerHookFunc() mapstructure.DecodeHookFuncType {
 			// the (un)marshalled string.
 
 			for _, v := range []reflect.Value{dataVal, ptrVal} {
-				if marshaller, ok := v.Interface().(encoding.TextMarshaler); ok {
+				if marshaller, ok := reflect.TypeAssert[encoding.TextMarshaler](v); ok {
 					text, err = marshaller.MarshalText()
 					if err != nil {
 						return nil, err

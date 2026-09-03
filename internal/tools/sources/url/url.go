@@ -19,9 +19,9 @@ type URL struct {
 	// Headers are sent with artifact download requests.
 	Headers http.Header `mapstructure:"headers" yaml:"headers"`
 	// Data contains metadata shared with the installer.
-	Data install.Metadata `mapstructure:"-"       yaml:"-"`
+	Data install.Metadata `mapstructure:"-" yaml:"-"`
 	// Token authenticates direct-download requests when required.
-	Token string `mapstructure:"token"   mask:"fixed"   yaml:"token"`
+	Token string `mapstructure:"token" mask:"fixed" yaml:"token"`
 }
 
 // Initialize is a no-op implementation of the Populator interface.

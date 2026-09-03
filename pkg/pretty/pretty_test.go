@@ -11,7 +11,7 @@ import (
 // The go-mask default masker replaces the field value with 8 '*' characters.
 type maskedStruct struct {
 	// Name is a visible fixture value.
-	Name string `json:"name"   yaml:"name"`
+	Name string `json:"name" yaml:"name"`
 	// Secret is a fixture value expected to be masked.
 	Secret string `json:"secret" mask:"fixed" yaml:"secret"`
 }

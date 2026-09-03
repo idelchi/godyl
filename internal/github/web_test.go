@@ -428,7 +428,8 @@ func TestGetReleaseFromWeb_ServerError(t *testing.T) {
 	}
 }
 
-// TestLatestVersionFromWebHTML_EmptyLocationHeader verifies latest version from web html empty location header behavior.
+// TestLatestVersionFromWebHTML_EmptyLocationHeader verifies latest version from web html empty location header
+// behavior.
 func TestLatestVersionFromWebHTML_EmptyLocationHeader(t *testing.T) {
 	t.Parallel()
 

@@ -16,6 +16,10 @@ These include:
 - `go path`
 - `temp download path`
 
+The config entry is the same active file printed by `godyl config path`. See
+[Configuration File Location]({{ site.baseurl }}/configuration/index#configuration-file-location)
+for its lookup order and platform-specific global location.
+
 ## Syntax
 
 ```sh

@@ -48,7 +48,7 @@ The following global flags are available:
 | `--no-progress`              | `GODYL_NO_PROGRESS`        | `false`                               | Disable progress bar                                 |
 | `--no-verify-checksum`, `-C` | `GODYL_NO_VERIFY_CHECKSUM` | `false`                               | Skip checksum verification                           |
 | `--show`, `-s`               | `GODYL_SHOW`               | `0`                                   | Show the parsed configuration and exit               |
-| `--config-file`, `-c`        | `GODYL_CONFIG_FILE`        | `godyl.yml`                           | Path to config file                                  |
+| `--config-file`, `-c`        | `GODYL_CONFIG_FILE`        | Resolved local/global path            | Path to config file                                  |
 | `--env-file`, `-e`           | `GODYL_ENV_FILE`           | `[".env"]`                            | Paths to .env files                                  |
 | `--defaults`, `-d`           | `GODYL_DEFAULTS`           | `defaults.yml`                        | Path to defaults file                                |
 | `--inherit`                  | `GODYL_INHERIT`            | `default`                             | Default to inherit from when unset in the tool spec  |
@@ -75,6 +75,9 @@ Running with `GODYL_DEBUG=true` will enable (extremely verbose) additional debug
 ### Configuration management
 
 Use `config` and `auth` to manage the tool configuration.
+The active configuration path and the mapping between flags, environment
+variables, and YAML keys are documented under
+[Configuration]({{ site.baseurl }}/configuration/index).
 
 > **Note**: Commands that write to the `yaml` configuration file (such as `config set`, `config remove`, `auth store` and `auth remove`) will lead to loss of order and newlines.
 

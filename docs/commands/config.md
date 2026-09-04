@@ -43,7 +43,7 @@ the Ollama-backed AI fallback and selects its model:
 ```sh
 godyl config set ai true
 godyl config set ai-provider ollama
-godyl config set ai-model gemma3:4b
+godyl config set ai-model gpt-oss:20b
 ```
 
 An OpenAI key can be stored as `ai-api-key`, although an environment variable

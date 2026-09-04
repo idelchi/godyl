@@ -49,8 +49,8 @@ The following global flags are available:
 | `--no-verify-checksum`, `-C` | `GODYL_NO_VERIFY_CHECKSUM` | `false`                               | Skip checksum verification                           |
 | `--ai`                       | `GODYL_AI`                 | `false`                               | Use AI to resolve ambiguous release asset matches    |
 | `--ai-provider`              | `GODYL_AI_PROVIDER`        | `ollama`                              | AI provider (`ollama` or `openai`)                   |
-| `--ai-model`                 | `GODYL_AI_MODEL`           | Provider-specific                     | Override the inexpensive default AI model            |
-| `--ai-url`                   | `GODYL_AI_URL`             | Provider-specific                     | Override the AI provider URL                         |
+| `--ai-model`                 | `GODYL_AI_MODEL`           | Ollama: `gpt-oss:20b`; OpenAI: `gpt-5-nano` | Override the AI model                          |
+| `--ai-url`                   | `GODYL_AI_URL`             | Ollama: `http://localhost:11434/v1`; OpenAI: SDK default | Override the AI provider URL             |
 | `--show`, `-s`               | `GODYL_SHOW`               | `0`                                   | Show the parsed configuration and exit               |
 | `--config-file`, `-c`        | `GODYL_CONFIG_FILE`        | `godyl.yml`                           | Path to config file                                  |
 | `--env-file`, `-e`           | `GODYL_ENV_FILE`           | `[".env"]`                            | Paths to .env files                                  |
@@ -87,7 +87,7 @@ The implementation uses Fantasy's provider interface. Ollama is connected
 through its OpenAI-compatible API and OpenAI uses Fantasy's native adapter, so
 additional provider adapters can be added without changing asset matching.
 
-Ollama is the default and uses `http://localhost:11434/v1` with `gemma3:4b`:
+Ollama is the default and uses `http://localhost:11434/v1` with `gpt-oss:20b`:
 
 ```sh
 godyl --ai install tools.yml
@@ -104,13 +104,16 @@ The model receives only the tied best candidates. Its answer is accepted only
 when it is exactly one of those release asset names. Use `--ai-model` and
 `--ai-url` to override the defaults; the same values can be supplied through the
 corresponding `GODYL_` environment variables or root YAML configuration keys.
+Godyl does not override the provider's input context window. Ollama therefore
+uses the context length configured for its model runner, while OpenAI applies
+the selected model's API limits.
 
 The complete root YAML configuration is:
 
 ```yaml
 ai: true
 ai-provider: ollama
-ai-model: gemma3:4b
+ai-model: gpt-oss:20b
 ai-url: http://localhost:11434/v1
 # ai-api-key: secret-value
 ```

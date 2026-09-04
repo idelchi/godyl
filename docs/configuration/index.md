@@ -50,7 +50,7 @@ The AI asset-matching fallback is configured through the same mechanism:
 ```sh
 GODYL_AI=true
 GODYL_AI_PROVIDER=ollama
-GODYL_AI_MODEL=gemma3:4b
+GODYL_AI_MODEL=gpt-oss:20b
 GODYL_AI_URL=http://localhost:11434/v1
 ```
 
@@ -85,7 +85,7 @@ env-file:
 # Optional AI tie-breaker for ambiguous release-asset matching
 ai: true
 ai-provider: ollama
-ai-model: gemma3:4b
+ai-model: gpt-oss:20b
 ai-url: http://localhost:11434/v1
 # ai-api-key: secret-value
 
@@ -107,8 +107,8 @@ The AI keys are root-command settings. Their defaults are:
 | :------------ | :------------------- | :--------------------------------------------------------------------- |
 | `ai`          | `GODYL_AI`           | `false`                                                                |
 | `ai-provider` | `GODYL_AI_PROVIDER`  | `ollama`                                                               |
-| `ai-model`    | `GODYL_AI_MODEL`     | `gemma3:4b` for Ollama; `gpt-5-nano` for OpenAI                        |
-| `ai-url`      | `GODYL_AI_URL`       | `http://localhost:11434/v1` for Ollama; the OpenAI endpoint for OpenAI |
+| `ai-model`    | `GODYL_AI_MODEL`     | `gpt-oss:20b` for Ollama; `gpt-5-nano` for OpenAI                      |
+| `ai-url`      | `GODYL_AI_URL`       | `http://localhost:11434/v1` for Ollama; OpenAI SDK default for OpenAI  |
 | `ai-api-key`  | `GODYL_AI_API_KEY`   | `ollama` for Ollama; `OPENAI_API_KEY` fallback for OpenAI              |
 
 CLI flags, environment variables, `.env`, and YAML retain the precedence shown

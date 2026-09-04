@@ -24,7 +24,7 @@ const (
 	providerOpenAI = "openai"
 
 	defaultOllamaURL   = "http://localhost:11434/v1"
-	defaultOllamaModel = "gemma3:4b"
+	defaultOllamaModel = "gpt-oss:20b"
 	defaultOpenAIModel = "gpt-5-nano"
 )
 

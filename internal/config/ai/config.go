@@ -7,7 +7,7 @@ type Config struct {
 	Enabled bool `mapstructure:"ai" yaml:"ai"`
 	// Provider selects the Fantasy provider adapter.
 	Provider string `mapstructure:"ai-provider" yaml:"ai-provider"`
-	// Model overrides the provider's inexpensive default model.
+	// Model overrides the provider's default model.
 	Model string `mapstructure:"ai-model" yaml:"ai-model"`
 	// URL overrides the provider's API endpoint.
 	URL string `mapstructure:"ai-url" yaml:"ai-url"`

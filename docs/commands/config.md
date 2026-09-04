@@ -8,6 +8,9 @@ nav_order: 7
 # Config Command
 
 The `config` command allows interaction with `godyl`'s config file.
+Use `godyl config path` to see whether the active file is local or global. See
+[Configuration File Location]({{ site.baseurl }}/configuration/index#configuration-file-location)
+for the lookup order and platform-specific global directories.
 
 ## Syntax
 
@@ -31,11 +34,20 @@ godyl [flags] config [path|set|remove] [flags]
 
 ## Examples
 
+### Display the active config file
+
+```sh
+godyl config path
+```
+
 ### Set a key in the config file
 
 ```sh
 godyl config set dump.tools.embedded true
 ```
+
+Keys follow the command hierarchy: `dump.tools.embedded` corresponds to
+`godyl dump tools --embedded` and `GODYL_DUMP_TOOLS_EMBEDDED`.
 
 Root settings use their names directly. For example, this persistently enables
 the Ollama-backed AI fallback and selects its model:

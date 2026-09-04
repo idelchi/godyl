@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/idelchi/godyl/internal/aimatch"
 	"github.com/idelchi/godyl/internal/tools/tool"
 )
 
@@ -19,6 +20,10 @@ type Result struct {
 	Message string
 	// Status classifies the operation outcome.
 	Status Status
+	// Suggestion contains a verified AI recommendation for a matching failure.
+	Suggestion *aimatch.Suggestion
+	// SuggestionError explains why a matching failure could not be diagnosed.
+	SuggestionError error
 }
 
 // Status represents the possible states of a tool operation.
@@ -75,6 +80,19 @@ func (s Summary) Error() error {
 	}
 
 	return fmt.Errorf("%d tools failed to install", s.Failed)
+}
+
+// SuggestionError returns an aggregated error for a diagnostic suggestion run.
+func (s Summary) SuggestionError() error {
+	if !s.HasErrors() {
+		return nil
+	}
+
+	if s.Failed == 1 {
+		return errors.New("1 tool remains unresolved")
+	}
+
+	return fmt.Errorf("%d tools remain unresolved", s.Failed)
 }
 
 // DetailedError returns a detailed error with all failure messages.

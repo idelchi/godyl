@@ -1,6 +1,9 @@
 package presentation
 
 import (
+	"errors"
+
+	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/processor"
 	"github.com/idelchi/godyl/pkg/logger"
 	"github.com/idelchi/godyl/pkg/path/file"
@@ -12,6 +15,8 @@ type ShowConfig struct {
 	Verbose int
 	// ErrorFile receives machine-readable errors when set.
 	ErrorFile file.File
+	// Suggest reports that results came from non-mutating suggestion mode.
+	Suggest bool
 }
 
 // ShowSummary formats and displays the processing results.
@@ -39,6 +44,17 @@ func ShowSummary(summary processor.Summary, cfg ShowConfig, log *logger.Logger) 
 		log.Info("Installation Summary:")
 		log.Info(tableOutput)
 
+		if suggestions := RenderSuggestions(summary.Results); suggestions != "" {
+			log.Info("")
+			log.Info("AI Suggestions:")
+			log.Info(suggestions)
+		}
+
+		if cfg.Suggest {
+			log.Info("")
+			log.Info("Nothing was downloaded or installed by suggestion mode.")
+		}
+
 		log.Infof("%d tools processed", len(summary.Results))
 	} else {
 		log.Info("Done!")
@@ -46,8 +62,31 @@ func ShowSummary(summary processor.Summary, cfg ShowConfig, log *logger.Logger) 
 
 	// Handle errors
 	if summary.HasErrors() {
+		if cfg.Suggest && cfg.ErrorFile.Path() == "" {
+			summary.Errors = nonMatchingErrors(summary.Errors)
+			summary.Failed = len(summary.Errors)
+		}
+
+		if !summary.HasErrors() {
+			return
+		}
+
 		showErrors(summary, cfg, log)
 	}
+}
+
+func nonMatchingErrors(details []processor.ErrorDetail) []processor.ErrorDetail {
+	filtered := make([]processor.ErrorDetail, 0, len(details))
+
+	for _, detail := range details {
+		if _, ok := errors.AsType[*match.SelectionError](detail.Error); ok {
+			continue
+		}
+
+		filtered = append(filtered, detail)
+	}
+
+	return filtered
 }
 
 // showErrors formats and displays error messages.

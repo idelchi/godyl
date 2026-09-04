@@ -45,6 +45,20 @@ GODYL_INSTALL_OUTPUT=~/.local/bin
 GODYL_DUMP_TOOLS_FULL=true
 ```
 
+The AI asset-matching fallback is configured through the same mechanism:
+
+```sh
+GODYL_AI=true
+GODYL_AI_PROVIDER=ollama
+GODYL_AI_MODEL=gemma3:4b
+GODYL_AI_URL=http://localhost:11434/v1
+```
+
+For OpenAI, set `GODYL_AI_PROVIDER=openai` and provide
+`GODYL_AI_API_KEY`. If that variable is unset, `OPENAI_API_KEY` is used.
+The API key deliberately has no command-line flag, avoiding exposure in shell
+history and process arguments.
+
 All environment variables are also loaded into the run-time environment, regardless of whether they came directly from the environment or from a `.env` file.
 
 They can be accessed with `{{ .Env.<ENV_VAR> }}`.
@@ -68,9 +82,17 @@ you would use the following format in your `yaml` file:
 env-file:
   - .env
 
+# Optional AI tie-breaker for ambiguous release-asset matching
+ai: true
+ai-provider: ollama
+ai-model: gemma3:4b
+ai-url: http://localhost:11434/v1
+# ai-api-key: secret-value
+
 # `install` subcommand
 install:
   output: ~/.local/bin
+  suggest: false
 
 # `dump` subcommand
 dump:
@@ -78,6 +100,25 @@ dump:
   tools:
     full: true
 ```
+
+The AI keys are root-command settings. Their defaults are:
+
+| Key           | Environment variable | Default                                                                |
+| :------------ | :------------------- | :--------------------------------------------------------------------- |
+| `ai`          | `GODYL_AI`           | `false`                                                                |
+| `ai-provider` | `GODYL_AI_PROVIDER`  | `ollama`                                                               |
+| `ai-model`    | `GODYL_AI_MODEL`     | `gemma3:4b` for Ollama; `gpt-5-nano` for OpenAI                        |
+| `ai-url`      | `GODYL_AI_URL`       | `http://localhost:11434/v1` for Ollama; the OpenAI endpoint for OpenAI |
+| `ai-api-key`  | `GODYL_AI_API_KEY`   | `ollama` for Ollama; `OPENAI_API_KEY` fallback for OpenAI              |
+
+CLI flags, environment variables, `.env`, and YAML retain the precedence shown
+at the top of this page. For example, `--ai-model` overrides `GODYL_AI_MODEL`,
+which overrides `ai-model` in `godyl.yml`.
+
+Suggestion mode is an install-command setting. Its flag, environment variable,
+and YAML key are `--suggest`, `GODYL_INSTALL_SUGGEST`, and `install.suggest`.
+It should normally be enabled for an individual diagnostic run rather than
+stored permanently.
 
 ## Defaults Configuration
 

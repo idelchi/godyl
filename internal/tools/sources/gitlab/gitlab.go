@@ -162,15 +162,10 @@ func (g *GitLab) MatchAssetsToRequirements(
 
 	assets := release.Assets
 
-	matches := assets.Match(requirements)
-
-	if matches.Status() != nil {
-		if err := matches.WithoutZero().Status(); err != nil {
-			return "", err
-		}
+	asset, err := assets.Select(ctx, requirements)
+	if err != nil {
+		return "", err
 	}
-
-	asset := assets.FilterByName(matches[0].Asset.Name)[0]
 
 	if checksums := assets.Checksums(requirements.Checksum); len(checksums) > 0 {
 		debug.Debug("found checksum assets: %q", checksums)

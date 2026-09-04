@@ -2,6 +2,7 @@
 package root
 
 import (
+	"github.com/idelchi/godyl/internal/config/ai"
 	"github.com/idelchi/godyl/internal/config/download"
 	"github.com/idelchi/godyl/internal/config/dump"
 	"github.com/idelchi/godyl/internal/config/install"
@@ -45,6 +46,9 @@ type Config struct {
 	Install install.Install `mapstructure:"install" validate:"-" yaml:"install"`
 
 	/* Flags */
+	// AI configures optional release-asset selection and suggestion features.
+	AI ai.Config `mapstructure:",squash" yaml:",inline,flatten"`
+
 	// Tokens store authentication tokens for various sources
 	Tokens Tokens `mapstructure:",squash" yaml:",inline,flatten"`
 

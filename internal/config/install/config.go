@@ -30,6 +30,9 @@ type Install struct {
 	// Dry reports planned installation work without applying it.
 	Dry bool `mapstructure:"dry" yaml:"dry"`
 
+	// Suggest diagnoses asset matching failures without installing tools.
+	Suggest bool `mapstructure:"suggest" yaml:"suggest"`
+
 	// Pre allows prerelease versions.
 	Pre bool `mapstructure:"pre" yaml:"pre"`
 

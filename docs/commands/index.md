@@ -47,6 +47,10 @@ The following global flags are available:
 | `--no-verify-ssl`, `-k`      | `GODYL_NO_VERIFY_SSL`      | `false`                               | Skip SSL verification                                |
 | `--no-progress`              | `GODYL_NO_PROGRESS`        | `false`                               | Disable progress bar                                 |
 | `--no-verify-checksum`, `-C` | `GODYL_NO_VERIFY_CHECKSUM` | `false`                               | Skip checksum verification                           |
+| `--ai`                       | `GODYL_AI`                 | `false`                               | Use AI to resolve ambiguous release asset matches    |
+| `--ai-provider`              | `GODYL_AI_PROVIDER`        | `ollama`                              | AI provider (`ollama` or `openai`)                   |
+| `--ai-model`                 | `GODYL_AI_MODEL`           | Provider-specific                     | Override the inexpensive default AI model            |
+| `--ai-url`                   | `GODYL_AI_URL`             | Provider-specific                     | Override the AI provider URL                         |
 | `--show`, `-s`               | `GODYL_SHOW`               | `0`                                   | Show the parsed configuration and exit               |
 | `--config-file`, `-c`        | `GODYL_CONFIG_FILE`        | `godyl.yml`                           | Path to config file                                  |
 | `--env-file`, `-e`           | `GODYL_ENV_FILE`           | `[".env"]`                            | Paths to .env files                                  |
@@ -71,6 +75,81 @@ godyl -ss
 If you get a lot of error messages for a run, use `error-file` to log them to a file for inspection.
 
 Running with `GODYL_DEBUG=true` will enable (extremely verbose) additional debug logging.
+
+### AI fallback
+
+`--ai` leaves normal matching unchanged. It asks a model to select one exact
+release asset only when deterministic matching cannot distinguish between
+equally ranked, qualified candidates. Unmatched assets, invalid hints, source
+API failures, and successful matches never invoke a model.
+
+The implementation uses Fantasy's provider interface. Ollama is connected
+through its OpenAI-compatible API and OpenAI uses Fantasy's native adapter, so
+additional provider adapters can be added without changing asset matching.
+
+Ollama is the default and uses `http://localhost:11434/v1` with `gemma3:4b`:
+
+```sh
+godyl --ai install tools.yml
+```
+
+OpenAI defaults to `gpt-5-nano` and reads `GODYL_AI_API_KEY`, falling back to
+`OPENAI_API_KEY`:
+
+```sh
+GODYL_AI_API_KEY="${OPENAI_API_KEY}" godyl --ai --ai-provider openai install tools.yml
+```
+
+The model receives only the tied best candidates. Its answer is accepted only
+when it is exactly one of those release asset names. Use `--ai-model` and
+`--ai-url` to override the defaults; the same values can be supplied through the
+corresponding `GODYL_` environment variables or root YAML configuration keys.
+
+The complete root YAML configuration is:
+
+```yaml
+ai: true
+ai-provider: ollama
+ai-model: gemma3:4b
+ai-url: http://localhost:11434/v1
+# ai-api-key: secret-value
+```
+
+The equivalent environment variables are `GODYL_AI`,
+`GODYL_AI_PROVIDER`, `GODYL_AI_MODEL`, `GODYL_AI_URL`, and
+`GODYL_AI_API_KEY`. `ai-api-key` is intentionally configuration/env-only and
+has no CLI flag. For OpenAI, `OPENAI_API_KEY` is used when
+`GODYL_AI_API_KEY` is unset. See [Configuration]({{ site.baseurl }}/configuration/)
+for precedence.
+
+### AI suggestions
+
+`godyl install --suggest` is a non-mutating diagnostic mode for deterministic
+asset matching failures. It does not require `--ai`, and the two modes cannot be
+enabled together: `--ai` resolves an ambiguity for the current run, while
+`--suggest` proposes a repeatable hint configuration.
+
+For an ambiguous match, the model receives only the equally ranked best
+candidates. When no candidate qualifies, it receives the complete release asset
+list. Invalid hints, empty releases, source API errors, authentication failures,
+and other non-matching errors are reported without consulting the model.
+
+The request contains matching-related context such as the tool name, source,
+version, target platform, installation mode, current hints, and asset names. It
+does not include tokens, environment variables, commands, or local paths.
+
+The model returns an exact asset name, a short explanation, and a complete
+replacement hint list. Godyl parses those hints and reruns the deterministic
+matcher. A suggestion is displayed as verified only when it uniquely resolves
+to the model's chosen asset.
+
+```sh
+godyl install --suggest tools.yml
+godyl --ai-model gpt-oss:20b install --suggest tools.yml
+```
+
+Suggestion mode implies dry-run behavior, processes every tool, does not update
+the cache, and retains a failing exit status while any tool remains unresolved.
 
 ### Configuration management
 

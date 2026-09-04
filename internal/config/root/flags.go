@@ -37,6 +37,10 @@ func Flags(cmd *cobra.Command) {
 	cmd.Flags().BoolP("no-verify-ssl", "k", false, "skip SSL verification")
 	cmd.Flags().Bool("no-progress", false, "disable progress bar")
 	cmd.Flags().BoolP("no-verify-checksum", "C", false, "skip checksum verification")
+	cmd.Flags().Bool("ai", false, "use AI to resolve ambiguous release asset matches")
+	cmd.Flags().String("ai-provider", "ollama", "AI provider (ollama or openai)")
+	cmd.Flags().String("ai-model", "", "AI model, defaulting to an inexpensive provider-specific model")
+	cmd.Flags().String("ai-url", "", "AI provider URL override")
 
 	cmd.Flags().StringP("error-file", "", "", "path to error log file, empty means stdout.")
 	cmd.Flags().CountP("verbose", "v", "increase verbosity (can be used multiple times)")

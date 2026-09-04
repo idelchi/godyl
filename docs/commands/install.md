@@ -40,6 +40,7 @@ Additionally, it will respect the `GODYL_TOOLS` environment variable, as well as
 | `--source`       | `GODYL_INSTALL_SOURCE`   | `github`    | Source from which to install the tools (github, gitlab, url, go, none) |
 | `--strategy`     | `GODYL_INSTALL_STRATEGY` | `sync`      | Strategy to use for updating tools (none, sync, existing, force)       |
 | `--dry`          | `GODYL_INSTALL_DRY`      | `false`     | Dry run. Will not download, but show what would be done. Implies `-v`  |
+| `--suggest`      | `GODYL_INSTALL_SUGGEST`  | `false`     | Suggest verified hints for release asset matching failures             |
 | `--pre`          | `GODYL_INSTALL_PRE`      | `false`     | Consider pre-releases when installing tools                            |
 
 `tags` may use wildcards `*` which matches any sequence of characters. Using the name of the tool as a tag (e.g. `idelchi/envprof`) will
@@ -88,3 +89,13 @@ godyl install tools.yml --strategy force
 ```sh
 godyl install tools.yml --os linux --arch arm64
 ```
+
+### Suggest hints for asset matching failures
+
+```sh
+godyl install --suggest tools.yml
+```
+
+Suggestion mode resolves release metadata but does not download, install,
+execute installation commands, or update the cache. It reports all tools and
+exits unsuccessfully when any tool remains unresolved.

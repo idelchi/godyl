@@ -21,6 +21,25 @@ hints:
 
 See [tools.yml](https://github.com/idelchi/godyl/blob/main/tools.yml) for various examples of hints.
 
+## AI Fallback and Hints
+
+Hints remain the primary, repeatable way to teach `godyl` how a project's
+release assets are named. When the root `ai` setting is enabled, AI is used only
+when the normal platform rules and configured hints produce equally ranked,
+qualified candidates. Successful and unmatched results are never sent to a
+model.
+
+The selected model receives the target platform and only the tied best asset
+names. The response must equal one of those names exactly; it cannot invent a
+download URL or bypass a requirement, exclusion, invalid hint, or source error.
+See [AI fallback]({{ site.baseurl }}/commands/index#ai-fallback) for
+configuration.
+
+Use `godyl install --suggest` when matching does not produce a usable result and
+you want help improving the configuration rather than selecting an asset for
+only the current run. Suggested replacement hints are parsed and rerun through
+the deterministic matcher before being displayed as verified.
+
 ## Conditional Logic
 
 You can use conditional logic to customize behavior based on the platform:

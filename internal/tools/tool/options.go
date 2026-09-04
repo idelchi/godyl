@@ -1,16 +1,27 @@
 package tool
 
+import "github.com/idelchi/godyl/internal/match"
+
 // ResolveOption is a functional option type for the Resolve method.
 type ResolveOption func(*resolveOptions)
 
 // resolveOptions holds all configurable options for the Resolve method.
 type resolveOptions struct {
+	// assetSelector is consulted only for ambiguous deterministic asset matches.
+	assetSelector match.AssetSelector
 	// skipVersion bypasses version resolution.
 	skipVersion bool
 	// upUntilVersion stops resolution after determining the version.
 	upUntilVersion bool
 	// skipURL bypasses artifact URL resolution.
 	skipURL bool
+}
+
+// WithAssetSelector enables a tie-breaker for ambiguous release assets.
+func WithAssetSelector(selector match.AssetSelector) ResolveOption {
+	return func(o *resolveOptions) {
+		o.assetSelector = selector
+	}
 }
 
 // WithoutVersion returns a ResolveOption that skips version resolution.

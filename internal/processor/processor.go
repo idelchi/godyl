@@ -5,13 +5,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"time"
 
 	"golang.org/x/sync/errgroup"
 
+	"github.com/idelchi/godyl/internal/aimatch"
 	"github.com/idelchi/godyl/internal/cache"
 	"github.com/idelchi/godyl/internal/config/root"
 	"github.com/idelchi/godyl/internal/data"
+	"github.com/idelchi/godyl/internal/match"
 	"github.com/idelchi/godyl/internal/tools"
 	"github.com/idelchi/godyl/internal/tools/result"
 	"github.com/idelchi/godyl/internal/tools/tags"
@@ -20,8 +23,16 @@ import (
 	"github.com/idelchi/godyl/pkg/pretty"
 )
 
+type assetSuggester interface {
+	Suggest(ctx context.Context, request aimatch.SuggestionRequest) (aimatch.Suggestion, error)
+}
+
 // Processor is a thin orchestrator that coordinates tool processing.
 type Processor struct {
+	// assetSelector is consulted only for ambiguous deterministic asset matches.
+	assetSelector match.AssetSelector
+	// assetSuggester diagnoses deterministic asset matching failures.
+	assetSuggester assetSuggester
 	// results collects outcomes from concurrent tool operations.
 	results *collector
 	// cache persists successful tool resolutions when enabled.
@@ -45,11 +56,11 @@ func New(toolsList tools.Tools, cfg root.Config, log *logger.Logger) *Processor 
 	// Initialize cache
 	var cacheManager *cache.Cache
 
-	if !cfg.Cache.Disabled {
+	if !cfg.Cache.Disabled && !cfg.Install.Suggest {
 		cacheManager = cache.New(data.CacheFile(cfg.Cache.Dir))
 	}
 
-	return &Processor{
+	processor := &Processor{
 		tools:    toolsList,
 		config:   cfg,
 		log:      log,
@@ -57,6 +68,16 @@ func New(toolsList tools.Tools, cfg root.Config, log *logger.Logger) *Processor 
 		cache:    cacheManager,
 		progress: newProgressMgr(cfg.NoProgress),
 	}
+
+	if cfg.AI.Enabled {
+		processor.assetSelector = aimatch.New(cfg.AI)
+	}
+
+	if cfg.Install.Suggest {
+		processor.assetSuggester = aimatch.New(cfg.AI)
+	}
+
+	return processor
 }
 
 // Process installs and manages tools with the given tags.
@@ -132,6 +153,10 @@ func (p *Processor) Process(tags tags.IncludeTags) (Summary, error) {
 
 // runTool executes a tool operation and returns the result.
 func (p *Processor) runTool(ctx context.Context, t *tool.Tool, tags tags.IncludeTags, artifacts *artifactStore) Result {
+	if p.assetSuggester != nil {
+		t.NoCache = true
+	}
+
 	// Enable cache if available
 	if p.cache != nil {
 		t.EnableCache(p.cache)
@@ -144,11 +169,22 @@ func (p *Processor) runTool(ctx context.Context, t *tool.Tool, tags tags.Include
 	p.log.Debug("-------")
 
 	// Resolve the tool
-	resolveResult := t.Resolve(tags, p.Options...)
+	options := p.Options
+	if p.assetSelector != nil {
+		options = append(slices.Clone(options), tool.WithAssetSelector(p.assetSelector))
+	}
+
+	resolveResult := t.Resolve(tags, options...)
 
 	// Convert internal result to Result
 	if !resolveResult.IsOK() {
-		return p.convertResult(t, resolveResult)
+		converted := p.convertResult(t, resolveResult)
+
+		if p.assetSuggester != nil {
+			p.addSuggestion(ctx, &converted, t, resolveResult.AsError())
+		}
+
+		return converted
 	}
 
 	// Check if we should skip download
@@ -161,6 +197,32 @@ func (p *Processor) runTool(ctx context.Context, t *tool.Tool, tags tags.Include
 	downloadResult := p.downloadTool(ctx, t, artifacts)
 
 	return p.convertResult(t, downloadResult)
+}
+
+func (p *Processor) addSuggestion(ctx context.Context, converted *Result, t *tool.Tool, resolveErr error) {
+	var selectionErr *match.SelectionError
+
+	if !errors.As(resolveErr, &selectionErr) {
+		return
+	}
+
+	suggestion, err := p.assetSuggester.Suggest(ctx, aimatch.SuggestionRequest{
+		Target:          t.Name,
+		Description:     t.Description,
+		Source:          t.Source.Type.String(),
+		Version:         t.Version.Version,
+		Mode:            t.Mode.String(),
+		Executable:      t.Exe.Name,
+		ChecksumPattern: t.Checksum.Pattern,
+		Failure:         selectionErr,
+	})
+	if err != nil {
+		converted.SuggestionError = err
+
+		return
+	}
+
+	converted.Suggestion = &suggestion
 }
 
 // convertResult converts an internal result.Result to a processor Result.

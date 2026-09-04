@@ -31,9 +31,15 @@ Asset downloader for GitHub releases, GitLab releases, URLs, and Go projects.
 
 Furthermore, custom commands can be used.
 
-`godyl` uses simple heuristics to select the correct binary to download, matching the current platform and architecture.
+`godyl` uses deterministic heuristics to select the correct binary to download, matching the current platform and architecture.
 
 Most properties can be overridden, with `hints` and `skip` used to help the tool make the correct decision.
+
+For releases with equally ranked deterministic matches, an opt-in AI fallback
+can select from the tied candidates. It is not called for successful or
+unmatched results, and its answer must match one supplied candidate exactly.
+See [AI fallback]({{ site.baseurl }}/commands/index#ai-fallback)
+for Ollama and OpenAI configuration.
 
 `godyl` has been tested on:
 
@@ -100,6 +106,20 @@ godyl install tools.yml --strategy=sync
 ```
 
 to bring down the latest version, if the current one is out of date.
+
+To resolve ambiguous deterministic asset matches, enable the optional AI
+fallback for the invocation:
+
+```sh
+godyl --ai install tools.yml
+```
+
+To inspect asset matching failures and receive verified hint suggestions without
+installing anything:
+
+```sh
+godyl install --suggest tools.yml
+```
 
 {% endraw %}
 

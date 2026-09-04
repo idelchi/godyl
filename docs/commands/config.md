@@ -37,6 +37,22 @@ godyl [flags] config [path|set|remove] [flags]
 godyl config set dump.tools.embedded true
 ```
 
+Root settings use their names directly. For example, this persistently enables
+the Ollama-backed AI fallback and selects its model:
+
+```sh
+godyl config set ai true
+godyl config set ai-provider ollama
+godyl config set ai-model gemma3:4b
+```
+
+An OpenAI key can be stored as `ai-api-key`, although an environment variable
+is preferable for secrets:
+
+```sh
+GODYL_AI_API_KEY="${OPENAI_API_KEY}" godyl --ai --ai-provider openai install tools.yml
+```
+
 ### Remove a key from the config file
 
 ```sh

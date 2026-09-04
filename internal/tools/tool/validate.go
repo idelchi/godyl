@@ -171,8 +171,10 @@ func (t *Tool) resolve(populator sources.Populator, tmpl *templates.Processor, o
 			Platform: t.Platform,
 			Hints:    *t.Hints.Reduced(),
 			Checksum: t.Checksum.Pattern,
+			Target:   t.Name,
+			Selector: opts.assetSelector,
 		}); err != nil {
-			return result.WithFailed(fmt.Sprintf("getting url: %s", err))
+			return result.WithFailed("getting url", err)
 		}
 
 		t.URL = populator.Get("url")

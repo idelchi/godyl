@@ -174,19 +174,10 @@ func (g *GitHub) MatchAssetsToRequirements(
 
 	assets := release.Assets
 
-	matches := assets.Match(requirements)
-
-	if matches.HasErrors() {
-		return "", matches.Errors()[0]
+	asset, err := assets.Select(ctx, requirements)
+	if err != nil {
+		return "", err
 	}
-
-	if matches.Status() != nil {
-		if err := matches.WithoutZero().Status(); err != nil {
-			return "", err
-		}
-	}
-
-	asset := assets.FilterByName(matches[0].Asset.Name)[0]
 
 	// Check inline digest
 	if asset.Digest != "" {

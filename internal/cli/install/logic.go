@@ -1,6 +1,7 @@
 package install
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/cli/core"
@@ -15,7 +16,11 @@ import (
 func run(input core.Input) error {
 	cfg, embedded, _, _, args := input.Unpack()
 
-	if cfg.Install.Dry {
+	if cfg.Install.Suggest && cfg.AI.Enabled {
+		return errors.New("AI fallback and suggestion mode cannot be enabled together")
+	}
+
+	if cfg.Install.Dry || cfg.Install.Suggest {
 		cfg.Verbose = 1
 	}
 
@@ -47,7 +52,7 @@ func run(input core.Input) error {
 	// At this point, all tools have been resolved and can be processed by the processor
 	proc := processor.New(tools, *cfg, runner.Logger())
 
-	proc.NoDownload = cfg.Install.Dry
+	proc.NoDownload = cfg.Install.Dry || cfg.Install.Suggest
 
 	summary, err := proc.Process(iutils.SplitTags(cfg.Install.Tags))
 	if err != nil {
@@ -57,7 +62,12 @@ func run(input core.Input) error {
 	presentation.ShowSummary(summary, presentation.ShowConfig{
 		Verbose:   cfg.Verbose,
 		ErrorFile: cfg.ErrorFile,
+		Suggest:   cfg.Install.Suggest,
 	}, runner.Logger())
+
+	if cfg.Install.Suggest {
+		return summary.SuggestionError()
+	}
 
 	return summary.Error()
 }

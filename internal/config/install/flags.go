@@ -20,5 +20,6 @@ func Flags(cmd *cobra.Command) {
 		String("strategy", strategy.Sync.String(), "strategy to use for updating tools (none, sync, existing, force)")
 
 	cmd.Flags().Bool("dry", false, "dry run, show what would be done without downloading")
+	cmd.Flags().Bool("suggest", false, "suggest verified hints for release asset matching failures")
 	cmd.Flags().Bool("pre", false, "consider pre-releases when installing tools")
 }

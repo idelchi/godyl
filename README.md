@@ -28,9 +28,28 @@ As an alternative to above, custom commands can be used as well.
 
 `godyl` will infer the platform and architecture from the system it is running on, and will attempt to download the appropriate binary.
 
-This uses simple heuristics to select the correct binary to download, and will not work for all projects.
+This uses deterministic heuristics to select the correct binary to download.
 
 However, most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
+
+An opt-in AI tie-breaker can handle ambiguous release assets. It runs only when
+deterministic matching returns equally ranked candidates, and accepts only an
+exact name from that candidate set. Ollama and OpenAI are supported:
+
+```sh
+godyl --ai install tools.yml
+godyl --ai --ai-provider openai install tools.yml
+```
+
+To diagnose ambiguous or unmatched assets and receive a verified replacement
+hint list without installing anything:
+
+```sh
+godyl install --suggest tools.yml
+```
+
+See the [AI fallback documentation](https://idelchi.github.io/godyl/commands/#ai-fallback)
+for provider defaults and configuration-file and environment-variable usage.
 
 Tool is inspired by [task](https://github.com/go-task/task), [dra](https://github.com/devmatteini/dra) and [ansible](https://github.com/ansible/ansible)
 

@@ -989,7 +989,7 @@
 - name: openai/codex
   description: A CLI tool for interacting with OpenAI's Codex models
   hints:
-    - pattern: proxy|command-runner|sandbox|npm|zsh|app-server|package|symbols|code-mode-host
+    - pattern: proxy|command-runner|sandbox|npm|zsh|app-server|package|symbols|code-mode-host|-bazel
       match: excluded
       type: regex
     - pattern: codex
@@ -1123,6 +1123,10 @@
 
 - name: rtk-ai/rtk
   description: CLI proxy that reduces LLM token consumption by 60-90% on common dev commands.
+  hints:
+    pattern: -oss|-proxy
+    match: excluded
+    type: regex
   tags:
     - terminal
 

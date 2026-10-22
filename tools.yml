@@ -622,14 +622,11 @@
   description: A versatile Go template processor
   hints:
     # gomplate releases both the `.exe` and `.zip` which would have identical scores
-    pattern: .zip
-    weight: |-
-      {{- if eq .OS "windows" -}}
-      1
-      {{- else -}}
-      0
-      {{- end -}}
-    type: endswith
+    - pattern: .zip
+      weight: '{{ if eq .OS "windows" }}1{{ else }}0{{ end }}'
+      type: endswith
+    - pattern: ^[^.]+$
+      type: regex
   tags:
     - terminal
 

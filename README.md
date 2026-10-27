@@ -28,7 +28,7 @@ As an alternative to above, custom commands can be used as well.
 
 `godyl` will infer the platform and architecture from the system it is running on, and will attempt to download the appropriate binary.
 
-This uses simple heuristics to select the correct binary to download, and will not work for all projects.
+This uses deterministic heuristics to select the correct binary to download.
 
 However, most properties can be overridden, with `hints` and `skip` used to help `godyl` make the correct decision.
 

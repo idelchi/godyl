@@ -31,7 +31,7 @@ Asset downloader for GitHub releases, GitLab releases, URLs, and Go projects.
 
 Furthermore, custom commands can be used.
 
-`godyl` uses simple heuristics to select the correct binary to download, matching the current platform and architecture.
+`godyl` uses deterministic heuristics to select the correct binary to download, matching the current platform and architecture.
 
 Most properties can be overridden, with `hints` and `skip` used to help the tool make the correct decision.
 

@@ -8,8 +8,8 @@ import (
 
 	"github.com/hashicorp/go-getter/v2"
 
-	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/internal/tools/checksum"
+	"github.com/idelchi/godyl/internal/tools/mode"
 	"github.com/idelchi/godyl/pkg/download"
 	"github.com/idelchi/godyl/pkg/env"
 	"github.com/idelchi/godyl/pkg/path/file"
@@ -48,36 +48,24 @@ type Data struct {
 	Arch string
 }
 
-// Download retrieves files according to the InstallData configuration.
-// Creates temporary directories when needed, manages the download process,
-// and returns the download output and file information.
+// Download acquires an artifact privately, then installs one executable or its full contents.
 func Download(d Data) (found file.File, err error) {
-	dir := folder.New(d.Output)
-
-	if d.Mode == "find" {
-		if dir, err = data.CreateUniqueDirIn(); err != nil {
-			return "", fmt.Errorf("creating random dir: %w", err)
-		}
-
-		defer func() {
-			err = errors.Join(err, dir.Remove())
-		}()
-	}
-
-	destination, err := Acquire(d, dir)
+	artifact, err := Acquire(d)
 	if err != nil {
 		return "", err
 	}
 
-	if d.Mode == "find" {
-		found, err = Find(destination, d)
+	defer func() { err = errors.Join(err, artifact.Remove()) }()
+
+	if d.Mode == mode.Find.String() {
+		return Find(artifact.Destination, d)
 	}
 
-	return found, err
+	return "", artifact.extract(folder.New(d.Output))
 }
 
-// Acquire downloads and extracts a tool artifact into dir.
-func Acquire(d Data, dir folder.Folder) (file.File, error) {
+// downloadInto downloads and extracts the configured artifact into dir.
+func downloadInto(d Data, dir folder.Folder) (file.File, error) {
 	options := []download.Option{
 		download.WithProgress(d.ProgressListener),
 		download.WithContextTimeout(download.DefaultTimeout),
@@ -147,24 +135,25 @@ func Find(destination file.File, d Data) (file.File, error) {
 		}
 	}
 
-	folder := folder.New(d.Output)
-	if !folder.Exists() {
-		if err := folder.Create(); err != nil {
-			return destination, fmt.Errorf("creating output folder: %w", err)
-		}
+	output := folder.New(d.Output)
+	if err := output.Create(); err != nil {
+		return destination, err
 	}
 
-	// Copy the executable to the output directory
-	target := file.New(d.Output, d.Exe)
-	if err := destination.Copy(target); err != nil {
-		return destination, fmt.Errorf("copying %q to %q: %w", destination, target, err)
-	}
-
-	if ok, _ := target.IsExecutable(); !ok {
-		if err := target.MakeExecutable(); err != nil {
-			return destination, fmt.Errorf("making %q executable: %w", target, err)
-		}
+	target := output.WithFile(d.Exe)
+	if err := destination.CopyAtomic(target, ensureExecutable); err != nil {
+		return destination, fmt.Errorf("installing %q: %w", target, err)
 	}
 
 	return destination, nil
+}
+
+// ensureExecutable adds execute bits only when the copy has none.
+func ensureExecutable(f file.File) error {
+	ok, err := f.IsExecutable()
+	if err != nil || ok {
+		return err
+	}
+
+	return f.MakeExecutable()
 }

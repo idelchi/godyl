@@ -176,7 +176,7 @@ A complete reference for all fields is available below.
       condition: '{{ eq .OS "darwin" }}'
   # The mode for downloading and installing the tool.
   # `find` will download, extract, and find the executable.
-  # `extract` will download and extract directly to the output directory.
+  # `extract` will install all extracted files in the output directory.
   mode: find|extract
   # A collection of arbitrary values.
   # Will be available as `{{ .Values.<name> }}` anywhere templating is supported.
@@ -535,7 +535,11 @@ mode: find
 Valid values:
 
 - `find`: Download, extract, and find the executable
-- `extract`: Download and extract directly to the output directory
+- `extract`: Install all extracted files in the output directory
+
+Both modes replace each destination file only after its new contents and permissions are ready. An update on Unix does
+not interrupt a running executable; restart it to use the new version. On Windows, a running executable may be locked.
+For directory and link handling in `extract` mode, see the [download command](../commands/download.md).
 
 ### `platform`
 

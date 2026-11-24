@@ -13,30 +13,20 @@ import (
 
 	"golang.org/x/sync/singleflight"
 
-	"github.com/idelchi/godyl/internal/data"
 	"github.com/idelchi/godyl/internal/tools/mode"
 	"github.com/idelchi/godyl/internal/tools/result"
 	"github.com/idelchi/godyl/internal/tools/sources"
 	"github.com/idelchi/godyl/internal/tools/sources/install"
 	"github.com/idelchi/godyl/internal/tools/tool"
 	"github.com/idelchi/godyl/pkg/path/file"
-	"github.com/idelchi/godyl/pkg/path/folder"
 )
-
-// acquiredArtifact tracks a downloaded artifact and the temp dir that owns it.
-type acquiredArtifact struct {
-	// destination is the downloaded artifact shared by matching tools.
-	destination file.File
-	// dir is the temporary directory that must be removed after processing.
-	dir folder.Folder
-}
 
 // artifactStore reuses resolved artifacts within a single processing run.
 type artifactStore struct {
 	// group coalesces concurrent downloads for the same artifact key.
 	group singleflight.Group
 	// artifacts caches completed downloads by artifact key.
-	artifacts map[string]acquiredArtifact
+	artifacts map[string]install.Artifact
 	// mu protects artifacts.
 	mu sync.Mutex
 }
@@ -64,7 +54,7 @@ type artifactKeyData struct {
 // newArtifactStore creates an empty per-run artifact store.
 func newArtifactStore() *artifactStore {
 	return &artifactStore{
-		artifacts: make(map[string]acquiredArtifact),
+		artifacts: make(map[string]install.Artifact),
 	}
 }
 
@@ -80,7 +70,7 @@ func (s *artifactStore) acquire(source sources.Type, d install.Data) (file.File,
 	if artifact, ok := s.artifacts[key]; ok {
 		s.mu.Unlock()
 
-		return artifact.destination, nil
+		return artifact.Destination, nil
 	}
 
 	s.mu.Unlock()
@@ -91,31 +81,23 @@ func (s *artifactStore) acquire(source sources.Type, d install.Data) (file.File,
 		if artifact, ok := s.artifacts[key]; ok {
 			s.mu.Unlock()
 
-			return artifact.destination, nil
+			return artifact.Destination, nil
 		}
 
 		s.mu.Unlock()
 
-		dir, err := data.CreateUniqueDirIn()
+		artifact, err := install.Acquire(d)
 		if err != nil {
-			return file.File(""), fmt.Errorf("creating random dir: %w", err)
-		}
-
-		destination, err := install.Acquire(d, dir)
-		if err != nil {
-			return file.File(""), errors.Join(err, dir.Remove())
+			return file.File(""), err
 		}
 
 		s.mu.Lock()
 
-		s.artifacts[key] = acquiredArtifact{
-			destination: destination,
-			dir:         dir,
-		}
+		s.artifacts[key] = artifact
 
 		s.mu.Unlock()
 
-		return destination, nil
+		return artifact.Destination, nil
 	})
 	if err != nil {
 		return "", err
@@ -133,7 +115,7 @@ func (s *artifactStore) acquire(source sources.Type, d install.Data) (file.File,
 func (s *artifactStore) cleanup() error {
 	s.mu.Lock()
 
-	artifacts := make([]acquiredArtifact, 0, len(s.artifacts))
+	artifacts := make([]install.Artifact, 0, len(s.artifacts))
 	for _, artifact := range s.artifacts {
 		artifacts = append(artifacts, artifact)
 	}
@@ -143,7 +125,7 @@ func (s *artifactStore) cleanup() error {
 	var err error
 
 	for _, artifact := range artifacts {
-		err = errors.Join(err, artifact.dir.Remove())
+		err = errors.Join(err, artifact.Remove())
 	}
 
 	return err

@@ -28,7 +28,14 @@ godyl [flags] download [tool, URL]... [flags]
 
 The `download` command provides a quick way to download tools. You can specify tools in the format `owner/repo` for GitHub/GitLab repositories, or provide a full URL.
 
-When using the `download` command, the tool will be downloaded and extracted directly into the output directory.
+The tool is downloaded and extracted in a temporary directory. Each completed file then replaces its counterpart in the
+output directory. On Unix, a running executable keeps using the old file until restarted. On Windows, an executable in
+use may need to be stopped before it can be replaced. A multi-file archive is updated one file at a time, not as a unit.
+
+Extraction follows existing symlinks in the output directory, so use a directory whose contents you trust. A symlink
+to a missing output file is an error. Other hardlinks to a replaced file still refer to the old version. Tar directory
+headers set permissions and timestamps only on directories that extraction creates.
+Selecting an archive subdirectory with `//subdir` also merges its contents; it does not clear the output directory.
 
 ## Flags
 

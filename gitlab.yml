@@ -58,6 +58,10 @@
   inherit:
     - gitlab:selfhosted
 
+- name: mcp/updates
+  inherit:
+    - gitlab:selfhosted
+
 - name: apps/dircmp
   inherit:
     - gitlab:selfhosted

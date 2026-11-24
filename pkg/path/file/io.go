@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"runtime"
 	"strings"
 )
 
@@ -193,7 +194,7 @@ func (f File) Rename(dest File) error {
 // Copy duplicates the file to a new location.
 // It copies contents and preserves the original file's permissions.
 // Timestamps and ownership are not preserved for cross-platform compatibility.
-func (f File) Copy(dest File) error {
+func (f File) Copy(dest File) (err error) {
 	if dest.Absolute().Path() == f.Absolute().Path() {
 		return fmt.Errorf("source (%q) and destination (%q) are identical", f, dest)
 	}
@@ -221,11 +222,79 @@ func (f File) Copy(dest File) error {
 	if err != nil {
 		return fmt.Errorf("opening destination file: %w", err)
 	}
-	defer dst.Close()
+
+	defer func() {
+		if cerr := dst.Close(); cerr != nil {
+			err = errors.Join(err, fmt.Errorf("closing file %q: %w", dest, cerr))
+		}
+	}()
 
 	// Copy contents
 	if _, err := io.Copy(dst, src); err != nil {
 		return fmt.Errorf("copying file contents: %w", err)
+	}
+
+	return nil
+}
+
+// CopyAtomic prepares a copy on the destination filesystem, then renames it over dest.
+// prepare may adjust the private copy's permissions or timestamps before it becomes visible.
+func (f File) CopyAtomic(dest File, prepare func(File) error) (err error) {
+	if dest.Absolute().Path() == f.Absolute().Path() {
+		return fmt.Errorf("source (%q) and destination (%q) are identical", f, dest)
+	}
+
+	// Copy removes its destination first. Give it a private directory, not a reserved filename.
+	dir, err := os.MkdirTemp(dest.Up().Path(), ".copy-*")
+	if err != nil {
+		return fmt.Errorf("staging a copy for %q: %w", dest, err)
+	}
+
+	defer func() { err = errors.Join(err, os.RemoveAll(dir)) }()
+
+	tmp := New(dir, "file")
+	if err := f.Copy(tmp); err != nil {
+		return err
+	}
+
+	if prepare != nil {
+		if err := prepare(tmp); err != nil {
+			return err
+		}
+	}
+
+	// Like Copy, an empty directory can be replaced by a file. Rename alone cannot do that.
+	if dest.IsDir() {
+		if err := dest.Remove(); err != nil {
+			return err
+		}
+	}
+
+	return tmp.renameOver(dest)
+}
+
+// renameOver replaces dest, retrying a Windows access denial on a read-only file.
+func (f File) renameOver(dest File) error {
+	err := f.Rename(dest)
+	if runtime.GOOS != "windows" || !errors.Is(err, fs.ErrPermission) {
+		return err
+	}
+
+	const ownerWrite = 0o200
+
+	// Do not change the permissions of a symlink's referent.
+	info, statErr := os.Lstat(dest.Path())
+	if statErr != nil || !info.Mode().IsRegular() || info.Mode().Perm()&ownerWrite != 0 {
+		return err
+	}
+
+	perm := info.Mode().Perm()
+	if chmodErr := dest.Chmod(perm | ownerWrite); chmodErr != nil {
+		return errors.Join(err, chmodErr)
+	}
+
+	if err := f.Rename(dest); err != nil {
+		return errors.Join(err, dest.Chmod(perm))
 	}
 
 	return nil

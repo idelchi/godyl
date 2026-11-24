@@ -3,8 +3,10 @@ package file_test
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"testing"
 
@@ -632,6 +634,186 @@ func TestFileCopy_SameDestination(t *testing.T) {
 
 	if string(got) != string(content) {
 		t.Errorf("file content after Copy(self) = %q, want %q", got, content)
+	}
+}
+
+// TestFileCopyAtomic verifies that the destination changes only after preparation finishes.
+func TestFileCopyAtomic(t *testing.T) {
+	t.Parallel()
+
+	out := t.TempDir()
+	src := file.New(t.TempDir(), "src")
+	dst := file.New(out, "tool")
+
+	if err := src.Write([]byte("new")); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := dst.Write([]byte("old")); err != nil {
+		t.Fatal(err)
+	}
+
+	err := src.CopyAtomic(dst, func(tmp file.File) error {
+		if got, err := dst.ReadString(); err != nil || got != "old" {
+			t.Fatalf("destination during preparation = %q, err %v", got, err)
+		}
+
+		return tmp.Write([]byte("prepared"))
+	})
+	if err != nil {
+		t.Fatalf("CopyAtomic() unexpected error: %v", err)
+	}
+
+	if got, err := dst.ReadString(); err != nil || got != "prepared" {
+		t.Fatalf("destination = %q, err %v", got, err)
+	}
+
+	if entries, err := os.ReadDir(out); err != nil || len(entries) != 1 {
+		t.Fatalf("unexpected entries: %v, err %v", entries, err)
+	}
+}
+
+// TestFileCopyAtomic_ReadOnlyDestination verifies replacement of an existing read-only file.
+func TestFileCopyAtomic_ReadOnlyDestination(t *testing.T) {
+	t.Parallel()
+
+	src := file.New(t.TempDir(), "src")
+	dst := file.New(t.TempDir(), "dst")
+
+	if err := src.Write([]byte("new")); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := dst.Write([]byte("old")); err != nil {
+		t.Fatal(err)
+	}
+
+	const readOnly = 0o400
+
+	if err := dst.Chmod(readOnly); err != nil {
+		t.Fatal(err)
+	}
+
+	if runtime.GOOS == "windows" {
+		checkLockedDestination(t, src, dst)
+	}
+
+	if err := src.CopyAtomic(dst, nil); err != nil {
+		t.Fatalf("CopyAtomic() over read-only file: %v", err)
+	}
+
+	if got, err := dst.ReadString(); err != nil || got != "new" {
+		t.Fatalf("destination = %q, err %v", got, err)
+	}
+}
+
+// checkLockedDestination verifies a Windows read-only file survives an update while held open without delete sharing.
+func checkLockedDestination(t *testing.T, src, dst file.File) {
+	t.Helper()
+
+	handle, err := dst.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = src.CopyAtomic(dst, nil)
+
+	if closeErr := handle.Close(); closeErr != nil {
+		t.Fatal(closeErr)
+	}
+
+	if err == nil {
+		t.Fatal("CopyAtomic() unexpectedly replaced an open Windows file")
+	}
+
+	info, err := dst.Info()
+	if err != nil || info.Mode().Perm()&0o200 != 0 {
+		t.Fatalf("read-only attribute lost after failed replacement: %v, err %v", info, err)
+	}
+
+	if got, err := dst.ReadString(); err != nil || got != "old" {
+		t.Fatalf("destination after failed replacement = %q, err %v", got, err)
+	}
+}
+
+// TestFileCopyAtomic_EmptyDirectory verifies an empty directory can be replaced with a file.
+func TestFileCopyAtomic_EmptyDirectory(t *testing.T) {
+	t.Parallel()
+
+	out := t.TempDir()
+	src := file.New(t.TempDir(), "src")
+	dst := file.New(out, "tool")
+
+	if err := src.Write([]byte("new")); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := os.Mkdir(dst.Path(), 0o700); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := src.CopyAtomic(dst, nil); err != nil {
+		t.Fatalf("CopyAtomic() over an empty directory: %v", err)
+	}
+
+	if got, err := dst.ReadString(); err != nil || got != "new" {
+		t.Fatalf("destination = %q, err %v", got, err)
+	}
+}
+
+// TestFileCopyAtomic_SameDestination verifies that the source survives a rejected self-copy.
+func TestFileCopyAtomic_SameDestination(t *testing.T) {
+	t.Parallel()
+
+	src := file.New(t.TempDir(), "src")
+	if err := src.Write([]byte("original")); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := src.CopyAtomic(src, nil); err == nil {
+		t.Fatal("CopyAtomic(self) = nil, want error")
+	}
+
+	if got, err := src.ReadString(); err != nil || got != "original" {
+		t.Fatalf("source after self-copy = %q, err %v", got, err)
+	}
+}
+
+// TestFileCopyAtomic_PrepareFailure verifies that failed preparation leaves no visible change.
+func TestFileCopyAtomic_PrepareFailure(t *testing.T) {
+	t.Parallel()
+
+	out := t.TempDir()
+	src := file.New(t.TempDir(), "src")
+	dst := file.New(out, "tool")
+
+	if err := src.Write([]byte("new")); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := dst.Write([]byte("old")); err != nil {
+		t.Fatal(err)
+	}
+
+	want := errors.New("prepare failed")
+	err := src.CopyAtomic(dst, func(tmp file.File) error {
+		if got, err := tmp.ReadString(); err != nil || got != "new" {
+			t.Fatalf("private copy = %q, err %v", got, err)
+		}
+
+		return want
+	})
+
+	if !errors.Is(err, want) {
+		t.Fatalf("CopyAtomic error = %v, want %v", err, want)
+	}
+
+	if got, err := dst.ReadString(); err != nil || got != "old" {
+		t.Fatalf("destination = %q, err %v", got, err)
+	}
+
+	if entries, err := os.ReadDir(out); err != nil || len(entries) != 1 {
+		t.Fatalf("unexpected entries: %v, err %v", entries, err)
 	}
 }
 

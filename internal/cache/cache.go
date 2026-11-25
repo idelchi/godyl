@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/fs"
 	"sync"
 	"time"
 
@@ -97,6 +98,16 @@ func (c *Cache) Load() error {
 	}
 
 	return nil
+}
+
+// LoadIfExists loads the cache without creating a missing file.
+func (c *Cache) LoadIfExists() error {
+	err := c.load()
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil
+	}
+
+	return err
 }
 
 // Get retrieves items from the cache by ID.

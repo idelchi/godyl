@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/idelchi/godyl/internal/cli/core"
+	"github.com/idelchi/godyl/internal/ierrors"
 	"github.com/idelchi/godyl/internal/iutils"
 	"github.com/idelchi/godyl/internal/presentation"
 	"github.com/idelchi/godyl/internal/processor"
@@ -62,5 +63,13 @@ func run(input core.Input) error {
 		ErrorFile: cfg.ErrorFile,
 	}, runner.Logger())
 
-	return summary.Error()
+	if err := summary.Error(); err != nil {
+		return err
+	}
+
+	if summary.Successful > 0 {
+		return ierrors.ErrChangesPending
+	}
+
+	return nil
 }

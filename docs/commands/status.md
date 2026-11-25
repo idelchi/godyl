@@ -24,6 +24,16 @@ godyl [flags] status [tools.yml|-]...
 
 The `status` command checks the status of the tools defined in the provided YAML file(s) or from standard input (STDIN). It compares the installed versions of the tools with the versions specified in the YAML file(s) and reports any discrepancies.
 
+It reads the installed-version cache when available, but does not create or update it.
+
+## Exit Codes
+
+| Code | Meaning |
+| :--- | :------ |
+| `0` | Nothing to install under the configured strategies, including when no tools match the tags. |
+| `1` | The check failed, even if other tools need installation. |
+| `2` | At least one selected tool needs installation and the check completed without errors. |
+
 ## Flags
 
 | Flag             | Environment Variable  | Default     | Description                                 |

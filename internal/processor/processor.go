@@ -24,7 +24,7 @@ import (
 type Processor struct {
 	// results collects outcomes from concurrent tool operations.
 	results *collector
-	// cache persists successful tool resolutions when enabled.
+	// cache records installed tool versions when enabled.
 	cache *cache.Cache
 	// progress coordinates download progress rendering.
 	progress *progressMgr
@@ -64,7 +64,12 @@ func New(toolsList tools.Tools, cfg root.Config, log *logger.Logger) *Processor 
 func (p *Processor) Process(tags tags.IncludeTags) (Summary, error) {
 	// 1. Setup
 	if p.cache != nil {
-		if err := p.cache.Load(); err != nil {
+		load := p.cache.Load
+		if p.resolveOnly() {
+			load = p.cache.LoadIfExists
+		}
+
+		if err := load(); err != nil {
 			return Summary{}, fmt.Errorf("loading cache: %w", err)
 		}
 	}
@@ -96,11 +101,6 @@ func (p *Processor) Process(tags tags.IncludeTags) (Summary, error) {
 			// Collect the result
 			p.results.Add(result)
 
-			// Update cache if successful
-			if result.Status == StatusOK && p.cache != nil {
-				p.updateCache(result) //nolint:contextcheck	// Unclear what this is about.
-			}
-
 			return nil
 		})
 	}
@@ -130,6 +130,11 @@ func (p *Processor) Process(tags tags.IncludeTags) (Summary, error) {
 	return summary, nil
 }
 
+// resolveOnly reports whether processing stops before installation.
+func (p *Processor) resolveOnly() bool {
+	return p.NoDownload || p.Options != nil
+}
+
 // runTool executes a tool operation and returns the result.
 func (p *Processor) runTool(ctx context.Context, t *tool.Tool, tags tags.IncludeTags, artifacts *artifactStore) Result {
 	// Enable cache if available
@@ -152,15 +157,18 @@ func (p *Processor) runTool(ctx context.Context, t *tool.Tool, tags tags.Include
 	}
 
 	// Check if we should skip download
-	if p.NoDownload || p.Options != nil {
+	if p.resolveOnly() {
 		t.DisableCache()
 
 		return p.convertResult(t, resolveResult)
 	}
 
-	downloadResult := p.downloadTool(ctx, t, artifacts)
+	result := p.convertResult(t, p.downloadTool(ctx, t, artifacts))
+	if result.Status == StatusOK && p.cache != nil {
+		p.updateCache(result) //nolint:contextcheck // The installed-version probe does not accept a context.
+	}
 
-	return p.convertResult(t, downloadResult)
+	return result
 }
 
 // convertResult converts an internal result.Result to a processor Result.

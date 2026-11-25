@@ -10,10 +10,12 @@ package main
 
 import (
 	"embed"
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/idelchi/godyl/internal/app"
+	"github.com/idelchi/godyl/internal/ierrors"
 )
 
 // version is the application version injected at build time.
@@ -24,8 +26,14 @@ var embeds embed.FS
 
 // main runs the CLI with its build-time version and embedded defaults, tools, and update assets.
 func main() {
+	const exitChangesPending = 2
+
 	// Execute the application
 	if err := app.Execute(version, embeds); err != nil {
+		if errors.Is(err, ierrors.ErrChangesPending) {
+			os.Exit(exitChangesPending)
+		}
+
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 
 		os.Exit(1)
